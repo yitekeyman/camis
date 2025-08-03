@@ -1,0 +1,377 @@
+<section id="investorBids" class="min">
+    <div class="investorBids-container">
+        <div class="has-bottom-index align-center">
+            <div class="investorBids-header min-header align-center">
+                <h3>Promotion</h3>
+                <h2>Register For Promotion</h2>
+            </div>
+        </div>
+        <div class="investorBids-body min-body" *ngIf="loading==false">
+            <div class="bid-detail">
+                <table class="table">
+                    <tr *ngIf="selectedPromotion != null">
+                        <td><strong>Title: </strong> {{selectedPromotion.promotion.title}}</td>
+                        <td><strong>Region: </strong> ({{selectedPromotion.promotion.region}})</td>
+                        <td><strong>Land UPIN: </strong> {{selectedPromotion.landUPIN}}</td>
+                        <td><strong>Land Area: </strong> {{selectedPromotion.landData.area}}</td>
+                        <td><strong>Submission Date:</strong>  {{selectedPromotion.promotion.applyDateTo | date:'MMM dd/yyyy' }}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="wizard" class="form_wizard wizard_horizontal">
+                <ul class="wizard_steps">
+                    <li>
+                        <a  [ngClass]="step1Class">
+                            <span class="step_no">1</span>
+                            <span class="step_descr">
+                                              Step 1<br />
+                                              <small>Profile Details</small>
+                                          </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a  [ngClass]="step2Class">
+                            <span class="step_no">2</span>
+                            <span class="step_descr">
+                                              Step 2<br />
+                                              <small>Promotion Details</small>
+                                          </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a  [ngClass]="step3Class">
+                            <span class="step_no">3</span>
+                            <span class="step_descr">
+                                              Step 3<br />
+                                              <small>Contact Information </small>
+                                          </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="step-1" class="col-md-10 col-md-offset-1" *ngIf="step == 1">
+                <div class="panel" *ngIf="isEdit==true || isNew==true">
+                    <div class="x_title">
+                        <h4>{{header}}</h4>
+                        <div class="clearfix"></div>
+                    </div>
+                    <form [formGroup]="investorProfileForm" (submit)="saveProfile()" name="investorProfileForm">
+                        <div class="panel-body">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Investor Name:  *  
+                                        <small class="form-text help" *ngIf="investorProfileForm.controls.investorName.errors!=null &&investorProfileForm.controls.investorName.errors.required!=null && investorProfileForm.controls.investorName.touched">This field is required.</small>
+                                        <small class="form-text help" *ngIf="investorProfileForm.controls.investorName.errors!=null &&investorProfileForm.controls.investorName.errors.pattern!=null && investorProfileForm.controls.investorName.touched">Name should be Character Only.</small>
+                                    </label>
+                                    <input type="text" class="form-control" placeholder="Investor Name" formControlName="investorName" [(ngModel)]="investorModel.Name">
+                                </div>
+                                <div class="form-group">
+                                    <label>Nationality:  *  
+                                        <small class="form-text help" *ngIf="investorProfileForm.controls.nationality.errors!=null && investorProfileForm.controls.nationality.errors.required!=null && investorProfileForm.controls.nationality.touched">This field is required.</small>
+                                        <small class="form-text help" *ngIf="investorProfileForm.controls.nationality.errors!=null && investorProfileForm.controls.nationality.errors.pattern!=null && investorProfileForm.controls.nationality.touched">Nationality should be Character Only.</small>
+                                    </label>
+                                    <input type="text" class="form-control" placeholder="Nationality" formControlName="nationality" [(ngModel)]="investorModel.Nationality">
+                                </div>
+                                <div class="form-group">
+                                    <label>Investor Type:  *  <small class="form-text help" *ngIf="investorProfileForm.controls.operatorType.errors!=null &&(investorProfileForm.controls.operatorType.errors.required!=null||investorProfileForm.controls.operatorType.errors.min!=null) && investorProfileForm.controls.operatorType.touched">This field is required.</small></label>
+                                    <select  class="form-control" formControlName="operatorType" [(ngModel)]="investorModel.TypeId">
+                                        <option value="0">Select Investor Type</option>
+                                        <option value="1">Person</option>
+                                        <option value="2">General Partnership</option>
+                                        <option value="3">Limited Partnership</option>
+                                        <option value="4">Private Limited Company</option>
+                                        <option value="5">Share Company</option>
+                                        <option value="6">Joint Venture</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Operator Origin:  *  <small class="form-text help" *ngIf="investorProfileForm.controls.operatorOrigin.errors!=null && (investorProfileForm.controls.operatorOrigin.errors.required!=null || investorProfileForm.controls.operatorOrigin.errors.min!=null)  && investorProfileForm.controls.operatorOrigin.touched">This field is required.</small></label>
+                                    <select class="form-control" formControlName="operatorOrigin" [(ngModel)]="investorModel.OriginId">
+                                        <option value="0">Select Origin Type</option>
+                                        <option value="1">Ethiopian</option>
+                                        <option value="2">Foreign</option>
+                                        <option value="3">Ethiopian Origin</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Capital:  *  
+                                        <small class="form-text help" *ngIf="investorProfileForm.controls.capital.errors!=null && investorProfileForm.controls.capital.errors.required!=null && investorProfileForm.controls.capital.touched">This field is required.</small>
+                                        <small class="form-text help" *ngIf="investorProfileForm.controls.capital.errors!=null && investorProfileForm.controls.capital.errors.min!=null && investorProfileForm.controls.capital.touched">Invalid Capital Amount.</small>
+                                    </label>
+                                    <input type="number" class="form-control" placeholder="Capital" formControlName="capital" [(ngModel)]="investorModel.Capital">
+                                </div>
+                                <div class="form-group">
+                                    <label>Phone No:  *  
+                                        <small class="form-text help" *ngIf="investorProfileForm.controls.phoneNo.errors!=null && investorProfileForm.controls.phoneNo.errors.required!=null && investorProfileForm.controls.phoneNo.touched">This field is Required.</small>
+                                        <small class="form-text help" *ngIf="investorProfileForm.controls.phoneNo.errors!=null && investorProfileForm.controls.phoneNo.errors.pattern!=null && investorProfileForm.controls.phoneNo.touched">Phone number is only number.</small>
+                                        <small class="form-text help" *ngIf="investorProfileForm.controls.phoneNo.errors!=null && investorProfileForm.controls.phoneNo.errors.maxlength!=null && investorProfileForm.controls.phoneNo.touched">Phone number is max length should be 13.</small>
+                                        <small class="form-text help" *ngIf="investorProfileForm.controls.phoneNo.errors!=null && investorProfileForm.controls.phoneNo.errors.minlength!=null && investorProfileForm.controls.phoneNo.touched">Phone number is min length should be 9.</small>
+                                    </label>
+                                    <input type="text" name="phoneNo" class="form-control" placeholder="Phone No"   formControlName="phoneNo" [(ngModel)]="investorModel.Phone" (keyup)="change()">
+                                </div>
+                                <div class="form-group">
+                                    <label>E-mail:  *  
+                                        <small class="form-text help" *ngIf="investorProfileForm.controls.email.errors!=null && investorProfileForm.controls.email.errors.required!=null && investorProfileForm.controls.email.touched">This field is required.</small>
+                                        <small class="form-text help" *ngIf="investorProfileForm.controls.email.errors!=null && investorProfileForm.controls.email.errors.pattern!=null && investorProfileForm.controls.email.touched">Invalid Email Address.</small>
+                                    </label>
+                                    <input type="email" class="form-control" placeholder="E-Mail Address" formControlName="email" [(ngModel)]="investorModel.Email">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+
+                                    <div *ngIf="investorModel.AddressId==''">
+                                        <label>Address:</label>
+                                        <app-address-selector (onChange)="opAddress = $event"></app-address-selector>
+                                    </div>
+                                    <div  *ngIf="investorModel.AddressId!=''">
+                                        <label>Address:  <button class="btn btn-xs btn-dark" (click)="changeAddress()">Change</button></label>
+                                        <app-address-output [leafId]='investorModel.AddressId'></app-address-output>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <table class="table table-striped camis-table" *ngIf="registrations?.length > 0">
+                                        <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Registration Type</th>
+                                            <th>Authority</th>
+                                            <th>Registration No</th>
+                                            <th>Reference No</th>
+                                            <th>Action</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr *ngFor="let registration of regDoc; index as i" >
+                                            <td>{{i+1}}</td>
+                                            <td>{{registration.TypeName}}</td>
+                                            <td>{{registration.AuthorityName}}</td>
+                                            <td>{{registration.RegistrationNumber}}</td>
+                                            <td>{{registration.Document.Ref}}</td>
+                                            <td><div class="">
+                                                <button type="button"  class="btn btn-sm btn-warning" (click)="removeReg(i)"><i class="fa fa-trash"></i> DELETE</button>
+                                            </div> </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group col-md-12">
+                                <p><strong>NOTE:</strong> <i>You can add registration document before you click on save profile button</i></p>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <div class="form-group align-right">
+                                <button (click)="showAddDocumentModal()" class="normal btn-camis-primary"  type="button"> Add Document</button>
+                                <button type="reset" class="normal  btn-camis-default">RESET</button>
+                                <button type="submit" class="normal  btn-camis" [disabled]="!investorProfileForm.valid">Next</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="step-2" class="col-md-10 col-md-offset-1" *ngIf="step == 2">
+                <div class="panel">
+                    <div class="form-group">
+                        <table class="table table-striped camis-table">
+                            <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Document Reference No</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let doc of proDocuments; index as i">
+                                <td>{{i+1}}</td>
+                                <td>{{doc.docRef}}</td>
+                                <td><button class="btn btn-sm btn-warning" (click)="removeDoc(i)"><i class="fa fa-trash"></i> DELETE</button></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                   <form [formGroup]="proposalAbstractForm" (submit)="saveProposalAbs()">
+                        <div class="panel-body">
+                            
+                            <div class="form-group col-md-6">
+                                <label>Proposed Capital:  *  
+                                    <small class="form-text help" *ngIf="proposalAbstractForm.controls.capital.errors!=null && proposalAbstractForm.controls.capital.errors.required!=null && proposalAbstractForm.controls.capital.touched">This field is required.</small>
+                                    <small class="form-text help" *ngIf="proposalAbstractForm.controls.capital.errors!=null && proposalAbstractForm.controls.capital.errors.min!=null && proposalAbstractForm.controls.capital.touched">Invalid Capital Amount.</small>
+                                </label>
+                                <input type="number" class="form-control" placeholder="Proposed Capital" formControlName="capital" [(ngModel)]="participatePro.proposedCapital">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Investment Type: *  <small class="form-text help" *ngIf="!proposalAbstractForm.controls.investmentType.valid && proposalAbstractForm.controls.investmentType.touched">This field is required.</small></label>
+                                <select class="form-control" formControlName="investmentType" [(ngModel)]="participatePro.investmentTypes" multiple>
+                                  
+                                    <option value="1">Large Scale Agriculture</option>
+                                    <option value="2">Horticulture</option>
+                                    <option value="3">Livestock Farming</option>
+                                    <option value="4">Forestry</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label>Proposal Abstract</label>
+                                <textarea class="form-control" placeholder="Proposal Abstract" rows="4" formControlName="proposalAbstract" [(ngModel)]="participatePro.proposalAbstract"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="panel-footer">
+                            <div class="form-group align-right">
+                                <button type="button" class="normal  btn-camis" (click)="showDialog()"> Add Document</button>
+                                <button type="button" class="normal  btn-camis-primary" (click)="backTo1()">Back</button>
+                                <button type="submit" class="normal  btn-camis" [disabled]="!(proposalAbstractForm.valid && proDocuments.length >0)">Next</button>
+                            </div>
+                        </div>
+                   </form>
+                </div>
+            </div>
+            <div id="step-3" class="col-md-10 col-md-offset-1" *ngIf="step == 3">
+                <div class="panel">
+                    <form [formGroup]="contactForm" (submit)="savePromotionSubmission()">
+
+                        <div class="panel-body ">
+                            <div class="col-md-6 col-md-offset-3">
+                                <div class="for-group">
+                                    <label>Contact Name:</label>
+                                    <input type="text" class="form-control" placeholder="Contact Name" formControlName="contactName" [(ngModel)]="contactModel.name"/>
+                                </div>
+                                <div class="form-group">
+                                    <label>Contact E-Mail: <small class="form-text help" *ngIf="contactForm.controls.contactEmail.errors!=null && contactForm.controls.contactEmail.errors.pattern!=null && contactForm.controls.contactEmail.touched">Invalid Email Address.</small></label>
+                                    <input type="email" class="form-control" placeholder="Contact Email" formControlName="contactEmail" [(ngModel)]="contactModel.email">
+                                </div>
+                                <div class="form-group ">
+                                    <label>Contact Phone No:<small class="form-text help" *ngIf="contactForm.controls.contactPhone.errors!=null && (contactForm.controls.contactPhone.errors.pattern!=null ||contactForm.controls.contactPhone.errors.minlength!=null||contactForm.controls.contactPhone.errors.maxlength!=null) && contactForm.controls.contactEmail.touched">Invalid Phone number.</small></label>
+                                    <input type="text" class="form-control" placeholder="Contact Phone" formControlName="contactPhone" [(ngModel)]="contactModel.phone">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel-footer">
+                            <div class="form-group align-right">
+                                <button type="button" class="normal  btn-camis-primary" (click)="backTo2()">back</button>
+                                <button type="submit" class="normal  btn-camis" [disabled]="!contactForm.valid">Finish</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="add-document-dialog" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">
+                                Select Document
+                            </h4>
+                        </div>
+                        <form [formGroup]="registrationForm" id="registrationForm" (submit)="saveDocument()">
+                            <div class="modal-body">
+                                <div class="form-group ">
+                                    <label>Registration Type:</label>
+                                    <select class="form-control" formControlName="type" [(ngModel)]="registrationModel.TypeId">
+                                       
+                                        <option value="1">Commercial Registration</option>
+                                        <option value="2">Business License</option>
+                                        <option value="3">Investment Permit</option>
+                                        <option value="4">TIN</option>
+                                        <option value="5">ID or Passport</option>
+                                        <option value="6">VAT Certificate</option>
+                                        <option value="7">Resident Permit (Foreign)</option>
+                                        <option value="8">Work Permit (Foreign)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group ">
+                                    <label>Authority:</label>
+                                    <select class="form-control" formControlName="authority" [(ngModel)]="registrationModel.AuthorityId">
+                                       
+                                        <option value="1">Ethiopian Investment Commission (EIC)</option>
+                                        <option value="2">Ministry of Trade (MoT)</option>
+                                        <option value="3">Revenue and Customs Authority</option>
+                                        <option value="4">Ministry of Labour and Social Affairs</option>
+                                        <option value="5">Immigration and Nationality Affairs</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Registration Number:</label>
+                                    <input type="text" class="form-control" placeholder="Registration Number"  formControlName="regNumber" [(ngModel)]="registrationModel.RegistrationNumber">
+                                </div>
+                                <div class="form-group">
+                                    <label>Reference No:</label>
+                                    <input type="text" class="form-control" placeholder="Reference No" formControlName="refNumber" [(ngModel)]="regDocument.Ref">
+                                </div>
+                                <div class="form-group">
+                                    <label>Upload Document:</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" disabled="disabled" placeholder="Upload Registration Document" id="registrationDocumentLabel">
+                                        <span class="input-group-btn">
+                                              <button type="button" class="btn btn-camis" (click)="regDocumentUploadTrigger()"><i class="fa fa-binoculars"></i></button>
+                                          </span>
+                                        <input type="file" id="uploadRegistrationDocumentPro" style="display: none;"  (change)="uploadRegistrationDocument($event)" >
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="form-group">
+                                    <button type="submit" class="button x-lg btn-camis">Add Document</button>
+                                    <button type="reset" class="button btn x-lg btn-default">Reset</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="add-pro-document-dialog" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">
+                                Select Document
+                            </h4>
+                        </div>
+                        <form [formGroup]="proposalDocForm" (submit)="addProposalDocument()">
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label>Reference No:</label>
+                                    <input type="text" class="form-control" placeholder="Reference No" formControlName="referenceNo" [(ngModel)]="proposalDocumentModel.docRef">
+                                </div>
+                                <div class="form-group">
+                                    <label>Upload Document:</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" disabled="disabled" placeholder="Upload Document" id="DocumentLabel">
+                                        <span class="input-group-btn">
+                                              <button type="button" class="btn btn-camis" (click)="docUploadTrigger()"><i class="fa fa-binoculars"></i></button>
+                                          </span>
+                                        <input type="file" id="uploadDocumentPro" style="display: none;"  (change)="uploadDocument($event)" formControlName="document">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="form-group">
+                                    <button type="submit" class="button x-lg btn-camis">Add Document</button>
+                                    <button type="reset" class="button btn x-lg btn-default">Reset</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="investorBids-body min-body" *ngIf="loading==true">
+            <div class="align-center bid-loader" >
+                <i class="fa fa-circle-o faa-burst animated"></i>
+            </div>
+        </div>
+    </div>
+</section>

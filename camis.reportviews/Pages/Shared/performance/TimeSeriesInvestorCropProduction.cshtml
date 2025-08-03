@@ -1,0 +1,78 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using intapscamis.camis.domain.Report
+@model intapscamis.camis.domain.Farms.Models.ReportResponseModel
+@{
+    var i = 1;
+    var type = (int)Model.Request.SelectedReportType;
+
+}
+
+<table class="table table-striped jambo_table bulk_action" id="tclick">
+    <thead>
+
+        <tr class="headings">
+            <th class="column-title">No</th>
+            <th class="column-title">Year</th>
+
+
+            <th class="column-title">Crop</th>
+            <th class="column-title numberValue">Coverage <br /> Area (ha)</th>
+            <th class="column-title numberValue">Average <br /> Productivity (qt/ha)</th>
+
+            <th class="column-title numberValue">Production (qt)</th>
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pair in Model.InvestorTimeSeriesCropProduction)
+        {
+            var item = pair.Value;
+            var key = pair.Key;
+            if (item.Count() > 0)
+            {
+                var productions = item.Where(m => m.tag.Substring(0, 10) == "production").ToList();
+                @foreach (var x in productions)
+                {
+
+                    var cov = item.Where(m => m.tag.Substring(8, m.tag.Length - 8) == x.tag.Substring(10, x.tag.Length - 10)).ToList();
+                    var coverage = cov.Count() > 0 ? cov.First().progress : 0;
+
+                    <tr>
+                        @if (productions.IndexOf(x) == 0)
+                        {
+                            <td class="column-title" rowspan="@productions.Count()">@(i++)</td>
+                            <td class="column-title" rowspan="@productions.Count()">@key</td>
+                        }
+
+
+                        <td class="column-title">@x.tag.Beautify(16)</td>
+                        <td class="column-title numberValue">@coverage</td>
+                        <td class="column-title numberValue">@(coverage != 0 ? Math.Round(x.progress / coverage, 2) : 0)</td>
+                        <td class="column-title numberValue">@x.progress</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+
+                        <td class="column-title" >@(i++)</td>
+                        <td class="column-title" >@key</td>
+
+
+                        <td class="column-title" colspan="4">No Progress Recorded On This Year</td>
+
+                </tr>
+            }
+
+
+
+
+        }
+    </tbody>
+</table>

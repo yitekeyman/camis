@@ -1,0 +1,34 @@
+[
+  {
+    "id":1,
+    "name":"Posted"
+  },
+  {
+    "id":2,
+    "name":"Approved"
+  },
+  {
+  "id":3,
+  "name":"Closed"
+},
+  {
+    "id":4,
+    "name":"EvaluationStarted"
+  },
+  {
+    "id":5,
+    "name":"EvaluationFinished"
+  },
+  {
+    "id":6,
+    "name":"ProposalAccepted"
+  },
+  {
+    "id":7,
+    "name":"Finished"
+  },
+  {
+    "id":8,
+    "name":"Canceled"
+  }
+]

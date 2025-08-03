@@ -1,0 +1,117 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using intapscamis.camis.domain.Report
+@model intapscamis.camis.domain.Farms.Models.ReportResponseModel
+@{
+    var i = 1;
+    var type = (int)Model.Request.SelectedReportType;
+
+    var swt = Model.ReferenceData.SurfaceWaterType;
+    var gwt = Model.ReferenceData.GroundWaterType;
+
+    int sl = swt.Count() * 2;
+    int gl = gwt.Count() * 2;
+
+    var lookup = Model.LocationLookup;
+}
+
+<table class="table table-striped jambo_table bulk_action" id="tclick">
+    <thead>
+
+        <tr class="headings">
+            <th class="column-title">No</th>
+            <th class="column-title">@Model.AddressType</th>
+
+            <th class="column-title" colspan="2">Rainfed</th>
+            <th class="column-title" colspan="@sl">Surface Water</th>
+            <th class="column-title" colspan="@gl">Ground Water</th>
+        </tr>
+        <tr class="headings">
+            <th class="column-title"></th>
+            <th class="column-title"></th>
+
+            <th class="column-title"></th>
+            <th class="column-title"></th>
+            @foreach (var sw in swt)
+            {
+                <th class="column-title" colspan="2">@sw.Name</th>
+            }
+            @foreach (var gw in gwt)
+            {
+                <th class="column-title" colspan="2">@gw.Name</th>
+            }
+        </tr>
+        <tr class="headings">
+            <th class="column-title"></th>
+            <th class="column-title"></th>
+
+            <th class="column-title numberValue">Area</th>
+            <th class="column-title numberValue">Count</th>
+            @foreach (var sw in swt)
+            {
+                <th class="column-title numberValue">Area</th>
+                <th class="column-title numberValue">Count</th>
+            }
+            @foreach (var gw in gwt)
+            {
+                <th class="column-title numberValue">Area</th>
+                <th class="column-title numberValue">Count</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.WaterSourceSummary)
+        {
+            <tr>
+                <td class="column-title">@(i++)</td>
+                <td class="column-title">
+                    @if (lookup.ContainsKey(item.location))
+                    {
+                        <p>@lookup[item.location]</p>
+                    }
+                    else
+                    {
+                        <p>@item.location</p>
+                    }
+                </td>
+                <th class="column-title numberValue">@Math.Round(item.RainfedSummary.Sum(m => m.area), 2)</th>
+                <th class="column-title numberValue">@item.RainfedSummary.Sum(m => m.count)</th>
+                @foreach (var sw in swt)
+                {
+                    <th class="column-title numberValue">@Math.Round(item.SurfaceWaterSummary.Where(m => m.type == sw.Id).Sum(m => m.area), 2)</th>
+                    <th class="column-title numberValue">@item.SurfaceWaterSummary.Where(m => m.type == sw.Id).Sum(m => m.count)</th>
+                }
+                @foreach (var gw in gwt)
+                {
+                    <th class="column-title numberValue">@Math.Round(item.GroundWaterSummary.Where(m => m.type == gw.Id).Sum(m => m.area), 2)</th>
+                    <th class="column-title numberValue">@item.GroundWaterSummary.Where(m => m.type == gw.Id).Sum(m => m.count)</th>
+                }
+
+
+
+            </tr>
+        }
+        @if(Model.WaterSourceSummary.Count() > 0) { 
+            <tr>
+                <td class="column-title"></td>
+                <td class="column-title">Total</td>
+                <th class="column-title numberValue">@Math.Round(Model.WaterSourceSummary.SelectMany(m => m.RainfedSummary).Sum(m => m.area), 2)</th>
+                <th class="column-title numberValue">@Model.WaterSourceSummary.SelectMany(m => m.RainfedSummary).Sum(m => m.count)</th>
+                @foreach (var sw in swt)
+                {
+                    <th class="column-title numberValue">@Math.Round(Model.WaterSourceSummary.SelectMany(m => m.SurfaceWaterSummary).Where(m => m.type == sw.Id).Sum(m => m.area), 2)</th>
+                    <th class="column-title numberValue">@Model.WaterSourceSummary.SelectMany(m => m.SurfaceWaterSummary).Where(m => m.type == sw.Id).Sum(m => m.count)</th>
+                }
+                @foreach (var gw in gwt)
+                {
+                    <th class="column-title numberValue">@Math.Round(Model.WaterSourceSummary.SelectMany(m => m.GroundWaterSummary).Where(m => m.type == gw.Id).Sum(m => m.area), 2)</th>
+                    <th class="column-title numberValue">@Model.WaterSourceSummary.SelectMany(m => m.GroundWaterSummary).Where(m => m.type == gw.Id).Sum(m => m.count)</th>
+                }
+
+               
+
+            </tr>
+        }
+    </tbody>
+</table>

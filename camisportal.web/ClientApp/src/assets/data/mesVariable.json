@@ -1,0 +1,153 @@
+[{
+  "id": 3,
+  "name": "Distance in Km",
+  "defaultUnitId": 2,
+  "typeId": 1,
+  "defaultUnit": {
+    "id": 2,
+    "name": "Kilometer",
+    "conversionFactor": 1.0,
+    "conversionOffset": 0.0
+  },
+  "type": {
+    "id": 1,
+    "name": "Measuring"
+  }
+}, {
+  "id": 2,
+  "name": "Area in Sq.m.",
+  "defaultUnitId": 4,
+  "typeId": 1,
+  "defaultUnit": {
+    "id": 4,
+    "name": "Square Meter",
+    "conversionFactor": 1.0,
+    "conversionOffset": 0.0
+  },
+  "type": {
+    "id": 1,
+    "name": "Measuring"
+  }
+}, {
+  "id": 1,
+  "name": "Area in ha",
+  "defaultUnitId": 3,
+  "typeId": 1,
+  "defaultUnit": {
+    "id": 3,
+    "name": "Hectar",
+    "convertFrom": 4,
+    "conversionFactor": 10000.0,
+    "conversionOffset": 0.0
+  },
+  "type": {
+    "id": 1,
+    "name": "Measuring"
+  }
+}, {
+  "id": 5,
+  "name": "Mass in Kgs",
+  "defaultUnitId": 6,
+  "typeId": 1,
+  "defaultUnit": {
+    "id": 6,
+    "name": "Ton",
+    "conversionFactor": 1000.0,
+    "conversionOffset": 0.0
+  },
+  "type": {
+    "id": 1,
+    "name": "Measuring"
+  }
+}, {
+  "id": 4,
+  "name": "Mass in Tons",
+  "defaultUnitId": 10,
+  "typeId": 1,
+  "defaultUnit": {
+    "id": 10,
+    "name": "Kilogram",
+    "conversionFactor": 1.0,
+    "conversionOffset": 0.0
+  },
+  "type": {
+    "id": 1,
+    "name": "Measuring"
+  }
+}, {
+  "id": 6,
+  "name": "Volume in lts",
+  "defaultUnitId": 7,
+  "typeId": 1,
+  "defaultUnit": {
+    "id": 7,
+    "name": "Liter",
+    "convertFrom": 10,
+    "conversionFactor": 1.0,
+    "conversionOffset": 0.0
+  },
+  "type": {
+    "id": 1,
+    "name": "Measuring"
+  }
+}, {
+  "id": 8,
+  "name": "Amount in ETB",
+  "defaultUnitId": 5,
+  "typeId": 2,
+  "defaultUnit": {
+    "id": 5,
+    "name": "ETB",
+    "conversionFactor": 1.0,
+    "conversionOffset": 0.0
+  },
+  "type": {
+    "id": 2,
+    "name": "Resource"
+  }
+}, {
+  "id": 9,
+  "name": "Amount in USD",
+  "defaultUnitId": 11,
+  "typeId": 2,
+  "defaultUnit": {
+    "id": 11,
+    "name": "USD",
+    "conversionFactor": 1.0,
+    "conversionOffset": 0.0
+  },
+  "type": {
+    "id": 2,
+    "name": "Resource"
+  }
+}, {
+  "id": 10,
+  "name": "Boolean",
+  "defaultUnitId": 1,
+  "typeId": 3,
+  "defaultUnit": {
+    "id": 1,
+    "name": "",
+    "conversionFactor": 1.0,
+    "conversionOffset": 0.0
+  },
+  "type": {
+    "id": 3,
+    "name": "Outcome"
+  }
+}, {
+  "id": 7,
+  "name": "Quantity in Number",
+  "defaultUnitId": 1,
+  "typeId": 3,
+  "defaultUnit": {
+    "id": 1,
+    "name": "",
+    "conversionFactor": 1.0,
+    "conversionOffset": 0.0
+  },
+  "type": {
+    "id": 3,
+    "name": "Outcome"
+  }
+}]

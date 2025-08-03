@@ -1,0 +1,131 @@
+@model System.String
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+          "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="/style/bootstrap.min.css" />
+    <link rel="stylesheet" href="/style/cmss.css" />
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery-ui.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/bootbox.js"></script>
+    <script src="/cmss/process_split.js"></script>
+    <title>CAMIS Qgis Task Manager</title>
+</head>
+<body>
+    <div id="select_app" class="align-center">
+        <h4>CAMIS Qgis Task Manager</h4>
+    </div>
+    <div id='search_result' style="display:none">
+    </div>
+    <div id='task_panel' style="display:none">
+    </div>
+</body>
+<script>
+$(document).ready(function ()
+        {
+            loadCurrentTasks();
+        });
+        var layerChanged = null;      //called from python
+        var featureSelected = null;   //called from python
+
+        var setFeatureData_done = null;
+        function setGeomData(data)  //called from python
+        {
+            setFeatureData_done(data);
+        }
+        function getGeomData(done,id)
+        {
+            setFeatureData_done = done;
+            var url='/cmss/qcmd/get_data/';
+            if(id)
+                url=url+"?id="+id;
+            window.location = url;
+        }
+        var sessionid = '@(Model==null?"":Model)';
+        function setSelectionTool()
+        {
+            window.location = '/cmss/qcmd/set_selection_mod';
+        }
+        function openUrl(url)
+        {
+            window.location = '/cmss/qcmd/open_url?url=' + encodeURIComponent(url)
+        }
+        function labelGeometry(labels)
+        {
+            var url = null;
+            for (var i = 0; i < labels.length; i++)
+            {
+                if (url)
+                    url = url + '&id' + i + '=' + labels[i].id + '&lb' + i + '=' + encodeURIComponent(labels[i].label);
+                else
+                    url = 'id' + i + '=' + labels[i].id + '&lb' + i + '=' + encodeURIComponent(labels[i].label);
+            }
+            window.location = '/cmss/qcmd/label_geom?' + url;
+        }
+        function openTaskPage()
+        {
+            $('#search_result').hide();
+            $('#task_panel').show();
+        }
+        function unloadTask()
+        {
+            window.location = '/cmss/qcmd/unloadTask';
+        }
+        function openHomePage()
+        {
+            $('#search_result').hide();
+            $('#task_panel').hide();
+            $('#select_app').show();
+            loadCurrentTasks();
+        }
+        function loadCurrentTasks()
+        {
+            var cal = {
+                method: "GET",
+                url: "/api/cmss/tasklist?sid=" + sessionid,
+                contentType: "application/json",
+                success: function (data)
+                {
+                    $("#search_result").show();
+                    $("#search_result").html(data);
+                },
+                error: function (err)
+                {
+                    alert('failed\n' + err);
+                }
+            };
+
+            $.ajax(cal);
+        }
+        function showMessageInQGIS()
+        {
+            alert('call back');
+        }
+        function loadTask(taskid, n)
+        {
+            var url = "/api/cmss/processsplit";
+            if (url)
+            {
+                var cal = {
+                    method: "GET",
+                    url: url + "?sid=" + sessionid + "&taskid=" + taskid,
+                    success: function (data)
+                    {
+                        $("#task_panel").html(data);
+                        splitInit(taskid,n);
+                        openTaskPage();
+                        window.location = '/cmss/qcmd/loadSplit?task_uid=' + taskid;
+                    },
+                    error: function (err)
+                    {
+                        alert('failed\n' + err);
+                    }
+                };
+
+                $.ajax(cal);
+            }
+        }</script>
+</html>

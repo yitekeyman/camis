@@ -1,0 +1,78 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using intapscamis.camis.domain.Report
+@model intapscamis.camis.domain.Farms.Models.ReportResponseModel
+@{
+    var i = 1;
+    var type = (int)Model.Request.SelectedReportType;
+    var uniqueFarms = Model.LandDevelopmentList.Select(m => m.farmid).Distinct().ToList();
+    var lookup = Model.LocationLookup;
+
+}
+
+<table class="table table-striped jambo_table bulk_action" id="tclick">
+    <thead>
+
+        <tr class="headings">
+            <th class="column-title">No</th>
+            <th class="column-title">Woreda</th>
+            <th class="column-title">Farm</th>
+            <th class="column-title">Investment License</th>
+            <th class="column-title numberValue">Area Size (ha)</th>
+            <th class="column-title numberValue">Area Developed( ha)</th>
+            <th class="column-title numberValue">Undeveloped Area (ha)</th>
+            <th class="column-title numberValue">% developed</th>
+
+        </tr>
+
+    </thead>
+    <tbody>
+        @foreach (var farmIds in uniqueFarms)
+        {
+            var farm = Model.LandDevelopmentList.Where(m => m.farmid == farmIds).LastOrDefault();
+
+
+        <tr>
+
+            <td class="column-title">@(i++)</td>
+            <td class="column-title">
+                @if (lookup.ContainsKey(farm.upin.Woreda()))
+                {
+                    <p>@lookup[farm.upin.Woreda()]</p>
+                }
+                else
+                {
+                    <p>@farm.upin.Woreda()</p>
+                }
+            </td>
+            <td class="column-title">@farm.OpeartorName</td>
+            <td class="column-title"></td>
+            <td class="column-title numberValue">@Math.Round(farm.area, 2)</td>
+            <td class="column-title numberValue">@Math.Round(farm.progress, 2)</td>
+            <td class="column-title numberValue">@Math.Round(farm.area - farm.progress, 2)</td>
+            <td class="column-title numberValue">@(Math.Round((farm.progress / farm.area) * 100, 2))</td>
+        </tr>
+        }
+
+       @if(Model.LandDevelopmentList.Count() > 0){
+           var farm2 = Model.LandDevelopmentList;
+
+
+        <tr>
+
+            <td class="column-title"></td>
+            <td class="column-title">Total</td>
+            <td class="column-title"></td>
+            <td class="column-title"></td>
+            <td class="column-title numberValue">@Math.Round(farm2.Sum(m => m.area), 2)</td>
+            <td class="column-title numberValue">@Math.Round(farm2.Sum(m => m.progress), 2)</td>
+            <td class="column-title numberValue">@Math.Round(farm2.Sum(m => m.area) - farm2.Sum(m => m.progress), 2)</td>
+            <td class="column-title numberValue">@(Math.Round((farm2.Sum(m => m.area) / farm2.Sum(m => m.progress)) * 100, 2))</td>
+        </tr>
+           }
+    </tbody>
+</table>

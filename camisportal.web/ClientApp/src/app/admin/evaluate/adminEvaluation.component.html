@@ -1,0 +1,237 @@
+<section id="investorBids" class="min">
+    <div class="investorBids-container">
+        <div class="has-bottom-index align-center">
+            <div class="investorBids-header min-header align-center">
+                <h3>Evaluation</h3>
+                <h2 *ngIf="application != null">{{invProfile.Name}} Evaluation Form</h2>
+            </div>
+        </div>
+        <div class="investorBids-body">
+            <div class="col-md-6">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h4><i class="fa fa-file-pdf-o"></i>  Investor Profile</h4>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="timeline-dsc x_content">
+                        <app-inv-profile-detail [userName]="currentUsername" [promotionUnitID]="promotionUnitId" [investorID]="investorID"></app-inv-profile-detail>
+                    </div>
+                </div>
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h4><i class="fa fa-file-pdf-o"></i>  Application Detail</h4>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="timeline-dsc x_content">
+                        <investor-application [promotionUnitID]="promotionUnitId" [investorID]="investorID"></investor-application>
+                    </div>
+                </div>
+                <div class="promotion_detail">
+                    <app-promo-unit-detail  [promotionID]="promotionID" [promotionUnitID]="promotionUnitId"  [investorID]="investorID"></app-promo-unit-detail>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h4>Evaluation Form</h4>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="input-group" *ngIf="user!=null">
+                            <span class="add-on input-group-addon"><i class="fa fa-user-circle-o"></i> {{user.fullName}}</span>
+                            <select class="form-control" (change)="selectTeam($event.target.value)">
+                                <option value="">Select Your Evaluation Team</option>
+                                <option *ngFor="let team of evaluationTeam" [value]="team.id">{{team.teamName}}</option>
+                            </select>
+                        </div>
+                        <div *ngIf="selectedEvaluationTeam != null && evaluationData==null">
+                            <form [formGroup]="evaluationForm" (submit)="saveEvaluationResult()">
+                                <table class="table" id="eval-team-parent-table">
+                                    <tbody>
+                                    <tr>
+                                        <td>
+                                            <table class="table table-condensed" id="eval-team-table">
+
+                                                <tr class="eval-team">
+                                                    <td>
+                                                        <input type="hidden" formControlName="evaluationTeamID">
+                                                        <strong>{{selectedEvaluationTeam.teamName}} ({{selectedEvaluationTeam.weight}})</strong>
+                                                    </td>
+                                                    <td>
+                                                        <span *ngFor="let member of selectedEvaluationTeam.members" class="tag">{{member.userName}} | {{member.weight}}, </span>
+                                                    </td>
+                                                </tr>
+
+                                                <tr  formArrayName="result"  *ngFor="let crit of selectedEvaluationTeam.criterion;  index as i">
+                                                    <td colspan="2" id="eval-criteria-parent" [formGroupName]="i">
+                                                        <table class="table table-condensed" id="evl-criteria-table">
+                                                            <tr class="eval-criteria">
+                                                                <td>
+                                                                    <input type="hidden" formControlName="id">
+                                                                    <strong >{{crit.name}}</strong><br>
+                                                                    <strong><small>Max-Value({{crit.maxVal}})</small> </strong><br>
+                                                                    <strong><small>Weight({{crit.weight}})</small> </strong>
+                                                                </td>
+                                                                <td class="align-right" style="width: 135px">
+                                                                    <div *ngIf="crit.valueList?.length > 0">
+                                                                        <select class="form-control" formControlName="val">
+                                                                            <option value="">Select Value</option>
+                                                                            <option  *ngFor="let list of crit.valueList" [value]="list.value">{{list.name}}</option>
+                                                                        </select>
+
+                                                                    </div>
+                                                                    <div *ngIf="crit.valueList?.length == 0">
+                                                                        <div *ngIf="crit.cubCriterion?.length > 0; else no_subCriteria">
+                                                                            <input type="number" class="form-control" formControlName="val" disabled="disabled" />
+                                                                        </div>
+                                                                        <ng-template #no_subCriteria>
+                                                                            
+                                                                            <input type="number" class="form-control" formControlName="val"/>
+                                                                        </ng-template>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr formArrayName="subResult"  *ngFor="let subCri of crit.cubCriterion; index as z" >
+                                                                <td colspan="2" id="eval-sub-criteria" [formGroupName]="z">
+                                                                    <table class="table  table-condensed" id="eval-sub-criteria-table">
+                                                                        <tr id="eval-sub-criteria-table-tr">
+                                                                            <td>
+                                                                                <input type="hidden" formControlName="id">
+                                                                                <strong>{{subCri.name}}</strong><br/>
+                                                                                <strong><small>Max-Value({{subCri.maxVal}})</small> </strong><br/>
+                                                                                <strong><small>Weight({{subCri.weight}}</small>) </strong>
+                                                                            </td>
+                                                                            <td class="align-right" style="width: 135px">
+                                                                                <div *ngIf="subCri.valueList?.length > 0">
+                                                                                    <select class="form-control" formControlName="val">
+                                                                                        <option value=""></option>
+                                                                                        <option  *ngFor="let list of subCri.valueList" [value]="list.value">{{list.name}}</option>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <div *ngIf="subCri.valueList?.length == 0">
+                                                                                    <div *ngIf="subCri.cubCriterion?.length > 0; else no_subCriteria">
+                                                                                        <input type="number" class="form-control" formControlName="val" disabled="disabled" />
+                                                                                    </div>
+                                                                                    <ng-template #no_subCriteria>
+                                                                                        <input type="number" class="form-control" formControlName="val"/>
+                                                                                    </ng-template>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr formArrayName="subResult"  *ngFor="let subCriOne of subCri.cubCriterion; index as a" >
+                                                                            <td colspan="2" id="eval-sub-criteria" [formGroupName]="a">
+                                                                                <table class="table  table-condensed" id="eval-sub-criteria-table">
+                                                                                    <tr class="eval-criteria">
+                                                                                        <td>
+                                                                                            <input type="hidden" formControlName="id">
+                                                                                            <strong>{{subCriOne.name}}</strong><br/>
+                                                                                            <strong><small>Max-Value({{subCriOne.maxVal}})</small> </strong><br/>
+                                                                                            <strong><small>Weight({{subCriOne.weight}}</small>) </strong>
+                                                                                        </td>
+                                                                                        <td class="align-right" style="width: 135px">
+                                                                                            <div *ngIf="subCriOne.valueList?.length > 0">
+                                                                                                <select class="form-control" formControlName="val">
+                                                                                                    <option value=""></option>
+                                                                                                    <option  *ngFor="let list of subCriOne.valueList" [value]="list.value">{{list.name}}</option>
+                                                                                                </select>
+                                                                                            </div>
+                                                                                            <div *ngIf="subCriOne.valueList?.length == 0">
+                                                                                                <div *ngIf="subCriOne.cubCriterion?.length > 0; else no_subCriteria">
+                                                                                                    <input type="number" class="form-control" formControlName="val" disabled="disabled" />
+                                                                                                </div>
+                                                                                                <ng-template #no_subCriteria>
+                                                                                                    <input type="number" class="form-control" formControlName="val"/>
+                                                                                                </ng-template>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr formArrayName="subResult"  *ngFor="let subCriTwo of subCriOne.cubCriterion; index as b" >
+                                                                                        <td colspan="2" id="eval-sub-criteria" [formGroupName]="b">
+                                                                                            <table class="table  table-condensed" id="eval-sub-criteria-table">
+                                                                                                <tr id="eval-sub-criteria-table-tr">
+                                                                                                    <td>
+                                                                                                        <input type="hidden" formControlName="id">
+                                                                                                        <strong>{{subCriTwo.name}}</strong><br/>
+                                                                                                        <strong><small>Max-Value({{subCriTwo.maxVal}})</small> </strong><br/>
+                                                                                                        <strong><small>Weight({{subCriTwo.weight}}</small>) </strong>
+                                                                                                    </td>
+                                                                                                    <td class="align-right" style="width: 135px">
+                                                                                                        <div *ngIf="subCriTwo.valueList?.length > 0">
+                                                                                                            <select class="form-control" formControlName="val">
+                                                                                                                <option value=""></option>
+                                                                                                                <option  *ngFor="let list of subCriTwo.valueList" [value]="list.value">{{list.name}}</option>
+                                                                                                            </select>
+                                                                                                        </div>
+                                                                                                        <div *ngIf="subCriTwo.valueList?.length == 0">
+                                                                                                            <div *ngIf="subCriTwo.cubCriterion?.length > 0; else no_subCriteria">
+                                                                                                                <input type="number" class="form-control" formControlName="val" disabled="disabled" />
+                                                                                                            </div>
+                                                                                                            <ng-template #no_subCriteria>
+                                                                                                                <input type="number" class="form-control" formControlName="val"/>
+                                                                                                            </ng-template>
+                                                                                                        </div>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                                <tr formArrayName="subResult"  *ngFor="let subCriThree of subCriTwo.cubCriterion; index as c" >
+                                                                                                    <td colspan="2" id="eval-sub-criteria" [formGroupName]="c">
+                                                                                                        <table class="table  table-condensed" id="eval-sub-criteria-table">
+                                                                                                            <tr class="eval-criteria">
+                                                                                                                <td>
+                                                                                                                    <input type="hidden" formControlName="id">
+                                                                                                                    <strong>{{subCriThree.name}}</strong><br/>
+                                                                                                                    <strong><small>Max-Value({{subCriThree.maxVal}})</small> </strong><br/>
+                                                                                                                    <strong><small>Weight({{subCriThree.weight}}</small>) </strong>
+                                                                                                                </td>
+                                                                                                                <td class="align-right" style="width: 135px">
+                                                                                                                    <div *ngIf="subCriThree.valueList?.length > 0">
+                                                                                                                        <select class="form-control" formControlName="val">
+                                                                                                                            <option value=""></option>
+                                                                                                                            <option  *ngFor="let list of subCriThree.valueList" [value]="list.value">{{list.name}}</option>
+                                                                                                                        </select>
+                                                                                                                    </div>
+                                                                                                                    <div *ngIf="subCriThree.valueList?.length == 0">
+                                                                                                                        <div *ngIf="subCriThree.cubCriterion?.length > 0; else no_subCriteria">
+                                                                                                                            <input type="number" class="form-control" formControlName="val" disabled="disabled" />
+                                                                                                                        </div>
+                                                                                                                        <ng-template #no_subCriteria>
+                                                                                                                            <input type="number" class="form-control" formControlName="val"/>
+                                                                                                                        </ng-template>
+                                                                                                                    </div>
+                                                                                                                </td>
+                                                                                                            </tr>
+
+                                                                                                        </table>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                            </table>
+                                                                                        </td>
+                                                                                    </tr>
+
+                                                                                </table>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div class="form-group align-right">
+                                    <button type="submit" class="button lg btn-camis" [disabled]="!evaluationForm.valid">Save Evaluation</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div *ngIf="selectedEvaluationTeam != null && evaluationData!=null">
+                            <h3 class="align-center"><span>you already submit evaluation result</span></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

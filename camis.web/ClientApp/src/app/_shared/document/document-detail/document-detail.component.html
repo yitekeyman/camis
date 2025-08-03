@@ -1,0 +1,18 @@
+<div *ngIf="document">
+
+  <div style="margin: 5px 0 0">
+    <a (click)="openDoc($event, document)" [href]="getLink(document)" target="_blank">
+      <i class="fa fa-file-text"></i>&nbsp;
+      {{document.filename || 'Open Document'}}
+    </a>
+  </div>
+
+  <div style="padding: 2px 0 0 18px; margin: 0">
+    <span style="font-style: italic">Ref.:</span> {{document.ref}}
+    <br />
+    <span style="font-style: italic">Date:</span> {{document.date | date}}
+    <br />
+    <span style="font-style: italic">Note:</span> {{document.note || '[n/a]'}}
+  </div>
+
+</div>

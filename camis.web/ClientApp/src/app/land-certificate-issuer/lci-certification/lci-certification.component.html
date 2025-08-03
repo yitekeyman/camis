@@ -1,0 +1,99 @@
+<div id="user" class="tab-pane board">
+  <div class="x_panel">
+    <div class="x_title">
+      <h2> Farm Land Certification</h2>
+      <ul class="nav navbar-right panel_toolbox">
+        <div class="btn-group" *ngIf="!loading && data">
+          <button class="btn btn-success" type="button" (click)="onCertify()" [disabled]="!certification.doc || !leaseContract.doc">
+            <i class="fa fa-check"></i>&nbsp; Certify Location
+          </button>
+        </div>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+
+    <div class="x_content has-scroll">
+      <div *ngIf="loading" class="align-center"><h2>Loading...</h2></div>
+      <div *ngIf="!loading">
+        <div style="padding: 0 0 20px">
+          <h4>New Selected Land For Transfer</h4>
+
+          <div style="margin-top: 10px">
+            <a class="btn btn-default btn-link" target="_blank" [routerLink]="'/land-clerk/land-dashboard/land-detail/' + data.landTransferRequest.landID">
+              <i class="fa fa-map"></i>&nbsp; Open Selected Land Details and Map
+            </a>
+          </div>
+
+          <div style="margin-top: 15px">Attach Required Documents:</div>
+
+          <div style="display: flex; margin-top: 10px">
+            <a href="#add-certification-document-dialog" class="btn btn-default" role="button" type="button" data-toggle="modal">
+              <span [class]="!certification.doc ? 'fa fa-warning text-warning' : 'fa fa-check-circle-o text-success'"></span>&nbsp;&nbsp;
+              {{certification.doc ? 'Change Certification Document *' : 'Select Certification Document *'}}
+            </a>
+            <div style="width: 15px"></div>
+            <a href="#add-lease-document-dialog" class="btn btn-default" role="button" type="button" data-toggle="modal">
+              <span [class]="!leaseContract.doc ? 'fa fa-warning text-warning' : 'fa fa-check-circle-o text-success'"></span>&nbsp;
+              {{leaseContract.doc ? 'Change Lease Document *' : 'Select Lease Document *'}}
+            </a>
+          </div>
+
+          <hr/>
+        </div>
+
+        <app-farm-detail *ngIf="data" [farm]="data"></app-farm-detail>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="add-certification-document-dialog" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">
+          <span [class]="!certification.doc ? 'fa fa-warning text-warning' : 'fa fa-check-circle-o text-success'"></span>&nbsp;&nbsp;
+          {{certification.doc ? 'Change Certification Document' : 'Select Certification Document'}}
+        </h4>
+      </div>
+      <div class="modal-body">
+        <app-single-document-selector
+          title="Choose a Document"
+          [document]="certification.doc"
+          (change)="chooseCertificationDocument($event)"
+        ></app-single-document-selector>
+      </div>
+      <div class="modal-footer right">
+        <button type="button" class="btn btn-default" (click)="clear()" data-dismiss="modal" aria-hidden="true">Cancel</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="add-lease-document-dialog" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">
+          <span [class]="!leaseContract.doc ? 'fa fa-warning text-warning' : 'fa fa-check-circle-o text-success'"></span>&nbsp;
+          {{leaseContract.doc ? 'Change Lease Document' : 'Select Lease Document'}}
+        </h4>
+      </div>
+      <div class="modal-body">
+        <app-single-document-selector
+          title="Choose a Document"
+          [document]="leaseContract.doc"
+          (change)="chooseLeaseContractDocument($event)"
+        ></app-single-document-selector>
+      </div>
+      <div class="modal-footer right">
+        <button type="button" class="btn btn-default" (click)="clear()" data-dismiss="modal" aria-hidden="true">Cancel</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Save</button>
+      </div>
+    </div>
+  </div>
+</div>

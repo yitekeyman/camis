@@ -1,0 +1,31 @@
+[
+  {
+    "code":"03",
+    "Name":"Amhara"
+  },
+  {
+    "code":"100",
+    "Name":"Investor"
+  },
+  {
+    "code":"99",
+    "Name":"Central"
+  },
+  {
+    "code":"01",
+    "Name":"Tigray"
+  }, {
+  "code":"04",
+  "Name":"Oromia"
+}, {
+  "code":"06",
+  "Name":"Benishangul Gumuz"
+}, {
+  "code":"08",
+  "Name":"Gambela"
+},
+  {
+    "code":"07",
+    "Name":"SNNP"
+  }
+]

@@ -1,0 +1,13 @@
+delete from investor_application_document;
+delete from application_evaluation;
+delete from investor_application;
+delete from investor_application_document;
+delete from investor_registration_number;;
+delete from investor;
+delete from evaluation_team_member;
+delete from application_evaluation_team;
+delete from promotion_doc;
+delete from promotion_picture;
+delete from promotion_unit;
+delete from promotion_status_change;
+delete from promotion;

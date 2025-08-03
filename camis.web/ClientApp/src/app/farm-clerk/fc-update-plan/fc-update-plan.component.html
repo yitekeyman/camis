@@ -1,0 +1,34 @@
+<div id="user" class="tab-pane board">
+  <div class="x_panel">
+    <div class="x_title">
+      <h2><i class="fa fa-edit"></i>&nbsp; Update Project Plan</h2>
+
+      <div class="clearfix"></div>
+    </div>
+
+    <div class="x_content" id="farm-registration">
+      <form method="post" (submit)="dumpSubmit($event)">
+        <div *ngIf="loading">Loading...</div>
+        <div [id]="'farm-reg-panel'" *ngIf="!loading">
+          <app-fc-project-detail-registration [plan]="plan"></app-fc-project-detail-registration>
+          <hr>
+
+          <app-document-selector
+            title="Business Plan Documents"
+            [documents]="plan.documents"
+          ></app-document-selector>
+
+          <hr>
+          <div style="text-align: right">
+            <button type="button" class="btn btn-default" (click)="cancel()">
+              <i class="fa fa-warning"></i>&nbsp; Cancel
+            </button>
+            <button (click)="onSubmit($event)" type="button" class="btn btn-success" [disabled]="!plan.statusId || !plan.note || !plan.rootActivity">
+              Submit for Approval <i class="fa fa-send"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

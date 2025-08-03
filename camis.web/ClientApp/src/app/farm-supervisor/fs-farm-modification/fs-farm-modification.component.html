@@ -1,0 +1,27 @@
+<div id="user" class="tab-pane board">
+  <div class="x_panel">
+    <div class="x_title">
+      <h2> Reviewing Farm Modification</h2>
+      <ul class="nav navbar-right panel_toolbox">
+        <div class="btn-group" *ngIf="!loading && data">
+          <button class="btn btn-default" type="button" (click)="onReject()">
+            <i class="fa fa-close"></i>&nbsp; Reject
+          </button>
+          <button class="btn btn-success" type="button" (click)="onApprove()">
+            <i class="fa fa-check"></i>&nbsp; Approve Modification
+          </button>
+        </div>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+
+    <div class="x_content has-scroll">
+      <div *ngIf="loading" class="align-center"><h2>Loading...</h2></div>
+      <div *ngIf="!loading && data">
+        <app-farm-detail *ngIf="data" [farm]="data"></app-farm-detail>
+
+      </div>
+    </div>
+  </div>
+</div>
+

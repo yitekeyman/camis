@@ -1,0 +1,46 @@
+<div>
+  <div *ngIf="progressPercent != undefined" class="progress-percent">
+    {{_scheduleStr}}
+  </div>
+
+  <div *ngIf="!isReady">Loading...</div>
+  <div *ngIf="isReady" style="display: flex">
+    <div style="flex: 3">
+      <label class="control-label">List:</label>
+      <div>
+        <app-activity-item
+          *ngIf="activity && activityPlanTemplates"
+          [activity]="activity"
+          [readonly]="readonlyMode"
+          [reportingMode]="reportingMode"
+          [readonlyReporting]="readonlyReporting"
+
+          [progressVariables]="progressVariables"
+          [progressVariableTypes]="progressVariableTypes"
+          [statusTypes]="statusTypes"
+          [variableValueLists]="variableValueLists"
+          [activityPlanTemplates]="activityPlanTemplates"
+
+          (change)="onChange($event)"
+        ></app-activity-item>
+      </div>
+    </div>
+
+    <div style="width: 15px"></div>
+
+    <div style="flex: 5">
+      <label class="control-label">Timeline: ({{minTime | date}} - {{maxTime | date}})</label>
+      <div class="timeline-container">
+        <div class="timeline-today-container" [ngStyle]="{ 'margin-left.%': todayLeft }">
+          <div class="timeline-today" title="Today" [ngStyle]="{'height.px': 8 + 30 * rowsCount + 4 * (rowsCount - 1)}"></div>
+        </div>
+        <app-activity-bar
+          *ngIf="activity"
+          [activity]="activity"
+          [maxTime]="maxTime"
+          [minTime]="minTime"
+        ></app-activity-bar>
+      </div>
+    </div>
+  </div>
+</div>

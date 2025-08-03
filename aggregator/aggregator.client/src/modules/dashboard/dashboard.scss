@@ -1,0 +1,69 @@
+#components-layout-demo-custom-trigger .trigger {
+    font-size: 18px;
+    line-height: 64px;
+    padding: 0 24px;
+    cursor: pointer;
+    transition: color .3s;
+  }
+  
+  #components-layout-demo-custom-trigger .trigger:hover {
+    color: #1890ff;
+  }
+  
+  #components-layout-demo-custom-trigger .logo {
+    height: 32px;
+    background: rgba(255,255,255,.2);
+    margin: 16px; 
+  }
+  #components-layout-demo-fixed .logo {
+    width: 120px;
+    height: 31px;
+    background: rgba(255,255,255,.2);
+    margin: 16px 24px 16px 0;
+    float: left;
+  }
+
+  .logo{
+     padding-bottom: 0px;
+     padding-top: 20px;
+     // background-image: url("../../assets//intaps1.png");
+     // width:200px;
+  }
+
+  .logo-image {
+    height: 50px;
+    color: white;
+    filter : invert(100%);
+    margin-left: 5px;
+  }
+
+  .logout {
+     float: right;
+  }
+
+  .footer_layout {
+    background: rgb(216, 216, 205);
+  }
+
+  .layout_container{
+   background: #e2dfdf
+  }
+
+  .ant-tree li {
+    border-bottom: solid 1px rgb(230, 210, 210);
+    padding-bottom: 6px;
+    font-size: 14px;
+  }
+
+ .ant-tree-treenode-selected{
+    background: #bae7ff;
+  }
+
+  .logo_title {
+    color : white;
+    font-size: 16pt;
+    letter-spacing: 4px;
+    font-weight: 400;
+
+    padding-top: 15px;
+  }

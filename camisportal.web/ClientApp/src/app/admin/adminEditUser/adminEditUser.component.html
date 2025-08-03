@@ -1,0 +1,95 @@
+<section id="admin" class="min">
+    <div class="investorBids-container">
+        <div class="has-bottom-index align-center">
+            <div class="investorBids-header min-header align-center">
+                <h3>User</h3>
+                <h2>{{title}} User Information</h2>
+                <p class="lead">
+
+                </p>
+            </div>
+        </div>
+        <div class="investorBids-body min-body">
+            <div class="panel col-md-6 col-md-offset-3">
+                <div class="panel-body">
+                    <form [formGroup]="editUserForm" (submit)="registerUser()">
+                        <div class="form-group">
+                            <label>Fullname:* 
+                                <small class="form-text help" *ngIf="editUserForm.controls.fullname.errors!=null && editUserForm.controls.fullname.errors.required!=null && editUserForm.controls.fullname.touched">This field is required.</small>
+                                <small class="form-text help" *ngIf="editUserForm.controls.fullname.errors!=null && editUserForm.controls.fullname.errors.pattern!=null && editUserForm.controls.fullname.touched">Invalid Name Use Character Only.</small>
+                            </label>
+                            <input type="text" class="form-control" placeholder="Fullname" formControlName="fullname" [(ngModel)]="userModel.FullName">
+                        </div>
+                        <div class="form-group " >
+                            <label>Role:* <small class="form-text help" *ngIf="editUserForm.controls.role.errors!=null &&(editUserForm.controls.role.errors.required!=null || editUserForm.controls.role.errors.min!=null) && editUserForm.controls.role.touched">This field is required.</small></label>
+                            <select class="form-control" formControlName="role" [(ngModel)]="userModel.Role">
+                                <option value="0">Select Role</option>
+                                <option value="1">Public</option>
+                                <option value="2">WebMaster</option>
+                                <option value="3">Promotion Manager</option>
+                                <option value="4">Application Evaluator</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone No:* 
+                                <small class="form-text help" *ngIf="editUserForm.controls.phoneNo.errors!=null && editUserForm.controls.phoneNo.errors.required!=null && editUserForm.controls.phoneNo.touched">This field is required.</small>
+                                <small class="form-text help" *ngIf="editUserForm.controls.phoneNo.errors!=null && editUserForm.controls.phoneNo.errors.pattern!=null && editUserForm.controls.phoneNo.touched">Invalid Phone No Use Number Only.</small>
+                                <small class="form-text help" *ngIf="editUserForm.controls.phoneNo.errors!=null && editUserForm.controls.phoneNo.errors.minlength!=null && editUserForm.controls.phoneNo.touched">Invalid Phone No min 10 digits.</small>
+                                <small class="form-text help" *ngIf="editUserForm.controls.phoneNo.errors!=null && editUserForm.controls.phoneNo.errors.maxlength!=null && editUserForm.controls.phoneNo.touched">Invalid Phone No max 10 digits.</small>
+                            </label>
+                            <input type="tel" class="form-control"  placeholder="Phone No" formControlName="phoneNo" [(ngModel)]="userModel.PhoneNo">
+                        </div>
+                        <div class="form-group">
+                            <label>E-Mail:* 
+                                <small class="form-text help" *ngIf="editUserForm.controls.email.errors!=null && editUserForm.controls.email.errors.required!=null && editUserForm.controls.email.touched">This field is required.</small>
+                                <small class="form-text help" *ngIf="editUserForm.controls.email.errors!=null && editUserForm.controls.email.errors.pattern!=null && editUserForm.controls.email.touched">Invalid E-mail Address.</small>
+                            </label>
+                            <input type="email" class="form-control" placeholder="E-Mail" formControlName="email" [(ngModel)]="userModel.EMail">
+                        </div>
+                        <div class="form-group">
+                            <label>Region: <small class="form-text help" *ngIf="editUserForm.controls.region.errors!=null &&(editUserForm.controls.region.errors.required!=null || editUserForm.controls.region.errors.min!=null) && editUserForm.controls.region.touched">This field is required.</small></label>
+                            <select class="form-control" formControlName="region" [(ngModel)]="userModel.Region">
+                                <option value="0">Select Region</option>
+                                <option *ngFor="let reg of REGIONS" [value]="reg.code">{{reg.Name}}</option>
+                               
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>CAMIS Username: <small class="form-text help" *ngIf="editUserForm.controls.CAMISUsername.errors!=null && editUserForm.controls.CAMISUsername.errors.required!=null && editUserForm.controls.CAMISUsername.touched">This field is required.</small></label>
+                            <input type="text" class="form-control" placeholder="CAMIS Username" formControlName="CAMISUsername" [(ngModel)]="userModel.CamisUserName">
+                        </div>
+                        <div class="form-group">
+                            <label>CAMIS Password: <small class="form-text help" *ngIf="!editUserForm.controls.CAMISPassword.valid && editUserForm.controls.CAMISPassword.touched">This field is required.</small></label>
+                            <input type="password" class="form-control" placeholder="CAMIS Password" formControlName="CAMISPassword" [(ngModel)]="userModel.CamisPassword"/>
+                        </div>
+                        <div class="form-group" *ngIf="isEdit==true">
+                            <label>Username: <small class="form-text help" *ngIf="!editUserForm.controls.username.valid && editUserForm.controls.username.touched">This field is required.</small></label>
+                            <input type="text" class="form-control" placeholder="Username" id="username" disabled="disabled"  formControlName="username" [(ngModel)]="userModel.UserName">
+                            <p class="username-error" style="display: none;"><i class="fa fa-close"></i> The Username is available in the Database</p>
+                            <p class="username-valid" style="display: none;"><i class="fa fa-check"></i> Valid Username</p>
+                        </div>
+                        <div class="form-group" *ngIf="isRegistration==true">
+                            <label>Username: <small class="form-text help" *ngIf="!editUserForm.controls.username.valid && editUserForm.controls.username.touched">This field is required.</small></label>
+                            <input type="text" class="form-control" placeholder="Username" id="username"  formControlName="username" [(ngModel)]="userModel.UserName">
+                            <p class="username-error" style="display: none;"><i class="fa fa-close"></i> The Username is available in the Database</p>
+                            <p class="username-valid" style="display: none;"><i class="fa fa-check"></i> Valid Username</p>
+                        </div>
+                        <div class="form-group" *ngIf="isRegistration==true">
+                            <label>Password: <small class="form-text help" *ngIf="!editUserForm.controls.password.valid && editUserForm.controls.password.touched">This field is required.</small></label>
+                            <input type="password" class="form-control" placeholder="Password" id="user_pass" formControlName="password" [(ngModel)]="userModel.Password">
+                        </div>
+                        <div class="form-group" *ngIf="isRegistration==true">
+                            <label>Confirm Password: <small class="form-text help" *ngIf="!editUserForm.controls.confirmPassword.valid && editUserForm.controls.confirmPassword.touched">This field is required.</small></label>
+                            <input type="password" class="form-control" placeholder="Confirm Password" id="conf_pass" formControlName="confirmPassword" (keyup)="validatePassword()">
+                            <p class="passwordMismatch">{{newPassConfirm}}</p>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="button x-lg btn-camis"  [disabled]="!editUserForm.valid">{{title}}</button>
+                            <button type="reset" class="button btn x-lg btn-default">Clear</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

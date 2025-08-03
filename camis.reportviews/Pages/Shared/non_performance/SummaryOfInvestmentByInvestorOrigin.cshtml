@@ -1,0 +1,100 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using intapscamis.camis.domain.Report
+@model intapscamis.camis.domain.Farms.Models.ReportResponseModel
+@{
+    var i = 1;
+    var type = (int)Model.Request.SelectedReportType;
+    var origins = Model.ReferenceData.FarmOperatorOrigins;
+    var uniqueOrigins = Model.OperatorSummary.Select(m => m.OriginId).Distinct();
+    var locations = Model.OperatorSummary.Select(m => m.Location).Distinct().ToList();
+
+    var lookup = Model.LocationLookup;
+}
+
+<table class="table table-striped jambo_table bulk_action" id="tclick">
+    <thead>
+
+        <tr class="headings">
+            <th class="column-title">@Model.AddressType</th>
+            @foreach (var k in uniqueOrigins)
+            {
+                <th class="column-title numberValue" colspan="3">@origins.Where(m => m.Id == k).First().Name</th>
+            }
+
+            <th class="column-title numberValue">Total Count</th>
+            <th class="column-title numberValue">Total Area</th>
+
+        </tr>
+
+        <tr class="headings">
+            <th class="column-title"></th>
+            @foreach (var k in uniqueOrigins)
+            {
+                <th class="column-title numberValue">Count</th>
+                <th class="column-title numberValue">Area (ha)</th>
+                <th class="column-title numberValue">% Area</th>
+            }
+            <th class="column-title"></th>
+            <th class="column-title"></th>
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var l in locations)
+        {
+            <tr>
+                @{
+                    var totalarea = Math.Round(Model.OperatorSummary.Where(m => m.Location == l).Sum(m => m.Area) / 10000, 2);
+                }
+                <td class="column-title">
+                    @if (lookup.ContainsKey(l))
+                    {
+                        <p>@lookup[l]</p>
+                    }
+                    else
+                    {
+                        <p>@l</p>
+                    }
+                </td>
+                @foreach (var k in uniqueOrigins)
+                {
+                    {
+                        var area = Math.Round(Model.OperatorSummary.Where(m => m.Location == l && m.OriginId == k).Sum(m => m.Area) / 10000, 2);
+
+
+                        <th class="column-title numberValue">@Model.OperatorSummary.Where(m => m.Location == l && m.OriginId == k).Count()</th>
+                        <th class="column-title numberValue">@area</th>
+                        <th class="column-title numberValue">@(Math.Round(area / totalarea * 100, 2))</th>}
+                }
+                <td class="column-title numberValue">@Model.OperatorSummary.Where(m => m.Location == l).Count()</td>
+                <td class="column-title numberValue">@totalarea</td>
+            </tr>
+        }
+        @if(Model.OperatorSummary.Count() > 0)
+        {
+
+        <tr>
+            @{
+                var totalarea2 = Math.Round(Model.OperatorSummary.Sum(m => m.Area) / 10000, 2);
+            }
+            <td class="column-title">Total</td>
+            @foreach (var k in uniqueOrigins)
+            {
+                {
+                    var area = Math.Round(Model.OperatorSummary.Where(m =>  m.OriginId == k).Sum(m => m.Area) / 10000, 2);
+
+
+                    <th class="column-title numberValue">@Model.OperatorSummary.Where(m =>  m.OriginId == k).Count()</th>
+                    <th class="column-title numberValue">@area</th>
+                    <th class="column-title numberValue">@(Math.Round(area / totalarea2 * 100, 2))</th>}
+            }
+            <td class="column-title numberValue">@Model.OperatorSummary.Count()</td>
+            <td class="column-title numberValue">@totalarea2</td>
+        </tr>
+
+                }
+    </tbody>
+</table>

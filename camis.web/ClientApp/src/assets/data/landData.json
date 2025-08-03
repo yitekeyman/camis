@@ -1,0 +1,45 @@
+{
+  "uPINs": ["0001"],
+  "accessablity": [3, 2, 4],
+  "agroEchologyZone": [
+    {"agroType": 1,"result": ""},
+    {"agroType": 2,"result": ""}
+  ],
+  "investmentType": [1, 2],
+  "moistureSource": 1,
+  "irrigationValues": {
+    "waterSourceParameter": [
+      {"waterSourceType": 1,"result": 1},
+      {"waterSourceType": 2,"result": 1},
+      {"waterSourceType": 3,"result": 1}
+    ],
+    "groundWater": 1,
+    "surfaceWater": [
+      {"surfaceWaterType": 1,"result": ""},
+      {"surfaceWaterType": 2,"result": ""},
+      {"surfaceWaterType": 3,"result": ""}
+    ]
+  },
+  "topography": [
+    {"topographyType": 1,"result": ""},
+    {"topographyType": 2,"result": ""}
+  ],
+  "soilTests": [
+    {"testType": 1,"result": 4},
+    {"testType": 2,"result": 6},
+    {"testType": 3,"result": 4},
+    {"testType": 4,"result": 4},
+    {"testType": 5,"result": 4}
+  ],
+  "ExistLandUse": [1, 2],
+  "isAgriculturalZone": "Yes",
+  "description": "This is the description WID 1",
+  "uploadDocument": [""],
+  "climate": [{
+    "month": 1,
+    "precipitation": 10.3,
+    "temp_low": 10,
+    "temp_high": 30,
+    "temp_avg": 18
+  }]
+}

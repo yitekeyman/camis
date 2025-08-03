@@ -1,0 +1,26 @@
+.progress-percent {
+    padding: 10px 0 30px;
+    text-align: center;
+}
+
+
+.timeline-container {
+    background-color: rgba(0,0,0,0.07);
+}
+
+.timeline-today-container {
+    position: relative;
+    height: 0;
+    transition: all 200ms;
+}
+
+.timeline-today {
+    display: inline-block;
+    position: absolute;
+    margin: -4px;
+    width: 4px;
+    height: inherit;
+    border-radius: 4px;
+    background-color: rgb(240,200,70);
+    transition: all 200ms;
+}

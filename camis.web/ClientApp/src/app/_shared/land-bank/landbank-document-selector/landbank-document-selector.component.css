@@ -1,0 +1,37 @@
+#fileLabel {
+    display: block;
+    text-align: center;
+}
+/* #fileInput {
+    display: none;
+} */
+.custom-css {
+    padding: 6px!important;
+}
+.upload-section {
+    background-color: #f9f8f8;
+    padding: 10px!important;
+    border: 1px solid lightgray;
+    margin-bottom: 23px!important;
+}
+
+.form-titles {
+  border-bottom: 1px solid lightgray;
+  margin-bottom: 15px;
+  background-color: #ededed;
+  padding: 7px 0 0px 10px;
+}
+
+.clear-button {
+    background-color: transparent;
+    padding: 6px;
+    border: 1px solid lightgray;
+    border-radius: 3px;
+    margin-bottom: 5px;
+    margin-right: 5px;
+    font-size: 14px;
+}
+.clear-button:hover {
+    background-color: gainsboro;
+    cursor: pointer;
+}

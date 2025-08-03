@@ -1,0 +1,38 @@
+<section id="login" class="min">
+    <div class="login-form-container col-md-4 col-md-offset-4 align-center">
+        <form [formGroup]="loginForm" (submit)="login()">
+            <section class="special x_panel">
+                <div class="x_content">
+                <i class="icon fa fa-lock major"></i>
+                <h3>Login Please</h3>
+
+                <div class="login-form-body">
+                    <hr>
+                    <div class="form-group">
+                        <input type="text"  class="camis-form-control" id="username" placeholder="Username | E-mail" formControlName="username" [(ngModel)]="user.username">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="camis-form-control"  id="password" placeholder="Password" formControlName="password" [(ngModel)]="user.password"/>
+                    </div>
+                    <div class="form-group">
+                        <!--<ul class="nav">
+                            <li><a href="#">Forget a Username?</a></li>
+                            <li><a href="#">Forget a Password?</a></li>
+                        </ul>-->
+                    </div>
+                    <div class="form-group align-right">
+                        <button class="lg btn-camis" type="submit" [disabled]="!loginForm.valid" *ngIf="loading==false">Login</button>
+                        <button class="lg btn-camis" type="button" disabled *ngIf="loading==true"><i class="fa fa-circle-o-notch faa-spin animated"></i> Please Wait</button>
+                    </div>
+                    <div class="form-group">
+                        <span>OR</span>
+                    </div>
+                    <div class="form-group">
+                        <a type="button" class="lg btn-camis-primary" routerLink="/default/register">Create Account</a>
+                    </div>
+                </div>
+                </div>
+            </section>
+        </form>
+    </div>
+</section>

@@ -1,0 +1,109 @@
+<div id="user" class="tab-pane board">
+  <div class="x_panel">
+    <div class="x_title">
+      <h2> Farm Land Selection</h2>
+      <ul class="nav navbar-right panel_toolbox">
+        <div class="btn-group" *ngIf="!loading && data">
+          <button class="btn btn-success" href="#dialog" type="button" data-toggle="modal">
+            <i class="fa fa-map-pin"></i>&nbsp; Request New Land Assignment
+          </button>
+        </div>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+
+    <div class="x_content has-scroll">
+      <div *ngIf="loading" class="align-center"><h2>Loading...</h2></div>
+      <div *ngIf="!loading && data">
+        <app-farm-detail *ngIf="data" [farm]="data"></app-farm-detail>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="dialog" class="modal fade" role="dialog">
+  <div class="modal-dialog" *ngIf="!loading">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Select Land for this Farm</h4>
+      </div>
+      <div class="modal-body">
+        <label class="control-label" for="inp">Enter Land UPIN:</label><br/>
+
+        <div style="display: flex">
+          <input [(ngModel)]="upin" list="UPINsList" (keyup)="loadLand()" (change)="loadLand()" class="form-control" id="inp" type="search" placeholder="UPIN" style="flex: 2">
+          <datalist id="UPINsList">
+            <option *ngFor="let UPIN of allUPINs" [value]="UPIN">{{UPIN}}</option>
+          </datalist>
+          <div style="width: 15px"></div>
+          <div style="flex: 1; display: flex">
+            <a *ngIf="data.landTransferRequest.landID" class="btn btn-default" target="_blank" [routerLink]="'/land-clerk/land-dashboard/land-detail/' + data.landTransferRequest.landID" style="flex: auto">
+              <i class="fa fa-map-marker"></i> Open Land and Map
+            </a>
+          </div>
+        </div>
+
+        <div *ngIf="data.landTransferRequest.landID">
+          <hr />
+
+          <div style="display: flex; padding: 7px 0">
+            <label class="text-muted" for="leaseFrom" style="flex: 1; padding-top: 5px">Lease Start Date:</label>
+            <span style="width: 15px"></span>
+            <input [(ngModel)]="data.landTransferRequest.leaseFrom" id="leaseFrom" type="date" class="form-control" style="flex: 3" />
+          </div>
+
+          <div style="display: flex; padding: 7px 0">
+            <label class="text-muted" for="leaseTo" style="flex: 1; padding-top: 5px">Lease End Date:</label>
+            <span style="width: 15px"></span>
+            <input [(ngModel)]="data.landTransferRequest.leaseTo" id="leaseTo" type="date" class="form-control" style="flex: 3" />
+          </div>
+
+          <div style="display: flex; padding: 7px 0">
+            <label class="text-muted" for="leaseRight" style="flex: 1; padding-top: 5px">Lease Right:</label>
+            <span style="width: 15px"></span>
+            <select [(ngModel)]="data.landTransferRequest.right" id="leaseRight" class="form-control" style="flex: 3">
+              <option [value]="1" selected>Lease From State</option>
+              <option [value]="2">Lease From Private</option>
+              <option [value]="3">Private</option>
+              <option [value]="4">Contract Farming</option>
+              <option [value]="5">Sub-lease</option>
+            </select>
+          </div>
+
+          <div style="display: flex; padding: 7px 0" *ngIf="data.landTransferRequest.right != 4">
+            <label class="text-muted" for="yearlyLeaseRate" style="flex: 1; padding-top: 5px">Yearly Lease Rate (ETB per ha):</label>
+            <span style="width: 15px"></span>
+            <input [(ngModel)]="yearlyLeaseRate" placeholder="Yearly Lease Rate (ETB per ha)" id="yearlyLeaseRate" type="number" class="form-control" style="flex: 3" />
+          </div>
+
+          <div style="display: flex; padding: 7px 0" *ngIf="data.landTransferRequest.right == 5">
+            <label class="text-muted" for="landSectionArea" style="flex: 1; padding-top: 5px">Land Section Area (ha):</label>
+            <span style="width: 15px"></span>
+            <input [(ngModel)]="data.landTransferRequest.landSectionArea" placeholder="Land Section Area (ha)" id="landSectionArea" type="number" class="form-control" style="flex: 3" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button
+          (click)="selectLand()"
+          type="button"
+          class="btn btn-primary"
+          data-dismiss="modal"
+          [disabled]="
+            !data.landTransferRequest.landID ||
+            !data.landTransferRequest.leaseFrom ||
+            !data.landTransferRequest.leaseFrom ||
+            data.landTransferRequest.right == null ||
+            (data.landTransferRequest.right != 4 && yearlyLeaseRate == null) ||
+            !data.landTransferRequest.farmer
+          "
+        >
+          <i class="fa fa-send"></i> Submit Selection
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

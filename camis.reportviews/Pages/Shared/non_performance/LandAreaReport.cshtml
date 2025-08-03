@@ -1,0 +1,83 @@
+﻿@model intapscamis.camis.domain.Farms.Models.ReportResponseModel
+@{ 
+    var regions = Model.LandArea.Select(m => m.location).Distinct().ToArray();
+
+    List<string> Zone = new List<string>();
+    Dictionary<string, List<string>> Woreda = new Dictionary<string, List<string>>();
+
+    if(Model.Request.Region != "")
+    {
+        Zone = Model.LandArea.Select(m => m.location).Distinct().ToList();
+        foreach (var z in Zone)
+        {
+            Woreda[z] = Model.LandArea.Where(m => m.zone == z).Select(m => m.woreda).Distinct().ToList();
+        }
+    }
+    var lookup = Model.LocationLookup;
+}
+
+<div>
+
+
+        <table class="table table-striped jambo_table bulk_action" id="tclick">
+            <thead>
+
+                <tr class="headings">
+                    <th class="column-title">No</th>
+                    <th class="column-title">@Model.AddressType</th>
+                    <th class="column-title text-center numberValue" colspan="2">Land Area (ha)</th>
+                    <th class="column-title numberValue">Total Area (ha)</th>
+                </tr>
+                <tr class="headings">
+                    <th class="column-title"></th>
+                    <th class="column-title"></th>
+                    <th class="column-title numberValue">In Land Bank</th>
+                    <th class="column-title numberValue">Transferred</th>
+                    <th class="column-title"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < regions.Count(); i++)
+                {
+                    <tr>
+                        <td class="column-title">@(i + 1)</td>
+                        <td class="column-title">
+                        @if(lookup.ContainsKey(regions[i]))
+                        {
+                            <p> @lookup[regions[i]] (@regions[i])  </p>
+                        }
+                        else
+                        {
+                            <p> @regions[i] </p>
+                        }
+                        </td>
+                        <td class="column-title numberValue">
+                            @Model.LandArea.Where(m => m.location == regions[i] && m.type == 2).Sum(m => m.area)
+                        </td>
+                        <td class="column-title numberValue">@Model.LandArea.Where(m => m.location == regions[i] && m.type == 3).Sum(m => m.area)</td>
+                        <td class="column-title numberValue">@Model.LandArea.Where(m => m.location == regions[i]).Sum(m => m.area)</td>
+
+                    </tr>
+                }
+                @if(Model.LandArea.Count() > 0)
+                {
+
+                <tr>
+                    <td class="column-title">Total</td>
+                    <td class="column-title"></td>
+                    <td class="column-title numberValue">
+                        @Model.LandArea.Where(m => m.type == 2).Sum(m => m.area)
+                    </td>
+                    <td class="column-title numberValue">@Model.LandArea.Where(m => m.type == 3).Sum(m => m.area)</td>
+                    <td class="column-title numberValue">@Model.LandArea.Sum(m => m.area)</td>
+
+                </tr>
+
+                }
+            </tbody>
+        </table>
+    
+    
+
+
+</div>

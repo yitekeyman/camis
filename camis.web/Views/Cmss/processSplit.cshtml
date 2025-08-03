@@ -1,0 +1,15 @@
+@model intapscamis.camis.domain.LandBank.LandBankFacadeModel.SplitData
+<h4>Original Parcel</h4>
+<hr>
+<ul>
+    <li><label>Unique Parcel ID: </label> @Model.upin</li>
+    <li><label>Area: </label> @Model.area</li>
+</ul>
+<div id="split_wait_for_split">
+    <h4 id="split_title_first"><label class="faa-flash animated">Split the parcel in to @Model.n parts</label></h4>
+</div>
+
+<div id="split_buttons" class="align-right">
+    <input id="split_button_commit" style="display:none" class="btn btn-primary" type="button" value="Commit" onclick="split_comit()" />
+    <input id="split_button_cancel" type="button" class="btn btn-default" value="Cancel" onclick="split_cancel()" />
+</div>

@@ -1,0 +1,80 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using intapscamis.camis.domain.Report
+@model intapscamis.camis.domain.Farms.Models.ReportResponseModel
+@{ 
+    var i = 1;
+    var type = (int)Model.Request.SelectedReportType;
+    var invTypes = Model.ReferenceData.InvestmentTypes;
+    var moistureSource = Model.ReferenceData.MoistureSources;
+    var swt = Model.ReferenceData.SurfaceWaterType;
+    var gwt = Model.ReferenceData.GroundWaterType;
+    var lookup = Model.LocationLookup;
+}
+
+<table class="table table-striped jambo_table bulk_action" id="tclick">
+    <thead>
+
+        <tr class="headings">
+            <th class="column-title">No</th>
+            <th class="column-title">Woreda</th>
+            <th class="column-title">Upin</th>
+            <th class="column-title numberValue">Area</th>
+            <th class="column-title">Type Of Investment</th>
+
+            <th class="column-title">Mositure Type</th>
+
+            <th class="column-title">Surface Water</th>
+            <th class="column-title">Ground Water</th>
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.LandList)
+        {
+            <tr>
+                <td class="column-title">@(i++)</td>
+                <td class="column-title">
+                @if (lookup.ContainsKey(item.upin.Woreda()))
+                {
+                <p>@lookup[item.upin.Woreda()]</p>
+                }
+                else{
+                <p>@item.upin.Woreda()</p>
+                }</td>
+
+                <td class="column-title">@item.upin</td>
+                <td class="column-title numberValue">@item.area</td>
+                <td class="column-title">@String.Join(" ,", item.LandInvestment.Select(m => invTypes.Where(t => t.Id == m.Investment).First().Name).ToList())</td>
+
+                <td class="column-title">@String.Join(" ,", item.LandMoisture.Select(m => moistureSource.Where(t => t.Id == m.Moisture).First().Name).ToList())</td>
+
+
+                <td class="column-title">@String.Join(',', item.SurfaceWater.Select(m => $"{m.result} ({swt.Where(wt => wt.Id == m.type).First().Name})").ToList())</td>
+                <td class="column-title">@String.Join(',', item.GroundWater.Select(m => gwt.Where(wt => wt.Id == m.type).First().Name).ToList())</td>
+                @* <td class="column-title"></td>*@
+
+
+
+            </tr>
+        }
+        @if(Model.LandList.Count() > 0) { 
+            <tr>
+                <td class="column-title"></td>
+                <td class="column-title">Total</td>
+                <td class="column-title"></td>
+
+                <td class="column-title numberValue">@Model.LandList.Sum(m => m.area)</td>
+                <td class="column-title"></td>
+                <td class="column-title"></td>
+
+                <td class="column-title"></td>
+                <td class="column-title"></td>
+
+
+            </tr>
+        }
+    </tbody>
+</table>

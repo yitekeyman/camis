@@ -1,0 +1,204 @@
+﻿@model intapscamis.camis.domain.Report.Models.PlanViewModel
+@{ 
+    var status = new[] { "", "Active", "Inactive", "Completed" };
+}
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Progress Report Paper Form</title>
+    <link rel="stylesheet" href="/style/bootstrap.min.css" />
+    <script>
+        window.addEventListener('load', () => window.print())
+    </script>
+</head>
+<body>
+    <h2>@Model.RootActivity.Activity.Name</h2>
+    <p>Date :____________________</p>
+    <p>Status : @status[(int)Model.Plan.StatusId]</p>
+
+    <h3>Progress Report</h3>
+
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th style="text-align: left">Activity</th>
+                        <th style="text-align: left">Variables</th>
+                        <th style="text-align: left">Targets</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Hierarchy[Model.RootActivity].OrderBy(m => m.Activity.Id))
+                    {
+                        <tr>
+                            <td colspan="3"></td>
+                        </tr>
+                        <tr>
+                            <th colspan="3">@item.Activity.Name</th>
+                        </tr>
+                        for (var i = 0; i < item.Detail.Count; i++)
+                        {
+                            <tr>
+                                @if (i == 0)
+                                {
+                                    <td rowspan="@item.Detail.Count"><small>@item.Activity.Description</small></td>
+                                }
+                                <td>
+                                    @(item.Detail[i].Detail.CustomVariableName ?? item.Detail[i].Detail.Variable.Name):
+                                    @if (item.Detail[i].VariableValueList.Count > 0)
+                                    {
+                                        <div style="padding-left: 1em">
+                                            @foreach (var li in item.Detail[i].VariableValueList)
+                                            {
+                                                <div>
+                                                    <input type="radio" disabled/>
+                                                    <span style="padding-left: 0.5em">@li.Name</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span>
+                                            ______________
+                                            <small>@item.Detail[i].ProgressMeasuringUnit.Name</small>
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.Detail[i].VariableValueList.Count > 0)
+                                    {
+                                        @item.Detail[i].TargetVariableValueList.Name
+                                    }
+                                    else
+                                    {
+                                        @item.Detail[i].Detail.Target
+                                        <small>@item.Detail[i].ProgressMeasuringUnit.Name</small>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        foreach (var children in Model.Hierarchy[item].OrderBy(m => m.Activity.Id))
+                        {
+                            <tr>
+                                <th colspan="3" style="padding-left: 2em">
+                                    @Html.Raw("       " + children.Activity.Name)
+                                </th>
+                            </tr>
+                            for (var i = 0; i < children.Detail.Count; i++)
+                            {
+                                <tr>
+                                    @if (i == 0)
+                                    {
+                                        <td rowspan="@children.Detail.Count">
+                                            <small>@children.Activity.Description</small>
+                                        </td>
+                                    }
+                                    <td>
+                                        @(children.Detail[i].Detail.CustomVariableName ?? children.Detail[i].Detail.Variable.Name):
+                                        @if (children.Detail[i].VariableValueList.Count > 0)
+                                        {
+                                            <div style="padding-left: 1em">
+                                                @foreach (var li in children.Detail[i].VariableValueList)
+                                                {
+                                                    <div>
+                                                        <input type="radio" disabled/>
+                                                        <span style="padding-left: 0.5em">@li.Name</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span>
+                                                ______________
+                                                <small>@children.Detail[i].ProgressMeasuringUnit.Name</small>
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (children.Detail[i].VariableValueList.Count > 0)
+                                        {
+                                            @children.Detail[i].TargetVariableValueList.Name
+                                        }
+                                        else
+                                        {
+                                            @children.Detail[i].Detail.Target
+                                            <small>@children.Detail[i].ProgressMeasuringUnit.Name</small>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                            foreach (var child in Model.Hierarchy[children].OrderBy(m => m.Activity.Id))
+                            {
+                                <tr>
+                                    <th colspan="3" style="padding-left: 4em">
+                                        @Html.Raw("       " + child.Activity.Name)
+                                    </th>
+                                </tr>
+                                for (var i = 0; i < child.Detail.Count; i++)
+                                {
+                                    <tr>
+                                        @if (i == 0)
+                                        {
+                                            <td rowspan="@child.Detail.Count">
+                                                <small>@child.Activity.Description</small>
+                                            </td>
+                                        }
+                                        <td>
+                                            @(child.Detail[i].Detail.CustomVariableName ?? child.Detail[i].Detail.Variable.Name):
+                                            @if (child.Detail[i].VariableValueList.Count > 0)
+                                            {
+                                                <div style="padding-left: 1em">
+                                                    @foreach (var li in child.Detail[i].VariableValueList)
+                                                    {
+                                                        <div>
+                                                            <input type="radio" disabled/>
+                                                            <span style="padding-left: 0.5em">@li.Name</span>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span>
+                                                    ______________
+                                                    <small>@child.Detail[i].ProgressMeasuringUnit.Name</small>
+                                                </span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (child.Detail[i].VariableValueList.Count > 0)
+                                            {
+                                                @child.Detail[i].TargetVariableValueList.Name
+                                            }
+                                            else
+                                            {
+                                                @child.Detail[i].Detail.Target
+                                                <small>@child.Detail[i].ProgressMeasuringUnit.Name</small>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div style="display: flex; padding: 5px 0 0">
+        <div style="flex: 2">
+            <p>Prepared by: ___________</p>
+            <p>Date: ______________</p>
+        </div>
+        <div style="flex: 1">
+            <p>Checked by: ______________</p>
+            <p>Date: ______________</p>
+        </div>
+    </div>
+</body>
+</html>

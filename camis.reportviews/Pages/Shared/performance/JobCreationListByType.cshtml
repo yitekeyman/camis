@@ -1,0 +1,118 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using intapscamis.camis.domain.Report
+@model intapscamis.camis.domain.Farms.Models.ReportResponseModel
+@{
+    var i = 1;
+    var type = (int)Model.Request.SelectedReportType;
+    var jobTypes = Model.JobCreationList.Select(m => m.profession).Distinct().ToList();
+    var uniqueFarms = Model.JobCreationList.Select(m => m.farmId).Distinct().ToList();
+    var lookup = Model.LocationLookup;
+}
+
+<table class="table table-striped jambo_table bulk_action" id="tclick">
+    <thead>
+
+        <tr class="headings">
+            <th class="column-title">No</th>
+            <th class="column-title">Woreda</th>
+            <th class="column-title">Farm</th>
+
+
+            <th class="column-title numberValue" colspan="3">Permanent</th>
+            <th class="column-title numberValue" colspan="3">Temporary</th>
+
+            <th class="column-title numberValue">Total</th>
+
+
+
+
+        </tr>
+        <tr class="headings">
+            <th class="column-title"></th>
+            <th class="column-title"></th>
+            <th class="column-title"> </th>
+
+
+            <th class="column-title numberValue">M</th>
+            <th class="column-title numberValue">F</th>
+            <th class="column-title numberValue">Total</th>
+            <th class="column-title numberValue">M</th>
+            <th class="column-title numberValue">F</th>
+            <th class="column-title numberValue">Total</th>
+
+            <th class="column-title"></th>
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var farmIds in uniqueFarms)
+        {
+            var farm = Model.JobCreationList.Where(m => m.farmId == farmIds).First();
+
+
+            <tr>
+
+                <td class="column-title">@(i++)</td>
+                <td class="column-title">
+                    @if (lookup.ContainsKey(farm.upin.Woreda()))
+                    {
+                        <p>@lookup[farm.upin.Woreda()]</p>
+                    }
+                    else
+                    {
+                        <p>@farm.upin.Woreda()</p>
+                    }
+                </td>
+                <td class="column-title">@farm.name</td>
+                @{
+                    var perm = Model.JobCreationList.Where(m => m.farmId == farmIds && m.type == "perm");
+                    var temp = Model.JobCreationList.Where(m => m.farmId == farmIds && m.type == "temp");
+                    <td class="column-title numberValue">@perm.Sum(m => m.male)</td>
+                    <td class="column-title numberValue">@perm.Sum(m => m.female)</td>
+                    <td class="column-title numberValue">@(perm.Sum(m => m.male) + perm.Sum(m => m.female))</td>
+                    <td class="column-title numberValue">@temp.Sum(m => m.male)</td>
+                    <td class="column-title numberValue">@temp.Sum(m => m.female)</td>
+                    <td class="column-title numberValue">@(temp.Sum(m => m.male) + temp.Sum(m => m.female))</td>
+
+                    <td class="column-title numberValue">@Model.JobCreationList.Where(m => m.farmId == farmIds).Sum(m => m.male + m.female) </td>
+                }
+
+            </tr>
+
+
+
+
+
+        }
+        @{
+            <tr>
+
+                <td class="column-title"></td>
+                <td class="column-title">Total</td>
+                <td class="column-title"></td>
+            @{ 
+                var perm2 = Model.JobCreationList.Where(m => m.type == "perm");
+                var temp2 = Model.JobCreationList.Where(m => m.type == "temp");
+            }
+
+                <td class="column-title numberValue">@perm2.Sum(m => m.male)</td>
+                <td class="column-title numberValue">@perm2.Sum(m => m.female)</td>
+                <td class="column-title numberValue">@(perm2.Sum(m => m.male) + perm2.Sum(m => m.female))</td>
+                <td class="column-title numberValue">@temp2.Sum(m => m.male)</td>
+                <td class="column-title numberValue">@temp2.Sum(m => m.female)</td>
+                <td class="column-title numberValue">@(temp2.Sum(m => m.male) + temp2.Sum(m => m.female))</td>
+
+                <td class="column-title numberValue">@Model.JobCreationList.Sum(m => m.male + m.female) </td>
+
+
+            </tr> }
+    </tbody>
+</table>

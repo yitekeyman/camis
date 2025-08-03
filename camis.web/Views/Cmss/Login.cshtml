@@ -1,0 +1,93 @@
+﻿<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>CAMIS Qgis Login</title>
+        <link rel="stylesheet" href="/style/cmss.css"/>
+        <link rel="stylesheet" href="/style/bootstrap.min.css"/>
+        <script src="/js/jquery.min.js"></script>
+        <script src="/js/jquery-ui.js"></script>
+    </head>
+
+    <body id="cmss-login">
+            <div class="cmss-login-warper">
+                <div class="cmss-login-body">
+                    <div class="cmss-login-body-h align-center">
+                        <i class="fa fa-user-circle"></i>
+                        <h2><label>WELCOME</label> to CAMIS Qgis</h2>
+                    </div>
+                    <hr>
+                    <div class="login-body-b">
+                        <form id="loginForm" method="POST" action="login.jsp">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="addon">
+                                    <i class="fa fa-user"></i>
+                                </span>
+                                <input type="text" placeholder="Username!" class="form-control username" id="username" name="username"  value=""/>
+                                <span class="input-group-addon username_error" id="username_error" style="display: none">
+                                    <i class="fa fa-warning faa-flash animated"></i>
+                                </span>
+                            </div>
+                            <div class="input-group">
+                                <span class="input-group-addon" id="addon">
+                                    <i class="fa fa-lock"></i>
+                                </span>
+                                <input type="password" placeholder="Password!" class="form-control password" id="password" name="password" value=""/>
+                                <span class="input-group-addon password_error" id="password_error" style="display: none">
+                                    <i class="fa fa-warning faa-flash animated"></i>
+
+                                </span>
+                            </div>
+                            <div class="input-group">
+                                <span class="user_pass_error" id="user_pass_error" style="display:none">
+                                    <i class="fa fa-warning faa-flash animated"></i>
+                                </span>
+                            </div>
+                            <div class="align-right">
+                                <div class="btn-group">
+                                    <select class="btn btn-default btn-select">
+                                        <option>Amharic</option>
+                                        <option selected>English</option>
+                                        <option>Oromifa</option>
+                                        <option>Tigrigna</option>
+                                    </select>
+                                    <button type="button" class="btn btn-primary" onclick="valLogin()">Login</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="login-body-f">
+                        <hr>
+                        <div class="pull-left">
+                            <img style="display:none" src="/assets/IMAGES/logo-2.png"/>
+                        </div>
+                        <div class="pull-right">
+                            <img style="display:none" src="/assets/IMAGES/logo1.png"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </body>
+    <script>
+        function valLogin() {
+            var valid = true;
+            var requiredField = ['username', 'password'];
+            for (var i = 0; i < requiredField.length; i++) {
+                var arrlist = $('#' + requiredField[i]).val();
+                if (arrlist == "" || arrlist == -1)
+                {
+                    $('#' + requiredField[i] + '_error').show();
+                    valid = false;
+                } else
+                {
+                    $('#' + requiredField[i] + '_error').hide();
+                }
+            }
+
+            if (valid)
+            {
+                document.location = '/cmss/login_cmd?un=' + encodeURIComponent($("#username").val()) + "&pw="+encodeURIComponent($("#password").val());
+            }
+        }
+    </script>
+</html>

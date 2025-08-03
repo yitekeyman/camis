@@ -1,0 +1,47 @@
+<div class="modal-content">
+    <div class="modal-header">
+        
+        <button type="button" class="close" (click)="closeForm()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <h5 class="modal-title ">Register User</h5>
+    </div>
+    <form [formGroup]="registrationForm" id="registrationForm" (submit)="register()">
+        <div class="modal-body has-scroll" >
+            <div class="input-form" >
+                <label>Full Name:</label>
+                <input type="text" class="form-control" placeholder="First Name" id="user_first_name" formControlName="fullname" [(ngModel)]="userModel.fullname">
+            </div>
+            <div class="input-form">
+                <label>Phone No:</label>
+                <input type="text" class="form-control" placeholder="User Phone No" id="user_phone_no" formControlName="phoneno" [(ngModel)]="userModel.phoneNo">
+            </div>
+            <div class="input-form">
+                <label>User Role:</label>
+                <select class="form-control" formControlName="role"  [(ngModel)]="userModel.roles" id="user_role" multiple>
+                    <option *ngFor="let role of ROLES" [value]="role.id" >{{role.name}}</option>
+                </select>
+
+            </div>
+            <div class="input-form">
+                <label>Username:</label>
+                <input type="text" class="form-control" placeholder="Username" id="username" formControlName="username" [(ngModel)]="userModel.username" >
+            </div>
+            <div class="input-form">
+                <label>Password:</label>
+                <input type="password" class="form-control" placeholder="Password" id="user_pass" formControlName="password" [(ngModel)]="userModel.password">
+            </div>
+            <div class="input-form">
+                <label>Confirm Password:</label>
+                <input type="password" class="form-control" placeholder="Confirm Password" id="conf_pass" formControlName="confirmPassword" (keyup)="checkDiff()">
+                <span class="error confirmPassord">{{newPassConfirm}}</span>
+            </div>
+        </div>
+        <div class="modal-footer ">
+            <div class="input-form align-right">
+                <button class="btn btn-default btn-sm" type="reset">Reset</button>
+                <button class="btn btn-success btn-sm" type="submit" [disabled]="!registrationForm.valid">Register</button>
+            </div>
+        </div>
+    </form>
+</div>

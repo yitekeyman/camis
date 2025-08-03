@@ -1,0 +1,39 @@
+/* You can add global styles to this file, and also import other style files */
+.swal2-loading .swal2-confirm {
+    border-left-color: green !important;
+    border-right-color: green !important;
+  }
+  
+  .swal2-loading {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 350px !important;
+  }
+  
+  .swal2-popup .swal2-styled.swal2-confirm {
+    background-color: green !important;
+    font-size: 15px !important;
+    border-left-color: green !important;
+    border-right-color: green !important;
+  }
+  
+  .swal2-popup .swal2-actions:not(.swal2-loading) .swal2-styled:active {
+    background-color: green !important;
+  }
+  
+  .swal2-popup {
+    font-size: 12px !important;
+  }
+  
+  .swal2-popup .swal2-title {
+    font-size: 20px !important;
+  }
+  
+  .swal2-popup .swal2-styled {
+    padding: 5px 20px !important;
+  }
+  
+  .swal2-popup .swal2-styled:focus {
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px green !important;
+  }
+  

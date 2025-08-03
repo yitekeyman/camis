@@ -1,0 +1,100 @@
+<header class="header">
+    <div class="logo">
+        <ul class="nav title">
+            <li>
+                <i class="fa fa-map-marker"></i>
+            </li>
+            <li>
+                <p class="title-big">
+                    CAMIS
+                </p>
+                <small>Commercial Agricultural Management Information System</small>
+            </li>
+        </ul>
+    </div>
+    <nav id="nav" class="header-nav-wrap">
+        <ul class="header-nav">
+            <li *ngFor="let route of routes" class=" parent">
+                <span *ngIf="route.route != ''">
+                <a  [routerLink]="route.route" routerLinkActive="active" (click)="onclicklink($event)">
+                    {{route.title}} <span [ngClass]="'fa ' + route.icon"></span>
+                
+                </a>
+                </span>
+                <span *ngIf="route.route == ''">
+                <a [routerLink]="" data-toggle="dropdown">
+                    {{route.title}} <span [ngClass]="'fa ' + route.icon"></span>
+                </a>
+                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                   
+                    <li>
+                        <a [routerLink]="" (click)="changePass()">
+                           Change Password<span></span>
+
+                        </a>
+                    </li>
+                    <li >
+                        <a [routerLink]="" (click)="logout()">
+                            logout
+                        </a>
+                    </li>
+                </ul>
+                </span>
+            </li>
+        </ul>
+    </nav>
+    <a class="header-menu-toggle" href="#0"><span>Menu</span></a>
+
+</header>
+<router-outlet></router-outlet>
+
+<div class="modal fade " id="changePass" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h5 class="modal-title ">Change your Password</h5>
+            </div>
+            <form [formGroup]="changePassForm" id="updatePassForm">
+                <div class="modal-body has-scroll" >
+                    <ul class="nav">
+                        <li><div class="input-form">
+                            <label>Old Password:</label>
+                            <input type="password" class="form-control" id="" formControlName="oldPassword" >
+                            <small class="form-text help" *ngIf="!changePassForm.controls.oldPassword.valid && changePassForm.controls.oldPassword.touched">This field is required.</small>
+                        </div></li>
+                        <li><div class="input-form">
+                            <label>New Password:</label>
+                            <input type="password" class="form-control" id="newPass" formControlName="newPassword" >
+                            <small class="form-text help" *ngIf="!changePassForm.controls.newPassword.valid && changePassForm.controls.newPassword.touched">This field is required.</small>
+                        </div></li>
+                        <li><div class="input-form">
+                            <label>Confirm Password:</label>
+                            <input type="password" class="form-control" id="confirmPass" formControlName="confirmPassword">
+                            <small class="form-text help" *ngIf="!changePassForm.controls.confirmPassword.valid && changePassForm.controls.confirmPassword.touched">The Password didn't match.</small>
+
+                        </div></li>
+                    </ul>
+                </div>
+                <div class="modal-footer ">
+                    <div class="input-form align-right">
+                        <button class="btn-camis normal lg" (click)="updatePass()" [disabled]="!changePassForm.valid">Change Password</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<footer>
+    <div class="row footer-bottom">
+        
+        <div class="col-twelve">
+            <div class="copyright">
+                <span>© Copyright CAMIS 2019</span>
+                <span>Design by <a href="https://www.intaps.com/">INTAPS Software Engineering</a></span>
+            </div>
+        </div>
+
+    </div> <!-- end footer-bottom -->
+
+</footer>

@@ -1,0 +1,20 @@
+<div id="user" class="tab-pane board">
+  <div class="x_panel">
+    <div class="x_title">
+      <h2><i class="fa fa-tree"></i>&nbsp; Farm Owner Detail</h2>
+      <ul class="nav navbar-right panel_toolbox">
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+
+    <div class="x_content has-scroll">
+      <div *ngIf="loading" class="align-center"><h2>Loading...</h2></div>
+      <div *ngIf="!loading && farmOperator">
+        <app-farm-detail *ngIf="farmOperator" [farm]="{ operator: farmOperator }"></app-farm-detail>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+

@@ -1,0 +1,79 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@using intapscamis.camis.domain.Report
+@model intapscamis.camis.domain.Farms.Models.ReportResponseModel
+@{
+    var i = 1;
+    var type = (int)Model.Request.SelectedReportType;
+    var farmTyes = Model.ReferenceData.FarmTypes;
+    var origins = Model.ReferenceData.FarmOperatorOrigins;
+    var lookup = Model.LocationLookup;
+}
+
+<table class="table table-striped jambo_table bulk_action" id="tclick">
+    <thead>
+
+        <tr class="headings">
+            <th class="column-title">No</th>
+
+            <th class="column-title">Woreda</th>
+
+            <th class="column-title">Farm</th>
+            <th class="column-title numberValue">Area (ha)</th>
+            <th class="column-title">Investor Origin</th>
+            <th class="column-title">Type Of Investment</th>
+
+            <th class="column-title">Start Date</th>
+
+            <th class="column-title numberValue">Investment Capital</th>
+            <th class="column-title">Inv. License Number</th>
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.OperatorList)
+        {
+            <tr>
+                <td class="column-title">@(i++)</td>
+                <td class="column-title">
+                    @if (lookup.ContainsKey(item.Woreda))
+                    {
+                    <p> @lookup[item.Woreda] (@item.Woreda)  </p>
+                    }
+                    else
+                    {
+                        <p> @item.Woreda </p>
+                    }
+                </td>
+                <td class="column-title">@item.Name</td>
+                <td class="column-title numberValue">@Math.Round(item.Area / 10000, 2)</td>
+                <td class="column-title">@origins.Where(m => m.Id == item.OriginId).First().Name</td>
+                <td class="column-title">@farmTyes.Where(m => m.Id == item.InvestmentType).First().Name</td>
+                <td class="column-title">@item.StartDate</td>
+                <td class="column-title numberValue">@item.InvestedCapital</td>
+                <td class="column-title">@item.LicenseNumber</td>
+
+            </tr>
+        }
+        @if(Model.OperatorList.Count() > 0)
+        {
+
+
+        <tr>
+            <td class="column-title"></td>
+            <td class="column-title">Total</td>
+            <td class="column-title"></td>
+            <td class="column-title numberValue">@Math.Round(Model.OperatorList.Sum(m => m.Area) / 10000, 2)</td>
+            <td class="column-title"></td>
+            <td class="column-title"></td>
+            <td class="column-title"></td>
+            <td class="column-title numberValue">@Math.Round(Model.OperatorList.Sum(m => m.InvestedCapital),2)</td>
+            <td class="column-title"></td>
+
+        </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,102 @@
+
+<ul class="land_details" *ngIf="invProfile">
+    <li>
+        <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+        <div class="land_details_wrapper">
+            <h4>Investor Name:</h4>
+            <div class="land_details_element">
+                <span>{{invProfile.Name}}</span>
+            </div>
+        </div>
+    </li>
+    <li>
+        <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+        <div class="land_details_wrapper">
+            <h4>Nationality:</h4>
+            <div class="land_details_element">
+                <span>{{invProfile.Nationality}}</span>
+            </div>
+        </div>
+    </li>
+    <li>
+
+        <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+        <div class="land_details_wrapper">
+            <h4>Investor Type:</h4>
+            <div class="land_details_element">
+                <span>{{investorType}}</span>
+            </div>
+        </div>
+    </li>
+    <li>
+        <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+        <div class="land_details_wrapper">
+            <h4>Investor Origin:</h4>
+            <div class="land_details_element">
+                <span>{{investorOrgin}}</span>
+            </div>
+        </div>
+    </li>
+    <li>
+        <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+        <div class="land_details_wrapper">
+            <h4>Capital:</h4>
+            <div class="land_details_element">
+                <span> {{invProfile.Capital}}</span>
+            </div>
+        </div>
+    </li>
+    <li>
+        <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+        <div class="land_details_wrapper">
+            <h4>Email Address:</h4>
+            <div class="land_details_element">
+                <span> {{invProfile.Email}}</span>
+            </div>
+        </div>
+    </li>
+    <li>
+        <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+        <div class="land_details_wrapper">
+            <h4>Phone No:</h4>
+            <div class="land_details_element">
+                <span> {{invProfile.Phone}}</span>
+            </div>
+        </div>
+    </li>
+    <li>
+        <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+        <div class="land_details_wrapper">
+            <h4>Address:</h4>
+            <div class="land_details_element">
+                 <app-address-output [leafId]="invProfile.AddressId"></app-address-output>
+            </div>
+        </div>
+    </li>
+    <li>
+        <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+        <div class="land_details_wrapper">
+            <h4>Registrations:</h4>
+            <table class="table-striped table">
+                <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Registration Type</th>
+                    <th>Registration Authority</th>
+                    <th>Registration Number</th>
+                    <th>Reference</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let reg of authority; index as i" style="cursor: pointer">
+                    <td (click)="openDoc(application.invProfile.id, i)">{{i+1}}</td>
+                    <td (click)="openDoc(application.invProfile.id, i)">{{reg.TypeId}}</td>
+                    <td (click)="openDoc(application.invProfile.id, i)">{{reg.AuthorityId}}</td>
+                    <td (click)="openDoc(application.invProfile.id, i)">{{reg.RegistrationNumber}}</td>
+                    <td><a (click)="openDoc(application.invProfile.id, i)">{{reg.Document.Ref}}</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </li>
+</ul>

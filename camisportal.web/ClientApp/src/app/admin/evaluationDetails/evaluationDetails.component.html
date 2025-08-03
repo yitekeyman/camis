@@ -1,0 +1,321 @@
+<section id="investorBids" class="min">
+    <div class="investorBids-container">
+        <div class="has-bottom-index align-center">
+            <div class="investorBids-header min-header align-center">
+                <h3>Evaluation Details</h3>
+                <h2>Application Evaluation Details</h2>
+            </div>
+        </div>
+        <div *ngIf="loading==false">
+            <div class="investorBids-body min-body">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h4>Promotion Details</h4>
+                        <div class="panel_toolbox">
+                           
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                       <div class="col-md-6">
+                           <table class="table table-striped">
+                               <tbody>
+                               <tr>
+                                   <td><strong>Title:</strong></td>
+                                   <td>{{promotionUnit.promotion.title}}</td>
+                               </tr>
+                               <tr>
+                                   <td><strong>Land UPIN:</strong></td>
+                                   <td>{{promotionUnit.landUPIN}}</td>
+                               </tr>
+                               <tr>
+                                   <td><strong>Reference No:</strong></td>
+                                   <td>{{promotionUnit.promotion.promotionRef}}</td>
+                               </tr>
+                               <tr>
+                                   <td><strong>Posted Date:</strong></td>
+                                   <td>{{promotionUnit.promotion.postedOn | date:'MMM dd/yyyy'}}</td>
+                               </tr>
+                               <tr>
+                                   <td><strong>Started Date:</strong></td>
+                                   <td>{{promotionUnit.promotion.applyDateFrom | date:'MMM dd/yyyy'}}</td>
+                               </tr>
+                               <tr>
+                                   <td><strong>Close Date:</strong></td>
+                                   <td>{{promotionUnit.promotion.applyDateTo | date: 'MMM dd/yyyy'}}</td>
+                               </tr>
+                               <tr>
+                                   <td><strong>Region:</strong></td>
+                                   <td>{{regions}}</td>
+                               </tr>
+                               <tr>
+                                   <td><strong>Bid Participant:</strong></td>
+                                   <td>
+                                       <p *ngFor="let app of applicantList; index as i"><a [routerLink]="" (click)="getDataByInvestor(app.investorID)" >{{i+1}}) {{app.investorName}}</a></p>
+                                   </td>
+                               </tr>
+                               </tbody>
+                           </table>
+                       </div>
+                       <div class="col-md-6">
+                           <table class="table" id="eval-team-parent-table"  *ngIf="promotionUnit.evalTeams?.length > 0">
+                               <tbody>
+                               <tr>
+                                   <td>
+                                       <strong>Evaluation Team With Criteria</strong>
+                                   </td>
+                               </tr>
+                               <tr *ngFor="let team of promotionUnit.evalTeams; index as x">
+                                   <td>
+                                       <table class="table table-condensed" id="eval-team-table">
+                                           <tbody>
+                                           <tr class="eval-team">
+                                               <td><strong>Team Name: </strong>{{team.teamName}}</td>
+                                               <td><strong>Team Weight: </strong> {{team.weight}}</td>
+                                               <td>
+                                                   <span *ngFor="let member of team.members" class="tag">{{member.userName}}  |  {{member.weight}}</span>
+                                               </td>
+                                           </tr>
+                                           <tr  *ngFor="let criteria of team.criterion; index as i">
+                                               <td colspan="3" id="eval-criteria-parent">
+                                                   <table class="table table-condensed" id="evl-criteria-table">
+                                                       <tr class="eval-criteria">
+                                                           <td style="width: 40%"><strong>Criteria Name: </strong>{{criteria.name}}</td>
+                                                           <td style="width: 15%;"><strong>Max Value: </strong>{{criteria.maxVal}}</td>
+                                                           <td style="width: 15%;"><strong>Weight: </strong>{{criteria.weight}}</td>
+                                                           <td style="width: 30%">
+                                                               <p *ngFor="let list of criteria.valueList">
+                                                                   <strong>{{list.name}}: </strong>{{list.value}}
+                                                               </p>
+                                                           </td>
+                                                       </tr>
+                                                       <tr  *ngFor="let subCri of criteria.cubCriterion; index as z">
+                                                           <td colspan="4" id="eval-sub-criteria">
+                                                               <table class="table  table-condensed" id="eval-sub-criteria-table">
+                                                                   <tr  id="eval-sub-criteria-table-tr">
+                                                                       <td style="width: 40%"><strong>Criteria Name: </strong>{{subCri.name}}</td>
+                                                                       <td style="width: 15%"><strong>Max Value: </strong>{{subCri.maxVal}}</td>
+                                                                       <td style="width: 15%"><strong>Weight: </strong>{{subCri.weight}}</td>
+                                                                       <td style="width: 30%">
+                                                                           <p *ngFor="let list of subCri.valueList">
+                                                                               <strong>{{list.name}}: </strong>{{list.value}}
+                                                                           </p>
+                                                                       </td>
+                                                                   </tr>
+                                                                   <tr *ngFor="let subCriOne of subCri.cubCriterion; index as a">
+                                                                       <td colspan="4" id="eval-criteria-parent">
+                                                                           <table class="table  table-condensed" id="eval-sub-criteria-table">
+                                                                               <tr   class="eval-criteria">
+                                                                                   <td><strong>Criteria Name: </strong>{{subCriOne.name}}</td>
+                                                                                   <td><strong>Max Value: </strong>{{subCriOne.maxVal}}</td>
+                                                                                   <td><strong>Weight: </strong>{{subCriOne.weight}}</td>
+                                                                                   <td>
+                                                                                       <p *ngFor="let list of subCriOne.valueList">
+                                                                                           <strong>{{list.name}}: </strong>{{list.value}}
+                                                                                       </p>
+                                                                                   </td>
+                                                                               </tr>
+                                                                               <tr *ngFor="let subCriTwo of subCriOne.cubCriterion; index as b">
+                                                                                   <td colspan="4" id="eval-sub-criteria">
+                                                                                       <table class="table  table-condensed" id="eval-sub-criteria-table">
+                                                                                           <tr  id="eval-sub-criteria-table-tr">
+                                                                                               <td><strong>Criteria Name: </strong>{{subCriTwo.name}}</td>
+                                                                                               <td><strong>Max Value: </strong>{{subCriTwo.maxVal}}</td>
+                                                                                               <td><strong>Weight: </strong>{{subCriTwo.weight}}</td>
+                                                                                               <td>
+                                                                                                   <p *ngFor="let list of subCriTwo.valueList">
+                                                                                                       <strong>{{list.name}}: </strong>{{list.value}}
+                                                                                                   </p>
+                                                                                               </td>
+                                                                                           </tr>
+                                                                                           <tr *ngFor="let subCriThree of subCriTwo.cubCriterion; index as b">
+                                                                                               <td colspan="4" id="eval-criteria-parent">
+                                                                                                   <table class="table  table-condensed" id="eval-sub-criteria-table">
+                                                                                                       <tr   class="eval-criteria">
+                                                                                                           <td><strong>Criteria Name: </strong>{{subCriThree.name}}</td>
+                                                                                                           <td><strong>Max Value: </strong>{{subCriThree.maxVal}}</td>
+                                                                                                           <td><strong>Weight: </strong>{{subCriThree.weight}}</td>
+                                                                                                           <td>
+                                                                                                               <p *ngFor="let list of subCriThree.valueList">
+                                                                                                                   <strong>{{list.name}}: </strong>{{list.value}}
+                                                                                                               </p>
+                                                                                                           </td>
+                                                                                                       </tr>
+
+                                                                                                   </table>
+                                                                                               </td>
+                                                                                           </tr>
+                                                                                       </table>
+                                                                                   </td>
+                                                                               </tr>
+                                                                           </table>
+                                                                       </td>
+                                                                   </tr>
+                                                               </table>
+                                                           </td>
+                                                       </tr>
+                                                   </table>
+                                               </td>
+                                           </tr>
+                                           </tbody>
+                                       </table>
+                                   </td>
+                               </tr>
+                               </tbody>
+                           </table>
+                       </div> 
+                    </div>
+                </div>
+
+            </div>
+        <div class="investorBids-body min-body" *ngIf="criteriaList?.length > 0">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h4>Investor <small>x</small> Evaluation Team</h4>
+                    <div class="panel_toolbox align-right">
+                        <button class="btn btn-sm btn-camis" (click)="approveEvaluation()" *ngIf="promotionUnit.status==5">accept result</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <table class="table table-striped camis-table">
+                        <thead>
+                        <tr>
+                            <td>InvestorName</td>
+                            <td *ngFor="let team of teamsList"  colspan="teamsList.member?.length">{{team.name}}</td>
+                            <td>Total</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let inv of criteriaList">
+                            <td>{{inv.invName}}</td>
+                            <td *ngFor="let val of inv.sumVal">{{val}}</td>
+                            <td>{{inv.total}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div *ngFor="let team of teamCriteriaList">
+                        <h4>{{team.teamName}}</h4>
+                        <table class="table table-striped camis-table">
+                            <thead>
+                            <tr>
+                                <td >InvestorName</td>
+                                <td *ngFor="let ur of team.teamMember">{{ur.userName}}</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let inv of team.teamVal">
+                                <td>{{inv.invName}}</td>
+                                <td *ngFor="let val of inv.val"><a  (click)="detail(val.promId, val.teamId, val.evaluatorUsername, val.investorId)">{{val.val}}</a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="investorBids-body min-body" *ngIf="invCriteriaList?.length > 0">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h4>Evaluator <small>x</small> Evaluation Team</h4>
+                   
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div *ngIf="investorName!=''"><strong>Investor Name:</strong> {{investorName}}</div>
+                    <table class="table table-striped camis-table">
+                        <thead>
+                        <tr>
+                            <td>Evaluator Name</td>
+                            <td *ngFor="let team of teamsList">{{team.name}}</td>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let inv of invCriteriaList">
+                            <td>{{inv.evaluator}}</td>
+                            <td *ngFor="let val of inv.val">{{val}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+           
+            
+
+        </div>
+        </div>
+        <div class="investorBids-body min-body" *ngIf="loading==true">
+            <div class="align-center bid-loader" >
+                <i class="fa fa-circle-o faa-burst animated"></i>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="view-evaluation-data-dialog" class="modal fade" role="dialog">
+        <div class="modal-dialog" *ngIf="promotionResult!=null">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h5 class="modal-title">
+                       {{promotionResult.evaluatorName}}
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <table class="table" id="eval-team-parent-table">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <table class="table table-condensed" id="eval-team-table">
+
+                                    <tr class="eval-team">
+                                        <td>
+                                            <strong>{{promotionResult.teamName}}</strong>
+                                        </td>
+                                        <td><strong>Weight: </strong>{{promotionResult.evaWeight}}</td>
+                                    </tr>
+
+                                    <tr  *ngFor="let crit of promotionResult.result;  index as i">
+                                        <td colspan="2" id="eval-criteria-parent">
+                                            <table class="table table-condensed" id="evl-criteria-table">
+                                                <tr class="eval-criteria">
+                                                    <td>
+                                                        <strong >{{crit.criteriaName}}</strong><br>
+                                                        <strong><small>Max-Value({{crit.maxVal}})</small> </strong><br>
+                                                        <strong><small>Weight({{crit.weight}})</small> </strong>
+                                                    </td>
+                                                    <td class="align-right" style="padding-right: 15px">
+                                                        <h2 class="camis-badge bg-primary">{{crit.val}}</h2>
+                                                    </td>
+                                                </tr>
+                                                <tr *ngFor="let subCri of crit.subCriteria; index as z" >
+                                                    <td colspan="2" id="eval-sub-criteria">
+                                                        <table class="table  table-condensed" id="eval-sub-criteria-table">
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>{{subCri.criteriaName}}</strong><br/>
+                                                                    <strong><small>Max-Value({{subCri.maxVal}})</small> </strong><br/>
+                                                                    <strong><small>Weight({{subCri.weight}}</small>) </strong>
+                                                                </td>
+                                                                <td class="align-right" style="padding-right: 15px">
+                                                                    <h3 >{{subCri.val}}</h3>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

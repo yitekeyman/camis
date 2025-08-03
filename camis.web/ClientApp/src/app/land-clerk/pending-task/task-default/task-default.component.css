@@ -1,0 +1,14 @@
+.landBank_panel{
+    min-height: 100vh;
+}
+.taskMap_breaker{
+    border-right: 1px solid #E6E9ED;
+    min-height: 88vh;
+}
+.task-Description-area{
+    border: 1px solid #E6E9ED;
+    padding: 5px;
+}
+.backButton{
+    float: right;
+}

@@ -1,0 +1,1 @@
+﻿dotnet ef dbcontext scaffold "Host=map-server;Database=camis_portal;Username=postgres;Password=toor" Npgsql.EntityFrameworkCore.PostgreSQL -c CamisPortalContext -o Entities -f

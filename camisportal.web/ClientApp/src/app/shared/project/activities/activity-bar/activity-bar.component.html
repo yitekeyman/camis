@@ -1,0 +1,16 @@
+<div *ngIf="activity">
+    <div class="bar" [title]="activity.name + '\n' + activity.description" [ngStyle]="{
+        'margin-left.%': left,
+        'width.%': width,
+        'visibility': activity.schedules && activity.schedules.length ? 'visible' : 'hidden'
+    }"></div>
+    
+    <div class="nanny" *ngIf="activity && activity.children">
+        <app-activity-bar
+                *ngFor="let child of activity.children"
+                [activity]="child"
+                [maxTime]="maxTime"
+                [minTime]="minTime"
+        ></app-activity-bar>
+    </div>
+</div>

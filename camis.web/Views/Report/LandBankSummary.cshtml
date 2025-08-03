@@ -1,0 +1,102 @@
+﻿@page
+@using Npgsql;
+@using intapscamis.camis.data.Entities;
+@using Microsoft.EntityFrameworkCore;
+@inject CamisContext context;
+@model System.String
+@{
+    Object par;
+    if ( base.ModelState==null || !base.ModelState.IsValid || String.IsNullOrEmpty(Model))
+    {
+        par = null;
+    }
+    else
+    {
+        par = Newtonsoft.Json.JsonConvert.DeserializeObject(Model);
+    }
+
+
+    var sql = $@"Select * from 
+(
+(Select 1 as land_type,count(*) n ,sum(u.area) a from lb.land l inner join lb.land_upin u on l.id=u.land_id 
+where land_type=1 and u.profile->'rights'->0->'party'->>'partyType'='3')
+union
+(Select 2 as land_type,count(*) n ,sum(u.area) a from lb.land l inner join lb.land_upin u on l.id=u.land_id 
+where land_type=2 and u.profile->'rights'->0->'party'->>'partyType'='3')
+union
+(Select 3 as land_type,count(*) n ,sum(u.area) a from lb.land l inner join lb.land_upin u on l.id=u.land_id 
+where land_type=3 and u.profile->'rights'->0->'party'->>'partyType'='3'
+)
+	)
+sl order by sl.land_type";
+    var stateLand = context.GetDataTable(sql);
+
+    sql = $@"Select * from 
+(
+(Select 1 as land_type,count(*) n ,sum(u.area) a from lb.land l inner join lb.land_upin u on l.id=u.land_id
+where land_type=1 and u.profile->'rights'->0->'party'->>'partyType'='1')
+union
+(Select 2 as land_type,count(*) n ,sum(u.area) a from lb.land l inner join lb.land_upin u on l.id=u.land_id 
+left join lb.land_right r on r.land_id=l.id
+where land_type=3 and u.profile->'rights'->0->'party'->>'partyType'='1' and r.right_type=2)
+union
+(Select 3 as land_type,count(*) n ,sum(u.area) a from lb.land l inner join lb.land_upin u on l.id=u.land_id 
+left join lb.land_right r on r.land_id=l.id
+where land_type=3 and u.profile->'rights'->0->'party'->>'partyType'='1' and r.right_type=3)
+
+union
+(Select 4 as land_type,count(*) n ,sum(u.area) a from lb.land l inner join lb.land_upin u on l.id=u.land_id 
+left join lb.land_right r on r.land_id=l.id
+where land_type=3 and u.profile->'rights'->0->'party'->>'partyType'='1' and r.right_type=4)
+)
+sl order by sl.land_type";
+    var privateLand = context.GetDataTable(sql);
+
+    String formatHecatre(object val)
+    {
+        if (val is double)
+        {
+            return (((double)val) / 10000).ToString("#,#0.00");
+        }
+        if (val is float)
+        {
+            return (((float)val) / 10000).ToString("#,#0.00");
+        }
+        return "-";
+    }
+}
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="~/style/bootstrap.min.css" />
+</head>
+<body>
+<h2>Land Summary</h2>
+<hr/>
+<p>State Land</p>
+
+    <table class="table table-striped">
+        <thead>
+            <tr><td></td><td></td><td>Count</td><td>Area</td></tr>
+        </thead>
+        <tbody>
+        <tr><td style="color:#fec258"><i class="fa fa-square"></i></td><td>Identified</td><td>@((long)stateLand.Rows[0][1])</td><td>@formatHecatre(stateLand.Rows[0][2])</td></tr>
+        <tr><td style="color:#1fae30"><i class="fa fa-square"></i></td><td>Prepared</td><td>@((long)stateLand.Rows[1][1])</td><td>@formatHecatre(stateLand.Rows[1][2])</td></tr>
+        <tr><td style="color:#703472"><i class="fa fa-square"></i></td><td>Transfered</td><td>@((long)stateLand.Rows[2][1])</td><td>@formatHecatre(stateLand.Rows[2][2])</td></tr>
+        </tbody>
+    </table>
+
+    <p>Private Land</p>
+    <table class="table table-striped">
+        <thead>
+        <tr><td></td><td></td><td>Count</td><td>Area</td></tr>
+        </thead>
+        <tbody>
+            <tr><td style="color:#7a9494"><i class="fa fa-square"></i></td><td>Identified</td><td>@((long)privateLand.Rows[0][1])</td><td>@formatHecatre(privateLand.Rows[0][2])</td></tr>
+            <tr><td style="color:"><i class="fa fa-square"></i></td><td>Rented to Investor</td><td>@((long)privateLand.Rows[1][1])</td><td>@formatHecatre(privateLand.Rows[1][2])</td></tr>
+            <tr><td style="color:"><i class="fa fa-square"></i></td><td>Used by Private Farmers</td><td>@((long)privateLand.Rows[2][1])</td><td>@formatHecatre(privateLand.Rows[2][2])</td></tr>
+            <tr><td style="color:"><i class="fa fa-square"></i></td><td>Used by For Contract Farming</td><td>@((long)privateLand.Rows[3][1])</td><td>@formatHecatre(privateLand.Rows[3][2])</td></tr>
+        </tbody>
+    </table>
+</body>
+</html>

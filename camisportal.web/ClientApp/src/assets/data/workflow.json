@@ -1,0 +1,194 @@
+[
+  {
+    "id": "b293c079-f95b-44cf-af44-a5e208d38cc7",
+    "workflowId": "6ba42c5c-1653-4023-9308-bcb08bb7e595",
+    "seqNo": 5,
+    "fromState": 2,
+    "toState": 3,
+    "trigger": 4,
+    "dataType": "intapscamis.camis.domain.Projects.Models.ActivityPlanRequest",
+    "data": {
+      "note": "test",
+      "statusId": 1,
+      "rootActivity": {
+        "name": "Business Plan",
+        "description": "Commercial Agriculture Business Plan",
+        "weight": 1.0,
+        "schedules": [],
+        "activityPlanDetails": [],
+        "children": [{
+          "name": "Horticulture Template",
+          "description": "",
+          "weight": 1.0,
+          "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+          "schedules": [{
+            "from": 1539129600000,
+            "to": 1541894400000,
+            "id": "856dedb1-9af6-4513-b599-169c1c7d90c8"
+          }],
+          "activityPlanDetails": [{
+            "target": 233.0,
+            "weight": 1.0,
+            "variableId": 2,
+            "customVariableName": "Area in Sq.m.",
+            "id": "d8b543ab-ad77-4a6b-87c2-7a0b9e8d1553"
+          }],
+          "children": [],
+          "id": "f2a36dcb-0fd0-4599-a142-73e7b55f984c"
+        }, {
+          "name": "Social Impact",
+          "description": "",
+          "weight": 1.0,
+          "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+          "schedules": [{
+            "from": 1546732800000,
+            "to": 1545436800000,
+            "id": "d5cfbba6-247e-4456-88cb-332a141ee69d"
+          }],
+          "activityPlanDetails": [{
+            "target": 50.0,
+            "weight": 1.0,
+            "variableId": 5,
+            "customVariableName": "Mass in Kgs",
+            "id": "8dbaff99-b6d8-4195-a7f6-4bb764fa0f41"
+          }, {
+            "target": 14.0,
+            "weight": 2.0,
+            "variableId": 6,
+            "customVariableName": "Volume in lts",
+            "id": "d27dd6f7-8ecb-49fd-a2a0-a257ed1328d9"
+          }, {
+            "target": 1000000.0,
+            "weight": 1.0,
+            "variableId": 8,
+            "customVariableName": "Amount Spent",
+            "id": "8b94f663-2bae-45bd-9a25-5afbfa20d303"
+          }, {
+            "target": 1.0,
+            "weight": 5.0,
+            "variableId": 10,
+            "customVariableName": "Community Support Provided",
+            "id": "ff91d6f7-132b-425f-9052-945577d199f6"
+          }],
+          "children": [{
+            "name": "Love",
+            "description": "",
+            "weight": 1.0,
+            "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+            "schedules": [{
+              "from": 1547164800000,
+              "to": 1554768000000,
+              "id": "00447266-5716-46e3-9c22-b25af759f9e7"
+            }],
+            "activityPlanDetails": [],
+            "children": [{
+              "name": "Social Impact",
+              "description": "",
+              "weight": 1.0,
+              "parentActivityId": "06bee647-22c6-4624-b6cb-511c5da92098",
+              "schedules": [{
+                "from": 1541376000000,
+                "to": 1554076800000,
+                "id": "e9709d93-b589-4661-a407-a1be511a1d4b"
+              }],
+              "activityPlanDetails": [],
+              "children": [],
+              "id": "dc43e8f7-515a-4388-965c-bb4266f2b490"
+            }],
+            "id": "06bee647-22c6-4624-b6cb-511c5da92098"
+          }, {
+            "name": "Environmental Impact",
+            "description": "",
+            "weight": 1.0,
+            "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+            "schedules": [{
+              "from": 1552348800000,
+              "to": 1563494400000,
+              "id": "b1582433-7076-4862-be09-1979c4719daa"
+            }],
+            "activityPlanDetails": [],
+            "children": [],
+            "id": "31365b99-0fd7-47fa-83b2-c22688803fa0"
+          }],
+          "id": "094569d4-16f9-4741-a8f5-3980dba1eb94"
+        }, {
+          "name": "Digging Holes",
+          "description": "",
+          "weight": 1.0,
+          "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+          "schedules": [],
+          "activityPlanDetails": [],
+          "children": [],
+          "id": "e42a44ac-5c8b-4398-9ed2-088b22c19fd9"
+        }],
+        "id": "80c48468-53e2-453e-83b1-4d861de6298e"
+      },
+      "documents": [],
+      "rootActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+      "reportStatusId": 0,
+      "reportDate": 0,
+      "reportDocuments": [{
+        "date": 1544572800000,
+        "ref": "12345",
+        "note": "rtt",
+        "mimetype": "application/pdf",
+        "filename": "Application Latter.pdf",
+        "id": "e27527fa-d102-4ede-a8f2-790194603216",
+        "overrideFilePath": "/api/Projects/InWorkItemReportFile/b293c079-f95b-44cf-af44-a5e208d38cc7?documentId=e27527fa-d102-4ede-a8f2-790194603216"
+      }],
+      "isAdditional": false,
+      "id": "988daaf7-b076-4d06-bceb-e78fd7ea767c"
+    },
+    "description": "Complete survey of a progress report.",
+    "assignedRole": 10,
+    "aid": 0
+  } ,
+  {
+    "id": "279a135b-1089-40ae-a16e-2dee2c143048",
+    "workflowId": "bf847048-006c-4408-90a6-6a6beee882d1",
+    "seqNo": 5,
+    "fromState": 2,
+    "toState": 3,
+    "trigger": 4,
+    "dataType": "intapscamis.camis.domain.Projects.Models.ActivityPlanRequest",
+    "data": {
+      "note": "klajdfla",
+      "statusId": 1,
+      "rootActivity": {
+        "name": "Business Plan",
+        "description": "Commercial Agriculture Business Plan",
+        "weight": 1.0,
+        "schedules": [],
+        "activityPlanDetails": [],
+        "children": [],
+        "id": "0540f34e-5ace-4804-a966-12f0f3d55981"
+      },
+      "documents": [{
+        "date": 1542223887696,
+        "ref": "kdfjak",
+        "note": "kdfjak",
+        "mimetype": "application/pdf",
+        "type": 10,
+        "filename": "Proposal",
+        "id": "dca6686a-595a-4331-a1bc-aedffa8829e2"
+      }],
+      "rootActivityId": "0540f34e-5ace-4804-a966-12f0f3d55981",
+      "reportStatusId": 0,
+      "reportDate": 0,
+      "reportDocuments": [{
+        "date": 1544227200000,
+        "ref": "1245",
+        "note": "",
+        "mimetype": "application/pdf",
+        "filename": "Application Latter.pdf",
+        "id": "42621afd-fc1d-4d5b-a272-dfcff98a05f7",
+        "overrideFilePath": "/api/Projects/InWorkItemReportFile/279a135b-1089-40ae-a16e-2dee2c143048?documentId=42621afd-fc1d-4d5b-a272-dfcff98a05f7"
+      }],
+      "isAdditional": false,
+      "id": "3a7025ba-ef1c-47d5-917e-bcca7d7a3f99"
+    },
+    "description": "Complete survey of a progress report.",
+    "assignedRole": 10,
+    "aid": 0
+  }
+]

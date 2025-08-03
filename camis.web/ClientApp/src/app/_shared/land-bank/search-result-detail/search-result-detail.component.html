@@ -1,0 +1,284 @@
+<div class="tab-pane board col-sm-12">
+  <div class="x_panel landBank_panel">
+    <div class="x_title">
+      <h2>
+        <i class="fa fa-map">
+          Searched Land detail
+        </i>
+      </h2>
+
+      <div class="btn-group backButton">
+        <button *ngIf="clerkRole && searchedLandDetail.landType === 1" class="btn btn-primary " type="submit"
+          data-toggle="modal" data-target="#prepareModal">Prepair Land</button>
+        <button class="btn btn-default " type="submit" (click)="backButton()">Back</button>
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+
+    <form [formGroup]="prepareForm" class="new-land-form form" (ngSubmit)="requestPreparation()">
+      <div class="modal fade" id="prepareModal" tabindex="-1" role="dialog" aria-labelledby="prepareModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" #prepareBtnClose class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body mx-3">
+              <div class="md-form">
+                <div class="form-group">
+                  <label>How many times you want the land to split? </label>
+                  <div>
+                    <label class="form-check-label">
+                      <input type="number" min="1" step="1" id="splitNumber" class="form-control" formControlName="splitNumberControl"
+                        required>
+                      <small class="split-info">Only positive integers. And empty value is not allowed!</small>
+
+                    </label>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer prepare-modal">
+              <button type="submit" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="empty value and integers less than 0 not allowed!"
+                [disabled]="!prepareForm.valid">Request preparation</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <div class="col-sm-7">
+
+      <div id="detail-header" class="col-sm-12">
+        <div class="col-sm-6">
+          <div style="float: left;font-size: 14px;">
+            <b>Land Status: </b>{{landTypes}}
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div style="float: right;font-size: 14px;">
+
+            <span *ngIf="isAgricultural === 'No'" style="color: red"> The land is not in agricultural zone</span>
+            <span *ngIf="isAgricultural === 'Yes'" style="color: green">The land is in agricultural zone</span>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="col-sm-12" style="padding: 0;margin-top: -4px;">
+        <div id="land-detail">
+          <ul class="decorator">
+            <li class="content">
+              <div class="detail-infos">
+                <h4 class='detail-title'>UPINs:</h4>
+
+                <ul *ngFor="let upin of searchedLandDetail.upins">
+                  <li class="detail-value">{{upin}}</li>
+                </ul>
+
+              </div>
+
+            </li>
+
+            <li class="content">
+              <div class="detail-infos">
+                <h4 class='detail-title'>Land Holder:</h4>
+
+                <ul>
+                  <li class="detail-value">{{searchedLandDetail.holdership}}</li>
+                </ul>
+
+              </div>
+
+            </li>
+
+            <li class="content">
+              <div class="detail-infos">
+                <h4 class='detail-title'>Area:</h4>
+
+                <ul>
+                  <li class="detail-value">{{getArea()}}</li>
+                </ul>
+
+              </div>
+
+            </li>
+
+            <li class="content">
+              <div class="detail-infos">
+                <h4 class='detail-title'>Location:</h4>
+
+                <ul>
+                  <li class="detail-value">{{searchedLandDetail.centroidX}}° E, {{searchedLandDetail.centroidY}}° N </li>
+                </ul>
+
+              </div>
+
+            </li>
+
+            <li class="content">
+              <div class="detail-infos">
+                <h4 class='detail-title'>Accessible By:</h4>
+
+                <ul *ngFor="let access of accessiblities">
+                  <li class="detail-value">{{access}}</li>
+                </ul>
+
+              </div>
+
+            </li>
+
+            <li class="content">
+              <div class="detail-infos">
+                <h4 class='detail-title'>Agro-Echology Zone:</h4>
+
+                <ul *ngFor="let agro of agroEchologyZones">
+                  <li class="detail-value"><b>{{agro.name}} : </b> {{agro.result}}</li>
+                </ul>
+
+              </div>
+
+            </li>
+
+            <li class="content">
+              <div class="detail-infos">
+                <h4 class='detail-title'>Land Suitable For:</h4>
+
+                <ul *ngFor="let investment of investmentTypes">
+                  <li class="detail-value">{{investment}}</li>
+                </ul>
+
+              </div>
+
+            </li>
+
+            <li class="content">
+              <div class="detail-infos">
+                <h4 class='detail-title'>Moisture Source:</h4>
+
+                <ul>
+                  <li class="detail-value">{{moistureSources}}</li>
+                </ul>
+
+                <li class="nested-content" *ngIf="moistureSources === 'Irrigated'">
+                  <div class="nested-detail-infos">
+                    <h6 class='nested-detail-title'>Generalized Water Sampling Parameters:</h6>
+
+                    <ul *ngFor="let water of waterSourceParams">
+                      <li class="detail-value"><b>{{water.name}}: </b> {{water.result}}</li>
+                    </ul>
+
+                    <h6 class='nested-detail-title'>Ground Water:</h6>
+
+                    <ul>
+                      <li class="detail-value">{{groundWater}}</li>
+                    </ul>
+
+                    <h6 class='nested-detail-title'>Surface Water:</h6>
+
+                    <ul *ngFor="let sWater of surfaceWater">
+                      <li class="detail-value"><b>{{sWater.name}} : </b> {{sWater.result}}</li>
+                    </ul>
+
+                  </div>
+
+                </li>
+              </div>
+
+            </li>
+
+            <li class="content">
+              <div class="detail-infos">
+                <h4 class='detail-title'>Topography: </h4>
+
+                <ul *ngFor="let topo of topography">
+                  <li class="detail-value"><b>{{topo.name}} : </b> {{topo.result}}</li>
+                </ul>
+
+              </div>
+
+            </li>
+
+            <li class="content">
+              <div class="detail-infos">
+                <h4 class='detail-title'>Soil Chemical and Physical Properties:</h4>
+
+                <ul *ngFor="let soil of soilTestTypes">
+                  <li class="detail-value">{{soil.name}} <b>:</b> {{soil.result}}</li>
+                </ul>
+
+              </div>
+
+            </li>
+
+            <li class="content">
+              <div class="detail-infos">
+                <h4 class='detail-title'>Existing Land Use:</h4>
+
+                <ul *ngFor="let eLand of existingLandes">
+                  <li class="detail-value">{{eLand}}</li>
+                </ul>
+
+              </div>
+
+            </li>
+
+            <li class="content">
+              <div class="detail-infos">
+                <h4 class='detail-title'>Climatology:</h4>
+
+                <table class="table table-striped jambo_table bulk_action" id="tclick">
+                  <thead>
+                    <tr class="headings">
+                      <th class="column-title">Month</th>
+                      <th class="column-title">Precipitation (cm)</th>
+                      <th class="column-title">Mean Minimum Temperature (°c)</th>
+                      <th class="column-title">Mean Maximum Temperature (°c)</th>
+                      <th class="column-title">Average Temperature (°c)</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr *ngFor="let climate of climates">
+                      <td>{{climate.month}}</td>
+                      <td>{{climate.precipitation}} cm</td>
+                      <td>{{climate.temp_low}} °c</td>
+                      <td>{{climate.temp_high }} °c</td>
+                      <td>{{climate.temp_avg}} °c</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+              </div>
+
+            </li>
+
+            <li class="content">
+              <div class="detail-infos">
+                <h4 class='detail-title'>Description:</h4>
+
+                <ul>
+                  <li class="detail-value">{{searchedLandDetail.description}}</li>
+                </ul>
+
+              </div>
+
+            </li>
+
+          </ul>
+
+          <app-document-list title="Uploaded Documents" [documents]="searchedLandDetail.uploadDocument">
+          </app-document-list>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-5">
+      <app-camis-map #camis_map></app-camis-map>
+    </div>
+  </div>
+</div>

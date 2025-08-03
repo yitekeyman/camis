@@ -1,0 +1,115 @@
+﻿@using intapscamis.camis.domain.Report
+@model intapscamis.camis.domain.Farms.Models.ReportResponseModel
+@{
+    var i = 1;
+    var type = (int)Model.Request.SelectedReportType;
+    var jobTypes = Model.JobCreationList.Select(m => m.profession).Distinct().ToList();
+    var uniqueFarms = Model.JobCreationList.Select(m => m.farmId).Distinct().ToList();
+    var lookup = Model.LocationLookup;
+}
+
+<table class="table table-striped jambo_table bulk_action" id="tclick">
+    <thead>
+
+        <tr class="headings">
+            <th class="column-title">No</th>
+            <th class="column-title">Woreda</th>
+            <th class="column-title">Farm</th>
+
+            @foreach (var jt in jobTypes)
+            {
+                <th class="column-title numberValue" colspan="3">@jt.Beautify()</th>
+            }
+
+            <th class="column-title numberValue">Total</th>
+
+
+        </tr>
+        <tr class="headings">
+            <th class="column-title"></th>
+            <th class="column-title"></th>
+            <th class="column-title"> </th>
+
+            @foreach (var jt in jobTypes)
+            {
+                <th class="column-title numberValue">M</th>
+                <th class="column-title numberValue">F</th>
+                <th class="column-title numberValue">Total</th>
+            }
+
+
+            <th class="column-title"></th>
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var farmIds in uniqueFarms)
+        {
+            var farm = Model.JobCreationList.Where(m => m.farmId == farmIds).First();
+
+
+            <tr>
+                @{
+                    var jl = Model.JobCreationList.Where(M => M.farmId == farmIds).ToList();
+                    var total = jl.Sum(m => m.male) + jl.Sum(m => m.female);
+                }
+
+                <td class="column-title">@(i++)</td>
+                <td class="column-title">
+                    @if (lookup.ContainsKey(farm.upin.Woreda()))
+                    {
+                        <p>@lookup[farm.upin.Woreda()]</p>
+                    }
+                    else
+                    {
+                        <p>@farm.upin.Woreda()</p>
+                    }
+                </td>
+                <td class="column-title">@farm.name</td>
+                @foreach (var jt in jobTypes)
+                {
+                    var job = Model.JobCreationList.Where(m => m.farmId == farmIds && m.profession == jt).First();
+                    <td class="column-title numberValue">@job.male</td>
+                    <td class="column-title numberValue">@job.female</td>
+                    <td class="column-title numberValue">@(job.male + job.female)</td>
+
+                }
+                <td class="column-title numberValue">@total</td>
+
+            </tr>
+
+
+
+
+        }
+
+
+        @if (Model.JobCreationList.Count() > 0)
+        {
+            var f = Model.JobCreationList.ToList();
+            var total2 = f.Sum(m => m.male) + f.Sum(m => m.female);
+            <tr>
+                <td class="column-title"></td>
+                <td class="column-title">Total</td>
+                <td class="column-title"></td>
+                @foreach (var jt in jobTypes)
+                {
+                    var job = Model.JobCreationList.Where(m => m.profession == jt).ToList();
+                    <td class="column-title numberValue">@job.Sum(m => m.male)</td>
+                    <td class="column-title numberValue">@job.Sum(m => m.female)</td>
+                    <td class="column-title numberValue">@(job.Sum(m => m.male) + job.Sum(m => m.female))</td>
+
+                }
+                <td class="column-title numberValue">@total2</td>
+            </tr>
+                }
+  
+
+
+
+
+        
+    </tbody>
+</table>

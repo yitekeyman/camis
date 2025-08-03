@@ -1,0 +1,6 @@
+[
+    {"id":1, "name": "Road"},
+    {"id":2, "name": "Rail"},
+    {"id":3, "name": "Water"},
+    {"id":4, "name": "Air"}
+]

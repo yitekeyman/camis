@@ -1,0 +1,34 @@
+[{
+  "id": 1,
+  "name": ""
+}, {
+  "id": 2,
+  "name": "Kilometer"
+}, {
+  "id": 3,
+  "name": "Hectar"
+}, {
+  "id": 4,
+  "name": "Square Meter"
+}, {
+  "id": 5,
+  "name": "ETB"
+}, {
+  "id": 6,
+  "name": "Ton"
+}, {
+  "id": 7,
+  "name": "Liter"
+}, {
+  "id": 8,
+  "name": "Quntal"
+}, {
+  "id": 9,
+  "name": "Bundle"
+}, {
+  "id": 10,
+  "name": "Kilogram"
+}, {
+  "id": 11,
+  "name": "USD"
+}]

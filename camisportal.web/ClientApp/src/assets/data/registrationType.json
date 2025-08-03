@@ -1,0 +1,38 @@
+[
+  {
+    "id":1,
+    "name":"Commercial Registration"
+  },
+  {
+    "id":1,
+    "name":"Commercial Registration"
+  },
+  {
+    "id":2,
+    "name":"Business License"
+  },
+  {
+    "id":3,
+    "name":"Investment Permit"
+  },
+  {
+    "id":4,
+    "name":"TIN"
+  },
+  {
+    "id":5,
+    "name":"ID or Passport"
+  },
+  {
+    "id":6,
+    "name":"VAT Certificate"
+  },
+  {
+    "id":7,
+    "name":"Resident Permit (Foreign)"
+  },
+  {
+    "id":8,
+    "name":"Work Permit (Foreign)"
+  }
+]

@@ -1,0 +1,101 @@
+<section class="min">
+    <div class="investorBids-container">
+        
+        <div class="investorBids-body min-body" *ngIf="loading==false">
+            <div class="x_panel col-md-12">
+                <div class="x_title">
+                    <h4>System Users</h4>
+                    <div class="panel_toolbox">
+                            <a routerLink="/admin/editUser" class="btn btn-sm btn-camis" *ngIf="selectedRole==2"><i class="fa fa-plus"></i> Add User</a>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                
+                <div class="x_content">
+                    <table class="table camis-table table-striped" *ngIf="usersList?.length > 0; else no_result">
+                        <thead>
+                        <tr >
+                            <th>FullName</th>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Phone No</th>
+                            <th>Email</th>
+                            <th>Region</th>
+                            <th class="align-center">Manage</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let user of usersList">
+                            <td>{{user.fullName}}</td>
+                            <td>{{user.userName}}</td>
+                            <td>{{user.role}}</td>
+                            <td>{{user.phoneNo}}</td>
+                            <td>{{user.eMail}}</td>
+                            <td>{{user.region}}</td>
+                            <td class="align-center"><div class="btn-group">
+                                <button class="btn btn-sm btn-camis" (click)="editUser(user.userName)" [disabled]="!(selectedRole==2)"><i class="fa fa-edit" ></i> Edit</button>
+                                <button class="btn btn-sm btn-primary" (click)="resetPass(user)" [disabled]="!(selectedRole==2)"><i class="fa fa-unlock"></i> Reset Pass</button>
+                                <button class="btn btn-sm btn-warning" *ngIf="user.active==true" (click)="deactivate(user.userName)" [disabled]="!(selectedRole==2)"><i class="fa fa-close"></i> DEACTIVATE</button>
+                                <button class="btn btn-sm btn-dark" *ngIf="user.active==false" (click)="activate(user.userName)" [disabled]="!(selectedRole==2)"><i class="fa fa-check"></i> ACTIVATE</button>
+                            </div> </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <ng-template #no_result>
+                        <div class="align-center">
+                            <i class="fa fa-info-circle no-data"></i>
+                            <h4>There is no available user</h4>
+                            
+                        </div>
+                    </ng-template>
+                </div>
+                
+            </div>
+
+            <!--<div class="panel col-md-12">-->
+                <!--<div class="x_title">-->
+                    <!--<h3>Investors</h3>-->
+                <!--</div>-->
+
+                <!--<div class="panel-body">-->
+                    <!--<table class="table camis-table table-striped">-->
+                        <!--<thead>-->
+                        <!--<tr >-->
+                            <!--<th>FullName</th>-->
+                            <!--<th>Username</th>-->
+                            <!--<th>Phone No</th>-->
+                            <!--<th>Email</th>-->
+                            <!--<th class="align-center">Manage</th>-->
+                        <!--</tr>-->
+                        <!--</thead>-->
+                        <!--<tbody>-->
+                        <!--<tr *ngFor="let investor of investors">-->
+                            <!--<td>{{investor.fullname}}</td>-->
+                            <!--<td>{{investor.username}}</td>-->
+                            <!--<td>{{investor.phoneNo}}</td>-->
+                            <!--<td>{{investor.email}}</td>-->
+                            <!--<td class="align-center"><div class="btn-group">-->
+                                <!--<button class="btn btn-sm btn-camis"><i class="fa fa-eye"></i> Detail</button>-->
+                            <!--</div> </td>-->
+                        <!--</tr>-->
+                        <!--</tbody>-->
+                    <!--</table>-->
+                <!--</div>-->
+
+            <!--</div>-->
+        </div>
+
+        <div class="investorBids-body min-body" *ngIf="loading==true">
+            <div class="align-center bid-loader" >
+                <i class="fa fa-circle-o faa-burst animated"></i>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<div class="modal fade " id="updatePass" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <app-reset-pass *ngIf="selectedUser" [userModel]="selectedUser" ></app-reset-pass>
+    </div>
+</div>

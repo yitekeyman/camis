@@ -1,0 +1,37 @@
+<div class="modal-content">
+    <div class="modal-header">
+
+        <button type="button" class="close" (click)="closeForm()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <h5 class="modal-title ">Update User Information</h5>
+    </div>
+    <form [formGroup]="editForm" (submit)="editUser()" id="editForm">
+        <div class="modal-body has-scroll" >
+            <div class="input-form" >
+                <label>Full Name:</label>
+                <input type="text" class="form-control"  id="edit_user_first_name" formControlName="fullname" [(ngModel)]="editModel.fullName"/>
+            </div>
+            <div class="input-form">
+                <label>Phone No:</label>
+                <input type="text" class="form-control"  id="edit_user_phone_no" formControlName="phoneno" [(ngModel)]="editModel.phoneNo">
+            </div>
+            <div class="input-form">
+                <label>User Role:</label>
+                <select class="form-control" formControlName="role"   id="edit_user_role" [(ngModel)]="editModel.roles" multiple>
+                    <option *ngFor="let role of ROLES" [value]="role.name" >{{role.name}}</option>
+                </select>
+            </div>
+            <div class="input-form">
+                <label>Username:</label>
+                <input type="text" class="form-control"  placeholder="Username" id="username" formControlName="username" [(ngModel)]="editModel.userName">
+            </div>
+        </div>
+        <div class="modal-footer ">
+            <div class="input-form align-right">
+                <button class="btn btn-default btn-sm" type="reset">Reset</button>
+                <button class="btn btn-cis btn-sm" type="submit" [disabled]="!editForm.valid">Update</button>
+            </div>
+        </div>
+    </form>
+</div>

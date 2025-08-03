@@ -1,0 +1,16 @@
+[{
+  "id":1,
+  "name":"Public"
+},
+  {
+    "id":2,
+    "name":"WebMaster"
+  },
+  {
+    "id":3,
+    "name":"PromotionManager"
+  },
+  {
+    "id":4,
+    "name":"ApplicationEvaluator"
+  }]

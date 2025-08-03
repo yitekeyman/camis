@@ -1,0 +1,244 @@
+<div class=""  *ngIf="loading==false">
+    <div class="x_panel">
+        <div class="" *ngIf="promotion != null">
+            <div class="timeline-header">
+
+                <p class="timeline-time-frame align-right">{{promotion.applyDateFrom | date:'MMM dd/yyyy'}}</p>
+
+
+                <h3>{{promotion.title}}</h3>
+                <h6>At {{regions}}({{promotion.region}}) Region  </h6>
+
+            </div>
+            <div class="timeline-dsc">
+                <div class="x_content">
+                    <table class="pd_table">
+                        <tbody>
+                        <tr>
+                            <td><strong>Current Status: </strong>{{status}}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bid Reference Number: </strong> {{promotion.promotionRef}}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Deadline:  </strong>{{promotion.applyDateTo | date:'MMM dd/yyyy'}}</td>
+                        </tr>
+                        <tr>
+                            <td> <strong>Investment Type: </strong><span *ngFor="let invType of investmentTypes; index as i">{{invType}}, </span></td>
+                        </tr>
+                        <tr>
+                            <td> <p>{{promotion.summery}}</p>
+                                <p>{{promotion.description}}</p></td>
+                        </tr>
+                        <tr>
+                            <td>  <strong>Submission Address: </strong><br/>
+                                {{promotion.physicalAddress}} </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div *ngIf="proUnit.length > 0">
+                    <div class="x_content" *ngFor="let pUnit of proUnit; index as x">
+                        <div class="x_title">
+                            <h3>Lot {{x+1}} ({{pUnit.landData.upins[0]}})  <small *ngIf="pUnit.landData.isAgriculturalZone == 'No'"> The land is not in agricultural zone</small>{{pUnit.isApply}}<small *ngIf="pUnit.landData.isAgriculturalZone == 'Yes'"> The land is in agricultural zone</small></h3>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="col-md-12" *ngIf="pUnit.id!=null && promotion.id!=null">
+                                <app-map [promoUnitID]="pUnit.id" [promoID]="promotion.id"></app-map>
+                            </div>
+                            <div class="col-md-12" *ngIf="pUnit.pictures.length > 0">
+                                    <ul class="templatemo-project-gallery">
+                                        <li class="col-lg-3 col-md-3 col-sm-3  gallery gallery-graphic" *ngFor="let img of pUnit.pictures">
+                                            <a class="colorbox" [href]="img" data-group="pUnit.landData.upins[0]" (click)="onImageClick()">
+                                                <div class="templatemo-project-box">
+
+                                                    <img [src]="img" class="img-responsive" alt="gallery" />
+
+                                                    <div class="project-overlay">
+
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                            </div>
+                        </div>
+                        <div class="x_content">
+                            <ul class="land_details">
+                                <li>
+                                    <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                    <div class="land_details_wrapper">
+                                        <h4>UPIN</h4>
+                                        <div class="land_details_element">
+                                            <span>{{pUnit.landData.upins[0]}}</span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                    <div class="land_details_wrapper">
+                                        <h4>Land Holder:</h4>
+                                        <div class="land_details_element">
+                                            <span>{{pUnit.landData.holdership}}</span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+
+                                    <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                    <div class="land_details_wrapper">
+                                        <h4>Area:</h4>
+                                        <div class="land_details_element">
+                                            <span>{{getArea(pUnit.landData.area)}}</span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                    <div class="land_details_wrapper">
+                                        <h4>Location:</h4>
+                                        <div class="land_details_element">
+                                            <span><strong>Centroid_X: </strong>{{pUnit.landData.centroidX}}</span><br>
+                                            <span><strong>Centroid_Y: </strong>{{pUnit.landData.centroidY}}</span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                    <div class="land_details_wrapper">
+                                        <h4>Accessible By:</h4>
+                                        <div class="land_details_element">
+                                            <span *ngFor="let acs of pUnit.landData.accessablity">{{acs}}<br></span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                    <div class="land_details_wrapper">
+                                        <h4>Agro-Echology Zone:</h4>
+                                        <div class="land_details_element">
+                                            <span *ngFor="let zone of pUnit.landData.agroEchologyZone"><strong>{{zone.agroType}}: </strong>{{zone.result}}<br></span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                    <div class="land_details_wrapper">
+                                        <h4>Land Suitable For:</h4>
+                                        <div class="land_details_element">
+                                            <span *ngFor="let inv of pUnit.landData.investmentType">{{inv}}<br></span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                    <div class="land_details_wrapper">
+                                        <h4>Existing Land Use:</h4>
+                                        <div class="land_details_element">
+                                            <span *ngFor="let lu of pUnit.landData.existLandUse">{{lu}}<br></span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                    <div class="land_details_wrapper">
+                                        <h4>Moisture Source:</h4>
+                                        <div class="land_details_element">
+                                            <span>{{pUnit.landData.moistureSource}}</span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                    <div class="land_details_wrapper">
+                                        <h4>Topography:</h4>
+                                        <div class="land_details_element">
+                                            <span *ngFor="let top of pUnit.landData.topography"><strong>{{top.topographyType}}: </strong>{{top.result}} <br></span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                    <div class="land_details_wrapper">
+                                        <h4>Soil Chemical and Physical Properties:</h4>
+                                        <div class="land_details_element">
+                                            <span class="ld_element" *ngFor="let st of pUnit.landData.soilTests"><strong>{{st.testType}}: </strong>{{st.result}}<br></span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                    <div class="land_details_wrapper">
+                                        <h4>Climatology:</h4>
+                                        <table class="table table-striped camis-table">
+                                            <thead>
+                                            <tr>
+                                                <th class="column-title">Month</th>
+                                                <th class="column-title">Precipitation (cm)</th>
+                                                <th class="column-title">Mean Minimum Temperature (°c)</th>
+                                                <th class="column-title">Mean Maximum Temperature (°c)</th>
+                                                <th class="column-title">Average Temperature (°c)</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr *ngFor="let c of pUnit.landData.climate">
+                                                <td>{{c.month}}</td>
+                                                <td>{{c.precipitation}} cm</td>
+                                                <td>{{c.temp_low}} °c</td>
+                                                <td>{{c.temp_high}} °c</td>
+                                                <td>{{c.temp_avg}} °c</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                    <div class="land_details_wrapper">
+                                        <h4>Request For Proposal Documents:</h4>
+                                        <div class="attached-bid-docs" *ngFor="let doc of pUnit.documents">
+                                            <ul>
+                                                <li class="bid-data">
+                                                    <a (click)="openDoc($event, doc, promotion.id, pUnit.id)">  <i class="fa fa-paperclip"></i>  {{doc.docRef || 'Open Document'}}</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="align-right">
+                            <div class="timeline-dsc-btn btn-group">
+                               
+                                <button class="btn btn-sm btn-camis" (click)="participateBid(promotion.id, pUnit.id)" *ngIf="promotion.status == 2 && pUnit.isApply==false">Apply for this opportunity</button>
+                                <button class="btn btn-sm btn-default" (click)="seeApplication(promotion.id, pUnit.id, investor_id)" *ngIf="pUnit.isApply!=false">You Already Apply, See Details</button>
+                               
+                            </div>
+                        </div> 
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="" *ngIf="loading==true">
+    <div class="align-center bid-loader" >
+        <i class="fa fa-circle-o faa-burst animated"></i>
+    </div>
+
+</div>
+<div id="view-document-dialog" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <iframe id="docIframe" class="has-scroll">
+
+            </iframe>
+        </div>
+    </div>
+
+</div>

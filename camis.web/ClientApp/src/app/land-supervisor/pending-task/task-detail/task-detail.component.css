@@ -1,0 +1,43 @@
+.landBank_panel{
+    min-height: 100vh;
+    height: auto!important;
+}
+.taskMap_breaker{
+    border-right: 1px solid #E6E9ED;
+    min-height: 88vh;
+}
+.task-Description-area{
+    border: 1px solid #E6E9ED;
+    padding: 5px;
+}
+.task-detail-LButtons{
+    float: left;
+}
+.task-detail-RButtons{
+    float: right;
+}
+.text-nowrap{
+    min-width: 200px;
+}
+.modal-header{
+    border-bottom: 0!important;
+}
+.modal-footer{
+    border-top: 0!important;
+}
+.modal-body {
+    padding-top: 0!important;
+}
+.md-textarea{
+    border: 1px solid #E6E9ED!important;
+    
+}
+.approve-modal{
+    text-align: center;
+}
+@media (min-width: 768px){
+    .modal-dialog {
+        width: 485px!important;
+
+    }
+}

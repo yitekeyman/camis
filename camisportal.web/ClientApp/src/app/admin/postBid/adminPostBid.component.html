@@ -1,0 +1,628 @@
+<section class="min" id="postBid">
+    <div class="investorBids-container">
+        <div class="has-bottom-index align-center">
+            <div class="investorBids-header min-header align-center">
+                <h2>{{title}}</h2>
+            </div>
+        </div>
+        <div class="investorBids-body min-body">
+            <div id="wizard" class="form_wizard wizard_horizontal">
+                <ul class="wizard_steps">
+                    <li>
+                        <a  [ngClass]="step1Class">
+                            <span class="step_no">1</span>
+                            <span class="step_descr">
+                                              Step 1<br />
+                                              <small>Promotion Details</small>
+                                          </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a  [ngClass]="step2Class">
+                            <span class="step_no">2</span>
+                            <span class="step_descr">
+                                              Step 2<br />
+                                              <small>Promotion Land Details</small>
+                                          </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a  [ngClass]="step3Class">
+                            <span class="step_no">3</span>
+                            <span class="step_descr">
+                                              Step 3<br />
+                                              <small>Evaluation Team </small>
+                                          </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a  [ngClass]="step4Class">
+                            <span class="step_no">4</span>
+                            <span class="step_descr">
+                                              Step 4<br />
+                                              <small>Evaluation Criteria </small>
+                                          </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div id="step-1" class="col-md-10 col-md-offset-1" *ngIf="step == 1">
+                <div class="panel">
+                    <form [formGroup]="bidRegForm" (submit)="savePromotion()">
+                        <div class="panel-body has-scroll">
+                            <div class="for-group bid-registration col-md-6">
+                                <label>Title: *  <small class="form-text help" *ngIf="!bidRegForm.controls.bidTitle.valid && bidRegForm.controls.bidTitle.touched">This field is required.</small></label>
+                                <input type="text" class="form-control" placeholder="Title" formControlName="bidTitle" [(ngModel)]="promotionModel.title" >
+                               
+                            </div>
+                            <div class="form-group bid-registration  col-md-6">
+                                <label>Bid Reference No: * <small class="form-text help" *ngIf="!bidRegForm.controls.BidRefNo.valid && bidRegForm.controls.BidRefNo.touched">This field is required.</small></label>
+                                <input type="text" class="form-control" placeholder="Bid Reference No " formControlName="BidRefNo" [(ngModel)]="promotionModel.promotionRef">
+                            </div>
+                            <div class="form-group bid-registration  col-md-6">
+                                <label>Bid Submission Start Date: * <small class="form-text help" *ngIf="!bidRegForm.controls.bidStartDate.valid && bidRegForm.controls.bidStartDate.touched">Invalid Start Date.</small> </label>
+                                <input type="date" id="startDate" min="" class="form-control" placeholder="Bid Submission Start Date" formControlName="bidStartDate" [(ngModel)]="promotionModel.applyDateFrom">
+                            </div>
+                            <div class="form-group bid-registration  col-md-6">
+                                <label>Bid Submission Deadline: * <small class="form-text help" *ngIf="!bidRegForm.controls.bidDeadline.valid && bidRegForm.controls.bidDeadline.touched">Invalid Submission Date.</small></label>
+                                <input type="date" id="submissionDate" min="" class="form-control" placeholder="Bid Submission Deadline" formControlName="bidDeadline" [(ngModel)]="promotionModel.applyDateTo">
+                            </div>
+                            <div class="form-group bid-registration col-md-6">
+                                <label>Submission Physical Address: * <small class="form-text help" *ngIf="!bidRegForm.controls.physicalAddress.valid && bidRegForm.controls.physicalAddress.touched">This field is required.</small></label>
+                                <textarea  class="form-control" placeholder="Submission Physical Address" rows="4" formControlName="physicalAddress" [(ngModel)]="promotionModel.physicalAddress"></textarea>
+                            </div>
+                            <div class="form-group select-input col-md-6">
+                                <label>Investment Type: * <small class="form-text help" *ngIf="!bidRegForm.controls.investmentTypes.valid && bidRegForm.controls.investmentTypes.touched">This field is required.</small></label>
+                                <select class="form-control" formControlName="investmentTypes" [(ngModel)]="promotionModel.investmentTypes" multiple>
+                                   
+                                    <option value="1">Large Scale Agriculture</option>
+                                    <option value="2">Horticulture</option>
+                                    <option value="3">Livestock Farming</option>
+                                    <option value="4">Forestry</option>
+                                </select>
+                            </div>
+                            <div class="form-group bid-registration col-md-12">
+                                <label>Bid Summery: * <small class="form-text help" *ngIf="!bidRegForm.controls.bidSummery.valid && bidRegForm.controls.bidSummery.touched">This field is required.</small></label>
+                                <textarea class="form-control" placeholder="Bid Summery" rows="4" formControlName="bidSummery" [(ngModel)]="promotionModel.summery"></textarea>
+                            </div>
+                            <div class="form-group bid-registration col-md-12">
+                                <label>Bid Details: * <small class="form-text help" *ngIf="!bidRegForm.controls.bidDetails.valid && bidRegForm.controls.bidDetails.touched">This field is required.</small></label>
+                                <textarea class="form-control has-scroll" placeholder="Bid Details" rows="8" formControlName="bidDetails" [(ngModel)]="promotionModel.description"></textarea>
+                            </div>
+                            <div class="form-group bid-registration col-md-6">
+                                <label>Document Reference No: * <small class="form-text help" *ngIf="!bidRegForm.controls.docRef.valid && bidRegForm.controls.docRef.touched">This field is required.</small></label>
+                                <input type="text" class="form-control" placeholder="Document Reference No" formControlName="docRef" [(ngModel)]="promotionDocModel.docRef">
+                            </div>
+                            <div class="form-group col-md-6 ">
+                                <label>Upload Document: * <small class="form-text help" *ngIf="promotionDocModel.data=='' && promotionDocModel.mime==''">This field is required.</small></label>
+                                <div class="input-group" *ngIf="promotionDocModel.data!='' && promotionDocModel.mime!=''">
+                                    <div  class="form-control">
+                                        <a (click)="openDoc($event, promotionDocModel, promotionID, promotionUnitID)">
+                                        <i class="fa fa-paperclip"></i>  {{promotionDocModel.desc}}
+                                        </a>
+                                    </div>
+                                    <span class="input-group-btn">
+                                              <button type="button" class="btn btn-camis" (click)="changeDoc()">Change</button>
+                                          </span>
+                                </div>
+                                <div class="input-group" *ngIf="promotionDocModel.data=='' && promotionDocModel.mime==''">
+                                    <input type="text" class="form-control"  disabled="disabled" placeholder="Upload Bid Document" id="uploadBidDocLabel">
+                                    <span class="input-group-btn">
+                                              <button type="button" class="btn btn-camis" id="uploadBidDocTrigger" (click)="bidDocUploadTrigger()"><i class="fa fa-binoculars"></i></button>
+                                          </span></div>
+                                <input type="file" id="uploadBidDoc" style="display: none;" (change)="handleDocumentUpload($event)" >
+                            </div>
+                        </div>
+
+                        <div class="panel-footer">
+                            <div class="form-group align-right">
+                                <button type="reset" class="normal  btn-camis-default">RESET</button>
+                                <button type="submit" class="normal  btn-camis" [disabled]="!(bidRegForm.valid && promotionDocModel.data!='' && promotionDocModel.mime!='')">Next</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div id="step-2" class="col-md-10 col-md-offset-1" *ngIf="step == 2">
+                <div class="panel">
+                    <form [formGroup]="promotionParcelForm" (submit)="savePromotionParcel()">
+                        <div class="panel-body has-scroll">
+                            <div class="col-md-6">
+                                <div class="input-group top_search">
+                                    <input type="text"  class="form-control"  placeholder="Search Parcel By UPIN" id="parcelUPIN" formControlName="parcelUPIN" [(ngModel)]="promotionUnit.landUPIN"/>
+                                    <span class="input-group-btn">
+                                      <button type="button" class="btn btn-primary" (click)="getParcelData()"><i class="fa fa-search"></i></button>
+                                </span>
+                                </div>
+                                <div class="form-group" *ngIf="landData != null">
+                                    <ul class="land_details">
+                                        <li>
+                                            <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                            <div class="land_details_wrapper">
+                                                <h4>UPIN</h4>
+                                                <div class="land_details_element">
+                                                    <span>{{landData.upins[0]}}</span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                            <div class="land_details_wrapper">
+                                                <h4>Land Holder:</h4>
+                                                <div class="land_details_element">
+                                                    <span>{{landData.holdership}}</span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+
+                                            <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                            <div class="land_details_wrapper">
+                                                <h4>Area:</h4>
+                                                <div class="land_details_element">
+                                                    <span>{{getArea(landData.area)}}</span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                            <div class="land_details_wrapper">
+                                                <h4>Location:</h4>
+                                                <div class="land_details_element">
+                                                    <span><strong>Centroid_X: </strong>{{landData.centroidX}}</span><br>
+                                                    <span><strong>Centroid_Y: </strong>{{landData.centroidY}}</span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                            <div class="land_details_wrapper">
+                                                <h4>Accessible By:</h4>
+                                                <div class="land_details_element">
+                                                    <span *ngFor="let acs of landData.accessablity">{{acs}}<br></span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                            <div class="land_details_wrapper">
+                                                <h4>Agro-Echology Zone:</h4>
+                                                <div class="land_details_element">
+                                                    <span *ngFor="let zone of landData.agroEchologyZone"><strong>{{zone.agroType}}: </strong>{{zone.result}}<br></span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                            <div class="land_details_wrapper">
+                                                <h4>Land Suitable For:</h4>
+                                                <div class="land_details_element">
+                                                    <span *ngFor="let inv of landData.investmentType">{{inv}}<br></span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                            <div class="land_details_wrapper">
+                                                <h4>Existing Land Use:</h4>
+                                                <div class="land_details_element">
+                                                    <span *ngFor="let lu of landData.existLandUse">{{lu}}<br></span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                            <div class="land_details_wrapper">
+                                                <h4>Moisture Source:</h4>
+                                                <div class="land_details_element">
+                                                    <span>{{landData.moistureSource}}</span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                            <div class="land_details_wrapper">
+                                                <h4>Topography:</h4>
+                                                <div class="land_details_element">
+                                                    <span *ngFor="let top of landData.topography"><strong>{{top.topographyType}}: </strong>{{top.result}} <br></span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                            <div class="land_details_wrapper">
+                                                <h4>Soil Chemical and Physical Properties:</h4>
+                                                <div class="land_details_element">
+                                                    <span class="ld_element" *ngFor="let st of landData.soilTests"><strong>{{st.testType}}: </strong>{{st.result}}<br></span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                       
+                                        
+                                    </ul>
+                                </div>
+                                <div class="form-group ">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div #gmap style="width:100%;height:400px">
+                                    <div class="map-error">
+                                        <i class="fa fa-cloud faa-burst animated"></i>
+                                        <h4>Internet Connection Error</h4>
+                                        <p>Sorry! I can't load a map</p>
+                                    </div>
+                                </div>
+                                <div *ngIf="landData != null">
+                                <ul class="land_details">
+                                    <li>
+                                        <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                                        <div class="land_details_wrapper">
+                                            <h4>Climatology:</h4>
+                                            
+                                        </div>
+                                    </li>
+                                </ul>
+                                <div class="">
+                                    <table class="table table-striped camis-table">
+                                        <thead>
+                                        <tr>
+                                            <th class="column-title">Month</th>
+                                            <th class="column-title">Precipitation (cm)</th>
+                                            <th class="column-title">Mean Minimum Temperature (°c)</th>
+                                            <th class="column-title">Mean Maximum Temperature (°c)</th>
+                                            <th class="column-title">Average Temperature (°c)</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr *ngFor="let c of landData.climate">
+                                            <td>{{c.month}}</td>
+                                            <td>{{c.precipitation}} cm</td>
+                                            <td>{{c.temp_low}} °c</td>
+                                            <td>{{c.temp_high}} °c</td>
+                                            <td>{{c.temp_avg}} °c</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="col-md-3 image" *ngFor="let img of promotionUnit.pictures; index as i">
+                                    <div class="img-close">
+                                        <a [routerLink]="" (click)="delImage(i)">X</a>
+                                    </div>
+                                    <img [src]="'data:'+img.mime+';base64,'+img.data" class="img avatar"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <div class="form-group align-right">
+                                <button type="button" class="normal btn-camis"  (click)="imgUploadTrigger()"><i class="fa fa-file-image-o"></i>  Add Promotion Image</button>
+
+                                <input type="file" id="uploadImageDoc" style="display: none;" accept="image/*" (change)="handleImageUpload($event)" >
+                                <button type="button" class="normal  btn-camis-primary" (click)="backToStep1()" >Back</button>
+                                <button type="submit" class="normal  btn-camis"  [disabled]="landData==null">Next</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="step-3" class="col-md-10 col-md-offset-1" *ngIf="step == 3">
+                <div class="panel">
+
+                    <div class="panel-body has-scroll">
+                        <table class="table table-striped" *ngIf="promotionUnit.evalTeams?.length > 0;else noTeam">
+                            <thead>
+                            <tr>
+                                <th>Evaluation Team Name</th>
+                                <th>Team Wight</th>
+                                <th>Team Member</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let team of promotionUnit.evalTeams; index as x">
+                                <td>{{team.teamName}}</td>
+                                <td>{{team.weight}}</td>
+                                <td>
+                                    <span *ngFor="let member of team.members" class="tag">{{member.userName}}  |  {{member.weight}}</span>
+                                </td>
+                                <td class="align-right"><button class="btn btn-sm btn-danger" (click)="removeTeam(x)"><i class="fa fa-minus"></i></button></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        
+                        <ng-template #noTeam>
+                            <div class="col-md-12 align-center">
+                            <h4><span class="fa fa-exclamation-triangle"></span></h4>
+                            <p>There is no team created</p>
+                                <hr>
+                                </div>
+                        </ng-template>
+                        <div class="col-md-6">
+                            <table class="table table-striped camis-table">
+                                <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Fullname</th>
+                                    <th>Username</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let user of users; index as x">
+                                    <td>{{x+1}}</td>
+                                    <td>{{user.fullName}}</td>
+                                    <td>{{user.userName}}</td>
+                                    <td class="align-right"><button class="btn btn-sm btn-camis" (click)="addUser(user,x)"> <i class="fa fa-plus"></i></button> </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <form [formGroup]="evaluationTeamForm">
+                                <table class="table table-striped camis-table">
+                                    <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Fullname</th>
+                                        <th>Username</th>
+                                        <th>Weight</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody formArrayName="members">
+                                    <tr *ngFor="let user of selectedUser; index as x" >
+                                        <td>{{x+1}}</td>
+                                        <td>{{user.fullName}}</td>
+                                        <td>
+                                            {{user.userName}}
+
+                                        </td>
+                                        <td>
+                                            <div class="form-group" [formGroupName]="x">
+                                                <input type="hidden" formControlName="userName">
+                                                <input type="number" min="0" class="form-control" formControlName="weight">
+                                            </div>
+
+                                        </td>
+                                        <td class="align-right"><button class="btn btn-sm btn-danger" (click)="removeUser(user,x)"> <i class="fa fa-minus"></i></button> </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div class="form-group">
+                                    <label>Team Name</label>
+                                    <input type="text" class="form-control" placeholder="Team Name" formControlName="teamName">
+                                </div>
+                                <div class="form-group">
+                                    <label>Team Weight</label>
+                                    <input type="number" class="form-control" placeholder="Team Weight" formControlName="weight">
+                                </div>
+                                <div class="form-group">
+                                    <button class="button lg btn-camis" (click)="saveEvaTeamMember()" [disabled]="!evaluationTeamForm.valid">Add Team </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="panel-footer">
+                        <div class="form-group align-right">
+                            <button type="button" class="normal  btn-camis-primary" (click)="backToStep2()">Back</button>
+                            <button type="submit" class="normal  btn-camis" (click)="saveCommute()">Next</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div id="step-4" class="col-md-10 col-md-offset-1" *ngIf="step == 4">
+                <div class="panel">
+
+                    <div class="panel-body has-scroll">
+                        <table class="table" id="eval-team-parent-table"  *ngIf="promotionUnit.evalTeams?.length > 0; else noEvaluation">
+                            <tbody>
+                            <tr *ngFor="let team of promotionUnit.evalTeams; index as x">
+                                <td>
+                                    <table class="table table-condensed" id="eval-team-table">
+                                        <tbody>
+                                        <tr class="eval-team">
+                                            <td><strong>Team Name: </strong>{{team.teamName}}</td>
+                                            <td><strong>Team Weight: </strong> {{team.weight}}</td>
+                                            <td>
+                                                <span *ngFor="let member of team.members" class="tag">{{member.userName}}  |  {{member.weight}}</span>
+                                            </td>
+                                            <td class="align-right"><button class="btn btn-sm btn-camis" (click)="addEvaluationCriteria(x)"><i class="fa fa-plus"></i> Add Criteria</button></td>
+                                        </tr>
+                                        <tr  *ngFor="let criteria of team.criterion; index as i">
+                                            <td colspan="4" id="eval-criteria-parent">
+                                                <table class="table table-condensed" id="evl-criteria-table">
+                                                    <tr class="eval-criteria">
+                                                        <td><button class="btn btn-sm btn-camis" (click)="addSubCriteria(x,i)"><i class="fa fa-plus"></i></button></td>
+                                                        <td><strong>Criteria Name: </strong>{{criteria.name}}</td>
+                                                        <td><strong>Max Value: </strong>{{criteria.maxVal}}</td>
+                                                        <td><strong>Weight: </strong>{{criteria.weight}}</td>
+                                                        <td>
+                                                            <p *ngFor="let list of criteria.valueList">
+                                                                <strong>{{list.name}}: </strong>{{list.value}}
+                                                            </p>
+                                                        </td>
+                                                        <td class="align-right"><button class="btn btn-sm btn-danger" (click)="removeCriteria(x,i)"><i class="fa fa-minus"></i></button></td>
+                                                    </tr>
+                                                    <tr  *ngFor="let subCri of criteria.cubCriterion; index as z">
+                                                        <td colspan="6" id="eval-sub-criteria">
+                                                            <table class="table  table-condensed" id="eval-sub-criteria-table">
+                                                                <tr id="eval-sub-criteria-table-tr">
+                                                                    <td><button class="btn btn-sm btn-camis" (click)="addSubCriOne(x,i, z)"><i class="fa fa-plus"></i></button></td>
+                                                                    <td><strong>Criteria Name: </strong>{{subCri.name}}</td>
+                                                                    <td><strong>Max Value: </strong>{{subCri.maxVal}}</td>
+                                                                    <td><strong>Weight: </strong>{{subCri.weight}}</td>
+                                                                    <td>
+                                                                        <p *ngFor="let list of subCri.valueList">
+                                                                            <strong>{{list.name}}: </strong>{{list.value}}
+                                                                        </p>
+                                                                    </td>
+                                                                    <td class="align-right"><button class="btn btn-sm btn-danger" (click)="removeSubCriteria(x,i,z)"><i class="fa fa-minus"></i></button></td>
+                                                                </tr>
+                                                                <tr *ngFor="let subCriOne of subCri.cubCriterion; index as a">
+                                                                    <td colspan="6" id="eval-sub-criteria">
+                                                                        <table class="table  table-condensed" id="eval-sub-criteria-table">
+                                                                            <tr  id="eval-sub-criteria-table-tr">
+                                                                                <td><button class="btn btn-sm btn-camis" (click)="addSubCriTwo(x,i, z, a)"><i class="fa fa-plus"></i></button></td>
+                                                                                <td><strong>Criteria Name: </strong>{{subCriOne.name}}</td>
+                                                                                <td><strong>Max Value: </strong>{{subCriOne.maxVal}}</td>
+                                                                                <td><strong>Weight: </strong>{{subCriOne.weight}}</td>
+                                                                                <td>
+                                                                                    <p *ngFor="let list of subCriOne.valueList">
+                                                                                        <strong>{{list.name}}: </strong>{{list.value}}
+                                                                                    </p>
+                                                                                </td>
+                                                                                <td class="align-right"><button class="btn btn-sm btn-danger" (click)="removeSubCriOne(x,i,z, a)"><i class="fa fa-minus"></i></button></td>
+                                                                            </tr>
+                                                                            <tr *ngFor="let subCriTwo of subCriOne.cubCriterion; index as b">
+                                                                                <td colspan="6" id="eval-sub-criteria">
+                                                                                    <table class="table  table-condensed" id="eval-sub-criteria-table">
+                                                                                        <tr  id="eval-sub-criteria-table-tr">
+                                                                                            <td><button class="btn btn-sm btn-camis" (click)="addSubCriThree(x,i, z, a, b)"><i class="fa fa-plus"></i></button></td>
+                                                                                            <td><strong>Criteria Name: </strong>{{subCriTwo.name}}</td>
+                                                                                            <td><strong>Max Value: </strong>{{subCriTwo.maxVal}}</td>
+                                                                                            <td><strong>Weight: </strong>{{subCriTwo.weight}}</td>
+                                                                                            <td>
+                                                                                                <p *ngFor="let list of subCriTwo.valueList">
+                                                                                                    <strong>{{list.name}}: </strong>{{list.value}}
+                                                                                                </p>
+                                                                                            </td>
+                                                                                            <td class="align-right"><button class="btn btn-sm btn-danger" (click)="removeSubCriTwo(x,i,z,a,b)"><i class="fa fa-minus"></i></button></td>
+                                                                                        </tr>
+                                                                                        <tr *ngFor="let subCriThree of subCriTwo.cubCriterion; index as c">
+                                                                                            <td colspan="6" id="eval-sub-criteria">
+                                                                                                <table class="table  table-condensed" id="eval-sub-criteria-table">
+                                                                                                    <tr  id="eval-sub-criteria-table-tr">
+                                                                                                        <td><strong>Criteria Name: </strong>{{subCriThree.name}}</td>
+                                                                                                        <td><strong>Max Value: </strong>{{subCriThree.maxVal}}</td>
+                                                                                                        <td><strong>Weight: </strong>{{subCriThree.weight}}</td>
+                                                                                                        <td>
+                                                                                                            <p *ngFor="let list of subCriThree.valueList">
+                                                                                                                <strong>{{list.name}}: </strong>{{list.value}}
+                                                                                                            </p>
+                                                                                                        </td>
+                                                                                                        <td class="align-right"><button class="btn btn-sm btn-danger" (click)="removeSubCriThree(x,i,z,a,b,c)"><i class="fa fa-minus"></i></button></td>
+                                                                                                    </tr>
+
+                                                                                                </table>
+                                                                                            </td>
+                                                                                        </tr>
+
+                                                                                    </table>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <ng-template #noEvaluation>
+                            <div class="col-md-12 align-center">
+                                <h4><span class="fa fa-exclamation-triangle"></span></h4>
+                                <p>There is no Evaluation Criteria</p>
+                            </div>
+                        </ng-template>
+                    </div>
+
+                    <div class="panel-footer">
+                        <div class="form-group align-right">
+                            <button type="button" class="normal  btn-camis-primary" (click)="backToStep3()">Back</button>
+                            <button type="button" class="normal  btn-camis" (click)="postBid()">Finish</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div id="add-criteria-dialog" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">
+                    Criteria
+                </h4>
+            </div>
+            <form [formGroup]="evaluationCriteriaForm" id="registrationForm">
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label>Criteria Name:</label>
+                        <input type="text" class="form-control" placeholder="Criteria Name" formControlName="name">
+                    </div>
+                    <div class="form-group">
+                        <label>Criteria Max-Value:</label>
+                        <input type="number" class="form-control" placeholder="Criteria Max Value" formControlName="maxVal">
+                    </div>
+                    <div class="form-group">
+                        <label>Criteria Weight:</label>
+                        <input type="number" class="form-control" placeholder="Criteria Weight" formControlName="weight">
+                    </div>
+                    <div class="form-group">
+                        <table class="table table-striped camis-table">
+                            <tbody>
+                            <tr>
+                                <th>
+                                    Value List
+                                </th>
+                                <th class="align-right">
+                                    <button class="btn btn-sm btn-camis" (click)="addValueList()"><i class="fa fa-plus"></i></button>
+                                </th>
+                            </tr>
+
+
+                            </tbody>
+                            <tbody formArrayName="valueList">
+                            <tr *ngIf="evaluationCriteriaForm.controls.valueList.controls.length > 0">
+                                <td>Name</td>
+                                <td>Value</td>
+                            </tr>
+                            <tr *ngFor="let valueList of evaluationCriteriaForm.controls.valueList.controls; let a=index" >
+                                <td [formGroupName]="a" colspan="2">
+                                    <div class="col-md-6 col-sm-6 col-xs-6"> <input type="text" class="form-control" formControlName="name"></div>
+                                    <div class="col-md-5 col-sm-5 col-xs-5"><input type="number" class="form-control" formControlName="value"></div>
+                                    <div class="col-md-1 col-sm-1 col-xs-1"><button type="button" class="btn btn-sm btn-warning" (click)="removeValueList(a)"><i class="fa fa-close"></i></button></div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="form-group">
+                        <button type="button" class="normal  btn-camis-default">Reset</button>
+                        <button type="submit" class="normal  btn-camis" (click)="saveValueList()" [disabled]="!evaluationCriteriaForm.valid">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="view-document-dialog" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <iframe id="docIframe" class="has-scroll">
+
+            </iframe>
+        </div>
+    </div>
+
+</div>

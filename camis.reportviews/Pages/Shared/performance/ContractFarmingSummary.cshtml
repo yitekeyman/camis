@@ -1,0 +1,113 @@
+﻿@using intapscamis.camis.domain.Report
+@model intapscamis.camis.domain.Farms.Models.ReportResponseModel
+@{
+    var i = 1;
+    var type = (int)Model.Request.SelectedReportType;
+    var lookup = Model.LocationLookup;
+    var data = Model.ContractFarmSummary;
+}
+
+
+    <table class="table table-striped jambo_table bulk_action" id="tclick">
+        <thead>
+
+            <tr class="headings">
+                <th class="column-title">No</th>
+                <th class="column-title">@Model.AddressType</th>
+                <th class="column-title">Number of <br /> Farms</th>
+                <th class="column-title">Number of <br /> Contractors</th>
+                <th class="column-title title-center" colspan="2">Input</th>
+                <th class="column-title title-center" colspan="2">Output</th>
+            </tr>
+            <tr class="headings">
+                <th class="column-title"></th>
+                <th class="column-title"></th>
+                <th class="column-title"></th>
+                <th class="column-title"></th>
+                <th class="column-title">Type</th>
+                <th class="column-title numberValue">Value</th>
+                <th class="column-title">Type</th>
+                <th class="column-title numberValue">Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var d in data)
+            {
+                <tr>
+                    <td class="column-title" rowspan="@d.RowCount">@(i++)</td>
+                    <td class="column-title" rowspan="@d.RowCount">
+                        @if (lookup.ContainsKey(d.location))
+                        {
+                            <p>@lookup[d.location] (@d.location)</p>
+                        }
+                        else
+                        {
+                            <p>@d.location</p>
+                        }
+                    </td>
+                    <td class="column-title" rowspan="@d.RowCount">
+                        @d.numberOfFarms
+                    </td>
+                    <td rowspan="@d.RowCount">
+                        @d.numberOfContractors
+                    </td>
+                    @{ var h = 0;
+                        @if (h < d.input.Count())
+                        {
+                            <td class="column-title">@d.input[h].tag.Beautify(23)</td>
+                            <td class="column-title">@d.input[h].progress</td>
+                        }
+                        else
+                        {
+                            <td class="column-title"></td>
+                            <td class="column-title"></td>
+                        }
+                        @if (h < d.output.Count())
+                        {
+                            <td class="column-title">@d.output[h].tag.Beautify(24)</td>
+                            <td class="column-title">@d.output[h].progress</td>
+                        }
+                        else
+                        {
+                            <td class="column-title"></td>
+                            <td class="column-title"></td>
+                        }
+
+                    }
+                </tr>
+
+
+
+                @for (int k = 1; k < d.RowCount; k++)
+                {
+                    <tr>
+
+
+                        @if (k < d.input.Count())
+                        {
+                            <td class="column-title">@d.input[k].tag.Beautify(23)</td>
+                            <td class="column-title">@d.input[k].progress</td>
+                        }
+                        else
+                        {
+                            <td class="column-title"></td>
+                            <td class="column-title"></td>
+                        }
+                        @if (k < d.output.Count())
+                        {
+                            <td class="column-title">@d.output[k].tag.Beautify(24)</td>
+                            <td class="column-title">@d.output[k].progress</td>
+                        }
+                        else
+                        {
+                            <td class="column-title"></td>
+                            <td class="column-title"></td>
+                        }
+
+                        
+
+                    </tr>
+                }
+                        }
+            </tbody>
+    </table>

@@ -1,0 +1,96 @@
+<div id="user" class="tab-pane board">
+  <div class="x_panel">
+    <div class="x_title">
+      <h2><i class="fa fa-tasks"></i>&nbsp; {{title}}</h2>
+
+      <div class="clearfix"></div>
+    </div>
+
+    <div class="x_content has-scroll">
+      <div *ngIf="loading" class="align-center"><h2>Loading...</h2></div>
+      <div class="col-md-6">
+        <div *ngIf="!loading && !activeWorkflows.length" class="align-center empty-task">
+          <h2><i class="fa fa-exclamation-circle"></i><br/>
+            <span>No pending tasks.</span>
+          </h2>
+        </div>
+        <section class="panel" *ngIf="!loading && activeWorkflows.length">
+          <div class="x_title">
+            <h2 class="title">Active Work</h2>
+            <div class="clearfix"></div>
+          </div>
+          <div class="panel-body">
+            <div class="dashboard-widget-content">
+
+              <ul class="list-unstyled timeline widget">
+                <li *ngFor="let wf of activeWorkflows">
+                  <div class="block">
+                    <div class="block_content">
+                      <h2 class="title">
+                        <a>{{wf.type.name}} ({{wf.type.description}})</a>
+                      </h2>
+                      <div class="byline">
+                        <span>{{wf.action.timeStr}} </span> by <a> {{wf.action.username}}</a>
+                      </div>
+                      <p class="excerpt" *ngIf="wf.description">
+                        <span class="text-muted">Message from {{wf.action.username}}:</span> {{wf.description}}
+                      </p>
+                      <p class="excerpt" *ngIf="wf.asyncMsgValue$ | async">
+                        {{wf.asyncMsgValue$ | async}}
+                      </p>
+                    </div>
+                    <div class="align-right">
+                      <button class="btn btn-default btn-sm" (click)="open.emit({ workflowId: wf.id, workflowTypeId: wf.typeId, currentState: wf.currentState })">
+                        <i class="fa fa-sign-in"></i>&nbsp; Work On This
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="col-md-6" *ngIf="!loading && involvedWorkflows.length">
+        <section class="panel" >
+          <div class="x_title">
+            <h2 class="title">Activity Log</h2>
+            <div class="clearfix"></div>
+          </div>
+          <div class="panel-body has-scroll">
+            <div class="dashboard-widget-content">
+
+              <ul class="list-unstyled timeline widget">
+                <li *ngFor="let wf of involvedWorkflows">
+                  <div class="block">
+                    <div class="block_content">
+                      <h2 class="title">
+                        <a>{{wf.type.name}} ({{wf.type.description}})</a>
+                      </h2>
+                      <div class="byline">
+                        <span>{{wf.action.timeStr}} </span> by <a> {{wf.action.username}}</a>
+                      </div>
+                      <p class="excerpt" *ngIf="wf.description">
+                        <span class="text-muted">Message from {{wf.action.username}}:</span> {{wf.description}}
+                      </p>
+                      <p class="excerpt" *ngIf="wf.asyncMsgValue$ | async">
+                        {{wf.asyncMsgValue$ | async}}
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+

@@ -1,0 +1,159 @@
+<section id="investorBids" class="min">
+    <div class="investorBids-container">
+        <div class="has-bottom-index align-center">
+            <div class="investorBids-header min-header align-center">
+                <h3>Promotion</h3>
+                <h2>Active Agricultural Investment Opportunity </h2>
+            </div>
+        </div>
+        <div class="investorBids-body min-body" *ngIf="loading==false">
+            <div *ngIf="investorApplication?.length > 0">
+                <div class="bids-activities alert alert-success"  *ngFor="let invApp of investorApplication" >
+
+                    <ul>
+                        <li class="bid-ata">
+                            <i class="fa fa-file-pdf-o" *ngIf="invApp.winnerInvestor!=investorId"></i>
+                            <i class="fa fa-star" *ngIf="invApp.winnerInvestor==investorId"></i>
+                            
+                        </li>
+                        <li class="bid-desc">
+                            <h3><a routerLink="" (click)="getApplication(invApp.promoID, invApp.promotionUnitID, invApp.investorID)">{{invApp.title}}</a></h3>
+                            <h4><span>You Applied for "{{invApp.landUpin}}"</span></h4>
+                            <h5 ><span *ngFor="let app of invApp.application.investmentTypes">{{app}}, </span></h5>
+                            <p class="pull-left"><small>Submitted On: <i>{{invApp.application.applicationTime | date:'MMM dd/yyyy'}}</i></small></p>
+                            <p class="pull-right"><small>DeadLine On: <i>{{invApp.deadline | date:'MMM dd/yyyy'}}</i></small></p>
+                        </li>
+                        <li class="bid-status align-center" *ngIf="invApp.winnerInvestor!=investorId">
+                            <small>Status</small>
+                            <h4>{{invApp.status}}</h4>
+                            <small *ngIf="invApp.investorName!=''">{{invApp.investorName}} is the Winner</small>
+                        </li>
+                        <li class="bid-status align-center" *ngIf="invApp.winnerInvestor==investorId">
+                           <small>Congratulation</small>
+                            <h2>You Won</h2>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+            <div class="x_panel"  *ngIf="activeBids?.length > 0; else no_searchResult">
+                <div class="x_title">
+                    <h4><i class="fa fa-align-justify"></i> Active Opportunities</h4>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="timeline x_content">
+                    <div *ngFor="let promotion of activeBids">
+                        <div *ngIf="promotion.status == 2">
+                            <div class="timeline-block col-md-12">
+
+                                <div class="timeline-bullet"></div>
+                                <div class="col-md-9">
+
+                                    <div class="timeline-header">
+                                        <p class="timeline-time-frame"><strong>DeadLine: </strong> {{promotion.deadline | date:'MMM dd/yyyy'}} (<small>{{promotion.status}}</small>)</p>
+                                        <h3>{{promotion.title}}</h3>
+                                        <h5>At {{promotion.regionName}} Region, {{promotion.address}}</h5>
+                                    </div>
+                                    <div class="timeline-dsc">
+                                        <div class="">
+                                            <p>{{promotion.summary}}</p>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <ul class="templatemo-project-gallery" *ngIf="promotion.picture!=null">
+                                        <li class=" gallery gallery-graphic">
+                                            <a class="colorbox" [href]="'data:' + promotion.picture.mime + ';base64,' + promotion.picture.data" data-group="gallery-graphic" (click)="onImageClick()">
+                                                <div class="templatemo-project-box">
+
+                                                    <img [src]="'data:' + promotion.picture.mime + ';base64,' + promotion.picture.data" class="img-responsive" alt="gallery" />
+
+                                                    <div class="project-overlay">
+
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="col-md-12 align-right ">
+                                    <button class="btn btn-sm btn-camis" (click)="showBidDetails(promotion.promotion_id)">Read More</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <ng-template #no_searchResult>
+                <div class="x_panel">
+                    <div class="align-center x_content">
+                        <i class="fa fa-info-circle no-data"></i>
+                        <h4>There are currently no active investment opportunities posted on this page</h4>
+                        <p>Please visit the page later</p>
+                    </div>
+                </div>
+            </ng-template>
+
+            <div class="x_panel" *ngIf="outdatedBids?.length > 0">
+                <div class="x_title">
+                    <h4> <i class="fa fa-indent"></i>  Outdated Opportunities</h4>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="timeline x_content" >
+                    <div *ngFor="let promotion of outdatedBids">
+                        <div *ngIf="promotion.status > 2">
+                            <div class="timeline-block col-md-12">
+                                <div class="timeline-bullet"></div>
+                                <div class="col-md-9">
+
+                                    <div class="timeline-header">
+                                        <p class="timeline-time-frame"><strong>DeadLine: </strong> {{promotion.deadline | date:'MMM dd/yyyy'}} (<small>{{promotion.status}}</small>)</p>
+                                        <h3>{{promotion.title}}</h3>
+                                        <h5>At {{promotion.regionName}} Region, {{promotion.address}}</h5>
+                                    </div>
+                                    <div class="timeline-dsc">
+                                        <div class="">
+                                            <p>{{promotion.summary}}</p>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <ul class="templatemo-project-gallery" *ngIf="promotion.picture!=null">
+                                        <li class=" gallery gallery-graphic">
+                                            <a class="colorbox" [href]="'data:' + promotion.picture.mime + ';base64,' + promotion.picture.data" data-group="gallery-graphic" (click)="onImageClick()">
+                                                <div class="templatemo-project-box">
+
+                                                    <img [src]="'data:' + promotion.picture.mime + ';base64,' + promotion.picture.data" class="img-responsive" alt="gallery" />
+
+                                                    <div class="project-overlay">
+
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="col-md-12 align-right">
+                                    <button class="btn btn-sm btn-camis" (click)="showBidDetails(promotion.promotion_id)">Read More</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="investorBids-body min-body" *ngIf="loading==true">
+            <div class="align-center bid-loader" >
+                <i class="fa fa-circle-o faa-burst animated"></i>
+            </div>
+
+        </div>
+    </div>
+</section>

@@ -1,0 +1,37 @@
+<div id="user" class="tab-pane board">
+  <div class="x_panel">
+    <div class="x_title">
+      <h2><i class="fa fa-tree"></i>&nbsp; Investment Detail</h2>
+      <ul class="nav navbar-right panel_toolbox">
+        <div class="btn-group" *ngIf="plan">
+          <a
+            class="btn btn-sm btn-default"
+            title="View Printable Paper Form"
+            target="_blank"
+            [href]="urlPrefix + 'Report/PlanForm/' + plan.id"
+          >
+            <i class="fa fa-file-text"></i>&nbsp; Paper Form
+          </a>
+        </div>
+        <div class="btn-group" *ngIf="plan && plan.id">
+          <button
+            class="btn btn-sm btn-default"
+            title="View Progress Reports"
+            (click)="goToReports(plan.id)"
+          >
+            <i class="fa fa-clock-o"></i>&nbsp; View Progress Reports
+          </button>
+        </div>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+
+    <div class="x_content has-scroll">
+      <div *ngIf="loading" class="align-center"><h2>Loading...</h2></div>
+      <div *ngIf="!loading && farm">
+        <app-farm-detail *ngIf="farm" [farm]="farm"></app-farm-detail>
+      </div>
+    </div>
+  </div>
+</div>
+

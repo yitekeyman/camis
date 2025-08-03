@@ -1,0 +1,370 @@
+<section class="min">
+    <div class="investorBids-container">
+        <div class="has-bottom-index align-center">
+            <div class="investorBids-header min-header align-center">
+                <h3>Promotions</h3>
+                <h2>Posted Promotion Information</h2>
+              
+            </div>
+        </div>
+        <div class="investorBids-body min-body" *ngIf="loading==false">
+            <div class="x_panel col-md-12">
+                <div class="x_title">
+                    <h4>List of Promotions</h4>
+
+                    <div class="panel_toolbox" *ngIf="role==3">
+                        <a routerLink="/admin/postBid" class="btn btn-sm btn-camis"><i class="fa fa-plus"></i> Post Promotion</a>
+                        
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="x_content">
+                    <table class="table camis-table table-striped" *ngIf="promotion?.length > 0; else no_result">
+                        <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Title</th>
+                            <th>Region Code</th>
+                            <th>Region Name</th>
+                            <th>Deadline</th>
+                            <th>No of Lands </th>
+                            <th>Status</th>
+                            <th class="align-right">Manage</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr  *ngFor="let promo of promotion; index as i">
+                            <td>{{i+1}}</td>
+                            <td>{{promo.title}}</td>
+                            <td>{{promo.regionCode}}</td>
+                            <td>{{promo.regionName}}</td>
+                            <td>{{promo.deadline | date:'MMM dd/yyyy'}}</td>
+                            <td>{{promo.landUPINS.length}}</td>
+                            <td>{{promo.status}}</td>
+                            <td class="align-right">
+                                <div class="btn-group" style="">
+                                    <div class="btn-group">
+                                    <button data-toggle="dropdown" class="btn btn-sm btn-default dropdown-toggle" type="button" aria-expanded="false"><i class="fa fa-eye"></i> View <span class="caret"></span>
+                                    </button>
+                                    <ul role="menu" class="dropdown-menu" >
+                                        <li *ngFor="let pu of promo.landUPINS"><a [routerLink]="" (click)="viewPromotion(pu.prom_id, promo.promotion_id)">{{pu.upin}}</a>
+                                        </li>
+                                        
+                                    </ul>
+                                    </div>
+                                    <button class="btn btn-sm btn-primary" (click)="addPromotionUnit(promo.promotion_id)"  *ngIf="role==3 && promo.status=='Posted'"><i class="fa fa-plus"></i> Add Lot</button>
+                                   
+                                    <div class="btn-group">
+                                        <button data-toggle="dropdown" class="btn btn-sm btn-default dropdown-toggle" type="button" aria-expanded="false"  *ngIf="role==3 && promo.status=='Posted'" ><i class="fa fa-edit"></i> Edit <span class="caret"></span>
+                                        </button>
+                                        <ul role="menu" class="dropdown-menu" >
+                                            <li *ngFor="let pu of promo.landUPINS"><a [routerLink]="" (click)="editPromotion(pu.prom_id, promo.promotion_id)">{{pu.upin}}</a>
+                                            </li>
+
+                                        </ul>
+                                    </div>
+                                    <button class="btn btn-sm btn-success" (click)="approvePromotion(promo.promotion_id)" *ngIf="role==3 && promo.status=='Posted'"><i class="fa fa-check-square-o"></i> Approve </button>
+                                    <button class="btn btn-sm btn-warning" (click)="cancelPromotion(promo.promotion_id)" *ngIf="role==3 && promo.status!='ProposalAccepted'"><i class="fa fa-trash"></i> Cancel </button>
+                                    <button class="btn btn-sm btn-primary" (click)="closePromotion(promo.promotion_id)"   *ngIf="promo.status=='Approved' && role==3"><i class="fa fa-power-off"></i> Close</button>
+                                    <button class="btn btn-sm btn-primary" (click)="showFormSubmissionDate(promo)"   *ngIf="promo.status=='Closed' && role==3"><i class="fa fa-calendar-o"></i> Post_Bond</button>
+                                  
+                                    <button class="btn btn-sm btn-primary" (click)="finishPromotionEvaluation(promo.promotion_id)"   *ngIf="promo.status=='EvaluationStarted' && role==3"><i class="fa fa-check"></i> Finish Evaluation</button>
+                                    <div class="btn-group">
+                                        <button data-toggle="dropdown" class="btn btn-sm btn-default dropdown-toggle" type="button" aria-expanded="false"  *ngIf="role==3 && promo.status=='EvaluationFinished'" ><i class="fa fa-check-circle-o"></i> Accept <span class="caret"></span>
+                                        </button>
+                                        <ul role="menu" class="dropdown-menu" >
+                                            <li *ngFor="let pu of promo.landUPINS"><a [routerLink]="" (click)="autoAcceptPromotion( promo.promotion_id,pu.prom_id)" *ngIf="pu.status!=6">{{pu.upin}}</a>
+                                            </li>
+
+                                        </ul>
+                                    </div>
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <ng-template #no_result>
+                        <div class="align-center">
+                            <i class="fa fa-info-circle no-data"></i>
+                            <h4>There is no available promotion</h4>
+
+                        </div>
+                    </ng-template>
+                </div>
+
+            </div>
+          
+        </div>
+
+        <div class="investorBids-body min-body" *ngIf="loading==true">
+            <div class="align-center bid-loader" >
+                <i class="fa fa-circle-o faa-burst animated"></i>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<div id="view-promotion-dialog" class="modal fade" role="dialog">
+    <div class="modal-dialog" *ngIf="selectedPromotion">
+        <div class="modal-content col-md-12">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">
+                    Promotion Detial
+                </h4>
+            </div>
+            <div class="modal-body col-md-12">
+                <div class="" role="tabpanel" data-example-id="togglable-tabs">
+                    <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+                        <li class="active"><a href="#promotion_detial" data-toggle="tab">Promotion</a>
+                        </li>
+                        <li><a href="#document" data-toggle="tab">Document</a>
+                        </li>
+                        <li><a href="#evalutionTeam" data-toggle="tab">Evaluation Team</a>
+                        </li>
+                        <li *ngIf="applicantList?.length > 0">
+                            <a href="#evaluation" data-toggle="tab">Evaluation Details</a>
+                        </li>
+                    </ul>
+
+                    <div id="myTabContent" class="tab-content has-scroll" *ngIf="promotionUnit != null">
+                        <div  role="tabpanel" class="tab-pane fade active in" id="promotion_detial" >
+                            <table class="table table-striped" >
+                                <tbody>
+                                <tr>
+                                    <td><strong>Title</strong></td>
+                                    <td>{{promotionUnit.promotion.title}}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Land UPIN</strong></td>
+                                    <td>{{promotionUnit.landUPIN}}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Reference No</strong></td>
+                                    <td>{{promotionUnit.promotion.promotionRef}}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Posted Date:</strong></td>
+                                    <td>{{promotionUnit.promotion.postedOn | date:'MMM dd/yyyy'}}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Started Date:</strong></td>
+                                    <td>{{promotionUnit.promotion.applyDateFrom | date:'MMM dd/yyyy'}}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>End Date</strong></td>
+                                    <td>{{promotionUnit.promotion.applyDateTo | date: 'MMM dd/yyyy'}}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Summery</strong></td>
+                                    <td>{{promotionUnit.promotion.summery}}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Description</strong></td>
+                                    <td>{{promotionUnit.promotion.description}}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Region:</strong></td>
+                                    <td>{{regions}}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Status:</strong></td>
+                                    <td>{{status}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="col-md-3 image" *ngFor="let img of promotionUnit.pictures">
+                                <img [src]="'data:'+img.mime+';base64,'+img.data" class="avatar"/>
+                            </div>
+                        </div>
+                        <div  role="tabpanel" class="tab-pane fade" id="document">
+                            
+                            <iframe id="docIframe" *ngIf="promotionUnit.documents[0].mime=='application/pdf' ||  promotionUnit.documents[0].mime=='image/jpeg' ||  promotionUnit.documents[0].mime=='image/jpg' || promotionUnit.documents[0].mime=='image/png'; else notOpen" [src]="openDoc(promotionUnit.documents[0], promotionUnit.promotion.id, promotionUnit.id)" class="has-scroll">
+                                
+                            </iframe>
+                            <ng-template #notOpen>
+                                <div class="align-center">
+                                    <h4>The File Format is Not Compatible to Open</h4>
+                                    <p>Please click the button below to download</p>
+                                    <button class="btn btn-default" (click)="downloadDoc(promotionUnit.documents[0], promotionUnit.promotion.id, promotionUnit.id)">Download Me</button>
+                                </div>
+                            </ng-template>
+
+                        </div>
+                        <div role="tabpanel" class="tab-pane fade" id="evalutionTeam">
+                            <table class="table" id="eval-team-parent-table"  *ngIf="promotionUnit.evalTeams?.length > 0">
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <strong>Evaluation Team With Criteria</strong>
+                                    </td>
+                                </tr>
+                                <tr *ngFor="let team of promotionUnit.evalTeams; index as x">
+                                    <td>
+                                        <table class="table table-condensed" id="eval-team-table">
+                                            <tbody>
+                                            <tr class="eval-team">
+                                                <td><strong>Team Name: </strong>{{team.teamName}}</td>
+                                                <td><strong>Team Weight: </strong> {{team.weight}}</td>
+                                                <td>
+                                                    <span *ngFor="let member of team.members" class="tag">{{member.userName}}  |  {{member.weight}}</span>
+                                                </td>
+                                            </tr>
+                                            <tr  *ngFor="let criteria of team.criterion; index as i">
+                                                <td colspan="3" id="eval-criteria-parent">
+                                                    <table class="table table-condensed" id="evl-criteria-table">
+                                                        <tr class="eval-criteria">
+                                                            <td style="width: 40%"><strong>Criteria Name: </strong>{{criteria.name}}</td>
+                                                            <td style="width: 15%;"><strong>Max Value: </strong>{{criteria.maxVal}}</td>
+                                                            <td style="width: 15%;"><strong>Weight: </strong>{{criteria.weight}}</td>
+                                                            <td style="width: 30%">
+                                                                <p *ngFor="let list of criteria.valueList">
+                                                                    <strong>{{list.name}}: </strong>{{list.value}}
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                        <tr  *ngFor="let subCri of criteria.cubCriterion; index as z">
+                                                            <td colspan="4" id="eval-sub-criteria">
+                                                                <table class="table  table-condensed" id="eval-sub-criteria-table">
+                                                                    <tr  id="eval-sub-criteria-table-tr">
+                                                                        <td style="width: 40%"><strong>Criteria Name: </strong>{{subCri.name}}</td>
+                                                                        <td style="width: 15%"><strong>Max Value: </strong>{{subCri.maxVal}}</td>
+                                                                        <td style="width: 15%"><strong>Weight: </strong>{{subCri.weight}}</td>
+                                                                        <td style="width: 30%">
+                                                                            <p *ngFor="let list of subCri.valueList">
+                                                                                <strong>{{list.name}}: </strong>{{list.value}}
+                                                                            </p>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr *ngFor="let subCriOne of subCri.cubCriterion; index as a">
+                                                                        <td colspan="4" id="eval-criteria-parent">
+                                                                            <table class="table  table-condensed" id="eval-sub-criteria-table">
+                                                                                <tr   class="eval-criteria">
+                                                                                    <td><strong>Criteria Name: </strong>{{subCriOne.name}}</td>
+                                                                                    <td><strong>Max Value: </strong>{{subCriOne.maxVal}}</td>
+                                                                                    <td><strong>Weight: </strong>{{subCriOne.weight}}</td>
+                                                                                    <td>
+                                                                                        <p *ngFor="let list of subCriOne.valueList">
+                                                                                            <strong>{{list.name}}: </strong>{{list.value}}
+                                                                                        </p>
+                                                                                    </td> 
+                                                                                </tr>
+                                                                                <tr *ngFor="let subCriTwo of subCriOne.cubCriterion; index as b">
+                                                                                    <td colspan="4" id="eval-sub-criteria">
+                                                                                        <table class="table  table-condensed" id="eval-sub-criteria-table">
+                                                                                            <tr  id="eval-sub-criteria-table-tr">
+                                                                                                <td><strong>Criteria Name: </strong>{{subCriTwo.name}}</td>
+                                                                                                <td><strong>Max Value: </strong>{{subCriTwo.maxVal}}</td>
+                                                                                                <td><strong>Weight: </strong>{{subCriTwo.weight}}</td>
+                                                                                                <td>
+                                                                                                    <p *ngFor="let list of subCriTwo.valueList">
+                                                                                                        <strong>{{list.name}}: </strong>{{list.value}}
+                                                                                                    </p>
+                                                                                                </td>
+                                                                                             </tr>
+                                                                                            <tr *ngFor="let subCriThree of subCriTwo.cubCriterion; index as b">
+                                                                                                <td colspan="4" id="eval-criteria-parent">
+                                                                                                    <table class="table  table-condensed" id="eval-sub-criteria-table">
+                                                                                                        <tr   class="eval-criteria">
+                                                                                                            <td><strong>Criteria Name: </strong>{{subCriThree.name}}</td>
+                                                                                                            <td><strong>Max Value: </strong>{{subCriThree.maxVal}}</td>
+                                                                                                            <td><strong>Weight: </strong>{{subCriThree.weight}}</td>
+                                                                                                            <td>
+                                                                                                                <p *ngFor="let list of subCriThree.valueList">
+                                                                                                                    <strong>{{list.name}}: </strong>{{list.value}}
+                                                                                                                </p>
+                                                                                                            </td>
+                                                                                                        </tr>
+
+                                                                                                    </table>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        </table>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div role="tabpanel" class="tab-pane fade" id="evaluation" *ngIf="applicantList?.length > 0">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr><th colspan="5">({{applicantList.length}}) Participated Investors</th><th class="align-right" colspan="2"><button class="btn btn-sm btn-camis" (click)="invEvaluationDetails(promotionUnit.promotion.id, promotionUnit.id)" *ngIf="role==3">View Details</button> </th></tr>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Investor Name</th>
+                                    <th>Nationality</th>
+                                    <th>Submitted On</th>
+                                    <th>Proposed Capital</th>
+                                    <th>Contact Address</th>
+                                    <th *ngIf="promotionUnit.winnerInvestor!=null"></th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let appInvestor of applicantList; index as x">
+                                    <td>{{x+1}}</td>
+                                    <td>{{appInvestor.investorName}}</td>
+                                    <td>{{appInvestor.nationality}}</td>
+                                    <td>{{appInvestor.submittedDate | date: 'MMM dd/yyyy'}}</td>
+                                    <td>{{appInvestor.capital}}</td>
+                                    <td><strong>Name: </strong>{{appInvestor.contact.name}}<br/>
+                                        <strong>Phone: </strong>{{appInvestor.contact.phone}}<br/>
+                                        <strong>Email: </strong>{{appInvestor.contact.email}}
+                                    </td>
+                                    <td *ngIf="promotionUnit.winnerInvestor!=null"> <span  *ngIf="promotionUnit.winnerInvestor==appInvestor.investorID"><i class="fa fa-star"></i>  Winner</span></td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button class="btn-sm btn btn-camis" (click)="evaluateBid(appInvestor.promoID, appInvestor.promotionUnitId, appInvestor.investorID)" *ngIf="role==4 && (promotionUnit.promotion.status == 3 || promotionUnit.promotion.status == 4)">Evaluate</button>
+                                            <button class="btn-sm btn btn-primary" (click)="evaluationDetails(appInvestor.promoID, appInvestor.promotionUnitId, appInvestor.investorID)" *ngIf="role==3">DETAIL</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+</div>
+
+<div id="postBond_dialog" class="modal fade" role="dialog">
+    <div class="modal-dialog" *ngIf="updateProm">
+        <div class="modal-content col-md-12">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">
+                    PostBond Promotion
+                </h4>
+            </div>
+            <div class="modal-body col-md-12">
+               <div class="form-group">
+                   <label>Bid Submission Deadline: </label>
+                   <input type="date" id="submissionDate" min="" class="form-control" placeholder="Bid Submission Deadline"  [(ngModel)]="applyDateTo">
+               </div>
+                <div class="form-group">
+                    <button class="button lg btn-camis" (click)="postBondSubmissionDate()">Update Submission Date</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

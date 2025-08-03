@@ -1,0 +1,291 @@
+<section id="investorBids" class="min">
+    <div class="investorBids-container">
+        <div class="has-bottom-index align-center">
+            <div class="investorBids-header min-header align-center">
+                <h3>Profile</h3>
+                <h2>{{header}}</h2>
+                <p class="lead">
+
+                </p>
+            </div>
+        </div>
+        <div class="investorBids-body min-body" *ngIf="isEdit==true || isRegister==true">
+            <div class="investor-profile col-md-8 col-md-offset-2 x_panel">
+                <div class="x_content">
+                <form [formGroup]="investorProfileForm" (submit)="saveProfile()">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Investor Name: *  
+                                <small class="form-text help" *ngIf="investorProfileForm.controls.investorName.errors!=null &&investorProfileForm.controls.investorName.errors.required!=null && investorProfileForm.controls.investorName.touched">This field is required.</small>
+                                <small class="form-text help" *ngIf="investorProfileForm.controls.investorName.errors!=null &&investorProfileForm.controls.investorName.errors.pattern!=null && investorProfileForm.controls.investorName.touched">Name should be Character Only.</small>
+                            </label>
+                            <input type="text" class="form-control" placeholder="Investor Name" formControlName="investorName" [(ngModel)]="investorModel.Name">
+                        </div>
+                        <div class="form-group">
+                            <label>Nationality: *
+                                <small class="form-text help" *ngIf="investorProfileForm.controls.nationality.errors!=null && investorProfileForm.controls.nationality.errors.required!=null && investorProfileForm.controls.nationality.touched">This field is required.</small>
+                                <small class="form-text help" *ngIf="investorProfileForm.controls.nationality.errors!=null && investorProfileForm.controls.nationality.errors.pattern!=null && investorProfileForm.controls.nationality.touched">Nationality should be Character Only.</small>
+                            </label>
+                            <input type="text" class="form-control" placeholder="Nationality" formControlName="nationality" [(ngModel)]="investorModel.Nationality">
+                        </div>
+                        <div class="form-group">
+                            <label>Operator Type: *  <small class="form-text help" *ngIf="investorProfileForm.controls.operatorType.errors!=null &&(investorProfileForm.controls.operatorType.errors.required!=null||investorProfileForm.controls.operatorType.errors.min!=null) && investorProfileForm.controls.operatorType.touched">This field is required.</small></label>
+                            <select class="form-control" formControlName="operatorType" [(ngModel)]="investorModel.TypeId">
+                                <option value="0">Select Investor Type</option>
+                                <option value="1">Person</option>
+                                <option value="2">General Partnership</option>
+                                <option value="3">Limited Partnership</option>
+                                <option value="4">Private Limited Company</option>
+                                <option value="5">Share Company</option>
+                                <option value="6">Joint Venture</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Operator Origin: *  <small class="form-text help" *ngIf="investorProfileForm.controls.operatorOrigin.errors!=null && (investorProfileForm.controls.operatorOrigin.errors.required!=null || investorProfileForm.controls.operatorOrigin.errors.min!=null) && investorProfileForm.controls.operatorOrigin.touched">This field is required.</small></label>
+                            <select class="form-control" formControlName="operatorOrigin" [(ngModel)]="investorModel.OriginId">
+                                <option value="0">Select Origin Type</option>
+                                <option value="1">Ethiopian</option>
+                                <option value="2">Foreign</option>
+                                <option value="3">Ethiopian Origin</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Capital: *
+                                <small class="form-text help" *ngIf="investorProfileForm.controls.capital.errors!=null && investorProfileForm.controls.capital.errors.required!=null && investorProfileForm.controls.capital.touched">This field is required.</small>
+                                <small class="form-text help" *ngIf="investorProfileForm.controls.capital.errors!=null && investorProfileForm.controls.capital.errors.min!=null && investorProfileForm.controls.capital.touched">Invalid Capital Amount.</small>
+                            </label>
+                            <input type="text" class="form-control" placeholder="Capital" formControlName="capital" [(ngModel)]="investorModel.Capital">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone No: *
+                                <small class="form-text help" *ngIf="investorProfileForm.controls.phoneNo.errors!=null && investorProfileForm.controls.phoneNo.errors.required!=null && investorProfileForm.controls.phoneNo.touched">This field is Required.</small>
+                                <small class="form-text help" *ngIf="investorProfileForm.controls.phoneNo.errors!=null && investorProfileForm.controls.phoneNo.errors.pattern!=null && investorProfileForm.controls.phoneNo.touched">Phone number is only number.</small>
+                                <small class="form-text help" *ngIf="investorProfileForm.controls.phoneNo.errors!=null && investorProfileForm.controls.phoneNo.errors.maxlength!=null && investorProfileForm.controls.phoneNo.touched">Phone number is max length should be 13.</small>
+                                <small class="form-text help" *ngIf="investorProfileForm.controls.phoneNo.errors!=null && investorProfileForm.controls.phoneNo.errors.minlength!=null && investorProfileForm.controls.phoneNo.touched">Phone number is min length should be 9.</small>
+                            </label>
+                            <input type="text" class="form-control" placeholder="Phone No" formControlName="phoneNo" [(ngModel)]="investorModel.Phone">
+                        </div>
+                        <div class="form-group">
+                            <label>E-Mail *
+                                <small class="form-text help" *ngIf="investorProfileForm.controls.email.errors!=null && investorProfileForm.controls.email.errors.required!=null && investorProfileForm.controls.email.touched">This field is required.</small>
+                                <small class="form-text help" *ngIf="investorProfileForm.controls.email.errors!=null && investorProfileForm.controls.email.errors.pattern!=null && investorProfileForm.controls.email.touched">Invalid Email Address.</small>
+                            </label>
+                            <input type="email" class="form-control" placeholder="E-Mail Address" formControlName="email" [(ngModel)]="investorModel.Email">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div *ngIf="investorModel.AddressId==''">
+                                <label>Address:</label>
+                                <app-address-selector [finalAddressId]="opAddress" (onChange)="opAddress = $event"></app-address-selector>
+                            </div>
+                            <div  *ngIf="investorModel.AddressId!=''">
+                                <label>Address:  <button class="btn btn-xs btn-dark" (click)="changeAddress()">Change</button></label>
+                                <app-address-output [leafId]='investorModel.AddressId'></app-address-output>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <table class="table table-striped camis-table" *ngIf="registrations?.length > 0">
+                                <thead>
+                                <tr>
+                                    <th>Registration Type</th>
+                                    <th>Authority</th>
+                                    <th>Registration No</th>
+                                    <th>Reference</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let reg of regDoc; index as i"  style="cursor: pointer">
+                                    <td (click)="openDoc(requestedInvestor.id, i)">{{reg.TypeName}}</td>
+                                    <td (click)="openDoc(requestedInvestor.id, i)">{{reg.AuthorityName}}</td>
+                                    <td (click)="openDoc(requestedInvestor.id, i)">{{reg.RegistrationNumber}}</td>
+                                    <td><a (click)="openDoc(requestedInvestor.id, i)">{{reg.Document.Ref}}</a></td>
+                                    <td><div class="">
+                                        <button class="btn btn-sm btn-warning" type="button" (click)="removeReg(i)"><i class="fa fa-trash"></i> DELETE</button>
+                                    </div> </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                  
+                    
+                    <div class="form-group col-md-12">
+                        <p><strong>NOTE:</strong> <i>You can add registration document before you click on save profile button</i></p>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <button (click)="showAddDocumentModal()" class="button x-md btn-success"  type="button"> Add Document</button>
+                        <button type="submit" class="button btn x-md btn-camis" [disabled]="!investorProfileForm.valid">Save Profile</button>
+                        <button type="reset" class="button btn x-md btn-default">Reset</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+            <div id="add-document-dialog" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">
+                                Select Document
+                            </h4>
+                        </div>
+                        <form [formGroup]="registrationForm" id="registrationForm" (submit)="saveDocument()">
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label>Registration Type</label>
+                                    <select  class="form-control" formControlName="type" [(ngModel)]="registrationModel.TypeId">
+                                        <option value="0">Registration Type</option>
+                                        <option value="1">Commercial Registration</option>
+                                        <option value="2">Business License</option>
+                                        <option value="3">Investment Permit</option>
+                                        <option value="4">TIN</option>
+                                        <option value="5">ID or Passport</option>
+                                        <option value="6">VAT Certificate</option>
+                                        <option value="7">Resident Permit (Foreign)</option>
+                                        <option value="8">Work Permit (Foreign)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Registration Authority:</label>
+                                    <select  class="form-control" formControlName="authority" [(ngModel)]="registrationModel.AuthorityId">
+                                        <option value="0">Registration Authority</option>
+                                        <option value="1">Ethiopian Investment Commission (EIC)</option>
+                                        <option value="2">Ministry of Trade (MoT)</option>
+                                        <option value="3">Revenue and Customs Authority</option>
+                                        <option value="4">Ministry of Labour and Social Affairs</option>
+                                        <option value="5">Immigration and Nationality Affairs</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Registration Number:</label>
+                                    <input type="text" class="form-control" placeholder="Registration Number"  formControlName="regNumber" [(ngModel)]="registrationModel.RegistrationNumber">
+                                </div>
+                                <div class="form-group">
+                                    <label>Reference No:</label>
+                                    <input type="text" class="form-control" placeholder="Reference No" formControlName="refNumber" [(ngModel)]="regDocument.Ref"> 
+                                </div>
+                                <div class="form-group">
+                                    <label>Upload Document:</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" disabled="disabled" placeholder="Upload Registration Document" id="registrationDocumentLabel">
+                                        <span class="input-group-btn">
+                                              <button type="button" class="btn btn-camis" (click)="regDocumentUploadTrigger()"><i class="fa fa-binoculars"></i></button>
+                                          </span>
+                                        <input type="file" id="uploadRegistrationDocumentPro" style="display: none;"  (change)="uploadRegistrationDocument($event)" >
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="form-group">
+                                    <button type="submit" class="button x-lg btn-camis">Add Document</button>
+                                    <button type="reset" class="button btn x-lg btn-default">Reset</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div >
+        <div class="investorBids-body min-body" *ngIf="isEdit!=true && isRegister!=true">
+            <div class="investor-profile col-md-8 col-md-offset-2 x_panel">
+                <div class="x_title">
+                    <h4><i class="fa fa-user-circle"></i> Profile Detials</h4>
+                    <div class="panel_toolbox">
+                        <button class="btn btn-sm btn-camis" (click)="updateProfile()"><i class="fa fa-edit"></i> edit Your profile</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <table class="table table-striped" *ngIf="requestedProfile!=null">
+                        <thead>
+                        <tr>
+                            <th colspan="2" class="align-right">
+                               
+                            </th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><label class="control-label text-muted">Investor Name:</label></td>
+                            <td>{{requestedProfile.Name}}</td>
+                        </tr>
+                        <tr>
+                            <td><label class="control-label text-muted">Nationality:</label></td>
+                            <td>{{requestedProfile.Nationality}}</td>
+                        </tr>
+                        <tr>
+                            <td><label class="control-label text-muted">Investor Type:</label></td>
+                            <td>{{invType}}</td>
+                        </tr>
+                        <tr>
+                            <td><label class="control-label text-muted">Investor Origin:</label></td>
+                            <td>{{invOrigin}}</td>
+                        </tr>
+                        <tr>
+                            <td><label class="control-label text-muted">Capital:</label></td>
+                            <td>{{requestedProfile.Capital}}</td>
+                        </tr>
+                        <tr>
+                            <td><label class="control-label text-muted">Email Address:</label></td>
+                            <td>{{requestedProfile.Email}}</td>
+                        </tr>
+                        <tr>
+                            <td><label class="control-label text-muted">Phone No:</label></td>
+                            <td>{{requestedProfile.Phone}}</td>
+                        </tr>
+                        <tr>
+                            <td><label class="control-label text-muted">Address:</label></td>
+                            <td>
+                                <app-address-output [leafId]='requestedProfile.AddressId'></app-address-output>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">Registrations</td>
+                        </tr>
+                        <tr *ngIf="requestedProfile.Registrations?.length >0">
+                            <td colspan="2">
+                                <table class="table-striped table">
+                                    <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Registration Type</th>
+                                        <th>Registration Authority</th>
+                                        <th>Registration Number</th>
+                                        <th>Reference</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr *ngFor="let reg of regDoc; index as i" style="cursor: pointer">
+                                        <td (click)="openDoc(requestedInvestor.id, i)">{{i+1}}</td>
+                                        <td (click)="openDoc(requestedInvestor.id, i)">{{reg.TypeName}}</td>
+                                        <td (click)="openDoc(requestedInvestor.id, i)">{{reg.AuthorityName}}</td>
+                                        <td (click)="openDoc(requestedInvestor.id, i)">{{reg.RegistrationNumber}}</td>
+                                        <td><a (click)="openDoc(requestedInvestor.id, i)">{{reg.Document.Ref}}</a></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+               
+            </div>
+        </div>
+    </div>
+    <div id="view-document-dialog" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <iframe id="docIframe" class="has-scroll">
+
+                </iframe>
+            </div>
+        </div>
+
+    </div>
+</section>

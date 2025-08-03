@@ -1,0 +1,176 @@
+<section class="min">
+    <div class="investorBids-container">
+        <div class="has-bottom-index align-center">
+            <div class="investorBids-header min-header align-center">
+                <h3>investment Details</h3>
+            </div>
+        </div>
+        <div class="investorBids-body min-body" *ngIf="loading==false">
+           <div class="col-md-12 x_panel">
+               <div class="col-md-12" *ngIf="!(plan && plan.documents?.length > 0)">
+                   <div class="x_title">
+                       <h4><i class="fa fa-money"></i>  Investment Information</h4>
+                       <div class="clearfix"></div>
+                   </div>
+                   <div class="x_content">
+                      <table class="table table-striped">
+                          <tr>
+                              <td>Farm Type:</td>
+                              <td>{{project.type.name}}</td>
+                          </tr>
+                          <tr>
+                              <td>Capital:</td>
+                              <td>{{project.investedCapital}}</td>
+                          </tr>
+                          <tr>
+                              <td>Description:</td>
+                              <td>{{project.description}}</td>
+                          </tr>
+                      </table>
+                   </div>
+               </div>
+               <div class="col-md-6" *ngIf="plan && plan.documents?.length > 0">
+                   <div class="x_title">
+                       <h4><i class="fa fa-money"></i>  Investment Information</h4>
+                       <div class="clearfix"></div>
+                   </div>
+                   <div class="x_content">
+                       <table class="table table-striped">
+                           <tr>
+                               <td>Farm Type:</td>
+                               <td>{{project.typeId}}</td>
+                           </tr>
+                           <tr>
+                               <td>Capital:</td>
+                               <td>{{project.investedCapital}}</td>
+                           </tr>
+                           <tr>
+                               <td>Description:</td>
+                               <td>{{project.description}}</td>
+                           </tr>
+                       </table>
+                   </div>
+               </div>
+               <div class=" col-md-6" *ngIf="plan && plan.documents?.length > 0">
+                   <div class="x_title">
+                       <h4><i class="fa fa-file-text-o"></i>  Plan Documents</h4>
+                       <div class="clearfix"></div>
+                   </div>
+                   <div class="x_content" *ngIf="plan != null">
+                       <div class="land-document" *ngIf="plan.documents?.length > 0; else noDocument">
+                           <div *ngFor="let doc of plan.documents">
+                               <div class="camistron">
+                                   <table class="table">
+                                       <tr>
+                                           <td><a><i class="fa fa-file-o"></i>  <label>{{doc.filename}}</label> </a></td>
+                                           <td> <a>    Ref: {{doc.ref}}   |   Date: {{doc.date |date}}   |    Note: {{doc.note}}
+                                           </a></td>
+                                       </tr>
+                                   </table>
+                               </div>
+                           </div>
+
+
+                       </div>
+                       <ng-template #noDocument class="align-center">
+                           <div class="align-center">
+                               <p>No Document</p>
+                           </div>
+                          
+                       </ng-template>
+                   </div>
+               </div>
+           </div>
+            <div class="col-md-12 x_panel">
+                <div class="x_title">
+                    <h4><i class="fa fa-line-chart"></i>  Project Plan</h4>
+                    <div class="panel_toolbox">
+                        <div class="btn-group">
+                            <button class="btn btn-camis" (click)="evaluate()">Self Evaluate</button>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="col-md-12">
+                      <!--  <app-activity-progress
+                                *ngIf="plan && plan.rootActivity && plan.rootActivity.id"
+                                [activity]="plan.rootActivity"
+                                [activityId]="plan.rootActivityId"
+                                [promotionUnitId]="promotionUnitID"
+                                (calc)="progressPercent = $event"
+                        ></app-activity-progress>-->
+                        <app-activity-progress *ngIf="plan && plan.rootActivity && plan.rootActivity.id"
+                                               [activity]="plan.rootActivity"
+                                               [overridePercent]="plan.calculatedProgress"
+                        ></app-activity-progress>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <app-activities
+                                *ngIf="plan && plan.rootActivity"
+                                [activity]="plan.rootActivity"
+                                [progressPercent]="progressPercent"
+                                (change)="onRootActivityItemChange($event)"
+                        ></app-activities>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-12 x_panel" *ngIf="reports.length>0">
+                <div class="x_title">
+                    <h4><i class="fa fa-align-justify"></i>  Project Report Lists</h4>
+                    
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                   <table class="table table-striped">
+                       <thead>
+                       <tr>
+                           <th>Date</th>
+                           <th>Status</th>
+                           <th>Progress</th>
+                           <th>Note</th>
+                           <th class="align-right">Action</th>
+                       </tr>
+                       </thead>
+                       <tbody>
+                       <tr *ngFor="let report of reports">
+                           <td>{{report.reportTime | date}}</td>
+                           <td>{{report.reportStatus ? report.reportStatus.name : null}}</td>
+                           <td>{{report.calculatedProgress | percent}}</td>
+                           <td>{{report.note}}</td>
+                           <td class="align-right"><button [id]="'report-open-btn-' + report.id"  class="btn btn-default" (click)="openDetail(report)"><i class="fa fa-eye"></i></button></td>
+                       </tr>
+                       </tbody>
+                   </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="investorBids-body min-body" *ngIf="loading==true">
+            <div class="align-center bid-loader" >
+                <i class="fa fa-circle-o faa-burst animated"></i>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<div id="view-promotion-dialog" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content col-md-12">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="close()">&times;</button>
+                <h4 class="modal-title">
+                    Report Details
+                </h4>
+            </div>
+            <div class="modal-body col-md-12">
+               
+               <app-report-details *ngIf="report" [report]="report" [promotionUnitId]="promotionUnitID"></app-report-details>
+            </div>
+        </div>
+    </div>
+
+</div>

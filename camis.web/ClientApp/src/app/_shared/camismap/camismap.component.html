@@ -1,0 +1,35 @@
+<div class="tab-pane board map-search">
+    <div class="x_panel">
+        <!-- <div class="x_title"> -->
+            <!-- <h2>
+                <i class="fa fa-map-marker">
+                Map
+                </i>
+            </h2> -->
+
+            <!-- <div class="clearfix"></div> -->
+        <!-- </div> -->
+
+    <div class="x_content">
+        <div id="camis_map"></div>
+        <div class="col-md-6">
+          <span>Map Type</span>
+          <select [(ngModel)]="mapType" class="form-control" (change)="googleMapSetting()">
+            <option  value="satellite">Satellite Map</option>
+            <option  value="roadmap">Google Roadmap</option>
+            <option  value="hybrid">Google Hybrid</option>
+            <option  value="">Off Google Map</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <span>Map Back To</span>
+          <select [(ngModel)]="backTo" class="form-control" (change)="googleMapSetting()">
+            <option  value="Land">Back To Land</option>
+            <option  value="Kebele">Back To Kebele</option>
+            <option  value="Woreda">Back To Woreda</option>
+            <option  value="Region">Back To Region</option>
+          </select>
+        </div>
+    </div>
+</div>
+</div>

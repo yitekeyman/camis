@@ -1,0 +1,266 @@
+[
+  {
+    "id": "3a7025ba-ef1c-47d5-917e-bcca7d7a3f99",
+    "note": "klajdfla",
+    "statusId": 1,
+    "rootActivityId": "0540f34e-5ace-4804-a966-12f0f3d55981",
+    "status": {
+      "id": 1,
+      "name": "Active"
+    },
+    "rootActivity": {
+      "id": "0540f34e-5ace-4804-a966-12f0f3d55981",
+      "name": "Business Plan",
+      "description": "Commercial Agriculture Business Plan",
+      "weight": 1.0,
+      "schedules": [],
+      "activityPlanDetails": [],
+      "children": []
+    },
+    "documents": [{
+      "id": "dca6686a-595a-4331-a1bc-aedffa8829e2",
+      "date": 1542223887696,
+      "ref": "kdfjak",
+      "note": "kdfjak",
+      "mimetype": "application/pdf",
+      "type": 10,
+      "filename": "Proposal"
+    }],
+    "calculatedProgress": 0.0
+  },
+  {
+    "id": "988daaf7-b076-4d06-bceb-e78fd7ea767c",
+    "note": "test",
+    "statusId": 1,
+    "rootActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+    "status": {
+      "id": 1,
+      "name": "Active"
+    },
+    "rootActivity": {
+      "id": "80c48468-53e2-453e-83b1-4d861de6298e",
+      "name": "Business Plan",
+      "description": "Commercial Agriculture Business Plan",
+      "weight": 1.0,
+      "schedules": [],
+      "activityPlanDetails": [],
+      "children": [{
+        "id": "f2a36dcb-0fd0-4599-a142-73e7b55f984c",
+        "name": "Horticulture Template",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+        "schedules": [{
+          "id": "856dedb1-9af6-4513-b599-169c1c7d90c8",
+          "from": 1539129600000,
+          "to": 1541894400000
+        }],
+        "activityPlanDetails": [{
+          "id": "d8b543ab-ad77-4a6b-87c2-7a0b9e8d1553",
+          "target": 233.0,
+          "weight": 1.0,
+          "variableId": 2,
+          "customVariableName": "Area in Sq.m.",
+          "variable": {
+            "id": 2,
+            "name": "Area in Sq.m.",
+            "defaultUnitId": 4,
+            "typeId": 1,
+            "defaultUnit": {
+              "id": 4,
+              "name": "Square Meter",
+              "conversionFactor": 1.0,
+              "conversionOffset": 0.0
+            },
+            "type": {
+              "id": 1,
+              "name": "Measuring"
+            }
+          }
+        }],
+        "children": []
+      }, {
+        "id": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "name": "Social Impact",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+        "schedules": [{
+          "id": "d5cfbba6-247e-4456-88cb-332a141ee69d",
+          "from": 1546732800000,
+          "to": 1545436800000
+        }],
+        "activityPlanDetails": [{
+          "id": "8dbaff99-b6d8-4195-a7f6-4bb764fa0f41",
+          "target": 50.0,
+          "weight": 1.0,
+          "variableId": 5,
+          "customVariableName": "Mass in Kgs",
+          "variable": {
+            "id": 5,
+            "name": "Mass in Kgs",
+            "defaultUnitId": 6,
+            "typeId": 1,
+            "defaultUnit": {
+              "id": 6,
+              "name": "Ton",
+              "conversionFactor": 1000.0,
+              "conversionOffset": 0.0
+            },
+            "type": {
+              "id": 1,
+              "name": "Measuring"
+            }
+          }
+        }, {
+          "id": "d27dd6f7-8ecb-49fd-a2a0-a257ed1328d9",
+          "target": 14.0,
+          "weight": 2.0,
+          "variableId": 6,
+          "customVariableName": "Volume in lts",
+          "variable": {
+            "id": 6,
+            "name": "Volume in lts",
+            "defaultUnitId": 7,
+            "typeId": 1,
+            "defaultUnit": {
+              "id": 7,
+              "name": "Liter",
+              "convertFrom": 10,
+              "conversionFactor": 1.0,
+              "conversionOffset": 0.0
+            },
+            "type": {
+              "id": 1,
+              "name": "Measuring"
+            }
+          }
+        }, {
+          "id": "8b94f663-2bae-45bd-9a25-5afbfa20d303",
+          "target": 1000000.0,
+          "weight": 1.0,
+          "variableId": 8,
+          "customVariableName": "Amount Spent",
+          "variable": {
+            "id": 8,
+            "name": "Amount in ETB",
+            "defaultUnitId": 5,
+            "typeId": 2,
+            "defaultUnit": {
+              "id": 5,
+              "name": "ETB",
+              "conversionFactor": 1.0,
+              "conversionOffset": 0.0
+            },
+            "type": {
+              "id": 2,
+              "name": "Resource"
+            }
+          }
+        }, {
+          "id": "ff91d6f7-132b-425f-9052-945577d199f6",
+          "target": 1.0,
+          "weight": 5.0,
+          "variableId": 10,
+          "customVariableName": "Community Support Provided",
+          "variable": {
+            "id": 10,
+            "name": "Boolean",
+            "defaultUnitId": 1,
+            "typeId": 3,
+            "defaultUnit": {
+              "id": 1,
+              "name": "",
+              "conversionFactor": 1.0,
+              "conversionOffset": 0.0
+            },
+            "type": {
+              "id": 3,
+              "name": "Outcome"
+            }
+          }
+        }],
+        "children": [{
+          "id": "06bee647-22c6-4624-b6cb-511c5da92098",
+          "name": "Love",
+          "description": "",
+          "weight": 1.0,
+          "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+          "schedules": [{
+            "id": "00447266-5716-46e3-9c22-b25af759f9e7",
+            "from": 1547164800000,
+            "to": 1554768000000
+          }],
+          "activityPlanDetails": [],
+          "children": [{
+            "id": "dc43e8f7-515a-4388-965c-bb4266f2b490",
+            "name": "Social Impact",
+            "description": "",
+            "weight": 1.0,
+            "parentActivityId": "06bee647-22c6-4624-b6cb-511c5da92098",
+            "schedules": [{
+              "id": "e9709d93-b589-4661-a407-a1be511a1d4b",
+              "from": 1541376000000,
+              "to": 1554076800000
+            }],
+            "activityPlanDetails": [],
+            "children": []
+          }]
+        }, {
+          "id": "31365b99-0fd7-47fa-83b2-c22688803fa0",
+          "name": "Environmental Impact",
+          "description": "",
+          "weight": 1.0,
+          "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+          "schedules": [{
+            "id": "b1582433-7076-4862-be09-1979c4719daa",
+            "from": 1552348800000,
+            "to": 1563494400000
+          }],
+          "activityPlanDetails": [],
+          "children": []
+        }]
+      }, {
+        "id": "e42a44ac-5c8b-4398-9ed2-088b22c19fd9",
+        "name": "Digging Holes",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+        "schedules": [],
+        "activityPlanDetails": [],
+        "children": []
+      }]
+    },
+    "documents": [],
+    "calculatedProgress": 0.53333333333333333
+  },
+  {
+    "id": "ea893cfb-be29-4bc9-8e9a-88b29e142e4e",
+    "note": "this is first registration 1",
+    "statusId": 1,
+    "rootActivityId": "dd138ecf-b367-40f6-84ea-12c8877a3fa8",
+    "status": {
+      "id": 1,
+      "name": "Active"
+    },
+    "rootActivity": {
+      "id": "dd138ecf-b367-40f6-84ea-12c8877a3fa8",
+      "name": "Business Plan",
+      "description": "Commercial Agriculture Business Plan",
+      "weight": 1.0,
+      "schedules": [],
+      "activityPlanDetails": [],
+      "children": []
+    },
+    "documents": [{
+      "id": "9439c231-db1a-4119-b401-d87096560a51",
+      "date": 1542293284776,
+      "ref": "ref:20181115-003",
+      "note": "ref:20181115-003",
+      "mimetype": "application/pdf",
+      "type": 10,
+      "filename": "Proposal"
+    }],
+    "calculatedProgress": 0.0
+  }
+]

@@ -1,0 +1,75 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using intapscamis.camis.domain.Report
+@model intapscamis.camis.domain.Farms.Models.ReportResponseModel
+@{
+    var i = 1;
+    var type = (int)Model.Request.SelectedReportType;
+    var lookup = Model.LocationLookup;
+
+
+}
+
+<table class="table table-striped jambo_table bulk_action" id="tclick">
+    <thead>
+
+        <tr class="headings">
+            <th class="column-title">No</th>
+            <th class="column-title">@Model.AddressType</th>
+            <th class="column-title numberValue">Area Developed( ha)</th>
+            <th class="column-title numberValue">Undeveloped Area (ha)</th>
+            <th class="column-title numberValue">Total Area</th>
+            <th class="column-title numberValue">% developed</th>
+
+        </tr>
+
+    </thead>
+    <tbody>
+        @foreach (var item in Model.LandDevelopmentSummary)
+        {
+
+
+
+        <tr>
+
+            <td class="column-title">@(i++)</td>
+            <td>
+            @if (lookup.ContainsKey(item.location))
+            {
+                <p> @lookup[item.location] (@item.location)  </p>
+            }
+            else
+            {
+                <p> @item.location </p>
+            }
+                </td>
+            <td class="column-title numberValue">@Math.Round(item.developedArea, 2)</td>
+            <td class="column-title numberValue">@(Math.Round(item.totalArea - item.developedArea, 2))</td>
+            <td class="column-title">@Math.Round(item.totalArea,2)</td>
+            <td class="column-title numberValue">@(Math.Round((item.developedArea / item.totalArea) * 100, 2))</td>
+        </tr>
+
+
+
+
+        }
+        @if(Model.LandDevelopmentSummary.Count() > 0){
+            var item2 = Model.LandDevelopmentSummary;
+            <tr>
+
+                <td class="column-title"></td>
+                <th class="column-title">Total</th>
+                <th class="column-title numberValue">@Math.Round(item2.Sum(m => m.developedArea), 2)</th>
+                <th class="column-title numberValue">@(Math.Round(item2.Sum(m => m.totalArea) - item2.Sum(m => m.developedArea), 2))</th>
+                <th class="column-title"></th>
+                <th class="column-title numberValue">@(Math.Round((item2.Sum(m => m.developedArea) / item2.Sum(m => m.totalArea)) * 100, 2))</th>
+            </tr>
+        }
+
+
+    </tbody>
+</table>

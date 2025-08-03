@@ -1,0 +1,13 @@
+.bar {
+    margin: 0 0 4px;
+    padding: 7px 15px 7px 0;
+    height: 30px;
+    max-height: 30px;
+    min-height: 30px;
+    font-size: 14px;
+    line-height: 16px;
+    border: 0;
+    border-radius: 3px;
+    background-color: rgba(0,70,140,0.7);
+    transition: all 200ms;
+}

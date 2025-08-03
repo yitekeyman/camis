@@ -1,0 +1,80 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using intapscamis.camis.domain.Report
+@model intapscamis.camis.domain.Farms.Models.ReportResponseModel
+@{
+    var i = 1;
+    var type = (int)Model.Request.SelectedReportType;
+    var lookup = Model.LocationLookup;
+}
+
+<table class="table table-striped jambo_table bulk_action" id="tclick">
+    <thead>
+
+        <tr class="headings">
+            <th class="column-title">No</th>
+            <th class="column-title">@Model.AddressType</th>
+           <th class="column-title numberValue">Farms With Camps</th>
+            <th class="column-title numberValue">Farms Without Camps</th>
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.CampSummary)
+        {
+
+
+            <tr>
+
+                <td class="column-title">@(i++)</td>
+                <td class="column-title">
+                    @if (lookup.ContainsKey(item.Location))
+                    {
+                        <p>@lookup[item.Location]</p>
+                    }
+                    else
+                    {
+                        <p>@item.Location</p>
+                    }
+                </td>
+                <td class="column-title numberValue">@item.farmsWithCamps</td>
+
+
+
+                <td class="column-title numberValue">@item.farmsWithoutCamps</td>
+
+
+            </tr>
+
+
+
+
+        }
+
+        @if(Model.CampSummary.Count() > 0)
+        {
+
+      
+        <tr>
+
+            <td class="column-title"></td>
+            <td class="column-title">Total</td>
+            <td class="column-title numberValue">@Model.CampSummary.Sum(m => m.farmsWithCamps)</td>
+
+
+
+            <td class="column-title numberValue">@Model.CampSummary.Sum(m => m.farmsWithoutCamps)</td>
+
+
+        </tr>
+        }
+
+    </tbody>
+</table>

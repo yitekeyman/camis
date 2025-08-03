@@ -1,0 +1,67 @@
+<h3 class="x_title" style="padding: 15px 20px 10px">
+  Activity Templates
+</h3>
+
+<div *ngIf="loading" style="padding: 15px 20px">Loading...</div>
+<div *ngIf="!loading" style="padding: 15px 20px">
+  <div *ngIf="!templates.length">No templates have been added, yet.</div>
+
+  <!-- list -->
+  <div class="panel-group" id="accordion">
+    <div class="panel panel-default" *ngFor="let template of templates; index as i">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" [href]="'#t-' + (i + 1)" style="display: flex">
+            <span style="flex: auto">{{i + 1}}. {{update_names[template.id] || ''}}</span>
+          </a>
+        </h4>
+      </div>
+      <div [id]="'t-' + (i + 1)" class="panel-collapse collapse" style="padding: 15px">
+        <div style="display: flex; padding-bottom: 10px">
+          <input
+            [(ngModel)]="template.name"
+            (keyup)="doUpdateNames()"
+            class="form-control"
+            title="Template Name"
+            placeholder="Template Name"
+            style="flex: auto" type="text"
+          />
+        </div>
+
+        <app-activities
+          [activity]="template.data"
+          [reportingMode]="false"
+          [readonlyMode]="false"
+          (change)="!$event.activity || (template.tempActivity = $event.activity)"
+        ></app-activities>
+
+        <div style="text-align: right; padding-top: 10px">
+          <button (click)="updateTemplate(template)" class="btn btn-sm btn-primary">
+            <i class="fa fa-save"></i>&nbsp; Save Changes
+          </button>
+          <button (click)="deleteTemplate(template)" class="btn btn-sm btn-danger">
+            <i class="fa fa-trash"></i>&nbsp; Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- adder -->
+  <div>
+    <hr style="margin: 30px 0"/>
+    <div style="display: flex">
+      <input
+        [(ngModel)]="create_name"
+        type="text"
+        placeholder="New Activity Template Name"
+        title="Use this to create a new activity template"
+        style="flex: auto"
+        class="form-control" />
+      <div style="width: 15px"></div>
+      <button (click)="createTemplate()" type="button" class="btn btn-primary" title="Add a New Template" [disabled]="!create_name">
+        <i class="fa fa-plus"></i>&nbsp; Create Template
+      </button>
+    </div>
+  </div>
+</div>

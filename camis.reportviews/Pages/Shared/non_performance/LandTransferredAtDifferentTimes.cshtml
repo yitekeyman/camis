@@ -1,0 +1,120 @@
+﻿@model intapscamis.camis.domain.Farms.Models.ReportResponseModel
+
+@{
+    var res = Model.RegionAreaSummery;
+
+    var regions = res.SelectMany(m => m.RegionAreas).Select(m => m.region).Distinct().ToList();
+    var k = res.Select(m => m.T1).Union(res.Select(s => s.T2)).Distinct().OrderBy(m => m).ToList();
+    var time = new List<long[]> { };
+    for (int i = 1; i < k.Count(); i++)
+    {
+        if(i == k.Count() - 1)
+        {
+            time.Add(new long[] { k[i], -1 });
+        }
+        else
+        {
+            time.Add(new long[] { k[i], k[i + 1] });
+        }
+    }
+
+    var lookup = Model.LocationLookup;
+
+
+}
+
+
+<div>
+    <table class="table table-stripped jambo_table bulk_action">
+        <thead>
+            <tr class="headings">
+                <th class="column-title">@Model.AddressType</th>
+                @*@foreach (var item in Model.RegionAreaSummery)
+        {
+            <th class="column-title">@(new DateTime(item.T1).ToShortDateString()) - @(item.T2 != -1 ? new DateTime(item.T2).ToShortDateString() : "Present") </th>
+
+        }*@
+                @for (int i = 0; i < time.Count(); i++)
+                {
+                    if (i == 0)
+                    {
+                        <th class="column-title numberValue">@(new DateTime(time[i][0]).ToShortDateString()) - @(time[i][1] != -1 ? new DateTime(time[i][1]).ToShortDateString() : "Present") </th>
+
+                    }
+                    else
+                    {
+                        <th class="column-title numberValue">@(new DateTime(time[i][0]).AddDays(1).ToShortDateString()) - @(time[i][1] != -1 ? new DateTime(time[i][1]).ToShortDateString() : "Present") </th>
+
+                    }
+                }
+                @*@foreach (var item in time)
+                {
+                    <th class="column-title numberValue">@(new DateTime(item[0]).ToShortDateString()) - @(item[1] != -1 ? new DateTime(item[1]).ToShortDateString() : "Present") </th>
+
+                }*@
+                <th class="column-title numberValue">Total</th>
+            </tr>
+            <tr class="headings">
+                <th class="column-title"></th>
+                @*@foreach (var item in Model.RegionAreaSummery)*@
+                
+                    <th class="column-title numberValue" colspan="@(Model.RegionAreaSummery.Count+1)">Area (ha) </th>
+
+               
+            </tr>
+
+        </thead>
+        <tbody>
+            @foreach (var r in regions)
+            {
+            <tr>
+                <td class="column-title">
+
+                    @if (lookup.ContainsKey(r))
+                    {
+                        <p>@lookup[r]</p>
+                    }
+                    else
+                    {
+                        <p>@r</p>
+                    }
+                </td>
+                @*@foreach (var item in Model.RegionAreaSummery)
+                {
+                    <td class="column-title">@Math.Round(item.RegionAreas.Where(m => m.region == r).Sum(m => m.area) / 10000, 2) </td>
+
+                }*@
+                @foreach (var item in time)
+                {
+                    <td class="column-title numberValue">@Math.Round(res.Where(m => m.T1 == item[0] && m.T2 == item[1]).SelectMany(m => m.RegionAreas).Where(m => m.region == r).Sum(m => m.area) / 10000, 2) </td>
+
+                }
+                <td class="column-title numberValue" >@Math.Round(Model.RegionAreaSummery.SelectMany(m => m.RegionAreas).Where(m => m.region == r).Sum(m => m.area) / 10000, 2)</td>
+
+
+            </tr>
+            }
+            @if(Model.RegionAreaSummery.Count() > 0)
+            {
+
+
+            <tr>
+                <td class="column-title">Total</td>
+                @*@foreach (var item in Model.RegionAreaSummery)
+                {
+                    <td class="column-title">@Math.Round(item.RegionAreas.Sum(m => m.area) / 10000, 2) </td>
+
+                }*@
+                @foreach (var item in time)
+                {
+                    <td class="column-title numberValue">@Math.Round(res.Where(m => m.T1 == item[0] && m.T2 == item[1]).SelectMany(m => m.RegionAreas).Sum(m => m.area)/ 10000, 2) </td>
+
+                }
+                <td class="column-title numberValue" >@Math.Round(Model.RegionAreaSummery.SelectMany(m => m.RegionAreas).Sum(m => m.area) / 10000, 2)</td>
+
+
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>

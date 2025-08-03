@@ -1,0 +1,132 @@
+﻿@model intapscamis.camis.domain.Farms.Models.ReportResponseModel
+@{
+    var count = Model.FarmCount;
+    var area = Model.FarmArea;
+    var k = count.Select(m => m.areaFrom).Union(count.Select(s => s.areaTo)).Distinct().OrderBy(m => m).ToList();
+    var size = new List<double[]> { };
+    for (int i = 1; i < k.Count(); i++)
+    {
+        if (i == k.Count() - 1)
+        {
+            size.Add(new double[] { k[i], -1 });
+        }
+        else
+        {
+            size.Add(new double[] { k[i], k[i + 1] });
+        }
+    }
+  
+    var regions = Model.FarmCount.SelectMany(m => m.RegionAreaCount).Select(m => m.Key).Distinct().ToList();
+    Dictionary<string, double> areas = new Dictionary<string, double>() { };
+    regions.ForEach(m => {
+        if(!areas.ContainsKey(m))
+        {
+            areas.Add(m, 0);
+        }
+    } );
+    var regionAreaCount = Model.FarmCount.SelectMany(a => a.RegionAreaCount).ToList();
+    regionAreaCount.ForEach(m => areas[m.Key] = areas[m.Key] + m.Value.area);
+
+    var lookup = Model.LocationLookup;
+
+}
+
+
+
+<table class="table table-striped jambo_table bulk_action" id="tclick">
+    <thead>
+
+        <tr class="headings">
+            <th class="column-title">@Model.AddressType</th>
+
+            @foreach (var item in size)
+            {
+                <th class="column-title numberValue" colspan="2">
+                    @if(item[1] == -1)
+                    {
+                        <p>@item[0] - Inf (ha)</p>
+                    }
+                    else
+                    {
+                        <p>@item[0] - @item[1] (ha)</p>
+                    }
+
+                </th>
+            }
+                        <th class="column-title numberValue">Total Area (ha)</th>
+
+        </tr>
+        <tr class="headings">
+            <th class="column-title"></th>
+
+            @foreach (var item in size)
+            {
+                <th class="column-title numberValue">Count</th>
+                <th class="column-title numberValue">Area</th>
+            }
+            <th class="column-title"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < regions.Count; i++)
+        {
+            <tr>
+                <th class="column-title">
+                    @if (lookup.ContainsKey(regions[i]))
+                    {
+                        <p> @lookup[regions[i]] (@regions[i])  </p>
+                    }
+                    else
+                    {
+                        <p> @regions[i] </p>
+                    }
+                </th>
+                @foreach (var item in size)
+                {
+                    <th class="column-title numberValue">
+                        @if (count.SelectMany(m => m.RegionAreaCount).Where(m => m.Key == regions[i]).Count() > 0)
+                        {
+                            <a>@count.Where(m => m.areaFrom == item[0] && m.areaTo == item[1]).SelectMany(m => m.RegionAreaCount).Where(m => m.Key == regions[i]).Sum(m => m.Value.count)</a>
+
+                        }
+                        else
+                        {
+                            <a>0</a>
+                        }
+                    </th>
+                    <th class="column-title numberValue">
+                        @if (count.SelectMany(m => m.RegionAreaCount).Where(m => m.Key == regions[i]).Count() > 0)
+                        {
+                            <a>@Math.Round(count.Where(m => m.areaFrom == item[0] && m.areaTo == item[1]).SelectMany(m => m.RegionAreaCount).Where(m => m.Key == regions[i]).Sum(m => m.Value.area),2)</a>
+
+                        }
+                        else
+                        {
+                            <a>0</a>
+                        }
+                    </th>
+                }
+                <th class="column-title numberValue">@Math.Round(areas[regions[i]], 2)</th>
+
+            </tr>
+        }
+        @if(count.Count() > 0)
+        {
+
+      
+        <tr class="headings">
+            <th class="column-title">Total</th>
+
+            @foreach (var item in size)
+            {
+                <th class="column-title numberValue" colspan="2">
+                    <p></p>
+
+                </th>
+            }
+            <th class="column-title numberValue">@Math.Round(areas.Sum(m => m.Value),2)</th>
+
+        </tr>
+        }
+    </tbody>
+</table>

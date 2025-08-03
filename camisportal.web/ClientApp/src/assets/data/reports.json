@@ -1,0 +1,2202 @@
+[{
+  "id": "426cd20c-258d-4ac5-b39d-4e34e5e4586d",
+  "note": "test",
+  "reportTime": 1542326400000,
+  "statusId": 1,
+  "rootActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+  "reportStatus": {
+    "id": 1,
+    "name": "Active"
+  },
+  "rootActivity": {
+    "id": "80c48468-53e2-453e-83b1-4d861de6298e",
+    "name": "Business Plan",
+    "description": "Commercial Agriculture Business Plan",
+    "weight": 1.0,
+    "schedules": [],
+    "activityPlanDetails": [],
+    "children": [{
+      "id": "f2a36dcb-0fd0-4599-a142-73e7b55f984c",
+      "name": "Horticulture Template",
+      "description": "",
+      "weight": 1.0,
+      "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+      "schedules": [{
+        "id": "856dedb1-9af6-4513-b599-169c1c7d90c8",
+        "from": 1539129600000,
+        "to": 1541894400000
+      }],
+      "activityPlanDetails": [{
+        "id": "d8b543ab-ad77-4a6b-87c2-7a0b9e8d1553",
+        "target": 233.0,
+        "weight": 1.0,
+        "variableId": 2,
+        "customVariableName": "Area in Sq.m.",
+        "variable": {
+          "id": 2,
+          "name": "Area in Sq.m.",
+          "defaultUnitId": 4,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 4,
+            "name": "Square Meter",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }],
+      "children": []
+    }, {
+      "id": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+      "name": "Social Impact",
+      "description": "",
+      "weight": 1.0,
+      "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+      "schedules": [{
+        "id": "d5cfbba6-247e-4456-88cb-332a141ee69d",
+        "from": 1546732800000,
+        "to": 1545436800000
+      }],
+      "activityPlanDetails": [{
+        "id": "8dbaff99-b6d8-4195-a7f6-4bb764fa0f41",
+        "target": 50.0,
+        "weight": 1.0,
+        "variableId": 5,
+        "customVariableName": "Mass in Kgs",
+        "variable": {
+          "id": 5,
+          "name": "Mass in Kgs",
+          "defaultUnitId": 6,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 6,
+            "name": "Ton",
+            "conversionFactor": 1000.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "d27dd6f7-8ecb-49fd-a2a0-a257ed1328d9",
+        "target": 14.0,
+        "weight": 2.0,
+        "variableId": 6,
+        "customVariableName": "Volume in lts",
+        "variable": {
+          "id": 6,
+          "name": "Volume in lts",
+          "defaultUnitId": 7,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 7,
+            "name": "Liter",
+            "convertFrom": 10,
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "8b94f663-2bae-45bd-9a25-5afbfa20d303",
+        "target": 1000000.0,
+        "weight": 1.0,
+        "variableId": 8,
+        "customVariableName": "Amount Spent",
+        "variable": {
+          "id": 8,
+          "name": "Amount in ETB",
+          "defaultUnitId": 5,
+          "typeId": 2,
+          "defaultUnit": {
+            "id": 5,
+            "name": "ETB",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 2,
+            "name": "Resource"
+          }
+        }
+      }, {
+        "id": "ff91d6f7-132b-425f-9052-945577d199f6",
+        "target": 1.0,
+        "weight": 5.0,
+        "variableId": 10,
+        "customVariableName": "Community Support Provided",
+        "variable": {
+          "id": 10,
+          "name": "Boolean",
+          "defaultUnitId": 1,
+          "typeId": 3,
+          "defaultUnit": {
+            "id": 1,
+            "name": "",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 3,
+            "name": "Outcome"
+          }
+        }
+      }],
+      "children": [{
+        "id": "06bee647-22c6-4624-b6cb-511c5da92098",
+        "name": "Love",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "00447266-5716-46e3-9c22-b25af759f9e7",
+          "from": 1547164800000,
+          "to": 1554768000000
+        }],
+        "activityPlanDetails": [],
+        "children": [{
+          "id": "dc43e8f7-515a-4388-965c-bb4266f2b490",
+          "name": "Social Impact",
+          "description": "",
+          "weight": 1.0,
+          "parentActivityId": "06bee647-22c6-4624-b6cb-511c5da92098",
+          "schedules": [{
+            "id": "e9709d93-b589-4661-a407-a1be511a1d4b",
+            "from": 1541376000000,
+            "to": 1554076800000
+          }],
+          "activityPlanDetails": [],
+          "children": []
+        }]
+      }, {
+        "id": "31365b99-0fd7-47fa-83b2-c22688803fa0",
+        "name": "Environmental Impact",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "b1582433-7076-4862-be09-1979c4719daa",
+          "from": 1552348800000,
+          "to": 1563494400000
+        }],
+        "activityPlanDetails": [],
+        "children": []
+      }]
+    }, {
+      "id": "e42a44ac-5c8b-4398-9ed2-088b22c19fd9",
+      "name": "Digging Holes",
+      "description": "",
+      "weight": 1.0,
+      "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+      "schedules": [],
+      "activityPlanDetails": [],
+      "children": []
+    }]
+  },
+  "reportDocuments": [{
+    "id": "9ca33fd6-ccf1-488c-8cfe-f53944d30ef2",
+    "date": 1542326400000,
+    "ref": "survey001",
+    "note": "",
+    "mimetype": "application/pdf",
+    "filename": "Test certificate.pdf"
+  }, {
+    "id": "4935abab-58ee-43fa-9f01-7abf47abe43a",
+    "date": 1542326400000,
+    "ref": "pic0033",
+    "note": "sample pic ",
+    "mimetype": "image/jpeg",
+    "filename": "Capture.JPG"
+  }],
+  "activityStatuses": [{
+    "id": "4bddb8ad-b340-4f81-8630-93e063dad5f7",
+    "activityId": "f2a36dcb-0fd0-4599-a142-73e7b55f984c",
+    "time": 1542326400000,
+    "statusId": 3,
+    "activity": {
+      "id": "f2a36dcb-0fd0-4599-a142-73e7b55f984c",
+      "name": "Horticulture Template",
+      "description": "",
+      "weight": 1.0,
+      "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+      "schedules": [{
+        "id": "856dedb1-9af6-4513-b599-169c1c7d90c8",
+        "from": 1539129600000,
+        "to": 1541894400000
+      }],
+      "activityPlanDetails": [{
+        "id": "d8b543ab-ad77-4a6b-87c2-7a0b9e8d1553",
+        "target": 233.0,
+        "weight": 1.0,
+        "variableId": 2,
+        "customVariableName": "Area in Sq.m.",
+        "variable": {
+          "id": 2,
+          "name": "Area in Sq.m.",
+          "defaultUnitId": 4,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 4,
+            "name": "Square Meter",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }],
+      "children": []
+    },
+    "status": {
+      "id": 3,
+      "name": "Completed"
+    }
+  }, {
+    "id": "8c9b79d2-84cc-4a9b-a0b7-072a64bbc4a5",
+    "activityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+    "time": 1542326400000,
+    "statusId": 1,
+    "activity": {
+      "id": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+      "name": "Social Impact",
+      "description": "",
+      "weight": 1.0,
+      "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+      "schedules": [{
+        "id": "d5cfbba6-247e-4456-88cb-332a141ee69d",
+        "from": 1546732800000,
+        "to": 1545436800000
+      }],
+      "activityPlanDetails": [{
+        "id": "8dbaff99-b6d8-4195-a7f6-4bb764fa0f41",
+        "target": 50.0,
+        "weight": 1.0,
+        "variableId": 5,
+        "customVariableName": "Mass in Kgs",
+        "variable": {
+          "id": 5,
+          "name": "Mass in Kgs",
+          "defaultUnitId": 6,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 6,
+            "name": "Ton",
+            "conversionFactor": 1000.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "d27dd6f7-8ecb-49fd-a2a0-a257ed1328d9",
+        "target": 14.0,
+        "weight": 2.0,
+        "variableId": 6,
+        "customVariableName": "Volume in lts",
+        "variable": {
+          "id": 6,
+          "name": "Volume in lts",
+          "defaultUnitId": 7,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 7,
+            "name": "Liter",
+            "convertFrom": 10,
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "8b94f663-2bae-45bd-9a25-5afbfa20d303",
+        "target": 1000000.0,
+        "weight": 1.0,
+        "variableId": 8,
+        "customVariableName": "Amount Spent",
+        "variable": {
+          "id": 8,
+          "name": "Amount in ETB",
+          "defaultUnitId": 5,
+          "typeId": 2,
+          "defaultUnit": {
+            "id": 5,
+            "name": "ETB",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 2,
+            "name": "Resource"
+          }
+        }
+      }, {
+        "id": "ff91d6f7-132b-425f-9052-945577d199f6",
+        "target": 1.0,
+        "weight": 5.0,
+        "variableId": 10,
+        "customVariableName": "Community Support Provided",
+        "variable": {
+          "id": 10,
+          "name": "Boolean",
+          "defaultUnitId": 1,
+          "typeId": 3,
+          "defaultUnit": {
+            "id": 1,
+            "name": "",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 3,
+            "name": "Outcome"
+          }
+        }
+      }],
+      "children": [{
+        "id": "06bee647-22c6-4624-b6cb-511c5da92098",
+        "name": "Love",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "00447266-5716-46e3-9c22-b25af759f9e7",
+          "from": 1547164800000,
+          "to": 1554768000000
+        }],
+        "activityPlanDetails": [],
+        "children": [{
+          "id": "dc43e8f7-515a-4388-965c-bb4266f2b490",
+          "name": "Social Impact",
+          "description": "",
+          "weight": 1.0,
+          "parentActivityId": "06bee647-22c6-4624-b6cb-511c5da92098",
+          "schedules": [{
+            "id": "e9709d93-b589-4661-a407-a1be511a1d4b",
+            "from": 1541376000000,
+            "to": 1554076800000
+          }],
+          "activityPlanDetails": [],
+          "children": []
+        }]
+      }, {
+        "id": "31365b99-0fd7-47fa-83b2-c22688803fa0",
+        "name": "Environmental Impact",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "b1582433-7076-4862-be09-1979c4719daa",
+          "from": 1552348800000,
+          "to": 1563494400000
+        }],
+        "activityPlanDetails": [],
+        "children": []
+      }]
+    },
+    "status": {
+      "id": 1,
+      "name": "Active"
+    }
+  }, {
+    "id": "ef4be72c-13df-4d79-a131-9950f40c8c7e",
+    "activityId": "dc43e8f7-515a-4388-965c-bb4266f2b490",
+    "time": 1542326400000,
+    "statusId": 1,
+    "activity": {
+      "id": "dc43e8f7-515a-4388-965c-bb4266f2b490",
+      "name": "Social Impact",
+      "description": "",
+      "weight": 1.0,
+      "parentActivityId": "06bee647-22c6-4624-b6cb-511c5da92098",
+      "schedules": [{
+        "id": "e9709d93-b589-4661-a407-a1be511a1d4b",
+        "from": 1541376000000,
+        "to": 1554076800000
+      }],
+      "activityPlanDetails": [],
+      "children": []
+    },
+    "status": {
+      "id": 1,
+      "name": "Active"
+    }
+  }, {
+    "id": "edcb294a-f2c8-49b3-9779-64471f39a832",
+    "activityId": "31365b99-0fd7-47fa-83b2-c22688803fa0",
+    "time": 1542326400000,
+    "statusId": 3,
+    "activity": {
+      "id": "31365b99-0fd7-47fa-83b2-c22688803fa0",
+      "name": "Environmental Impact",
+      "description": "",
+      "weight": 1.0,
+      "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+      "schedules": [{
+        "id": "b1582433-7076-4862-be09-1979c4719daa",
+        "from": 1552348800000,
+        "to": 1563494400000
+      }],
+      "activityPlanDetails": [],
+      "children": []
+    },
+    "status": {
+      "id": 3,
+      "name": "Completed"
+    }
+  }],
+  "variableProgresses": [{
+    "id": "7e0e6c2d-8986-4abb-b72a-ef966d71d921",
+    "activityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+    "time": 1542326400000,
+    "variableId": 5,
+    "progress": 40.0,
+    "activity": {
+      "id": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+      "name": "Social Impact",
+      "description": "",
+      "weight": 1.0,
+      "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+      "schedules": [{
+        "id": "d5cfbba6-247e-4456-88cb-332a141ee69d",
+        "from": 1546732800000,
+        "to": 1545436800000
+      }],
+      "activityPlanDetails": [{
+        "id": "8dbaff99-b6d8-4195-a7f6-4bb764fa0f41",
+        "target": 50.0,
+        "weight": 1.0,
+        "variableId": 5,
+        "customVariableName": "Mass in Kgs",
+        "variable": {
+          "id": 5,
+          "name": "Mass in Kgs",
+          "defaultUnitId": 6,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 6,
+            "name": "Ton",
+            "conversionFactor": 1000.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "d27dd6f7-8ecb-49fd-a2a0-a257ed1328d9",
+        "target": 14.0,
+        "weight": 2.0,
+        "variableId": 6,
+        "customVariableName": "Volume in lts",
+        "variable": {
+          "id": 6,
+          "name": "Volume in lts",
+          "defaultUnitId": 7,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 7,
+            "name": "Liter",
+            "convertFrom": 10,
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "8b94f663-2bae-45bd-9a25-5afbfa20d303",
+        "target": 1000000.0,
+        "weight": 1.0,
+        "variableId": 8,
+        "customVariableName": "Amount Spent",
+        "variable": {
+          "id": 8,
+          "name": "Amount in ETB",
+          "defaultUnitId": 5,
+          "typeId": 2,
+          "defaultUnit": {
+            "id": 5,
+            "name": "ETB",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 2,
+            "name": "Resource"
+          }
+        }
+      }, {
+        "id": "ff91d6f7-132b-425f-9052-945577d199f6",
+        "target": 1.0,
+        "weight": 5.0,
+        "variableId": 10,
+        "customVariableName": "Community Support Provided",
+        "variable": {
+          "id": 10,
+          "name": "Boolean",
+          "defaultUnitId": 1,
+          "typeId": 3,
+          "defaultUnit": {
+            "id": 1,
+            "name": "",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 3,
+            "name": "Outcome"
+          }
+        }
+      }],
+      "children": [{
+        "id": "06bee647-22c6-4624-b6cb-511c5da92098",
+        "name": "Love",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "00447266-5716-46e3-9c22-b25af759f9e7",
+          "from": 1547164800000,
+          "to": 1554768000000
+        }],
+        "activityPlanDetails": [],
+        "children": [{
+          "id": "dc43e8f7-515a-4388-965c-bb4266f2b490",
+          "name": "Social Impact",
+          "description": "",
+          "weight": 1.0,
+          "parentActivityId": "06bee647-22c6-4624-b6cb-511c5da92098",
+          "schedules": [{
+            "id": "e9709d93-b589-4661-a407-a1be511a1d4b",
+            "from": 1541376000000,
+            "to": 1554076800000
+          }],
+          "activityPlanDetails": [],
+          "children": []
+        }]
+      }, {
+        "id": "31365b99-0fd7-47fa-83b2-c22688803fa0",
+        "name": "Environmental Impact",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "b1582433-7076-4862-be09-1979c4719daa",
+          "from": 1552348800000,
+          "to": 1563494400000
+        }],
+        "activityPlanDetails": [],
+        "children": []
+      }]
+    },
+    "variable": {
+      "id": 5,
+      "name": "Mass in Kgs",
+      "defaultUnitId": 6,
+      "typeId": 1,
+      "defaultUnit": {
+        "id": 6,
+        "name": "Ton",
+        "conversionFactor": 1000.0,
+        "conversionOffset": 0.0
+      },
+      "type": {
+        "id": 1,
+        "name": "Measuring"
+      }
+    }
+  }, {
+    "id": "c83f3c9c-a503-4766-840f-40e283e5ef94",
+    "activityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+    "time": 1542326400000,
+    "variableId": 6,
+    "progress": 7.0,
+    "activity": {
+      "id": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+      "name": "Social Impact",
+      "description": "",
+      "weight": 1.0,
+      "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+      "schedules": [{
+        "id": "d5cfbba6-247e-4456-88cb-332a141ee69d",
+        "from": 1546732800000,
+        "to": 1545436800000
+      }],
+      "activityPlanDetails": [{
+        "id": "8dbaff99-b6d8-4195-a7f6-4bb764fa0f41",
+        "target": 50.0,
+        "weight": 1.0,
+        "variableId": 5,
+        "customVariableName": "Mass in Kgs",
+        "variable": {
+          "id": 5,
+          "name": "Mass in Kgs",
+          "defaultUnitId": 6,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 6,
+            "name": "Ton",
+            "conversionFactor": 1000.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "d27dd6f7-8ecb-49fd-a2a0-a257ed1328d9",
+        "target": 14.0,
+        "weight": 2.0,
+        "variableId": 6,
+        "customVariableName": "Volume in lts",
+        "variable": {
+          "id": 6,
+          "name": "Volume in lts",
+          "defaultUnitId": 7,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 7,
+            "name": "Liter",
+            "convertFrom": 10,
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "8b94f663-2bae-45bd-9a25-5afbfa20d303",
+        "target": 1000000.0,
+        "weight": 1.0,
+        "variableId": 8,
+        "customVariableName": "Amount Spent",
+        "variable": {
+          "id": 8,
+          "name": "Amount in ETB",
+          "defaultUnitId": 5,
+          "typeId": 2,
+          "defaultUnit": {
+            "id": 5,
+            "name": "ETB",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 2,
+            "name": "Resource"
+          }
+        }
+      }, {
+        "id": "ff91d6f7-132b-425f-9052-945577d199f6",
+        "target": 1.0,
+        "weight": 5.0,
+        "variableId": 10,
+        "customVariableName": "Community Support Provided",
+        "variable": {
+          "id": 10,
+          "name": "Boolean",
+          "defaultUnitId": 1,
+          "typeId": 3,
+          "defaultUnit": {
+            "id": 1,
+            "name": "",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 3,
+            "name": "Outcome"
+          }
+        }
+      }],
+      "children": [{
+        "id": "06bee647-22c6-4624-b6cb-511c5da92098",
+        "name": "Love",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "00447266-5716-46e3-9c22-b25af759f9e7",
+          "from": 1547164800000,
+          "to": 1554768000000
+        }],
+        "activityPlanDetails": [],
+        "children": [{
+          "id": "dc43e8f7-515a-4388-965c-bb4266f2b490",
+          "name": "Social Impact",
+          "description": "",
+          "weight": 1.0,
+          "parentActivityId": "06bee647-22c6-4624-b6cb-511c5da92098",
+          "schedules": [{
+            "id": "e9709d93-b589-4661-a407-a1be511a1d4b",
+            "from": 1541376000000,
+            "to": 1554076800000
+          }],
+          "activityPlanDetails": [],
+          "children": []
+        }]
+      }, {
+        "id": "31365b99-0fd7-47fa-83b2-c22688803fa0",
+        "name": "Environmental Impact",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "b1582433-7076-4862-be09-1979c4719daa",
+          "from": 1552348800000,
+          "to": 1563494400000
+        }],
+        "activityPlanDetails": [],
+        "children": []
+      }]
+    },
+    "variable": {
+      "id": 6,
+      "name": "Volume in lts",
+      "defaultUnitId": 7,
+      "typeId": 1,
+      "defaultUnit": {
+        "id": 7,
+        "name": "Liter",
+        "convertFrom": 10,
+        "conversionFactor": 1.0,
+        "conversionOffset": 0.0
+      },
+      "type": {
+        "id": 1,
+        "name": "Measuring"
+      }
+    }
+  }, {
+    "id": "d911029d-232e-436f-8ede-88e675b4e5e2",
+    "activityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+    "time": 1542326400000,
+    "variableId": 8,
+    "progress": 500000.0,
+    "activity": {
+      "id": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+      "name": "Social Impact",
+      "description": "",
+      "weight": 1.0,
+      "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+      "schedules": [{
+        "id": "d5cfbba6-247e-4456-88cb-332a141ee69d",
+        "from": 1546732800000,
+        "to": 1545436800000
+      }],
+      "activityPlanDetails": [{
+        "id": "8dbaff99-b6d8-4195-a7f6-4bb764fa0f41",
+        "target": 50.0,
+        "weight": 1.0,
+        "variableId": 5,
+        "customVariableName": "Mass in Kgs",
+        "variable": {
+          "id": 5,
+          "name": "Mass in Kgs",
+          "defaultUnitId": 6,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 6,
+            "name": "Ton",
+            "conversionFactor": 1000.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "d27dd6f7-8ecb-49fd-a2a0-a257ed1328d9",
+        "target": 14.0,
+        "weight": 2.0,
+        "variableId": 6,
+        "customVariableName": "Volume in lts",
+        "variable": {
+          "id": 6,
+          "name": "Volume in lts",
+          "defaultUnitId": 7,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 7,
+            "name": "Liter",
+            "convertFrom": 10,
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "8b94f663-2bae-45bd-9a25-5afbfa20d303",
+        "target": 1000000.0,
+        "weight": 1.0,
+        "variableId": 8,
+        "customVariableName": "Amount Spent",
+        "variable": {
+          "id": 8,
+          "name": "Amount in ETB",
+          "defaultUnitId": 5,
+          "typeId": 2,
+          "defaultUnit": {
+            "id": 5,
+            "name": "ETB",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 2,
+            "name": "Resource"
+          }
+        }
+      }, {
+        "id": "ff91d6f7-132b-425f-9052-945577d199f6",
+        "target": 1.0,
+        "weight": 5.0,
+        "variableId": 10,
+        "customVariableName": "Community Support Provided",
+        "variable": {
+          "id": 10,
+          "name": "Boolean",
+          "defaultUnitId": 1,
+          "typeId": 3,
+          "defaultUnit": {
+            "id": 1,
+            "name": "",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 3,
+            "name": "Outcome"
+          }
+        }
+      }],
+      "children": [{
+        "id": "06bee647-22c6-4624-b6cb-511c5da92098",
+        "name": "Love",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "00447266-5716-46e3-9c22-b25af759f9e7",
+          "from": 1547164800000,
+          "to": 1554768000000
+        }],
+        "activityPlanDetails": [],
+        "children": [{
+          "id": "dc43e8f7-515a-4388-965c-bb4266f2b490",
+          "name": "Social Impact",
+          "description": "",
+          "weight": 1.0,
+          "parentActivityId": "06bee647-22c6-4624-b6cb-511c5da92098",
+          "schedules": [{
+            "id": "e9709d93-b589-4661-a407-a1be511a1d4b",
+            "from": 1541376000000,
+            "to": 1554076800000
+          }],
+          "activityPlanDetails": [],
+          "children": []
+        }]
+      }, {
+        "id": "31365b99-0fd7-47fa-83b2-c22688803fa0",
+        "name": "Environmental Impact",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "b1582433-7076-4862-be09-1979c4719daa",
+          "from": 1552348800000,
+          "to": 1563494400000
+        }],
+        "activityPlanDetails": [],
+        "children": []
+      }]
+    },
+    "variable": {
+      "id": 8,
+      "name": "Amount in ETB",
+      "defaultUnitId": 5,
+      "typeId": 2,
+      "defaultUnit": {
+        "id": 5,
+        "name": "ETB",
+        "conversionFactor": 1.0,
+        "conversionOffset": 0.0
+      },
+      "type": {
+        "id": 2,
+        "name": "Resource"
+      }
+    }
+  }, {
+    "id": "ebf209c6-877b-42d4-b1e5-256c0500250f",
+    "activityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+    "time": 1542326400000,
+    "variableId": 10,
+    "progress": 1.0,
+    "activity": {
+      "id": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+      "name": "Social Impact",
+      "description": "",
+      "weight": 1.0,
+      "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+      "schedules": [{
+        "id": "d5cfbba6-247e-4456-88cb-332a141ee69d",
+        "from": 1546732800000,
+        "to": 1545436800000
+      }],
+      "activityPlanDetails": [{
+        "id": "8dbaff99-b6d8-4195-a7f6-4bb764fa0f41",
+        "target": 50.0,
+        "weight": 1.0,
+        "variableId": 5,
+        "customVariableName": "Mass in Kgs",
+        "variable": {
+          "id": 5,
+          "name": "Mass in Kgs",
+          "defaultUnitId": 6,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 6,
+            "name": "Ton",
+            "conversionFactor": 1000.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "d27dd6f7-8ecb-49fd-a2a0-a257ed1328d9",
+        "target": 14.0,
+        "weight": 2.0,
+        "variableId": 6,
+        "customVariableName": "Volume in lts",
+        "variable": {
+          "id": 6,
+          "name": "Volume in lts",
+          "defaultUnitId": 7,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 7,
+            "name": "Liter",
+            "convertFrom": 10,
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "8b94f663-2bae-45bd-9a25-5afbfa20d303",
+        "target": 1000000.0,
+        "weight": 1.0,
+        "variableId": 8,
+        "customVariableName": "Amount Spent",
+        "variable": {
+          "id": 8,
+          "name": "Amount in ETB",
+          "defaultUnitId": 5,
+          "typeId": 2,
+          "defaultUnit": {
+            "id": 5,
+            "name": "ETB",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 2,
+            "name": "Resource"
+          }
+        }
+      }, {
+        "id": "ff91d6f7-132b-425f-9052-945577d199f6",
+        "target": 1.0,
+        "weight": 5.0,
+        "variableId": 10,
+        "customVariableName": "Community Support Provided",
+        "variable": {
+          "id": 10,
+          "name": "Boolean",
+          "defaultUnitId": 1,
+          "typeId": 3,
+          "defaultUnit": {
+            "id": 1,
+            "name": "",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 3,
+            "name": "Outcome"
+          }
+        }
+      }],
+      "children": [{
+        "id": "06bee647-22c6-4624-b6cb-511c5da92098",
+        "name": "Love",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "00447266-5716-46e3-9c22-b25af759f9e7",
+          "from": 1547164800000,
+          "to": 1554768000000
+        }],
+        "activityPlanDetails": [],
+        "children": [{
+          "id": "dc43e8f7-515a-4388-965c-bb4266f2b490",
+          "name": "Social Impact",
+          "description": "",
+          "weight": 1.0,
+          "parentActivityId": "06bee647-22c6-4624-b6cb-511c5da92098",
+          "schedules": [{
+            "id": "e9709d93-b589-4661-a407-a1be511a1d4b",
+            "from": 1541376000000,
+            "to": 1554076800000
+          }],
+          "activityPlanDetails": [],
+          "children": []
+        }]
+      }, {
+        "id": "31365b99-0fd7-47fa-83b2-c22688803fa0",
+        "name": "Environmental Impact",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "b1582433-7076-4862-be09-1979c4719daa",
+          "from": 1552348800000,
+          "to": 1563494400000
+        }],
+        "activityPlanDetails": [],
+        "children": []
+      }]
+    },
+    "variable": {
+      "id": 10,
+      "name": "Boolean",
+      "defaultUnitId": 1,
+      "typeId": 3,
+      "defaultUnit": {
+        "id": 1,
+        "name": "",
+        "conversionFactor": 1.0,
+        "conversionOffset": 0.0
+      },
+      "type": {
+        "id": 3,
+        "name": "Outcome"
+      }
+    }
+  }],
+  "calculatedProgress": 0.53333333333333333
+}, {
+  "id": "3422c2b6-43c9-4cdb-be2f-8cd946af61f1",
+  "note": "test",
+  "reportTime": 1542315600000,
+  "statusId": 1,
+  "rootActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+  "reportStatus": {
+    "id": 1,
+    "name": "Active"
+  },
+  "rootActivity": {
+    "id": "80c48468-53e2-453e-83b1-4d861de6298e",
+    "name": "Business Plan",
+    "description": "Commercial Agriculture Business Plan",
+    "weight": 1.0,
+    "schedules": [],
+    "activityPlanDetails": [],
+    "children": [{
+      "id": "f2a36dcb-0fd0-4599-a142-73e7b55f984c",
+      "name": "Horticulture Template",
+      "description": "",
+      "weight": 1.0,
+      "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+      "schedules": [{
+        "id": "856dedb1-9af6-4513-b599-169c1c7d90c8",
+        "from": 1539129600000,
+        "to": 1541894400000
+      }],
+      "activityPlanDetails": [{
+        "id": "d8b543ab-ad77-4a6b-87c2-7a0b9e8d1553",
+        "target": 233.0,
+        "weight": 1.0,
+        "variableId": 2,
+        "customVariableName": "Area in Sq.m.",
+        "variable": {
+          "id": 2,
+          "name": "Area in Sq.m.",
+          "defaultUnitId": 4,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 4,
+            "name": "Square Meter",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }],
+      "children": []
+    }, {
+      "id": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+      "name": "Social Impact",
+      "description": "",
+      "weight": 1.0,
+      "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+      "schedules": [{
+        "id": "d5cfbba6-247e-4456-88cb-332a141ee69d",
+        "from": 1546732800000,
+        "to": 1545436800000
+      }],
+      "activityPlanDetails": [{
+        "id": "8dbaff99-b6d8-4195-a7f6-4bb764fa0f41",
+        "target": 50.0,
+        "weight": 1.0,
+        "variableId": 5,
+        "customVariableName": "Mass in Kgs",
+        "variable": {
+          "id": 5,
+          "name": "Mass in Kgs",
+          "defaultUnitId": 6,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 6,
+            "name": "Ton",
+            "conversionFactor": 1000.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "d27dd6f7-8ecb-49fd-a2a0-a257ed1328d9",
+        "target": 14.0,
+        "weight": 2.0,
+        "variableId": 6,
+        "customVariableName": "Volume in lts",
+        "variable": {
+          "id": 6,
+          "name": "Volume in lts",
+          "defaultUnitId": 7,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 7,
+            "name": "Liter",
+            "convertFrom": 10,
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "8b94f663-2bae-45bd-9a25-5afbfa20d303",
+        "target": 1000000.0,
+        "weight": 1.0,
+        "variableId": 8,
+        "customVariableName": "Amount Spent",
+        "variable": {
+          "id": 8,
+          "name": "Amount in ETB",
+          "defaultUnitId": 5,
+          "typeId": 2,
+          "defaultUnit": {
+            "id": 5,
+            "name": "ETB",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 2,
+            "name": "Resource"
+          }
+        }
+      }, {
+        "id": "ff91d6f7-132b-425f-9052-945577d199f6",
+        "target": 1.0,
+        "weight": 5.0,
+        "variableId": 10,
+        "customVariableName": "Community Support Provided",
+        "variable": {
+          "id": 10,
+          "name": "Boolean",
+          "defaultUnitId": 1,
+          "typeId": 3,
+          "defaultUnit": {
+            "id": 1,
+            "name": "",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 3,
+            "name": "Outcome"
+          }
+        }
+      }],
+      "children": [{
+        "id": "06bee647-22c6-4624-b6cb-511c5da92098",
+        "name": "Love",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "00447266-5716-46e3-9c22-b25af759f9e7",
+          "from": 1547164800000,
+          "to": 1554768000000
+        }],
+        "activityPlanDetails": [],
+        "children": [{
+          "id": "dc43e8f7-515a-4388-965c-bb4266f2b490",
+          "name": "Social Impact",
+          "description": "",
+          "weight": 1.0,
+          "parentActivityId": "06bee647-22c6-4624-b6cb-511c5da92098",
+          "schedules": [{
+            "id": "e9709d93-b589-4661-a407-a1be511a1d4b",
+            "from": 1541376000000,
+            "to": 1554076800000
+          }],
+          "activityPlanDetails": [],
+          "children": []
+        }]
+      }, {
+        "id": "31365b99-0fd7-47fa-83b2-c22688803fa0",
+        "name": "Environmental Impact",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "b1582433-7076-4862-be09-1979c4719daa",
+          "from": 1552348800000,
+          "to": 1563494400000
+        }],
+        "activityPlanDetails": [],
+        "children": []
+      }]
+    }, {
+      "id": "e42a44ac-5c8b-4398-9ed2-088b22c19fd9",
+      "name": "Digging Holes",
+      "description": "",
+      "weight": 1.0,
+      "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+      "schedules": [],
+      "activityPlanDetails": [],
+      "children": []
+    }]
+  },
+  "reportDocuments": [{
+    "id": "0286dd2b-2d80-47d3-9e21-625cf80e149f",
+    "date": 1542356678186,
+    "ref": "1542356678186",
+    "mimetype": "image/jpeg",
+    "filename": "image-34941f60-d11a-40e5-8daa-beea9d2e2f63.jpg"
+  }, {
+    "id": "3ce379de-2ffe-4a22-b624-8b52c03d3a73",
+    "date": 1542356732946,
+    "ref": "1542356732946",
+    "mimetype": "image/jpeg",
+    "filename": "image-eb45b03c-cb05-44c7-b1d9-330cca6b86f1.jpg"
+  }],
+  "activityStatuses": [{
+    "id": "0a4f55c3-d0b0-4915-b9c3-9e114de22436",
+    "activityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+    "time": 1542315600000,
+    "statusId": 1,
+    "activity": {
+      "id": "80c48468-53e2-453e-83b1-4d861de6298e",
+      "name": "Business Plan",
+      "description": "Commercial Agriculture Business Plan",
+      "weight": 1.0,
+      "schedules": [],
+      "activityPlanDetails": [],
+      "children": [{
+        "id": "f2a36dcb-0fd0-4599-a142-73e7b55f984c",
+        "name": "Horticulture Template",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+        "schedules": [{
+          "id": "856dedb1-9af6-4513-b599-169c1c7d90c8",
+          "from": 1539129600000,
+          "to": 1541894400000
+        }],
+        "activityPlanDetails": [{
+          "id": "d8b543ab-ad77-4a6b-87c2-7a0b9e8d1553",
+          "target": 233.0,
+          "weight": 1.0,
+          "variableId": 2,
+          "customVariableName": "Area in Sq.m.",
+          "variable": {
+            "id": 2,
+            "name": "Area in Sq.m.",
+            "defaultUnitId": 4,
+            "typeId": 1,
+            "defaultUnit": {
+              "id": 4,
+              "name": "Square Meter",
+              "conversionFactor": 1.0,
+              "conversionOffset": 0.0
+            },
+            "type": {
+              "id": 1,
+              "name": "Measuring"
+            }
+          }
+        }],
+        "children": []
+      }, {
+        "id": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "name": "Social Impact",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+        "schedules": [{
+          "id": "d5cfbba6-247e-4456-88cb-332a141ee69d",
+          "from": 1546732800000,
+          "to": 1545436800000
+        }],
+        "activityPlanDetails": [{
+          "id": "8dbaff99-b6d8-4195-a7f6-4bb764fa0f41",
+          "target": 50.0,
+          "weight": 1.0,
+          "variableId": 5,
+          "customVariableName": "Mass in Kgs",
+          "variable": {
+            "id": 5,
+            "name": "Mass in Kgs",
+            "defaultUnitId": 6,
+            "typeId": 1,
+            "defaultUnit": {
+              "id": 6,
+              "name": "Ton",
+              "conversionFactor": 1000.0,
+              "conversionOffset": 0.0
+            },
+            "type": {
+              "id": 1,
+              "name": "Measuring"
+            }
+          }
+        }, {
+          "id": "d27dd6f7-8ecb-49fd-a2a0-a257ed1328d9",
+          "target": 14.0,
+          "weight": 2.0,
+          "variableId": 6,
+          "customVariableName": "Volume in lts",
+          "variable": {
+            "id": 6,
+            "name": "Volume in lts",
+            "defaultUnitId": 7,
+            "typeId": 1,
+            "defaultUnit": {
+              "id": 7,
+              "name": "Liter",
+              "convertFrom": 10,
+              "conversionFactor": 1.0,
+              "conversionOffset": 0.0
+            },
+            "type": {
+              "id": 1,
+              "name": "Measuring"
+            }
+          }
+        }, {
+          "id": "8b94f663-2bae-45bd-9a25-5afbfa20d303",
+          "target": 1000000.0,
+          "weight": 1.0,
+          "variableId": 8,
+          "customVariableName": "Amount Spent",
+          "variable": {
+            "id": 8,
+            "name": "Amount in ETB",
+            "defaultUnitId": 5,
+            "typeId": 2,
+            "defaultUnit": {
+              "id": 5,
+              "name": "ETB",
+              "conversionFactor": 1.0,
+              "conversionOffset": 0.0
+            },
+            "type": {
+              "id": 2,
+              "name": "Resource"
+            }
+          }
+        }, {
+          "id": "ff91d6f7-132b-425f-9052-945577d199f6",
+          "target": 1.0,
+          "weight": 5.0,
+          "variableId": 10,
+          "customVariableName": "Community Support Provided",
+          "variable": {
+            "id": 10,
+            "name": "Boolean",
+            "defaultUnitId": 1,
+            "typeId": 3,
+            "defaultUnit": {
+              "id": 1,
+              "name": "",
+              "conversionFactor": 1.0,
+              "conversionOffset": 0.0
+            },
+            "type": {
+              "id": 3,
+              "name": "Outcome"
+            }
+          }
+        }],
+        "children": [{
+          "id": "06bee647-22c6-4624-b6cb-511c5da92098",
+          "name": "Love",
+          "description": "",
+          "weight": 1.0,
+          "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+          "schedules": [{
+            "id": "00447266-5716-46e3-9c22-b25af759f9e7",
+            "from": 1547164800000,
+            "to": 1554768000000
+          }],
+          "activityPlanDetails": [],
+          "children": [{
+            "id": "dc43e8f7-515a-4388-965c-bb4266f2b490",
+            "name": "Social Impact",
+            "description": "",
+            "weight": 1.0,
+            "parentActivityId": "06bee647-22c6-4624-b6cb-511c5da92098",
+            "schedules": [{
+              "id": "e9709d93-b589-4661-a407-a1be511a1d4b",
+              "from": 1541376000000,
+              "to": 1554076800000
+            }],
+            "activityPlanDetails": [],
+            "children": []
+          }]
+        }, {
+          "id": "31365b99-0fd7-47fa-83b2-c22688803fa0",
+          "name": "Environmental Impact",
+          "description": "",
+          "weight": 1.0,
+          "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+          "schedules": [{
+            "id": "b1582433-7076-4862-be09-1979c4719daa",
+            "from": 1552348800000,
+            "to": 1563494400000
+          }],
+          "activityPlanDetails": [],
+          "children": []
+        }]
+      }, {
+        "id": "e42a44ac-5c8b-4398-9ed2-088b22c19fd9",
+        "name": "Digging Holes",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+        "schedules": [],
+        "activityPlanDetails": [],
+        "children": []
+      }]
+    },
+    "status": {
+      "id": 1,
+      "name": "Active"
+    }
+  }],
+  "variableProgresses": [{
+    "id": "75aa2f65-ae75-42bd-ad9b-ec1082e5f4fe",
+    "activityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+    "time": 1542315600000,
+    "variableId": 5,
+    "progress": 40.0,
+    "activity": {
+      "id": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+      "name": "Social Impact",
+      "description": "",
+      "weight": 1.0,
+      "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+      "schedules": [{
+        "id": "d5cfbba6-247e-4456-88cb-332a141ee69d",
+        "from": 1546732800000,
+        "to": 1545436800000
+      }],
+      "activityPlanDetails": [{
+        "id": "8dbaff99-b6d8-4195-a7f6-4bb764fa0f41",
+        "target": 50.0,
+        "weight": 1.0,
+        "variableId": 5,
+        "customVariableName": "Mass in Kgs",
+        "variable": {
+          "id": 5,
+          "name": "Mass in Kgs",
+          "defaultUnitId": 6,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 6,
+            "name": "Ton",
+            "conversionFactor": 1000.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "d27dd6f7-8ecb-49fd-a2a0-a257ed1328d9",
+        "target": 14.0,
+        "weight": 2.0,
+        "variableId": 6,
+        "customVariableName": "Volume in lts",
+        "variable": {
+          "id": 6,
+          "name": "Volume in lts",
+          "defaultUnitId": 7,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 7,
+            "name": "Liter",
+            "convertFrom": 10,
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "8b94f663-2bae-45bd-9a25-5afbfa20d303",
+        "target": 1000000.0,
+        "weight": 1.0,
+        "variableId": 8,
+        "customVariableName": "Amount Spent",
+        "variable": {
+          "id": 8,
+          "name": "Amount in ETB",
+          "defaultUnitId": 5,
+          "typeId": 2,
+          "defaultUnit": {
+            "id": 5,
+            "name": "ETB",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 2,
+            "name": "Resource"
+          }
+        }
+      }, {
+        "id": "ff91d6f7-132b-425f-9052-945577d199f6",
+        "target": 1.0,
+        "weight": 5.0,
+        "variableId": 10,
+        "customVariableName": "Community Support Provided",
+        "variable": {
+          "id": 10,
+          "name": "Boolean",
+          "defaultUnitId": 1,
+          "typeId": 3,
+          "defaultUnit": {
+            "id": 1,
+            "name": "",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 3,
+            "name": "Outcome"
+          }
+        }
+      }],
+      "children": [{
+        "id": "06bee647-22c6-4624-b6cb-511c5da92098",
+        "name": "Love",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "00447266-5716-46e3-9c22-b25af759f9e7",
+          "from": 1547164800000,
+          "to": 1554768000000
+        }],
+        "activityPlanDetails": [],
+        "children": [{
+          "id": "dc43e8f7-515a-4388-965c-bb4266f2b490",
+          "name": "Social Impact",
+          "description": "",
+          "weight": 1.0,
+          "parentActivityId": "06bee647-22c6-4624-b6cb-511c5da92098",
+          "schedules": [{
+            "id": "e9709d93-b589-4661-a407-a1be511a1d4b",
+            "from": 1541376000000,
+            "to": 1554076800000
+          }],
+          "activityPlanDetails": [],
+          "children": []
+        }]
+      }, {
+        "id": "31365b99-0fd7-47fa-83b2-c22688803fa0",
+        "name": "Environmental Impact",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "b1582433-7076-4862-be09-1979c4719daa",
+          "from": 1552348800000,
+          "to": 1563494400000
+        }],
+        "activityPlanDetails": [],
+        "children": []
+      }]
+    },
+    "variable": {
+      "id": 5,
+      "name": "Mass in Kgs",
+      "defaultUnitId": 6,
+      "typeId": 1,
+      "defaultUnit": {
+        "id": 6,
+        "name": "Ton",
+        "conversionFactor": 1000.0,
+        "conversionOffset": 0.0
+      },
+      "type": {
+        "id": 1,
+        "name": "Measuring"
+      }
+    }
+  }, {
+    "id": "91c5e2c5-b464-46f5-946d-0beaefd85b96",
+    "activityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+    "time": 1542315600000,
+    "variableId": 6,
+    "progress": 5.0,
+    "activity": {
+      "id": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+      "name": "Social Impact",
+      "description": "",
+      "weight": 1.0,
+      "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+      "schedules": [{
+        "id": "d5cfbba6-247e-4456-88cb-332a141ee69d",
+        "from": 1546732800000,
+        "to": 1545436800000
+      }],
+      "activityPlanDetails": [{
+        "id": "8dbaff99-b6d8-4195-a7f6-4bb764fa0f41",
+        "target": 50.0,
+        "weight": 1.0,
+        "variableId": 5,
+        "customVariableName": "Mass in Kgs",
+        "variable": {
+          "id": 5,
+          "name": "Mass in Kgs",
+          "defaultUnitId": 6,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 6,
+            "name": "Ton",
+            "conversionFactor": 1000.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "d27dd6f7-8ecb-49fd-a2a0-a257ed1328d9",
+        "target": 14.0,
+        "weight": 2.0,
+        "variableId": 6,
+        "customVariableName": "Volume in lts",
+        "variable": {
+          "id": 6,
+          "name": "Volume in lts",
+          "defaultUnitId": 7,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 7,
+            "name": "Liter",
+            "convertFrom": 10,
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "8b94f663-2bae-45bd-9a25-5afbfa20d303",
+        "target": 1000000.0,
+        "weight": 1.0,
+        "variableId": 8,
+        "customVariableName": "Amount Spent",
+        "variable": {
+          "id": 8,
+          "name": "Amount in ETB",
+          "defaultUnitId": 5,
+          "typeId": 2,
+          "defaultUnit": {
+            "id": 5,
+            "name": "ETB",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 2,
+            "name": "Resource"
+          }
+        }
+      }, {
+        "id": "ff91d6f7-132b-425f-9052-945577d199f6",
+        "target": 1.0,
+        "weight": 5.0,
+        "variableId": 10,
+        "customVariableName": "Community Support Provided",
+        "variable": {
+          "id": 10,
+          "name": "Boolean",
+          "defaultUnitId": 1,
+          "typeId": 3,
+          "defaultUnit": {
+            "id": 1,
+            "name": "",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 3,
+            "name": "Outcome"
+          }
+        }
+      }],
+      "children": [{
+        "id": "06bee647-22c6-4624-b6cb-511c5da92098",
+        "name": "Love",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "00447266-5716-46e3-9c22-b25af759f9e7",
+          "from": 1547164800000,
+          "to": 1554768000000
+        }],
+        "activityPlanDetails": [],
+        "children": [{
+          "id": "dc43e8f7-515a-4388-965c-bb4266f2b490",
+          "name": "Social Impact",
+          "description": "",
+          "weight": 1.0,
+          "parentActivityId": "06bee647-22c6-4624-b6cb-511c5da92098",
+          "schedules": [{
+            "id": "e9709d93-b589-4661-a407-a1be511a1d4b",
+            "from": 1541376000000,
+            "to": 1554076800000
+          }],
+          "activityPlanDetails": [],
+          "children": []
+        }]
+      }, {
+        "id": "31365b99-0fd7-47fa-83b2-c22688803fa0",
+        "name": "Environmental Impact",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "b1582433-7076-4862-be09-1979c4719daa",
+          "from": 1552348800000,
+          "to": 1563494400000
+        }],
+        "activityPlanDetails": [],
+        "children": []
+      }]
+    },
+    "variable": {
+      "id": 6,
+      "name": "Volume in lts",
+      "defaultUnitId": 7,
+      "typeId": 1,
+      "defaultUnit": {
+        "id": 7,
+        "name": "Liter",
+        "convertFrom": 10,
+        "conversionFactor": 1.0,
+        "conversionOffset": 0.0
+      },
+      "type": {
+        "id": 1,
+        "name": "Measuring"
+      }
+    }
+  }, {
+    "id": "f5e5e566-d2dc-4fec-aad2-a6168674aaea",
+    "activityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+    "time": 1542315600000,
+    "variableId": 8,
+    "progress": 100000.0,
+    "activity": {
+      "id": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+      "name": "Social Impact",
+      "description": "",
+      "weight": 1.0,
+      "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+      "schedules": [{
+        "id": "d5cfbba6-247e-4456-88cb-332a141ee69d",
+        "from": 1546732800000,
+        "to": 1545436800000
+      }],
+      "activityPlanDetails": [{
+        "id": "8dbaff99-b6d8-4195-a7f6-4bb764fa0f41",
+        "target": 50.0,
+        "weight": 1.0,
+        "variableId": 5,
+        "customVariableName": "Mass in Kgs",
+        "variable": {
+          "id": 5,
+          "name": "Mass in Kgs",
+          "defaultUnitId": 6,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 6,
+            "name": "Ton",
+            "conversionFactor": 1000.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "d27dd6f7-8ecb-49fd-a2a0-a257ed1328d9",
+        "target": 14.0,
+        "weight": 2.0,
+        "variableId": 6,
+        "customVariableName": "Volume in lts",
+        "variable": {
+          "id": 6,
+          "name": "Volume in lts",
+          "defaultUnitId": 7,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 7,
+            "name": "Liter",
+            "convertFrom": 10,
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "8b94f663-2bae-45bd-9a25-5afbfa20d303",
+        "target": 1000000.0,
+        "weight": 1.0,
+        "variableId": 8,
+        "customVariableName": "Amount Spent",
+        "variable": {
+          "id": 8,
+          "name": "Amount in ETB",
+          "defaultUnitId": 5,
+          "typeId": 2,
+          "defaultUnit": {
+            "id": 5,
+            "name": "ETB",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 2,
+            "name": "Resource"
+          }
+        }
+      }, {
+        "id": "ff91d6f7-132b-425f-9052-945577d199f6",
+        "target": 1.0,
+        "weight": 5.0,
+        "variableId": 10,
+        "customVariableName": "Community Support Provided",
+        "variable": {
+          "id": 10,
+          "name": "Boolean",
+          "defaultUnitId": 1,
+          "typeId": 3,
+          "defaultUnit": {
+            "id": 1,
+            "name": "",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 3,
+            "name": "Outcome"
+          }
+        }
+      }],
+      "children": [{
+        "id": "06bee647-22c6-4624-b6cb-511c5da92098",
+        "name": "Love",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "00447266-5716-46e3-9c22-b25af759f9e7",
+          "from": 1547164800000,
+          "to": 1554768000000
+        }],
+        "activityPlanDetails": [],
+        "children": [{
+          "id": "dc43e8f7-515a-4388-965c-bb4266f2b490",
+          "name": "Social Impact",
+          "description": "",
+          "weight": 1.0,
+          "parentActivityId": "06bee647-22c6-4624-b6cb-511c5da92098",
+          "schedules": [{
+            "id": "e9709d93-b589-4661-a407-a1be511a1d4b",
+            "from": 1541376000000,
+            "to": 1554076800000
+          }],
+          "activityPlanDetails": [],
+          "children": []
+        }]
+      }, {
+        "id": "31365b99-0fd7-47fa-83b2-c22688803fa0",
+        "name": "Environmental Impact",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "b1582433-7076-4862-be09-1979c4719daa",
+          "from": 1552348800000,
+          "to": 1563494400000
+        }],
+        "activityPlanDetails": [],
+        "children": []
+      }]
+    },
+    "variable": {
+      "id": 8,
+      "name": "Amount in ETB",
+      "defaultUnitId": 5,
+      "typeId": 2,
+      "defaultUnit": {
+        "id": 5,
+        "name": "ETB",
+        "conversionFactor": 1.0,
+        "conversionOffset": 0.0
+      },
+      "type": {
+        "id": 2,
+        "name": "Resource"
+      }
+    }
+  }, {
+    "id": "9b93ca51-cd7e-4db5-acb7-7ef7852eaf90",
+    "activityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+    "time": 1542315600000,
+    "variableId": 10,
+    "progress": 0.0,
+    "activity": {
+      "id": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+      "name": "Social Impact",
+      "description": "",
+      "weight": 1.0,
+      "parentActivityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+      "schedules": [{
+        "id": "d5cfbba6-247e-4456-88cb-332a141ee69d",
+        "from": 1546732800000,
+        "to": 1545436800000
+      }],
+      "activityPlanDetails": [{
+        "id": "8dbaff99-b6d8-4195-a7f6-4bb764fa0f41",
+        "target": 50.0,
+        "weight": 1.0,
+        "variableId": 5,
+        "customVariableName": "Mass in Kgs",
+        "variable": {
+          "id": 5,
+          "name": "Mass in Kgs",
+          "defaultUnitId": 6,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 6,
+            "name": "Ton",
+            "conversionFactor": 1000.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "d27dd6f7-8ecb-49fd-a2a0-a257ed1328d9",
+        "target": 14.0,
+        "weight": 2.0,
+        "variableId": 6,
+        "customVariableName": "Volume in lts",
+        "variable": {
+          "id": 6,
+          "name": "Volume in lts",
+          "defaultUnitId": 7,
+          "typeId": 1,
+          "defaultUnit": {
+            "id": 7,
+            "name": "Liter",
+            "convertFrom": 10,
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 1,
+            "name": "Measuring"
+          }
+        }
+      }, {
+        "id": "8b94f663-2bae-45bd-9a25-5afbfa20d303",
+        "target": 1000000.0,
+        "weight": 1.0,
+        "variableId": 8,
+        "customVariableName": "Amount Spent",
+        "variable": {
+          "id": 8,
+          "name": "Amount in ETB",
+          "defaultUnitId": 5,
+          "typeId": 2,
+          "defaultUnit": {
+            "id": 5,
+            "name": "ETB",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 2,
+            "name": "Resource"
+          }
+        }
+      }, {
+        "id": "ff91d6f7-132b-425f-9052-945577d199f6",
+        "target": 1.0,
+        "weight": 5.0,
+        "variableId": 10,
+        "customVariableName": "Community Support Provided",
+        "variable": {
+          "id": 10,
+          "name": "Boolean",
+          "defaultUnitId": 1,
+          "typeId": 3,
+          "defaultUnit": {
+            "id": 1,
+            "name": "",
+            "conversionFactor": 1.0,
+            "conversionOffset": 0.0
+          },
+          "type": {
+            "id": 3,
+            "name": "Outcome"
+          }
+        }
+      }],
+      "children": [{
+        "id": "06bee647-22c6-4624-b6cb-511c5da92098",
+        "name": "Love",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "00447266-5716-46e3-9c22-b25af759f9e7",
+          "from": 1547164800000,
+          "to": 1554768000000
+        }],
+        "activityPlanDetails": [],
+        "children": [{
+          "id": "dc43e8f7-515a-4388-965c-bb4266f2b490",
+          "name": "Social Impact",
+          "description": "",
+          "weight": 1.0,
+          "parentActivityId": "06bee647-22c6-4624-b6cb-511c5da92098",
+          "schedules": [{
+            "id": "e9709d93-b589-4661-a407-a1be511a1d4b",
+            "from": 1541376000000,
+            "to": 1554076800000
+          }],
+          "activityPlanDetails": [],
+          "children": []
+        }]
+      }, {
+        "id": "31365b99-0fd7-47fa-83b2-c22688803fa0",
+        "name": "Environmental Impact",
+        "description": "",
+        "weight": 1.0,
+        "parentActivityId": "094569d4-16f9-4741-a8f5-3980dba1eb94",
+        "schedules": [{
+          "id": "b1582433-7076-4862-be09-1979c4719daa",
+          "from": 1552348800000,
+          "to": 1563494400000
+        }],
+        "activityPlanDetails": [],
+        "children": []
+      }]
+    },
+    "variable": {
+      "id": 10,
+      "name": "Boolean",
+      "defaultUnitId": 1,
+      "typeId": 3,
+      "defaultUnit": {
+        "id": 1,
+        "name": "",
+        "conversionFactor": 1.0,
+        "conversionOffset": 0.0
+      },
+      "type": {
+        "id": 3,
+        "name": "Outcome"
+      }
+    }
+  }],
+  "calculatedProgress": 0.16825396825396824
+}]

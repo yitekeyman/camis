@@ -1,0 +1,125 @@
+<div *ngIf="loading" class="align-center"><h2>Loading...</h2></div>
+<div *ngIf="!loading && !report" class="align-center">
+  <h2 class="red"><i class="fa fa-warning"></i>&nbsp; An error occured.</h2>
+</div>
+<div *ngIf="!loading && report">
+
+  <!-- PROGRESS BAR -->
+  <div style="padding-bottom: 15px">
+    <app-activity-progress
+      [activity]="report.rootActivity"
+      [overridePercent]="report.calculatedProgress"
+    ></app-activity-progress>
+  </div>
+
+  <!-- PROGRESS REPORT -->
+  <div style="padding-bottom: 15px">
+    <table class="table table-striped table-responsive jambo_table bulk_action">
+      <thead>
+      <tr>
+        <th colspan="2">
+          <i class="fa fa-file-text"></i>&nbsp; Progress Report
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Reported Date:</td>
+        <td style="width: 75%">
+          {{report.reportTime | date}}
+        </td>
+      </tr>
+      <tr>
+        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Progress Status:</td>
+        <td style="width: 75%">
+          {{report.reportStatus && report.reportStatus.name}}
+        </td>
+      </tr>
+      <tr>
+        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Note:</td>
+        <td style="width: 75%">
+          {{report.note}}
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- REPORT DOCUMENTS -->
+  <div style="padding-bottom: 15px" *ngIf="report.reportDocuments && report.reportDocuments.length">
+    <app-document-list
+      title="Report Documents"
+      [documents]="report.reportDocuments"
+    ></app-document-list>
+  </div>
+
+  <!-- REPORT SUMMARY -->
+  <div style="padding-bottom: 15px">
+    <table class="table table-striped table-responsive jambo_table bulk_action">
+      <thead>
+      <tr>
+        <th colspan="2">
+          <i class="fa fa-file-text"></i>&nbsp; Progress Report
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Physical Progress:</td>
+        <td style="width: 75%">
+          {{report.calculatedProgress | percent}} complete
+        </td>
+      </tr>
+      <tr>
+        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Schedule Status:</td>
+        <td style="width: 75%">
+          {{_scheduleStr}}
+        </td>
+      </tr>
+      <tr>
+        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Budget Use:</td>
+        <td style="width: 75%">
+          <div *ngIf="!resourceProgresses.length">[n/a]</div>
+          <div *ngFor="let prg of resourceProgresses" style="display: flex">
+                        <span class="text-muted text-nowrap" style="min-width: 90px">
+                            <b>{{prg.variable && prg.variable.name || '?'}}: </b>
+                        </span>
+            <span class="text-muted text-nowrap" style="flex: auto">
+                            {{prg.totalProgress}} / {{prg.totalTarget}}
+                            {{prg.variable && prg.variable.defaultUnit && prg.variable.defaultUnit.name || ''}}
+                            ({{(prg.totalProgress / prg.totalTarget) | percent}} used)
+                        </span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Outcomes:</td>
+        <td style="width: 75%">
+          <div *ngIf="!outcomeProgresses.length">[n/a]</div>
+          <div *ngFor="let prg of outcomeProgresses" style="display: flex">
+                        <span class="text-muted text-nowrap" style="min-width: 90px">
+                            <b>{{prg.variable && prg.variable.name || '?'}}: </b>
+                        </span>
+            <span class="text-muted text-nowrap" style="flex: auto">
+                            {{prg.totalProgress}} / {{prg.totalTarget}}
+                            {{prg.variable && prg.variable.defaultUnit && prg.variable.defaultUnit.name || ''}}
+                            ({{(prg.totalProgress / prg.totalTarget) | percent}} delivered)
+                        </span>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- REPORT DETAIL -->
+  <div style="padding-bottom: 15px">
+    <app-activities
+      *ngIf="report.statusId != 3"
+      [activity]="report.rootActivity"
+      [readonlyMode]="true"
+      [reportingMode]="true"
+      [readonlyReporting]="true"
+    ></app-activities>
+  </div>
+</div>

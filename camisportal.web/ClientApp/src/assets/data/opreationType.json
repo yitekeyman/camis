@@ -1,0 +1,26 @@
+[
+  {
+    "id":1,
+    "name":"Person"
+  },
+  {
+    "id":2,
+    "name":"General Partnership"
+  },
+  {
+    "id":3,
+    "name":"Limited Partnership"
+  },
+  {
+    "id":4,
+    "name":"Private Limited Company"
+  },
+  {
+    "id":5,
+    "name":"Share Company"
+  },
+  {
+    "id":6,
+    "name":"Joint Venture"
+  }
+]

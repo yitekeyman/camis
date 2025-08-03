@@ -1,0 +1,61 @@
+<section class="min">
+    <div class="investorBids-container">
+        <div class="has-bottom-index align-center">
+            <div class="investorBids-header min-header align-center">
+                <h3>Projects</h3>
+                <h2>Your Projects</h2>
+
+            </div>
+        </div>
+        <div class="investorBids-body min-body" *ngIf="loading==false">
+            <div class="" *ngIf="projects?.length > 0; else no_searchResult">
+            <div class="col-md-4 col-xs-12 widget widget_tally_box" *ngFor="let pro of projects">
+                <div class="x_panel ui-ribbon-container" *ngIf="pro.isApproved==true">
+                    <div class="x_content">
+                        <div class="align-center">
+                            <ul class="list-inline widget_profile_box">
+                                <li>
+
+                                </li>
+                                <li>
+                                    <h1>{{pro.activityPlan.calculatedProgress|percent}}</h1>
+                                </li>
+                                <li>
+
+                                </li>
+                            </ul>
+                        </div>
+
+                        <h3 class="name_title">	{{pro.investment.typeId}}</h3>
+                        <p class="align-center">{{pro.investment.description}}</p>
+
+                        <div class="divider"></div>
+                        <p class="align-left"><label class="text-muted">Capital:</label> {{pro.investment.investedCapital}}</p>
+                        <p class="align-left"><label class="text-muted">Operator Name:</label> {{pro.investment.operator.name}}</p>
+                        <p class="align-left"><label class="text-muted">Operator Type:</label> Person</p>
+                        <div class="align-center">
+                                <button type="button" class="lg btn-camis" (click)="showProjectDetails(pro.promotionUnitId, pro.invProfile.id)">View</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <ng-template #no_searchResult>
+                <div class="x_panel">
+                    <div class="align-center x_content">
+                        <i class="fa fa-info-circle no-data"></i>
+                        <h4>There are currently no investment projects registered by your name</h4>
+                        <p>Please participate on the investment actively</p>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+
+        <div class="investorBids-body min-body" *ngIf="loading==true">
+            <div class="align-center bid-loader" >
+                <i class="fa fa-circle-o faa-burst animated"></i>
+            </div>
+
+        </div>
+    </div>
+</section>

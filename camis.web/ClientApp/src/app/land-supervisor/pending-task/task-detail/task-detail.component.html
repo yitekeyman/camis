@@ -1,0 +1,122 @@
+<div class="tab-pane board col-sm-12">
+  <div class="x_panel landBank_panel">
+    <div class="x_title">
+
+      <div class="col-sm-4 btn-group task-detail-LButtons">
+        <button class="btn btn-success detailBtns" type="submit" data-toggle="modal" data-target="#approveModal">
+          <i class="fa fa-thumbs-up btnIcons"></i>
+          Approve
+        </button>
+        <button class="btn btn-danger detailBtns" type="submit" data-toggle="modal" data-target="#removeModal">
+          <i class="fa fa-close btnIcons"></i>
+          Reject
+        </button>
+      </div>
+
+      <div class="col-sm-4">
+        <h2 style="text-align: center;float: none;">
+          <i class="fa fa-map">
+            Task detail
+          </i>
+        </h2>
+      </div>
+
+      <div class="col-sm-4">
+        <div class="btn-group task-detail-RButtons">
+          <button class="btn btn-danger detailBtns" type="submit" data-toggle="modal" data-target="#cancelModal">
+              <i class="fa fa-trash btnIcons"></i>
+              Cancel request</button>
+          <button class="btn btn-default detailBtns" type="submit" (click)="backButton()">
+            <i class="fa fa-chevron-left btnIcons"></i>
+            Back</button>
+        </div>
+
+      </div>
+
+      <div class="clearfix"></div>
+    </div>
+
+    <form [formGroup]="messageForm" class="new-land-form form" (ngSubmit)="sendMessage()">
+      <div class="modal fade" id="approveModal" tabindex="-1" role="dialog" aria-labelledby="approveModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" #btnClose class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body mx-3">
+              <div class="md-form">
+                <textarea type="text" id="message" class="md-textarea form-control" rows="4" formControlName="message" required placeholder="Write your message for clerk here"></textarea>
+              </div>
+            </div>
+            <div class="modal-footer approve-modal">
+              <button type="submit" class="btn btn-success">Approve <i class="fa fa-thumbs-up"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <form [formGroup]="rejectMessageForm" class="new-land-form form" (ngSubmit)="rejectApproval()">
+      <div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="removeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" #rejectBtnClose class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body mx-3">
+              <div class="md-form">
+                <textarea type="text" id="rejectMessage" class="md-textarea form-control" rows="4" formControlName="rejectMessage" required
+                  placeholder="Write your message for clerk here"></textarea>
+              </div>
+            </div>
+            <div class="modal-footer approve-modal">
+              <button type="submit" class="btn btn-danger">Reject <i class="fa fa-close"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <form [formGroup]="cancelMessageForm" class="new-land-form form" (ngSubmit)="cancelRequest()">
+      <div class="modal fade" id="cancelModal" tabindex="-1" role="dialog" aria-labelledby="cancelModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" #cancelBtnClose class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body mx-3">
+              <div class="md-form">
+                <textarea type="text" id="cancelMessage" class="md-textarea form-control" rows="4" formControlName="cancelMessage" required
+                  placeholder="Write your message for clerk here"></textarea>
+              </div>
+            </div>
+            <div class="modal-footer approve-modal">
+              <button type="submit" class="btn btn-danger">Cancel request <i class="fa fa-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <div class="col-sm-7">
+
+      <app-detail-table></app-detail-table>
+
+    </div>
+
+    <div class="col-sm-5">
+
+      <app-camis-map #camis_map>
+      </app-camis-map>
+
+    </div>
+
+  </div>
+</div>
+

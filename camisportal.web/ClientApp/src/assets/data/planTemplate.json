@@ -1,0 +1,69 @@
+[{
+  "id": "e18eca37-17d0-4306-bd27-bd8c7084984a",
+  "name": "Social Impact",
+  "data": {
+    "name": "Social Impact",
+    "description": "",
+    "weight": 1.0,
+    "schedules": [],
+    "activityPlanDetails": [],
+    "children": [{
+      "name": "Love",
+      "description": "",
+      "weight": 1.0,
+      "schedules": [],
+      "activityPlanDetails": [],
+      "children": [{
+        "name": "Social Impact",
+        "description": "",
+        "weight": 1.0,
+        "schedules": [],
+        "activityPlanDetails": [],
+        "children": []
+      }]
+    }, {
+      "name": "Environmental Impact",
+      "description": "",
+      "weight": 1.0,
+      "schedules": [],
+      "activityPlanDetails": [],
+      "children": []
+    }]
+  }
+}, {
+  "id": "5c0c1665-f329-48d8-9669-c3b72969a7d9",
+  "name": "Environmental Impact",
+  "data": {
+    "name": "Environmental Impact",
+    "description": "",
+    "weight": 1.0,
+    "schedules": [],
+    "activityPlanDetails": [],
+    "children": [{
+      "name": "Sub 1",
+      "description": "",
+      "weight": 1.0,
+      "schedules": [],
+      "activityPlanDetails": [],
+      "children": []
+    }, {
+      "name": "Sub 2",
+      "description": "",
+      "weight": 1.0,
+      "schedules": [],
+      "activityPlanDetails": [],
+      "children": []
+    }]
+  }
+}, {
+  "id": "e2f40010-6cd7-46f6-8d9d-8e3f750eafba",
+  "name": "Horticulture Template",
+  "data": {
+    "name": "Horticulture Template",
+    "description": "",
+    "weight": 1.0,
+    "schedules": [],
+    "activityPlanDetails": [],
+    "children": []
+  }
+}]

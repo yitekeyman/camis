@@ -1,0 +1,28 @@
+<h4 class="title">Plan</h4>
+
+<div style="display: flex">
+  <div style="flex: 3">
+    <label class="control-label" for="plan-status">Status *:</label>
+    <select [(ngModel)]="activityPlan.statusId" class="form-control input-sm" id="plan-status">
+      <option *ngFor="let statusType of statusTypes" [value]="statusType.id">{{statusType.name}}</option>
+    </select>
+  </div>
+
+  <div style="width: 15px"></div>
+
+  <div style="flex: 5">
+    <label class="control-label" for="plan-note">Note *:</label>
+    <textarea [(ngModel)]="activityPlan.note" class="form-control input-sm" id="plan-note"></textarea>
+  </div>
+</div>
+
+<hr>
+
+<div *ngIf="activityPlan && activityPlan.rootActivity">
+  <h4 class="title">Activities</h4>
+  <app-activities
+    [activity]="activityPlan.rootActivity"
+    [readonlyMode]="false"
+    (change)="onRootActivityItemChange($event)"
+  ></app-activities>
+</div>

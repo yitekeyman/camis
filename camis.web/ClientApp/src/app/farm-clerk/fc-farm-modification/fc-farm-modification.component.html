@@ -1,0 +1,207 @@
+<div id="user" class="tab-pane board">
+  <div class="x_panel">
+    <div class="x_title">
+      <h2><i class="fa fa-edit"></i>&nbsp; Edit Commercial Farm</h2>
+
+      <div class="clearfix"></div>
+    </div>
+
+    <div class="x_content" id="farm-registration">
+      <form method="post" (submit)="dumpSubmit($event)">
+        <!-- STEP 1 -->
+        <div class="panel panel-default" [id]="'farm-reg-panel'" *ngIf="step == 1">
+          <div class="panel-heading panel-title">Step 1 of 2: Edit Farm Owner</div>
+
+          <div class="panel-body has-scroll">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="control-label" for="op-name">Name: *</label>
+                <input [(ngModel)]="opName" type="text" name="op-name" id="op-name" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label class="control-label" for="op-nationality">{{opType == '1' ? 'Nationality' : 'Country of Origin'}}: *</label>
+                <input [(ngModel)]="opNationality" type="text" name="op-nationality" id="op-nationality" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label class="control-label" for="op-type">Owner Type: *</label>
+                <select [(ngModel)]="opType" name="op-type" id="op-type" class="form-control" required>
+                  <option *ngFor="let type of farmOperatorTypes" [value]="type.id">{{type.name}}</option>
+                </select>
+              </div>
+
+              <div class="form-group" *ngIf="opType == 1">
+                <label class="control-label" for="op-gender">Gender: *</label>
+                <select [(ngModel)]="opGender" name="op-gender" id="op-gender" class="form-control" required>
+                  <option value="F">Female</option>
+                  <option value="M">Male</option>
+                </select>
+              </div>
+              <div class="form-group" *ngIf="opType == 1">
+                <label class="control-label" for="op-martial-status">Martial Status: *</label>
+                <select [(ngModel)]="opMartialStatus" name="op-martial-status" id="op-martial-status" class="form-control" required>
+                  <option [value]="1">Not Married</option>
+                  <option [value]="2">Married</option>
+                  <option [value]="3">Divorced</option>
+                  <option [value]="4">Widowed</option>
+                </select>
+              </div>
+              <div class="form-group" *ngIf="opType == 1">
+                <label class="control-label" for="op-birthdate">Birthdate: *</label>
+                <input [(ngModel)]="opBirthdate" type="date" name="op-birthdate" id="op-birthdate" class="form-control" required>
+              </div>
+
+              <div class="form-group" *ngIf="opType == 6">
+                <label class="control-label" for="op-venture-search">Ventures: *</label>
+                <div *ngIf="opVentures.length">
+                  <div class="text-muted">Selected:</div>
+                  <div *ngFor="let farmOperatorId of opVentures; index as i" style="padding: 5px 5px 5px 15px">
+                    <a
+                      [href]="'/clerk/farm-operator/' + farmOperatorId"
+                      target="_blank"
+                      rel="noopener"
+                    >Owner #{{i + 1}} (click to view)</a>
+
+                    <button type="button" (click)="removeFromVentures(farmOperatorId)" class="btn btn-xs btn-circle">
+                      <i class="fa fa-remove"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="panel panel-body panel-default" style="margin-top: 5px">
+                  <input
+                    (keyup)="searchVentures($event.target.value)"
+                    (change)="searchVentures($event.target.value)"
+                    (blur)="searchVentures($event.target.value)"
+                    type="search"
+                    name="op-venture-search"
+                    id="op-venture-search"
+                    class="form-control"
+                    style="flex-grow: 1"
+                    placeholder="Search"
+                  >
+                  <div style="padding-top: 5px">
+                    <select
+                      [(ngModel)]="opVentureResultSelections"
+                      type="search"
+                      name="op-venture-results"
+                      id="op-venture-results"
+                      class="form-control"
+                      multiple
+                    >
+                      <option *ngFor="let result of opVentureResults" [value]="result.id">{{result.name}}</option>
+                    </select>
+                    <div style="text-align: right; padding-top: 5px">
+                      <button type="button" (click)="addVentures()" class="btn btn-default btn-sm" style="margin-right: 0">
+                        <i class="fa fa-plus"></i> Add Selected
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="control-label" for="op-origin">Owner Origin: *</label>
+                <select [(ngModel)]="opOriginId" name="op-origin" id="op-origin" class="form-control" required>
+                  <option *ngFor="let origin of farmOperatorOrigins" [value]="origin.id">{{origin.name}}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="control-label" for="op-capital">Capital:</label>
+                <input [(ngModel)]="opCapital" type="number" name="op-capital" id="op-capital" class="form-control">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="control-label" for="op-email">Email:</label>
+                <input [(ngModel)]="opEmail" type="email" name="op-email" id="op-email" class="form-control">
+              </div>
+              <div class="form-group">
+                <label class="control-label" for="op-phone">Phone:</label>
+                <input [(ngModel)]="opPhone" type="tel" name="op-phone" id="op-phone" class="form-control">
+              </div>
+              <div class="form-group">
+                <label class="control-label">
+                  Address: *
+                  <span *ngIf="!opAddress" class="fa fa-warning text-warning"></span>
+                  <span *ngIf="opAddress" class="fa fa-check-circle-o text-success"></span>
+                </label>
+                <app-address-selector [finalAddressId]="opAddress" (onChange)="opAddress = $event"></app-address-selector>
+              </div>
+            </div>
+
+            <div>
+              <app-authority-registrar
+                title="Supporting/License/Registration Documents"
+                [registrations]="opRegistrations"
+                [registrationTypes]="registrationTypes"
+                [registrationAuthorities]="registrationAuthorities"
+                (change)="$event.registrations && (opRegistrations = $event.registrations)"
+              ></app-authority-registrar>
+            </div>
+          </div>
+
+          <div class="panel-footer align-right">
+            <button type="button" class="btn btn-default" (click)="cancel()">
+              <i class="fa fa-warning"></i>&nbsp; Cancel
+            </button>
+            <button type="button" class="btn btn-success" (click)="step = 2" [disabled]="!opName || !opNationality || !opType">
+              Continue   <i class="fa fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="panel panel-default" [id]="'farm-reg-panel'" *ngIf="step == 2">
+          <div class="panel-heading panel-title">Step 2 of 2: Edit Farm</div>
+
+          <div class="panel-body has-scroll">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="control-label" for="fr-type">Primary Farm Type: *</label>
+                <select [(ngModel)]="frType" name="fr-type" id="fr-type" class="form-control" required>
+                  <option *ngFor="let type of farmTypes" [value]="type.id">{{type.name}}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="control-label" for="fr-other-types">Other Farm Types:</label>
+                <select [(ngModel)]="frOtherTypeIds" name="fr-other-types" id="fr-other-types" class="form-control" multiple>
+                  <option *ngFor="let type of farmTypes" [value]="type.id">
+                    {{type.name}}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="control-label" for="fr-invested-capital">Invested Capital: </label>
+                <input [(ngModel)]="frInvestedCapital" type="number" name="fr-invested-capital" id="fr-invested-capital" class="form-control">
+              </div>
+              <div class="form-group">
+                <label class="control-label" for="fr-description">Description: </label>
+                <textarea [(ngModel)]="frDescription" type="number" name="fr-description" id="fr-description" class="form-control"></textarea>
+              </div>
+            </div>
+
+            <div>
+              <app-authority-registrar
+                title="Farm Registrations"
+                [registrations]="frRegistrations"
+                [registrationTypes]="registrationTypes"
+                [registrationAuthorities]="registrationAuthorities"
+                (change)="$event.registrations && (frRegistrations = $event.registrations)"
+              ></app-authority-registrar>
+            </div>
+          </div>
+
+          <div class="panel-footer align-right">
+            <button type="button" class="btn btn-default" (click)="step = 1">
+              <i class="fa fa-arrow-left"></i> Back
+            </button>
+            <button (click)="onSubmit($event)" type="button" class="btn btn-success" [disabled]="!frType">
+              Submit for Approval <i class="fa fa-send"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

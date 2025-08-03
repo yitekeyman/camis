@@ -1,0 +1,242 @@
+<div id="detail-header" class="col-sm-12">
+  <div class="col-sm-6">
+    <div style="float: left;font-size: 14px;">
+      <b>Sent by: </b> {{userWorkItems.sentUserName}},<br />
+      <b>On: </b> {{userWorkItems.workItemDate | date}}
+    </div>
+  </div>
+  <div class="col-sm-6">
+    <div style="float: right;font-size: 14px;">
+      <b>{{userWorkItems.description}}</b>, <br />
+      <span *ngIf="isAgricultural === 'No'" style="color: red"> The land is not in agricultural zone</span>
+      <span *ngIf="isAgricultural === 'Yes'" style="color: green"> The land is in agricultural zone</span>
+    </div>
+  </div>
+</div>
+
+
+<div class="col-sm-12" style="padding: 0;margin-top: -4px;">
+  <div id="land-detail">
+    <ul class="decorator">
+      <li class="content">
+        <div class="detail-infos">
+          <h4 class='detail-title'>UPINs:</h4>
+
+          <ul *ngFor="let upin of workflowLand.upins">
+            <li class="detail-value">{{upin}}</li>
+          </ul>
+
+        </div>
+
+      </li>
+
+      <li class="content">
+        <div class="detail-infos">
+          <h4 class='detail-title'>Land Status: </h4>
+
+          <ul>
+            <li class="detail-value" *ngIf="workflowLand.landType === 0">New Land</li>
+            <li class="detail-value" *ngIf="workflowLand.landType !== 0">{{landType}}</li>
+          </ul>
+
+        </div>
+
+      </li>
+
+      <li class="content">
+        <div class="detail-infos">
+          <h4 class='detail-title'>Land Holder:</h4>
+
+          <ul>
+            <li class="detail-value">{{workflowLand.holdership}}</li>
+          </ul>
+
+        </div>
+
+      </li>
+
+      <li class="content">
+        <div class="detail-infos">
+          <h4 class='detail-title'>Area:</h4>
+
+          <ul>
+            <li class="detail-value">{{getArea()}}</li>
+          </ul>
+
+        </div>
+
+      </li>
+
+      <li class="content">
+        <div class="detail-infos">
+          <h4 class='detail-title'>Location:</h4>
+
+          <ul>
+            <li class="detail-value">{{workflowLand.centroidX}}° E, {{workflowLand.centroidY}}° N </li>
+          </ul>
+
+        </div>
+
+      </li>
+
+      <li class="content" *ngIf="accessiblities.length !== 0">
+        <div class="detail-infos">
+          <h4 class='detail-title'>Accessible By:</h4>
+
+          <ul *ngFor="let access of accessiblities">
+            <li class="detail-value">{{access}}</li>
+          </ul>
+
+        </div>
+
+      </li>
+
+      <li class="content" *ngIf="agroEchologyZones.length !== 0">
+        <div class="detail-infos">
+          <h4 class='detail-title'>Agro-Echology Zone:</h4>
+
+          <ul *ngFor="let agro of agroEchologyZones">
+            <li class="detail-value"><b>{{agro.name}} : </b> {{agro.result}}</li>
+          </ul>
+
+        </div>
+
+      </li>
+
+      <li class="content" *ngIf="investmentTypes.length !== 0">
+        <div class="detail-infos">
+          <h4 class='detail-title'>Land Suitable For:</h4>
+
+          <ul *ngFor="let investment of investmentTypes">
+            <li class="detail-value">{{investment}}</li>
+          </ul>
+
+        </div>
+
+      </li>
+
+      <li class="content">
+        <div class="detail-infos">
+          <h4 class='detail-title'>Moisture Source:</h4>
+
+          <ul>
+            <li class="detail-value"><b style="font-size: 15px;">{{moistureSources}}</b></li>
+          </ul>
+
+          <li class="nested-content" *ngIf="moistureSources === 'Irrigated'">
+            <div class="nested-detail-infos">
+              <div *ngIf="waterSourceParams.length !== 0">
+                <h6 class='nested-detail-title'>Generalized Water Sampling Parameters:</h6>
+
+                <ul *ngFor="let water of waterSourceParams">
+                  <li class="detail-value"><b>{{water.name}}: </b> {{water.result}}</li>
+                </ul>
+              </div>
+              <div *ngIf="groundWater.length !== 0">
+                <h6 class='nested-detail-title'>Ground Water:</h6>
+
+                <ul *ngFor="let gWater of groundWater">
+                  <li class="detail-value">{{gWater}}</li>
+                </ul>
+              </div>
+              <div *ngIf="surfaceWater.length !== 0">
+                <h6 class='nested-detail-title'>Surface Water:</h6>
+
+                <ul *ngFor="let sWater of surfaceWater">
+                  <li class="detail-value"><b>{{sWater.name}} : </b> {{sWater.result}}</li>
+                </ul>
+              </div>
+
+            </div>
+
+          </li>
+        </div>
+
+      </li>
+
+      <li class="content" *ngIf="topography.length !== 0">
+        <div class="detail-infos">
+          <h4 class='detail-title'>Topography: </h4>
+
+          <ul *ngFor="let topo of topography">
+            <li class="detail-value"><b>{{topo.name}} : </b> {{topo.result}}</li>
+          </ul>
+
+        </div>
+
+      </li>
+
+      <li class="content" *ngIf="soilTestTypes.length !== 0">
+        <div class="detail-infos">
+          <h4 class='detail-title'>Soil Chemical and Physical Properties:</h4>
+
+          <ul *ngFor="let soil of soilTestTypes">
+            <li class="detail-value"><b>{{soil.name}} : </b> {{soil.result}}</li>
+          </ul>
+
+        </div>
+
+      </li>
+
+      <li class="content" *ngIf="existingLandes.length !== 0">
+        <div class="detail-infos">
+          <h4 class='detail-title'>Existing Land Use:</h4>
+
+          <ul *ngFor="let eLand of existingLandes">
+            <li class="detail-value">{{eLand}}</li>
+          </ul>
+
+        </div>
+
+      </li>
+
+      <li class="content" *ngIf="climates.length !== 0">
+        <div class="detail-infos">
+          <h4 class='detail-title'>Climatology:</h4>
+
+          <table class="table table-striped jambo_table bulk_action" id="tclick">
+            <thead>
+              <tr class="headings">
+                <th class="column-title">Month</th>
+                <th class="column-title">Precipitation (cm)</th>
+                <th class="column-title">Mean Minimum Temperature (°c)</th>
+                <th class="column-title">Mean Maximum Temperature (°c)</th>
+                <th class="column-title">Average Temperature (°c)</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let climate of climates">
+                <td>{{climate.month}}</td>
+                <td>{{climate.precipitation}} cm</td>
+                <td>{{climate.temp_low}} °c</td>
+                <td>{{climate.temp_high }} °c</td>
+                <td>{{climate.temp_avg}} °c</td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+
+      </li>
+
+      <li class="content">
+        <div class="detail-infos">
+          <h4 class='detail-title'>Description:</h4>
+
+          <ul>
+            <li class="detail-value">{{workflowLand.description}}</li>
+          </ul>
+
+        </div>
+
+      </li>
+
+    </ul>
+
+    <app-document-list *ngIf="workflowLand && workflowLand.uploadDocument && workflowLand.uploadDocument.length" title="Uploaded Documents"
+      [documents]="workflowLand.uploadDocument">
+    </app-document-list>
+
+  </div>
+</div>

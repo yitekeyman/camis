@@ -1,0 +1,11 @@
+[
+    {"id":1, "name":"PH"},
+    {"id":2, "name":"Electrical conductivity ECW, mmhos/cm"},
+    {"id":3, "name":"Total Dissolved Solids TDS, ppm"},
+    {"id":4, "name":"Sodium Na, ppm"},
+    {"id":5, "name":"Chloride Cl, ppm"},
+    {"id":6, "name":"Calcium Ca, ppm"},
+    {"id":7, "name":"Bicarbonate HCo3, ppm"},    
+    {"id":8, "name":"Boron B, ppm"},
+    {"id":9, "name":"Florid F, ppm"}
+]

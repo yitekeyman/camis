@@ -1,0 +1,206 @@
+a {
+  cursor: pointer;
+}
+
+.refreshButton{
+    float: right;
+}
+.newland_panel{
+    min-height: 100vh;
+}
+.new-land-form {
+    padding-top: 10px;
+  }
+  
+  .new-land-form fieldset.fieldset-border {
+    border: 1px solid #E6E9ED;
+    padding: 12px;
+    margin: 0 0 1.5em 0;
+    -webkit-box-shadow: 0px 0px 0px 0px #000;
+    box-shadow: 0px 0px 0px 0px #000;
+  }
+  
+  .new-land-form legend.title-border {
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: left;
+    width: auto;
+    padding: 0 10px;
+    border-bottom: none;
+  }
+  .form-titles {
+    border-bottom: 1px solid lightgray;
+    margin-bottom: 15px;
+    background-color: #ededed;
+    padding: 7px 0 0px 10px;
+  }
+  
+  .help {
+    color: red;
+    font-size: 12px;
+  }
+  .newland_checkbox{
+    /* background: #f3f3f3; */
+    border-radius: 3px;
+    position: relative;
+    padding: 7px;
+    margin-bottom: 5px;
+    list-style: none;
+  }
+  .newland_radiobutton {
+    padding-left:  20px;
+  }
+  .agro-hidden-sec {
+    padding: 0 12px;
+  }
+  .newandButton{
+      float: right;
+  }
+  .landBank_map_preview{
+    min-height: 300px;
+  }
+  .add-upin{
+    float: right;
+    margin-right: 0!important;
+    padding: 0 6px!important;
+  }
+  .remove-upin{
+    padding: 0 6px!important;
+  }
+  .upload-document {
+    background-color: #ededed;
+  }
+  .add-document-input {
+    padding: 15px;
+    min-height: 55px;
+  }
+  .upload-label {
+    padding: 15px;
+  }
+  .upload-button {
+    float: right;
+    margin: 10px;
+  }
+  .question {
+    padding: 15px;
+    font-size: 15px;
+    border: 1px solid lightblue;
+  }
+
+  .wizard_horizontal ul.wizard_steps li a .step_no{
+    margin: 0 50px 5px!important;
+  }
+
+  .wizard_steps {
+    padding-left: 0!important;
+  }
+  .wizard_horizontal ul.wizard_steps li a, .wizard_horizontal ul.wizard_steps li:hover{
+    cursor: pointer;
+  }
+  .file-showing-textarea {
+    width: 100%;
+    min-height: 100px;
+  }
+  .checkbox-container {
+    display: block;
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  .checkbox-container input,
+  .checkbox-container .option {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+  .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 18px;
+        width: 18px;
+        background-color: #dedcdc;
+
+  }
+  .radiobutton {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 18px;
+    width: 18px;
+    background-color: #dedcdc;
+    border-radius: 50%;
+
+  }
+
+  .checkbox-container:hover input ~ 
+  .checkmark,
+  .checkbox-container:hover .option~.checkmark,
+  .checkbox-container:hover input ~
+  .radiobutton {
+    background-color: #ccc;
+  }
+  .checkbox-container input:checked ~
+  .checkmark,
+  .checkbox-container .option:checked~.checkmark,
+  .checkbox-container input:checked ~
+  .radiobutton {
+    background-color: green;
+  }
+  .checkmark:after,
+  .radiobutton:after
+   { 
+    content: '';
+    position: absolute;
+    display: none;
+  }
+  .checkbox-container input:checked ~
+  .checkmark:after,
+  .checkbox-container .option:checked~.checkmark:after,
+  .checkbox-container input:checked ~
+  .radiobutton:after {
+    display: block;
+  }
+  .checkbox-container .checkmark:after {
+    left: 7px;
+    top: 3px;
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 3px 0;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+  .checkbox-container .radiobutton:after {
+    left: 5px;
+    top: 5px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+.prev-button {
+  float: left;
+  background-color: #34495E;
+}
+.next-button {
+  float: right;
+  background-color: #34495E;
+}
+.prev-button a{
+  color: white;
+}
+
+.next-button a{
+  color: white;
+}

@@ -1,0 +1,33 @@
+﻿@model intapscamis.camis.domain.LandBank.LandBankFacadeModel.SplitTaskList
+
+    @if (Model.tasks.Count == 0)
+    {
+    <h2>No CAMIS QGIS Tasks..</h2>
+    }
+    else
+    {
+    <div class="table-responsive current-task">
+        <table class="table table-striped cmss_table bulk_action">
+            <thead>
+                <tr>
+                    <td></td>
+                    <td>UPIN</td>
+                    <td>Number of Parcels</td>
+                    <td>Description</td>
+                </tr>
+            </thead>
+            @foreach(var task in Model.tasks)
+            {
+            <tr>
+                <td>
+                    <input type="button" onclick="loadTask('@task.id',@task.n)" value="@(task.pending?" Process":"Redo")" class="btn btn-primary"/>
+                </td>
+                <td>@task.upin</td>
+                <td>@task.n</td>
+                <td>@task.description</td>
+
+            </tr>
+            }
+        </table>
+    </div>
+    }

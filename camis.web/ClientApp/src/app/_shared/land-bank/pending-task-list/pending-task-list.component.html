@@ -1,0 +1,126 @@
+<div class="tab-pane board" id="user">
+  <div class="x_panel">
+    <div class="x_title">
+      <h2><i class="fa fa-archive"></i> {{user}}'s Pending task list</h2>
+
+      <div class="clearfix"></div>
+    </div>
+
+    <div class="x_content has-scroll">
+
+      <div class="col-md-6">
+        <section class="panel">
+          <div class="x_title">
+            <h2 class="title" *ngIf="loginRole === 'land-clerk'">Initial land registration requests' responses </h2>
+            <h2 class="title" *ngIf="loginRole === 'land-supervisor'">Initial land registration requests </h2>
+            <div class="clearfix"></div>
+          </div>
+          <div class="panel-body">
+            <div class="dashboard-widget-content" >
+
+              <div *ngIf="noItem || userWorkItems.length == 0" class="alert alert-info">
+                There are no pending tasks to display!
+              </div>
+              <div *ngFor="let list of userWorkItems">
+                <div *ngIf="list.workFlowType === 4">
+                  <ul class="list-unstyled timeline widget">
+                    <li >
+                      <div class="block">
+                        <div class="block_content">
+                          <h2 class="title">
+                            <p>{{list.description}} (Type of request)</p>
+                          </h2>
+                          <div class="byline">
+                            <i class="fa fa-clock-o"></i>
+                            <span>{{list.workItemDate | date}} </span> by <span> {{list.sentUserName}}</span>
+                          </div>
+                          <p class="excerpt" *ngIf="loginRole === 'land-clerk'">
+                            <span class="text-muted">Message from supervisor: </span> {{list.workItemNote}}.
+
+                          </p>
+                          <p class="excerpt" *ngIf="loginRole === 'land-supervisor'">
+                            <span class="text-muted">Message from clerk: </span> {{list.workItemNote}}.
+
+                          </p>
+                        </div>
+                        <div class="align-right">
+                          <button *ngIf="loginRole === 'land-clerk'" class="btn btn-default btn-sm" (click)="editLand(list.wfid)">
+                            <i class="fa fa-sign-in"></i>&nbsp; Edit land
+                          </button>
+
+                          <button *ngIf="loginRole === 'land-supervisor'" class="btn btn-default btn-sm" (click)="taskDetail(list.wfid)">
+                            <i class="fa fa-sign-in"></i>&nbsp; Show detail
+                          </button>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="col-md-6">
+        <section class="panel" *ngIf="false"> <!--  // todo: SLI-temp -->
+          <div class="x_title">
+            <h2 class="title" *ngIf="loginRole === 'land-clerk'">Land preparation requests' responses </h2>
+            <h2 class="title" *ngIf="loginRole === 'land-supervisor'">Land preparation requests </h2>
+            <div class="clearfix"></div>
+          </div>
+          <div class="panel-body">
+            <div class="dashboard-widget-content" >
+
+              <div *ngIf="noItem || userWorkItems.length == 0" class="alert alert-info">
+                There are no pending tasks to display!
+              </div>
+              <div *ngFor="let list of userWorkItems">
+                <div *ngIf="list.workFlowType === 7">
+                  <ul class="list-unstyled timeline widget">
+                    <li >
+                      <div class="block">
+                        <div class="block_content">
+                          <h2 class="title">
+                            <p>{{list.description}} (Type of request)</p>
+                          </h2>
+                          <div class="byline">
+                            <i class="fa fa-clock-o"></i>
+                            <span>{{list.workItemDate | date}} </span> by <span> {{list.sentUserName}}</span>
+                          </div>
+                          <p class="excerpt" *ngIf="loginRole === 'land-clerk'">
+                            <span class="text-muted">Message from supervisor: </span> {{list.workItemNote}}.
+
+                          </p>
+                          <p class="excerpt" *ngIf="loginRole === 'land-supervisor'">
+                            <span class="text-muted">Message from clerk: </span> {{list.workItemNote}}.
+
+                          </p>
+                        </div>
+                        <div class="align-right">
+                          <button *ngIf="loginRole === 'land-clerk'" class="btn btn-default btn-sm" (click)="editLand(list.wfid)">
+                            <i class="fa fa-sign-in"></i>&nbsp; Edit land
+                          </button>
+
+                          <button *ngIf="loginRole === 'land-supervisor'" class="btn btn-default btn-sm" (click)="taskDetail(list.wfid)">
+                            <i class="fa fa-sign-in"></i>&nbsp; Show detail
+                          </button>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+

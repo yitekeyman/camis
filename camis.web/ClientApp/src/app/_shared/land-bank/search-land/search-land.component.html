@@ -1,0 +1,188 @@
+<div class="tab-pane board map-search">
+  <div class="x_panel landBank_x_panel">
+    <div class="x_title">
+      <h2>
+        <i class="fa fa-search">
+          Search for land
+        </i>
+      </h2>
+
+      <div class="title_right">
+        <div class="align-right row">
+          <form class="from col-sm-12" [formGroup]="searchForm" (ngSubmit)="searchResult()">
+            <div class="col-sm-1"></div>
+
+            <div class="col-sm-5 top_search">
+
+              <div class="input-group" id="search">
+                <input class="form-control my-0 py-1 lime-border" type="text" formControlName="keyword" placeholder="using upin"
+                  aria-label="Search">
+
+
+                <span class="input-group-btn">
+                  <button class="btn btn-round btn-default" type="submit">
+                    <i class="fa fa-search"></i>&nbsp;
+                  </button>
+                </span>
+              </div>
+
+            </div>
+
+            <div class="col-sm-5 top_search">
+
+              <div class="input-group" id="search">
+                <select class="land-type-select" (change)="selectChangeHandler($event.target.value)">
+                  <option value="0">--- Select land status ---</option>
+                  <option *ngFor="let type of landType">{{type.name}}</option>
+                </select>
+              </div>
+
+            </div>
+            <div class="col-sm-1"></div>
+            <div class="col-sm-12">
+              <div *ngIf="searchedResult !== null">{{searchedResult.length}} results found</div>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="searchedResult === null">
+      <table class="table table-striped jambo_table bulk_action" id="tclick" *ngIf="defaultSearch != null && !noDefaultSearchResult">
+        <thead>
+
+          <tr class="headings">
+            <th class="column-title">UPINs</th>
+            <th class="column-title">Description</th>
+            <th class="column-title">Land Status</th>
+            <th class="column-title">Area (ha)</th>
+            <th class="column-title">Land Holder</th>
+            <!-- <th class="column-title" *ngIf="clerkRole"></th> -->
+          </tr>
+        </thead>
+
+        <tbody *ngFor="let defaultResult of defaultSearch">
+
+          <!-- <tr routerLink="/land-clerk/land-dashboard/land-detail/{{result.landID}}"> -->
+          <tr>
+
+            <td (click)="showLandDetail(defaultResult.landID)">
+              {{defaultResult.upins}}
+            </td>
+            <td (click)="showLandDetail(defaultResult.landID)">
+              {{defaultResult.description}}
+            </td>
+            <td (click)="showLandDetail(defaultResult.landID)">
+              {{defaultResult.landType}}
+            </td>
+            <td (click)="showLandDetail(defaultResult.landID)">
+              {{defaultResult.area}}
+            </td>
+            <td (click)="showLandDetail(defaultResult.landID)">
+              {{defaultResult.holdership}}
+            </td>
+            <!-- <td style="padding: 2px;" *ngIf="clerkRole">
+              <button class="btn btn-primary edit-button" (click)="editLand(defaultResult.wfid)">
+                <i class="fa fa-edit" style="font-size: 13px;"></i>
+              </button>
+            </td> -->
+          </tr>
+        </tbody>
+
+      </table>
+
+      <div class="alert alert-danger" *ngIf="defaultSearch === null && noDefaultSearchResult">There is no identified land to display!
+        Go to <a class="goto-link" (click)="goToRegistration()">land profile registration</a> to register identified land!
+      </div>
+
+    </div>
+
+    <!-- <div class="alert alert-success" *ngIf="searchedResult === null">Use the above fields to search for a land!</div> -->
+
+    <div class="alert alert-danger" *ngIf="noSearchResult">
+      No result found!
+    </div>
+
+    <table class="table table-striped jambo_table bulk_action" id="tclick" *ngIf="searchedResult != null && !noSearchResult">
+      <thead>
+
+        <tr class="headings">
+          <th class="column-title">UPINs</th>
+          <th class="column-title">Description</th>
+          <th class="column-title">Land Status</th>
+          <th class="column-title">Area (ha)</th>
+          <th class="column-title">Holdership</th>
+          <th class="column-title" *ngIf="clerkRole"></th>
+        </tr>
+      </thead>
+
+      <tbody *ngFor="let result of pagedItems">
+
+        <!-- <tr routerLink="/land-clerk/land-dashboard/land-detail/{{result.landID}}"> -->
+        <tr>
+
+          <td (click)="showLandDetail(result.landID)">
+            {{result.upins}}
+          </td>
+          <td (click)="showLandDetail(result.landID)">
+            {{result.description}}
+          </td>
+          <td (click)="showLandDetail(result.landID)">
+            {{result.landType}}
+          </td>
+          <td (click)="showLandDetail(result.landID)">
+            {{result.area}}
+          </td>
+          <td (click)="showLandDetail(result.landID)">
+            {{result.holdership}}
+          </td>
+          <td style="padding: 2px;" *ngIf="clerkRole">
+            <button class="btn btn-primary edit-button" (click)="editLand(result.wid)">
+              <i class="fa fa-edit" style="font-size: 13px;"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+
+    </table>
+
+  </div>
+
+  <div class="col-sm-6 col-sm-offset-3" *ngIf="searchedResult != null && !noSearchResult">
+    <nav aria-label="Page navigation" class="pagination-nav">
+      <ul *ngIf="pager.pages && pager.pages.length" class="pagination pagination-centered">
+        <li [ngClass]="{disabled:pager.currentPage === 1}">
+          <a aria-label="previous" (click)="setPage(1)">
+            <span aria-hidden="true">First</span>
+          </a>
+        </li>
+        <li [ngClass]="{disabled:pager.currentPage === 1}">
+          <a aria-label="previous" (click)="setPage(pager.currentPage - 1)">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+
+        <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+          <a (click)="setPage(page)">
+            <span aria-hidden="true">{{page}}</span>
+          </a>
+        </li>
+
+        <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+          <a aria-label="next" (click)="setPage(pager.currentPage + 1)">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+        <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+          <a aria-label="previous" (click)="setPage(pager.totalPages)">
+            <span aria-hidden="true">Last</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+
+</div>

@@ -1,0 +1,58 @@
+<div id="dashboard" class="tab-pane active in dashboard board-with-header-footer">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Recent Activities</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li><a class="collapse-link" data-toggle='tooltip' title='Collapse the Page'><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                        <li><a class="close-link" data-toggle='tooltip' title='Hide the Page'><i class="fa fa-close"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content has-scroll">
+                    <div class="dashboard-widget-content">
+
+                        <ul class="list-unstyled timeline widget">
+                            <li *ngFor="let audit of pagedItems" >
+                                <div class="block">
+                                    <div class="block_content" >
+                                        <h2 class="title">
+                                            <a>{{audit.action}}</a>
+                                        </h2>
+                                        <div class="byline">
+                                            <a><i class="fa fa-user"></i>  {{audit.userName}} ({{audit.fullName}})</a><br/>
+                                            <span><i class="fa fa-calendar-check-o"></i>  {{audit.actionTime}}</span> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                           
+                        </ul>
+                    </div>
+                </div>
+                <div class="x_footer">
+                    <div class="align-center">
+                        <div class="clearfix"></div>
+                        <ul *ngIf="pager.pages && pager.pages.length" class="pagination">
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a (click)="setPage(1)" data-toggle='tooltip' title='First Page'><i class="fa  fa-arrows-v"></i><i class="fa fa-chevron-left"></i></a>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === 1}">
+                                <a (click)="setPage(pager.currentPage - 1)" data-toggle='tooltip' title='Prevouse Page'><i class="fa fa-chevron-left"></i></a>
+                            </li>
+                            <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+                                <a (click)="setPage(page)">{{page}}</a>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a (click)="setPage(pager.currentPage + 1)" data-toggle='tooltip' title='Next Page'><i class="fa fa-chevron-right"></i></a>
+                            </li>
+                            <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+                                <a (click)="setPage(pager.totalPages)" data-toggle='tooltip' title='Last Page'><i class="fa fa-chevron-right"></i><i class="fa  fa-arrows-v"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        
+</div>

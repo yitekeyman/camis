@@ -1,0 +1,78 @@
+<section id="register" class="min">
+    <div class="register-form-container col-md-4 col-md-offset-4">
+
+        <section class="x_panel">
+            <div class="x_content">
+                <div class="reg-header align-center">
+                    <i class="icon fa fa-address-book-o major"></i>
+                    <h3>Register </h3>
+                </div>
+                <form [formGroup]="userForm" (submit)="register()">
+                    <div class="register-form-body">
+                        <hr>
+                        <div class="form-group">
+                            <label>Fullname:*   
+                                <small class="form-text help" *ngIf="userForm.controls.fullname.errors!=null && userForm.controls.fullname.errors.required!=null && userForm.controls.fullname.touched">This field is required.</small>
+                                <small class="form-text help" *ngIf="userForm.controls.fullname.errors!=null && userForm.controls.fullname.errors.pattern!=null && userForm.controls.fullname.touched">Invalid Name Use Character Only.</small>
+                            </label>
+                            <input type="text" class="form-control" placeholder="Fullname" formControlName="fullname" [(ngModel)]="userModel.FullName">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone No:*  
+                                <small class="form-text help" *ngIf="userForm.controls.phoneNo.errors!=null && userForm.controls.phoneNo.errors.required!=null && userForm.controls.phoneNo.touched">This field is required.</small>
+                                <small class="form-text help" *ngIf="userForm.controls.phoneNo.errors!=null && userForm.controls.phoneNo.errors.pattern!=null && userForm.controls.phoneNo.touched">Invalid Phone No Use Number Only.</small>
+                                <small class="form-text help" *ngIf="userForm.controls.phoneNo.errors!=null && userForm.controls.phoneNo.errors.maxlength!=null && userForm.controls.phoneNo.touched">Invalid Phone No max 13 digits.</small>
+                                <small class="form-text help" *ngIf="userForm.controls.phoneNo.errors!=null && userForm.controls.phoneNo.errors.minlength!=null && userForm.controls.phoneNo.touched">Invalid Phone No min 10 digits.</small>
+                            </label>
+                            <input type="tel" class="form-control" placeholder="Phone No" formControlName="phoneNo" [(ngModel)]="userModel.PhoneNo">
+                        </div>
+                        <div class="form-group">
+                            <label>E-Mail:* 
+                                <small class="form-text help" *ngIf="userForm.controls.email.errors!=null && userForm.controls.email.errors.required!=null && userForm.controls.email.touched">This field is required.</small>
+                                <small class="form-text help" *ngIf="userForm.controls.email.errors!=null && userForm.controls.email.errors.pattern!=null && userForm.controls.email.touched">Invalid E-mail Address.</small>
+                                <small class="form-text help" *ngIf="validEmail==false">This E-Mail is available in database</small>
+                            </label>
+                            <div class="input-group">
+                                <input type="email" class="form-control" placeholder="E-Mail" formControlName="email" [(ngModel)]="userModel.EMail" (change)="checkEmail($event.target.value)">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-spinner faa-spin animated" *ngIf="emailLoad==true"></i>
+                                    <i class="fa fa-check correct" *ngIf="validEmail==true"></i>
+                                    <i class="fa fa-close wrong" *ngIf="validEmail==false"></i>
+                                </span>
+                            </div>
+                           
+                        </div>
+                        <div class="form-group">
+                            <label>Username:* 
+                                <small class="form-text help" *ngIf="!userForm.controls.username.valid && userForm.controls.username.touched">This field is required.</small>
+                                <small class="form-text help" *ngIf="validUsername==false">This Username is available in database</small>
+                            </label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Username" id="username"  formControlName="username" [(ngModel)]="userModel.UserName" (change)="checkUser($event.target.value)">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-spinner faa-spin animated" *ngIf="usernameLoad==true"></i>
+                                    <i class="fa fa-check correct" *ngIf="validUsername==true"></i>
+                                    <i class="fa fa-close wrong" *ngIf="validUsername==false"></i>
+                                </span>
+                            </div>
+                            
+                        </div>
+                        <div class="form-group">
+                            <label>Password: <small class="form-text help" *ngIf="!userForm.controls.password.valid && userForm.controls.password.touched">This field is required.</small></label>
+                            <input type="password" class="form-control" placeholder="Password" id="user_pass" formControlName="password" [(ngModel)]="userModel.Password">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm Password: <small class="form-text help" *ngIf="!userForm.controls.confirmPassword.valid && userForm.controls.confirmPassword.touched">This field is required.</small></label>
+                            <input type="password" class="form-control" placeholder="Confirm Password" id="conf_pass" formControlName="confirmPassword" (keyup)="validatePassword()">
+                            <small class="passwordMismatch form-text help">{{newPassConfirm}}</small>
+                        </div>
+                        <div class="form-group align-right">
+                            <button type="submit" class="button x-lg btn-camis" [disabled]="!(userForm.valid && validUsername && validEmail)">Register</button>
+                            <button type="reset" class="button btn x-lg btn-default">Clear</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</section>

@@ -1,0 +1,44 @@
+<div id="user" class="tab-pane board">
+  <div class="x_panel">
+    <div class="x_title">
+      <h2><i class="fa fa-clock-o"></i>&nbsp; Reviewing Project Plan Update</h2>
+      <ul class="nav navbar-right panel_toolbox">
+        <div class="btn-group">
+          <button class="btn btn-sm btn-danger" title="View Land" (click)="rejectUpdatePlan()">
+            <i class="fa fa-close"></i>&nbsp; Reject Plan Update
+          </button>
+          <button class="btn btn-sm btn-success" title="View Land" (click)="approveUpdatePlan()">
+            <i class="fa fa-check"></i>&nbsp; Approve Plan Update
+          </button>
+        </div>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+
+    <div class="x_content has-scroll">
+      <div *ngIf="loading" class="align-center"><h2>Loading...</h2></div>
+      <div *ngIf="!loading" style="padding-bottom: 60px">
+        <app-farm-detail [farm]="farm"></app-farm-detail>
+
+        <div style="display: flex">
+          <div style="flex: 3">
+            <label class="control-label" for="plan-status">Status *:</label>
+            <select [(ngModel)]="farm.activityPlan.statusId" class="form-control input-sm" id="plan-status" readonly>
+              <option *ngFor="let statusType of statusTypes" [value]="statusType.id">{{statusType.name}}</option>
+            </select>
+          </div>
+
+          <div style="width: 15px"></div>
+
+          <div style="flex: 5">
+            <label class="control-label" for="plan-note">Note *:</label>
+            <textarea [(ngModel)]="farm.activityPlan.note" class="form-control input-sm" id="plan-note" readonly></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+

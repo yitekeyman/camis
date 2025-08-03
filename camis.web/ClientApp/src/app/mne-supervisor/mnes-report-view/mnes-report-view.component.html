@@ -1,0 +1,20 @@
+<div id="user" class="tab-pane board">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2><i class="fa fa-clock-o"></i>  Report Detail</h2>
+            <ul class="nav navbar-right panel_toolbox">
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="x_content has-scroll">
+            <div *ngIf="loading" class="align-center"><h2>Loading...</h2></div>
+            <div *ngIf="!loading && report">
+                <app-report-detail [report]="report"></app-report-detail>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+

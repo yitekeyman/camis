@@ -1,0 +1,87 @@
+<div id="user" class="tab-pane board">
+  <div class="x_panel">
+    <div class="x_title">
+      <h2><i class="fa fa-clock-o"></i>  Report Detail</h2>
+      <ul class="nav navbar-right panel_toolbox">
+        <div class="btn-group">
+          <button class="btn btn-sm btn-danger" title="View Land" (click)="cancelProgressReport()">
+            <i class="fa fa-close"></i>&nbsp; Cancel Report
+          </button>
+          <button class="btn btn-sm btn-warning" title="View Land" (click)="rejectProgressReport()">
+            <i class="fa fa-close"></i>&nbsp; Reject Encoding
+          </button>
+          <button class="btn btn-sm btn-success" title="View Land" (click)="reportProgressReport()">
+            <i class="fa fa-check"></i>&nbsp; Report Encoding
+          </button>
+        </div>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+
+    <div class="x_content has-scroll">
+      <div *ngIf="loading" class="align-center"><h2>Loading...</h2></div>
+      <div *ngIf="!loading" style="padding-bottom: 60px">
+        <h4>Progress Report</h4>
+
+        <div style="display: flex; padding-bottom: 15px">
+          <div style="flex: 2">
+            <div style="padding-bottom: 15px">
+              <label class="control-label" for="progress-status">Status *:</label>
+              <select [(ngModel)]="activityPlan.reportStatusId" class="form-control input-sm" id="progress-status" [disabled]="readonlyReporting">
+                <option *ngFor="let statusType of statusTypes" [value]="statusType.id">{{statusType.name}}</option>
+              </select>
+            </div>
+            <div style="padding-bottom: 15px">
+              <label class="control-label" for="progress-time">Report Date *:</label>
+              <input [(ngModel)]="activityPlan.reportDate" type="date" class="form-control input-sm" id="progress-time" [readonly]="readonlyReporting">
+            </div>
+          </div>
+
+          <div style="width: 15px"></div>
+
+          <div style="flex: 4;">
+            <div style="padding-bottom: 15px">
+              <label class="control-label" for="progress-input-type">Progress Input Type *:</label>
+              <select [(ngModel)]="activityPlan.isAdditional" class="form-control input-sm" id="progress-input-type" [disabled]="readonlyReporting">
+                <option [value]="false">Cumulative</option>
+                <option [value]="true">Additional</option>
+              </select>
+            </div>
+            <div style="padding-bottom: 15px">
+              <label class="control-label" for="progress-note">Note *:</label>
+              <textarea [(ngModel)]="activityPlan.reportNote" class="form-control input-sm" id="progress-note" [readonly]="readonlyReporting"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding-bottom: 15px">
+          <!-- if !readonlyReporting: -->
+          <app-document-selector
+            *ngIf="!readonlyReporting"
+            title="Progress Report Documents"
+            [documents]="activityPlan.reportDocuments"
+            (change)="onDocumentSelectorChange($event)"
+          ></app-document-selector>
+          <!-- else: -->
+          <app-document-list
+            *ngIf="readonlyReporting"
+            title="Progress Report Documents"
+            [documents]="activityPlan.reportDocuments"
+          ></app-document-list>
+        </div>
+
+        <div *ngIf="activityPlan.reportStatusId && activityPlan.reportStatusId != 3">
+          <app-activities
+            *ngIf="activityPlan && activityPlan.rootActivity"
+            [activity]="activityPlan.rootActivity"
+            [reportingMode]="true"
+            [readonlyReporting]="true"
+          ></app-activities>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+

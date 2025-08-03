@@ -1,0 +1,89 @@
+
+<div id="login">
+  <div class="container">
+    <div class="login-warper">
+      <div class="parties">
+        <div class="camis">
+          <i class="fa fa-map-marker"></i>
+          <h1>CAMiS</h1>
+          <p>Commercial Agriculture Management Information System</p>
+        </div>
+        <div class="parties-logo">
+          <img src="/images/eu-logo.png" class="first" style="padding-right: 2em; height:70px" title="European Union"/>
+          <img src="/images/GIZ-logo.png" class="middle"/>
+          <img src="/images/ata-logo.png" class="middle"/>
+          <img src="/images/horticulture.png" class="last"/>
+        </div>
+      </div>
+      <div class="login-page">
+        <div>
+
+          <div class="login-content">
+            <div class="align-center login-icon">
+              <img src="/images/camis.png">
+              <p>Commercial Agriculture Management Information System</p>
+            </div>
+            <div class="align-center">
+              <h3>Please Login</h3>
+              <hr>
+            </div>
+            <form [formGroup]="loginForm" (submit)="login()">
+              <div >
+                <input type="text" class="username" id="username" placeholder="Username" formControlName="username"  [(ngModel)]="user.username">
+                <input type="password" class="password" id="password" placeholder="Password" formControlName="password"  [(ngModel)]="user.password">
+
+              </div>
+              <div class="login-message" id="login-message">
+
+              </div>
+              <div class="align-right">
+                <button class="btn btn-defualt" type="reset">Clear</button>
+                <button class="btn btn-success" type="submit">Login</button>
+              </div>
+            </form>
+          </div>
+          <div class="login-footer">
+            <div ><p class="align-center">powered by <a href="https://www.intaps.com">INTAPS Consultancy plc</a></p></div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div  id="roleModal"  class="modal fade">
+  <div class="modal-dialog">
+    <form (ngSubmit)="closeForm()" (reset)="cancelLogin()">
+      <div class="modal-content">
+        <div class="modal-header">
+
+          <h5 class="modal-title ">Role Selection</h5>
+        </div>
+        <div class="modal-body">
+          <div *ngFor="let role of ROLES">
+            <ul class="nav">
+              <li>
+                <div class="input-form">
+                  <input class="form-check-input" type="radio" name="roleRadio" [id]="'role-radio-' + role.id" value={{role.id}} [(ngModel)]="selectedRole">
+                  <label class="form-check-label" [for]="'role-radio-' + role.id">{{role.name}}</label>
+                </div>
+              </li>
+            </ul>
+
+          </div>
+        </div>
+        <div class="modal-footer">
+          <ul class="nav">
+            <li id="addImgBtn" class="align-center addDocBtn">
+              <div class="input-group" style="display: flex">
+                <button type="submit" class="btn btn-success btn-sm">Ok</button>
+                <button type="reset" class="btn btn-warning btn-sm">Cancel</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>

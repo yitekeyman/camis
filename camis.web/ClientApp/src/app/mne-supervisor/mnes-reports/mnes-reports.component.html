@@ -1,0 +1,75 @@
+<div id="user" class="tab-pane board">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2><i class="fa fa-clock-o"></i>  Submitted Reports</h2>
+            <div class="title_right">
+                <div class="align-right" style="display: flex;">
+                    <div class="col-md-5 col-sm-5 col-xs-5 col-lg-5 col-md-offset-2 top_search">
+                        <div class="input-group">
+                            <input [(ngModel)]="term" (keyup)="load(0)" class="form-control btn-round" type="search" name="search" placeholder="Search" title="Search">
+                            <span class="input-group-btn">
+                                <button class="btn btn-round btn-default" type="button" (click)="load(0)">
+                                    <i class="fa fa-search"></i>&nbsp;
+                                </button>
+                            </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+        <div class="x_content has-scroll">
+            <div *ngIf="loading" class="align-center"><h2>Loading...</h2></div>
+            <div *ngIf="!loading && !reports.length" class="align-center">
+                <p> {{term ? ('No search results found for "' + term + '".') : 'No submitted reports, yet.'}}</p>
+            </div>
+
+            <div *ngIf="!loading && reports.length && plan && plan.rootActivity">
+                <div class="title text-success">Latest progress report:</div>
+                <app-activity-progress [activity]="plan.rootActivity"></app-activity-progress>
+            </div>
+
+            <div *ngIf="!loading && reports.length">
+                <table class="table table-striped table-bordered jambo_table bulk_action">
+                    <caption class="title text-success">Showing {{reports.length}} of {{totalReports}} {{term ? 'search result' : 'submitted report'}}{{reports.length == 1 ? '' : 's'}}{{term ? (' found for "' + term + '"') : null}}.</caption>
+                    <thead>
+                    <tr class="">
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Progress</th>
+                        <th>Note</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr *ngFor="let report of reports">
+                        <td>
+                            <label [for]="'report-open-btn-' + report.id">{{report.reportTime | date}}</label>
+                        </td>
+                        <td>
+                            <label [for]="'report-open-btn-' + report.id">{{report.reportStatus ? report.reportStatus.name : null}}</label>
+                        </td>
+                        <td>
+                            <label [for]="'report-open-btn-' + report.id">{{report.calculatedProgress | percent}}</label>
+                        </td>
+                        <td>
+                            <label [for]="'report-open-btn-' + report.id">{{report.note}}</label>
+                        </td>
+                        <td class="text-nowrap align-center">
+                            <button [id]="'report-open-btn-' + report.id" class="btn btn-sm btn-default" title="Detail" (click)="openDetail(report.id)">
+                                <i class="fa fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="align-center" *ngIf="totalReports > reports.length">
+                    <button type="button" class="btn btn-round" (click)="load()">Load More...</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

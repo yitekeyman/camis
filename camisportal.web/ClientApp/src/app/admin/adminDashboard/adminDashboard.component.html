@@ -1,0 +1,40 @@
+<section class="min">
+    <div class="investorBids-container">
+        <div class="investorBids-body min-body">
+            <div class="col-md-3" *ngIf="userRole==2">
+                <a routerLink="/admin/manageUsers">
+                    <div class="panel">
+                        <div class="panel-body admin-tiles align-center">
+                            <i class="fa fa-users"></i>
+                            <h3>Users</h3>
+                        </div>
+                    </div>
+                </a>
+                
+                
+            </div>
+            <div class="col-md-3">
+                <a routerLink="/admin/manageBid">
+                    <div class="panel">
+                        <div class="panel-body admin-tiles align-center">
+                            <i class="fa fa-suitcase"></i>
+                            <h3>Promotions</h3>
+                        </div>
+                    </div>
+                </a>
+                
+            </div>
+            <div class="col-md-3">
+                <a routerLink="/admin/regionsSetting">
+                    <div class="panel">
+                        <div class="panel-body admin-tiles align-center">
+                            <i class="fa fa-gear"></i>
+                            <h3>Regions Setting</h3>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+    </div>
+</section>

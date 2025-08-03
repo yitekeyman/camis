@@ -1,0 +1,90 @@
+{
+  "common": {
+    "ok": "OK!",
+    "yes": "Yes",
+    "yesSure": "Yes, I am Sure",
+    "cancel": "Cancel",
+    "back": "Back",
+    "areYouSure": "Are you absolutely sure?",
+    "error": "Error",
+    "success": "Success!",
+    "failed": "Failed!   :(",
+    "howTo": "HOW TO",
+    "active": "Active",
+    "inactive": "Inactive",
+    "complete": "Complete",
+    "target": "Target",
+    "noneSelected": "[none selected]"
+  },
+  "brand": {
+    "camis": "CAMIS",
+    "camisLong": "Commercial Agriculture Management Information System",
+    "copyright": "(C) 2018 CAMIS.\n\nPowered by INTAPS Consultancy plc"
+  },
+  "errors": {
+    "invalidEmail": "Invalid email address."
+  },
+  "navigation": {
+    "tasks": "Tasks",
+    "settings": "Settings"
+  },
+  "tasks": {
+    "header": "CAMIS",
+    "noTasks": "No tasks to show.",
+    "noTasksDesc":
+      "Configure your connection and credential Settings and then Refresh, from the top right corner of this screen, to get an up-to-date tasks information."
+  },
+  "progress": {
+    "header": "Progress",
+    "submitDialogTitle": "Submit Progress Report",
+    "submitDialogMessage": "Are you absolutely sure you want to submit this report?",
+    "encodingLink": "Proceed to Progress Data Entry...",
+    "investmentInfoHeader": "Investment",
+    "planNoteLabel": "Plan Notes:",
+    "coordinatesLabel": "Land Coordinates:",
+    "noCoordinates": "This investment has no land assigned.",
+    "reportDocumentsHeader": "Report Documents",
+    "noReportDocuments": "No picture has been attached to this report.",
+    "date": "Shot on",
+    "refNo": "Ref. no.",
+    "addPhoto": "+ Add Photo Attachement",
+    "reportOptionsHeader": "Report Options",
+    "reportStatusLabel": "Report Status:",
+    "reportTypeLabel": "Report Type:",
+    "additional": "Additional",
+    "cumulative": "Cumulative",
+    "reportDateLabel": "Report Date:",
+    "reportNoteLabel": "Report Note:",
+    "reportNotePlaceholder": "Progress report note.",
+    "footer":
+      "--- PRESS THE \"Send\" ICON, AT THE TOP RIGHT OF THIS SCREEN, TO SUBMIT THIS REPORT ---"
+  },
+  "encoding": {
+    "header": "Data Entry",
+    "activityStatusLabel": "Activity Status:",
+    "footer": "--- PROGRESS DATA IS AUTOMATICALLY SAVED LOCALLY ---"
+  },
+  "settings": {
+    "header": "Settings",
+    "connection": "Connection",
+    "domainUrlLabel": "Domain URL:",
+    "domainUrlPlaceholder": "http://192.168.43.xxx:5000",
+    "credentials": "Credentials",
+    "usernameLabel": "Username:",
+    "usernamePlaceholder": "expert",
+    "passwordLabel": "Password:",
+    "passwordPlaceholder": "password",
+    "testLogin": "Test Connection and Credentials",
+    "testLoginSuccess": "Both connection and authentication have completed successfully.",
+    "storage": "Storage",
+    "dataClearingOptionsLabel": "Data Clearing Options:",
+    "clearSettings": "Clear Settings Data",
+    "clearTasks": "Clear Tasks Data",
+    "clearAll": "Clear All Data",
+    "clearSuccess": "The data has been cleared successfully."
+  },
+  "storybook": {
+    "placeholder": "Placeholder",
+    "field": "Field"
+  }
+}

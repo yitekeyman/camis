@@ -1,0 +1,142 @@
+.landBank_panel{
+    min-height: 100vh;
+    height: auto!important;
+}
+.detailMap_breaker{
+    border-right: 1px solid #E6E9ED;
+    min-height: 88vh;
+}
+.land-Description-area{
+    border: 1px solid #E6E9ED;
+    padding: 5px;
+}
+.backButton{
+    float: right;
+}
+.modal-header{
+  border-bottom: 0!important;
+}
+.modal-footer{
+  border-top: 0!important;
+}
+.modal-body {
+  padding-top: 0!important;
+}
+.prepare-modal{
+  text-align: center;
+}
+@media (min-width: 768px){
+  .modal-dialog {
+      width: 370px!important;
+
+  }
+}
+
+/* ...........search result detail......... */
+#land-detail {
+  text-align: center;
+  border: 0.25em solid #E6E9ED;
+  border-left: 0;
+  border-radius: 0.5em;
+  border-top: none!important;
+  border-top-right-radius: unset;
+}
+
+.decorator {
+  border-left: 0.25em solid #26b99a;
+  background: rgba(255, 255, 255, 0.1);
+  line-height: 1.4em;
+  padding: 1em;
+  padding-left: 2.5em;
+  list-style: none;
+  text-align: left;
+  border-radius: 0.3em;
+  border-top-left-radius: unset;
+  min-width: 22em;
+  margin: 0!important;
+}
+
+.content {
+  min-width: 20em;
+  width: 100%;
+  vertical-align: middle;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.decorator .content:before,
+.decorator .content:after {
+  position: absolute;
+  display: block;
+  top: 1em;
+}
+
+.decorator .content:before {
+  left: -15em;
+  color: rgba(255, 255, 255, 0.8);
+  content: attr(data-date);
+  text-align: right;
+  font-weight: 100;
+  font-size: 0.9em;
+  min-width: 9em;
+}
+
+.decorator .content:after {
+  box-shadow: 0 0 0 0.2em #26b99a;
+  left: -3em;
+  background: #ededed;
+  border-radius: 50%;
+  height: 0.75em;
+  width: 0.75em;
+  content: "";
+}
+
+.detail-infos {
+  padding: 10px 10px 5px 0;
+  text-align: left;
+  position: relative;
+  border-bottom: 1px solid #E6E9ED;
+}
+
+.detail-infos .detail-title {
+  font-weight: bold;
+  font-size: 1.3em;
+  margin: 0!important;
+}
+
+.detail-value {
+  text-indent: 2px;
+  padding-top: 3px;
+}
+
+#tclick {
+  margin-top: 10px;
+}
+#detail-header {
+  border-bottom: 2px solid #81bfb2;
+  border-left: 0.25em solid #26b99a;
+  border-right: 0.25em solid #E6E9ED;
+  padding: 5px;
+  background-color: #ededed;
+  border-radius: 0.4em;
+  border-bottom-right-radius: unset;
+  border-bottom-left-radius: unset;
+  color: #73879c;
+}
+.split-info{
+  color: #a5a2a2;
+}
+.nested-content {
+  margin-left: 25px;
+  border-left: 4px solid #eee
+}
+
+.nested-detail-title {
+  font-size: 1.2em;
+  margin: 0 !important;
+}
+
+.nested-detail-infos {
+  padding-left: 14px;
+  padding-top: 10px;
+}

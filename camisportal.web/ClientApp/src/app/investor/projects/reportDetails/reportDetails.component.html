@@ -1,0 +1,98 @@
+
+<div style="padding-bottom: 15px" class="col-md-12">
+    <app-activity-progress *ngIf="report"
+                           [activity]="report.rootActivity"
+                           [overridePercent]="report.calculatedProgress"
+    ></app-activity-progress>
+</div>
+<div class="col-md-6">
+    <div class="x_title">
+        <h4>Progress Report</h4>
+        <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+        <table class="table table-striped" *ngIf="report !=null">
+            <tbody>
+            <tr>
+                <td><label>Reported Date:</label></td>
+                <td>{{report.reportTime | date}}</td>
+            </tr>
+            <tr>
+                <td><label>Progress Status:</label></td>
+                <td>{{report.reportStatus && report.reportStatus.name}}</td>
+            </tr>
+            <tr>
+                <td><label>Note:</label></td>
+                <td>{{report.note}}</td>
+            </tr>
+            <tr>
+                <td><label>Physical Progress:</label></td>
+                <td> {{report.calculatedProgress | percent}} complete</td>
+            </tr>
+            <tr>
+                <td><label>Schedule Status:</label></td>
+                <td>{{status}}</td>
+            </tr>
+            <tr>
+                <td><label>Budget Use:</label></td>
+                <td>
+                    <div *ngIf="!resourceProgresses.length">[n/a]</div>
+                    <div *ngFor="let prg of resourceProgresses" style="display: flex">
+                        <span class="text-muted text-nowrap" style="min-width: 90px">
+                            <b>{{prg.variable && prg.variable.name || '?'}}: </b>
+                        </span>
+                        <span class="text-muted text-nowrap" style="flex: auto">
+                            {{prg.totalProgress}} / {{prg.totalTarget}}
+                            {{prg.variable && prg.variable.defaultUnit && prg.variable.defaultUnit.name || ''}}
+                            ({{(prg.totalProgress / prg.totalTarget) | percent}} used)
+                        </span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td><label>Outcomes:</label></td>
+                <td>
+                    <div *ngIf="!outcomeProgresses.length">[n/a]</div>
+                    <div *ngFor="let prg of outcomeProgresses" style="display: flex">
+                        <span class="text-muted text-nowrap" style="min-width: 90px">
+                            <b>{{prg.variable && prg.variable.name || '?'}}: </b>
+                        </span>
+                        <span class="text-muted text-nowrap" style="flex: auto">
+                            {{prg.totalProgress}} / {{prg.totalTarget}}
+                            {{prg.variable && prg.variable.defaultUnit && prg.variable.defaultUnit.name || ''}}
+                            ({{(prg.totalProgress / prg.totalTarget) | percent}} delivered)
+                        </span>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="col-md-6">
+    <div class="x_title">
+        <h4> Report Document</h4>
+        <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+        <div class="land-document" *ngIf="report.reportDocuments?.length > 0; else noDocument">
+            <div *ngFor="let doc of report.reportDocuments">
+                <div class="camistron">
+                    <table class="table">
+                        <tr>
+                            <td><a><i class="fa fa-file-o"></i>  <label>{{doc.filename}}</label> </a></td>
+                            <td> <a>    Ref: {{doc.ref}}   |   Date: {{doc.date}}   |    Note: {{doc.note}}
+                            </a></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+
+        </div>
+        <ng-template #noDocument class="align-center">
+            <p>No Document</p>
+        </ng-template>
+    </div>
+</div>

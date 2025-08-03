@@ -1,0 +1,91 @@
+<section class="min">
+    <div class="investorBids-container">
+
+        <div class="investorBids-body min-body" *ngIf="loading==false">
+            <div class="x_panel col-md-12">
+                <div class="x_title">
+                    <h4><i class="fa fa-list"></i> Regions</h4>
+                    <div class="panel_toolbox">
+                      
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="x_content">
+                    <table class="table camis-table table-striped">
+                        <thead>
+                        <tr >
+                            <th>No</th>
+                            <th>Region Code</th>
+                            <th>Region Name</th>
+                            <th>Region CAMIS URL</th>
+                          
+                            <th class="align-center">Manage</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td></td>
+                            <td><input type="text" class="form-control" [disabled]="!(isNew)"[(ngModel)]="regionModel.Code"/> </td>
+                            <td><input type="text" class="form-control"  [(ngModel)]="regionModel.Name"/> </td>
+                            <td><input type="text" class="form-control"  [(ngModel)]="regionModel.CamisUrl"/> </td>
+                            <td class="align-center">
+                                <button class="btn btn-sm btn-camis" (click)="updateRegion()"  [disabled]="!(selectedRole==2)"><span *ngIf="isNew==true"><i class="fa fa-plus"></i> Add Region</span><span *ngIf="isUpdate==true"><i class="fa fa-edit"></i> Update Region</span></button>
+                            </td>
+                        </tr>
+                        <tr *ngFor="let reg of regions; index as i">
+                            <td>{{i+1}}</td>
+                            <td>{{reg.code}}</td>
+                            <td>{{reg.name}}</td>
+                            <td>{{reg.camisUrl}}</td>
+                            <td class="align-center"><div class="btn-group">
+                                <button class="btn btn-sm btn-camis"  (click)="editRegion(reg)" [disabled]="!(selectedRole==2)"><i class="fa fa-edit" ></i> update region</button>
+                            </div> </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <!--<div class="panel col-md-12">-->
+            <!--<div class="x_title">-->
+            <!--<h3>Investors</h3>-->
+            <!--</div>-->
+
+            <!--<div class="panel-body">-->
+            <!--<table class="table camis-table table-striped">-->
+            <!--<thead>-->
+            <!--<tr >-->
+            <!--<th>FullName</th>-->
+            <!--<th>Username</th>-->
+            <!--<th>Phone No</th>-->
+            <!--<th>Email</th>-->
+            <!--<th class="align-center">Manage</th>-->
+            <!--</tr>-->
+            <!--</thead>-->
+            <!--<tbody>-->
+            <!--<tr *ngFor="let investor of investors">-->
+            <!--<td>{{investor.fullname}}</td>-->
+            <!--<td>{{investor.username}}</td>-->
+            <!--<td>{{investor.phoneNo}}</td>-->
+            <!--<td>{{investor.email}}</td>-->
+            <!--<td class="align-center"><div class="btn-group">-->
+            <!--<button class="btn btn-sm btn-camis"><i class="fa fa-eye"></i> Detail</button>-->
+            <!--</div> </td>-->
+            <!--</tr>-->
+            <!--</tbody>-->
+            <!--</table>-->
+            <!--</div>-->
+
+            <!--</div>-->
+        </div>
+
+        <div class="investorBids-body min-body" *ngIf="loading==true">
+            <div class="align-center bid-loader" >
+                <i class="fa fa-circle-o faa-burst animated"></i>
+            </div>
+
+        </div>
+    </div>
+</section>

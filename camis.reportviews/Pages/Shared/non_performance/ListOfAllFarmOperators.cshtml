@@ -1,0 +1,92 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@using intapscamis.camis.domain.Report
+@model intapscamis.camis.domain.Farms.Models.ReportResponseModel
+@{
+    var i = 1;
+    var type = (int)Model.Request.SelectedReportType;
+    var uids = Model.OperatorList.Select(m => m.Id).Distinct();
+
+}
+
+<table class="table table-striped jambo_table bulk_action" id="tclick">
+    <thead>
+
+        <tr class="headings">
+            <th class="column-title">No</th>
+
+            <th class="column-title">Name</th>
+
+            <th class="column-title">Nationality</th>
+            <th class="column-title">Type</th>
+            <th class="column-title">Phone</th>
+            <th class="column-title">Email</th>
+            <th class="column-title numberValue">Investment Capital</th>
+
+            <th class="column-title">Origin</th>
+
+            <th class="column-title">Registration</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var id in uids)
+        {
+            var all = Model.OperatorList.Where(m => m.Id == id).ToList();
+            var item = all.FirstOrDefault();
+        <tr>
+            <td class="column-title">@(i++)</td>
+            <td class="column-title">@item.Name   </td>
+            <td class="column-title">@item.Nationality</td>
+            <td class="column-title numberValue">@item.Type</td>
+            <td class="column-title">@item.Phone</td>
+            <td class="column-title">@item.Email</td>
+            <td class="column-title numberValue">@item.InvestedCapital</td>
+            <td class="column-title">@item.Origin</td>
+            <td class="column-title">
+                @foreach(var r in all)
+                {
+                    <p>@r.RegistrationType | @r.LicenseNumber | @r.Authroity </p>
+                }
+            </td>
+
+        </tr>
+        }
+        @*@foreach (var item in Model.OperatorList)
+        {
+            <tr>
+                <td class="column-title">@(i++)</td>
+                <td class="column-title">@item.Name   </td>
+                <td class="column-title">@item.Nationality</td>
+                <td class="column-title numberValue">@item.Type</td>
+                <td class="column-title">@item.Phone</td>
+                <td class="column-title">@item.Email</td>
+                <td class="column-title numberValue">@item.InvestedCapital</td>
+                <td class="column-title">@item.Origin</td>
+                <td class="column-title">@item.LicenseNumber</td>
+                <td class="column-title">@item.RegistrationType</td>
+                <td class="column-title">@item.Authroity</td>
+
+            </tr>
+        }*@
+        @if (Model.OperatorList.Count() > 0)
+        {
+
+            <tr>
+                <td class="column-title"></td>
+                <td class="column-title"></td>
+                <td class="column-title"></td>
+                <td class="column-title"></td>
+                <td class="column-title"></td>
+                <td class="column-title"></td>
+                <td class="column-title numberValue">@Math.Round(Model.OperatorList.Sum(m => m.InvestedCapital), 2)</td>
+                <td class="column-title"></td>
+                <td class="column-title"></td>
+
+            </tr>
+
+        }
+    </tbody>
+</table>

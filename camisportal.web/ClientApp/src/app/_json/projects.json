@@ -1,0 +1,207 @@
+[
+  {
+    "id": "94ca5f92-47ff-4001-b225-11ab138d4af7",
+    "operatorId": "b2908f4b-dbf2-468d-967b-09690665e9aa",
+    "typeId": 4,
+    "activityId": "80c48468-53e2-453e-83b1-4d861de6298e",
+    "investedCapital": 7865.0,
+    "description": "test",
+    "registrations": [{
+      "id": 53,
+      "registrationNumber": "1346809077",
+      "authorityId": 4,
+      "typeId": 3,
+      "authority": {
+        "id": 4,
+        "name": "Ministry of Labour and Social Affairs"
+      },
+      "type": {
+        "id": 3,
+        "name": "Investment Permit"
+      }
+    }],
+    "operator": {
+      "id": "b2908f4b-dbf2-468d-967b-09690665e9aa",
+      "name": "Abel consultant ",
+      "nationality": "Ethiopian",
+      "typeId": 1,
+      "addressId": "c2d29867-3d0b-d497-9191-18a9d8ee7844",
+      "phone": "+25191000000",
+      "email": "info@abel.com",
+      "originId": 1,
+      "capital": 124578963.0,
+      "registrations": [{
+        "id": 131,
+        "registrationNumber": "124578",
+        "authorityId": 1,
+        "typeId": 1,
+        "documentId": "d9b03897-aa52-4fe2-9ac7-da58f0d5f4af",
+        "authority": {
+          "id": 1,
+          "name": "Ethiopian Investment Commission (EIC)"
+        },
+        "type": {
+          "id": 1,
+          "name": "Commercial Registration"
+        },
+        "document": {
+          "id": "d9b03897-aa52-4fe2-9ac7-da58f0d5f4af",
+          "date": 1542119019930,
+          "ref": "ref:124578",
+          "note": "",
+          "mimetype": "application/pdf",
+          "type": 0,
+          "filename": "Registration"
+        }
+      }],
+      "type": {
+        "id": 1,
+        "name": "Person"
+      },
+      "origin": {
+        "id": 1,
+        "name": "Ethiopian"
+      }
+    },
+    "type": {
+      "id": 4,
+      "name": "Forestery"
+    },
+    "farmLands": []
+  },
+
+  {
+    "id": "e395d9b5-e4ac-4314-a8b4-3a260780a3c3",
+    "operatorId": "b2908f4b-dbf2-468d-967b-09690665e9aa",
+    "typeId": 1,
+    "activityId": "0540f34e-5ace-4804-a966-12f0f3d55981",
+    "investedCapital": 124578.0,
+    "description": "Selected from CAMIS Portal",
+    "registrations": [],
+    "operator": {
+      "id": "b2908f4b-dbf2-468d-967b-09690665e9aa",
+      "name": "Abel consultant ",
+      "nationality": "Ethiopian",
+      "typeId": 1,
+      "addressId": "c2d29867-3d0b-d497-9191-18a9d8ee7844",
+      "phone": "+25191000000",
+      "email": "info@abel.com",
+      "originId": 1,
+      "capital": 124578963.0,
+      "registrations": [{
+        "id": 131,
+        "registrationNumber": "124578",
+        "authorityId": 1,
+        "typeId": 1,
+        "documentId": "d9b03897-aa52-4fe2-9ac7-da58f0d5f4af",
+        "authority": {
+          "id": 1,
+          "name": "Ethiopian Investment Commission (EIC)"
+        },
+        "type": {
+          "id": 1,
+          "name": "Commercial Registration"
+        },
+        "document": {
+          "id": "d9b03897-aa52-4fe2-9ac7-da58f0d5f4af",
+          "date": 1542119019930,
+          "ref": "ref:124578",
+          "note": "",
+          "mimetype": "application/pdf",
+          "type": 0,
+          "filename": "Registration"
+        }
+      }],
+      "type": {
+        "id": 1,
+        "name": "Person"
+      },
+      "origin": {
+        "id": 1,
+        "name": "Ethiopian"
+      }
+    },
+    "type": {
+      "id": 1,
+      "name": "Large Scale Agriculture"
+    },
+    "farmLands": [{
+      "landId": "aee68281-af88-41de-8dc1-aac1c720eb04",
+      "certificateDocId": "d7df3c3f-8e45-4a6e-bf59-50d268755e1a",
+      "leaseContractDocId": "45928f7e-1594-44a3-be1d-39693535e422",
+      "farmId": "e395d9b5-e4ac-4314-a8b4-3a260780a3c3",
+      "certificateDoc": {
+        "id": "d7df3c3f-8e45-4a6e-bf59-50d268755e1a",
+        "date": 1542326400000,
+        "ref": "Ref:124578",
+        "note": "",
+        "mimetype": "application/pdf",
+        "filename": "NRLAIS2.pdf"
+      },
+      "leaseContractDoc": {
+        "id": "45928f7e-1594-44a3-be1d-39693535e422",
+        "date": 1542326400000,
+        "ref": "ref:20181116-001",
+        "note": "",
+        "mimetype": "application/pdf",
+        "filename": "Grit Philosophers Notes.pdf"
+      }
+    }]
+  },
+  {
+    "id": "815f6292-48eb-491a-ad41-00918919e7cb",
+    "operatorId": "f05f0c36-67bb-400f-8783-18ec05c3b301",
+    "typeId": 1,
+    "activityId": "dd138ecf-b367-40f6-84ea-12c8877a3fa8",
+    "investedCapital": 12457896.0,
+    "description": "Selected from CAMIS Portal",
+    "registrations": [],
+    "operator": {
+      "id": "f05f0c36-67bb-400f-8783-18ec05c3b301",
+      "name": "chaltu Agro industry",
+      "nationality": "Ethiopian",
+      "typeId": 1,
+      "addressId": "c2d29867-3d0b-d497-9191-18a9d8ee7843",
+      "phone": "+251910616253",
+      "email": "info@chaltu.com",
+      "originId": 1,
+      "capital": 124578.32,
+      "registrations": [{
+        "id": 132,
+        "registrationNumber": "12457896",
+        "authorityId": 1,
+        "typeId": 1,
+        "documentId": "c6ef8304-372b-4041-9d78-f4dd4a93c4b3",
+        "authority": {
+          "id": 1,
+          "name": "Ethiopian Investment Commission (EIC)"
+        },
+        "type": {
+          "id": 1,
+          "name": "Commercial Registration"
+        },
+        "document": {
+          "id": "c6ef8304-372b-4041-9d78-f4dd4a93c4b3",
+          "date": 1542240000000,
+          "ref": "ref:20181113-003",
+          "note": "",
+          "mimetype": "application/pdf",
+          "filename": "test.pdf"
+        }
+      }],
+      "type": {
+        "id": 1,
+        "name": "Person"
+      },
+      "origin": {
+        "id": 1,
+        "name": "Ethiopian"
+      }
+    },
+    "type": {
+      "id": 1,
+      "name": "Large Scale Agriculture"
+    },
+    "farmLands": []
+  }
+]

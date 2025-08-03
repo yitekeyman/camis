@@ -1,0 +1,31 @@
+.item {
+    display: flex;
+    margin: 0 0 4px;
+    padding: 7px 15px 7px 0;
+    height: 30px;
+    max-height: 30px;
+    min-height: 30px;
+    font-size: 14px;
+    line-height: 16px;
+    border: 0;
+    border-left: 3px solid rgba(0,70,140,0.7);
+    background-color: rgba(0,0,0,0.07);
+}
+
+.item > a, .item > span {
+    display: inline-block;
+    margin-left: 15px;
+    cursor: pointer;
+}
+.item > span {
+    cursor: default !important;
+}
+
+.name {
+    flex: auto;
+    margin-left: 20px !important;
+}
+
+.nanny {
+    padding: 0 0 0 23px;
+}

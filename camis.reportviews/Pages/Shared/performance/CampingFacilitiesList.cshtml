@@ -1,0 +1,73 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using intapscamis.camis.domain.Report
+@model intapscamis.camis.domain.Farms.Models.ReportResponseModel
+@{
+    var i = 1;
+    var type = (int)Model.Request.SelectedReportType;
+    var lookup = Model.LocationLookup;
+
+}
+
+<table class="table table-striped jambo_table bulk_action" id="tclick">
+    <thead>
+
+        <tr class="headings">
+            <th class="column-title">No</th>
+            <th class="column-title">Upin</th>
+            <th class="column-title">Woreda</th>
+
+
+
+
+            <th class="column-title">Camp Type</th>
+            <th class="column-title numberValue">Area (m2)</th>
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.CampingFacilityList)
+        {
+            var key = item.Key;
+            var list = item.Value;
+            @foreach (var x in list)
+            {
+
+
+                <tr>
+                    @if (list.IndexOf(x) == 0)
+                    {
+                        <td class="column-title" rowspan="@list.Count()">@(i++)</td>
+                        <td class="column-title" rowspan="@list.Count()">
+                            @if (lookup.ContainsKey(list[0].upin.Woreda()))
+                            {
+                                <p>@lookup[list[0].upin.Woreda()]</p>
+                            }
+                            else
+                            {
+                                <p>@list[0].upin.Woreda()</p>
+                            }
+                        </td>
+                        <td class="column-title" rowspan="@list.Count()">@list[0].OpeartorName</td>
+
+                    }
+
+
+                    <td class="column-title">@x.tag.Beautify(19)</td>
+                    <td class="column-title numberValue">@x.progress</td>
+
+                </tr>
+            }
+
+
+
+        }
+    </tbody>
+</table>

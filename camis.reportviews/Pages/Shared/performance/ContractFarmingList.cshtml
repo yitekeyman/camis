@@ -1,0 +1,162 @@
+﻿@using intapscamis.camis.domain.Report
+@model intapscamis.camis.domain.Farms.Models.ReportResponseModel
+@{
+    var i = 1;
+    var type = (int)Model.Request.SelectedReportType;
+    var lookup = Model.LocationLookup;
+    var data = Model.ContractFarmingList;
+
+}
+
+
+<table class="table table-striped jambo_table bulk_action" id="tclick">
+    <thead>
+
+        <tr class="headings">
+            <th class="column-title">No</th>
+            <th class="column-title">Farm</th>
+            <th class="column-title">Woreda</th>
+            <th class="column-title">Contracted Upin</th>
+            <th class="column-title title-center" colspan="2">Input</th>
+            <th class="column-title title-center" colspan="2">Output</th>
+        </tr>
+        <tr class="headings">
+            <th class="column-title"></th>
+            <th class="column-title"></th>
+            <th class="column-title"></th>
+            <th class="column-title"></th>
+            <th class="column-title">Type</th>
+            <th class="column-title numberValue">Value</th>
+            <th class="column-title">Type</th>
+            <th class="column-title numberValue">Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var d in data)
+        {
+            <tr>
+                <td class="column-title" rowspan="@d.RowCount">@(i++)</td>
+                <td class="column-title" rowspan="@d.RowCount">@d.farmName</td>
+                <td class="column-title" rowspan="@d.RowCount">
+                    @if (lookup.ContainsKey(d.woreda))
+                    {
+                        <p>@lookup[d.woreda] (@d.woreda)</p>
+                    }
+                    else
+                    {
+                        <p>@d.woreda</p>
+                    }
+                </td>
+
+                @{ var upin = d.ContractedFarms[0];
+                }
+                <td class="column-title" rowspan="@upin.MaxPPICount">@upin.upin</td>
+                @if (upin.Input.Count() > 0)
+                {
+                    <td class="column-title">@upin.Input[0].tag.GetTag().Beautify(23)</td>
+                    <td class="column-title">@upin.Input[0].progress</td>
+                }
+                else
+                {
+                    <td class="column-title"></td>
+                    <td class="column-title"></td>
+                }
+                @if (upin.Output.Count() > 0)
+                {
+                    <td class="column-title">@upin.Output[0].tag.GetTag().Beautify(24)</td>
+                    <td class="column-title">@upin.Output[0].progress</td>
+                }
+                else
+                {
+                    <td class="column-title"></td>
+                    <td class="column-title"></td>
+                }
+            </tr>
+
+            @for (int k = 1; k < upin.MaxPPICount; k++)
+            {
+
+                <tr>
+                    @if (k < upin.Input.Count())
+                    {
+                        <td class="column-title">@upin.Input[k].tag.GetTag().Beautify(23)</td>
+                        <td class="column-title">@upin.Input[k].progress</td>
+                    }
+                    else
+                    {
+                        <td class="column-title"></td>
+                        <td class="column-title"></td>
+                    }
+                    @if (k < upin.Output.Count())
+                    {
+                        <td class="column-title">@upin.Output[k].tag.GetTag().Beautify(24)</td>
+                        <td class="column-title">@upin.Output[k].progress</td>
+                    }
+                    else
+                    {
+                        <td class="column-title"></td>
+                        <td class="column-title"></td>
+                    }
+                </tr>
+            }
+
+            @for (int z = 1; z < d.ContractedFarms.Count; z++)
+            {
+                <tr>
+                    @{ var up = d.ContractedFarms[z];
+                    }
+                    <td class="column-title" rowspan="@up.MaxPPICount">@up.upin</td>
+                    @if (up.Input.Count() > 0)
+                    {
+                        <td class="column-title">@up.Input[0].tag.GetTag().Beautify(23)</td>
+                        <td class="column-title">@up.Input[0].progress</td>
+                    }
+                    else
+                    {
+                        <td class="column-title"></td>
+                        <td class="column-title"></td>
+                    }
+                    @if (up.Output.Count() > 0)
+                    {
+                        <td class="column-title">@up.Output[0].tag.GetTag().Beautify(24)</td>
+                        <td class="column-title">@up.Output[0].progress</td>
+                    }
+                    else
+                    {
+                        <td class="column-title"></td>
+                        <td class="column-title"></td>
+                    }
+                </tr>
+
+                @for (int k = 1; k < up.MaxPPICount; k++)
+                {
+
+                    <tr>
+                        @if (k < up.Input.Count())
+                        {
+                            <td class="column-title">@up.Input[k].tag.GetTag().Beautify(23)</td>
+                            <td class="column-title">@up.Input[k].progress</td>
+                        }
+                        else
+                        {
+                            <td class="column-title"></td>
+                            <td class="column-title"></td>
+                        }
+                        @if (k < up.Output.Count())
+                        {
+                            <td class="column-title">@up.Output[k].tag.GetTag().Beautify(24)</td>
+                            <td class="column-title">@up.Output[k].progress</td>
+                        }
+                        else
+                        {
+                            <td class="column-title"></td>
+                            <td class="column-title"></td>
+                        }
+                    </tr>
+                }
+
+
+            }
+}
+        </tbody>
+    </table>

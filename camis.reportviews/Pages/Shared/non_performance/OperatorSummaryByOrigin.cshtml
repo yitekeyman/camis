@@ -1,0 +1,44 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@using intapscamis.camis.domain.Report
+@model intapscamis.camis.domain.Farms.Models.ReportResponseModel
+@{
+    var i = 1;
+    var type = (int)Model.Request.SelectedReportType;
+
+}
+
+<table class="table table-striped jambo_table bulk_action" id="tclick">
+    <thead>
+
+        <tr class="headings">
+
+            <th class="column-title">Origin</th>
+
+            <th class="column-title numberValue">Count</th>
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.OperatorSummaryByOrigins)
+        {
+            <tr>
+                <td class="column-title">@item.Origin   </td>
+                <td class="column-title numberValue">@item.Count</td>
+
+            </tr>
+        }
+        @if (Model.OperatorSummaryByOrigins.Count() > 0)
+        {
+
+            <tr>
+                <td class="column-title"></td>
+                <td class="column-title numberValue">@Model.OperatorSummaryByOrigins.Sum(m => m.Count)</td>
+            </tr>
+
+        }
+    </tbody>
+</table>

@@ -1,0 +1,66 @@
+
+
+            <ul class="land_details" *ngIf="application">
+                <li>
+                    <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                    <div class="land_details_wrapper">
+                        <h4>Submission Date:</h4>
+                        <div class="land_details_element">
+                            <span>{{application.applicationTime | date: 'MMM dd/yyyy'}}</span>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                    <div class="land_details_wrapper">
+                        <h4>Proposed Capital:</h4>
+                        <div class="land_details_element">
+                            <span>{{application.proposedCapital}}</span>
+                        </div>
+                    </div>
+                </li>
+                <li>
+
+                    <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                    <div class="land_details_wrapper">
+                        <h4>Investment Type:</h4>
+                        <div class="land_details_element">
+                            <span *ngFor="let inv of invesType">{{inv}}<br/></span>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                    <div class="land_details_wrapper">
+                        <h4>Proposal Abstract:</h4>
+                        <div class="land_details_element">
+                            <span>{{application.proposalAbstract}}</span>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                    <div class="land_details_wrapper">
+                        <h4>Contact Address:</h4>
+                        <div class="land_details_element">
+                            <span> <strong>Name: </strong> {{application.contactAddress.name}}</span><br/>
+                            <span><strong>E-Mail: </strong> {{application.contactAddress.email}}</span><br/>
+                            <span> <strong>Phone: </strong> {{application.contactAddress.phone}}</span>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <span class="ld_icon"><i class="fa fa-check-square-o"></i> </span>
+                    <div class="land_details_wrapper">
+                        <h4>Proposal Documents:</h4>
+                        <div class="attached-bid-docs" *ngFor="let doc of application.proposalDocument; index as i">
+                            <ul>
+                                <li class="bid-data">
+                                    <a (click)="openProDoc(promotionUnitID, investorID, i)">  <i class="fa fa-file-pdf-o"></i>  {{doc.docRef || 'Open Document'}}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+       

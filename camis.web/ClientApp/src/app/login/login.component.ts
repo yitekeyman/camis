@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit {
   public loggedIn: boolean | false;
   public user: LoginUser;
   public selectedRole: number;
-
+  showPassword = false;
 
   public ROLES: any[];
 
@@ -95,5 +95,8 @@ export class LoginComponent implements OnInit {
   }
   public cancelLogin(): void {
     $('#roleModal').hide().removeClass('in');
+  }
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 }

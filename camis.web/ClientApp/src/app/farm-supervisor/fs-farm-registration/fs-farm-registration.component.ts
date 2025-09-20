@@ -3,6 +3,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 
 import {FarmApiService} from '../../_services/farm-api.service';
 import dialog from '../../_shared/dialog';
+import {ObjectKeyCasingService} from "../../_services/object-key-casing.service";
 
 @Component({
   selector: 'app-fs-farm-registration',
@@ -18,13 +19,16 @@ export class FsFarmRegistrationComponent implements OnInit {
   constructor (
     private api: FarmApiService,
     private router: Router,
-    private ar: ActivatedRoute
+    private ar: ActivatedRoute,
+    private keyCase: ObjectKeyCasingService
   ) {
+
   }
 
   ngOnInit(): void {
     this.ar.params.subscribe(params => this.workflowId = params.workflowId, dialog.error)
       .add(this.api.getLastWorkItem(this.workflowId).subscribe(workItem => {
+        this.keyCase.camelCase(workItem);
         if (workItem) { this.data = workItem.data; }
         this.loading = false;
       }, dialog.error));

@@ -3,6 +3,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 
 import {FarmApiService} from '../../_services/farm-api.service';
 import dialog from '../../_shared/dialog';
+import {ObjectKeyCasingService} from "../../_services/object-key-casing.service";
 
 @Component({
   selector: 'app-fs-farm-view',
@@ -15,15 +16,16 @@ export class FsFarmViewComponent implements OnInit {
   farmId: string;
   farm: any;
 
-  constructor (private router: Router, private api: FarmApiService, private ar: ActivatedRoute) {
+  constructor (private router: Router, private api: FarmApiService, private ar: ActivatedRoute, private keyCaseService: ObjectKeyCasingService) {
   }
 
   ngOnInit(): void {
-    this.ar.params.subscribe(params => this.farmId = params.farmId, dialog.error)
+    this.ar.params.subscribe(params =>{ this.keyCaseService.camelCase(params);this.farmId = params.farmId}, dialog.error)
       .add(this.api.getFarm(this.farmId).subscribe(farm => {
+        this.keyCaseService.camelCase(farm);
         this.farm = farm;
         this.loading = false;
-      }, dialog.error));
+      }));
   }
 
 }

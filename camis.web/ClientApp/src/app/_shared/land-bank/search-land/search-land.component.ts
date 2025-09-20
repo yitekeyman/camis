@@ -139,6 +139,7 @@ export class SearchLandComponent implements OnInit {
     this.searchModel.upin = this.keyword.value;
     this.keyCase.PascalCase(this.searchModel);
     this.landService.SearchLand(this.searchModel).subscribe(resp => {
+      this.keyCase.camelCase(resp);
         this.searchedResult = resp.result;
 
         this.setPage(1);

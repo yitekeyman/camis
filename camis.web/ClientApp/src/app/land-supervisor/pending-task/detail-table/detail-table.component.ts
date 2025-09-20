@@ -1,10 +1,13 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { LandBankWorkFlowLand, LandBankWorkItem, Month, SoilTestType, Accessablity, LandType,
-      AgroEchologicalZone, ExistingLandUse, InvestmentType, MoistureSource, WaterTestParameters,
-      GroundWater, SurfaceWater, Topography} from '../../../_shared/land-bank/land.model';
-import { Router, ActivatedRoute } from '@angular/router';
-import { LandDataService } from '../../../_services/land-data.service';
-import { timingSafeEqual } from 'crypto';
+import {Component, OnInit, Input} from '@angular/core';
+import {
+  LandBankWorkFlowLand, LandBankWorkItem, Month, SoilTestType, Accessablity, LandType,
+  AgroEchologicalZone, ExistingLandUse, InvestmentType, MoistureSource, WaterTestParameters,
+  GroundWater, SurfaceWater, Topography
+} from '../../../_shared/land-bank/land.model';
+import {Router, ActivatedRoute} from '@angular/router';
+import {LandDataService} from '../../../_services/land-data.service';
+import {timingSafeEqual} from 'crypto';
+import {ObjectKeyCasingService} from "../../../_services/object-key-casing.service";
 
 @Component({
   selector: 'app-detail-table',
@@ -47,7 +50,8 @@ export class DetailTableComponent implements OnInit {
 
 
   constructor(private router: Router, private landService: LandDataService, private activeRoute: ActivatedRoute,
-              ) { }
+              private keyCase: ObjectKeyCasingService) {
+  }
 
   ngOnInit() {
     this.activeRoute.params.subscribe(params => {
@@ -56,12 +60,14 @@ export class DetailTableComponent implements OnInit {
     });
 
   }
+
   getArea() {
     return Math.round(this.workflowLand.area / 10) / 1000 + ' ha';
   }
+
   getLandDetail() {
     this.landService.GetUserWorkItems().subscribe(data => {
-
+      this.keyCase.camelCase(data);
       for (const workItem of data) {
         if (workItem.wfid === this.wfid) {
           this.userWorkItems = workItem;
@@ -70,6 +76,7 @@ export class DetailTableComponent implements OnInit {
     });
 
     this.landService.GetWorkFlowLand(this.wfid).subscribe(data => {
+      this.keyCase.camelCase(data);
       this.workflowLand = data;
 
       console.log(this.workflowLand);
@@ -143,6 +150,7 @@ export class DetailTableComponent implements OnInit {
     }
 
   }
+
   prepareExistingLand() {
     for (const existLand of this.workflowLand['existLandUse']) {
       for (const existLandList of this.existingLandList) {
@@ -152,6 +160,7 @@ export class DetailTableComponent implements OnInit {
       }
     }
   }
+
   prepareInvestmentType() {
     for (const investmentType of this.workflowLand['investmentType']) {
       for (const investmentList of this.investmentTypeList) {
@@ -161,6 +170,7 @@ export class DetailTableComponent implements OnInit {
       }
     }
   }
+
   prepareSoilTestTypesList() {
     for (const soilTests of this.workflowLand['soilTests']) {
       for (const soilTestList of this.soilTestTypesList) {
@@ -172,6 +182,7 @@ export class DetailTableComponent implements OnInit {
     }
 
   }
+
   prepareMoistureSource() {
     for (const moistureSourceList of this.moistureSourceList) {
       if (moistureSourceList.id === this.workflowLand['moistureSource']) {
@@ -179,6 +190,7 @@ export class DetailTableComponent implements OnInit {
       }
     }
   }
+
   prepareWaterSourceParams() {
     for (const waterSource of this.workflowLand.irrigationValues['waterSourceParameter']) {
       for (const waterSourceList of this.waterSourceParamList) {
@@ -189,6 +201,7 @@ export class DetailTableComponent implements OnInit {
       }
     }
   }
+
   prepareGroundWater() {
     for (const gWater of this.workflowLand.irrigationValues['groundWater']) {
       console.log(gWater);
@@ -201,6 +214,7 @@ export class DetailTableComponent implements OnInit {
     }
 
   }
+
   prepareSurfaceWater() {
     for (const sWater of this.workflowLand.irrigationValues['surfaceWater']) {
       for (const sWaterList of this.surfaceWaterList) {
@@ -211,6 +225,7 @@ export class DetailTableComponent implements OnInit {
       }
     }
   }
+
   prepareAgroEchologyZone() {
     for (const agroEchologies of this.workflowLand['agroEchologyZone']) {
       for (const agroEchologyList of this.agroEchologyList) {
@@ -221,6 +236,7 @@ export class DetailTableComponent implements OnInit {
       }
     }
   }
+
   prepareTopography() {
     for (const topography of this.workflowLand['topography']) {
       for (const topographyList of this.topographyList) {
@@ -231,6 +247,7 @@ export class DetailTableComponent implements OnInit {
       }
     }
   }
+
   prepareMonth() {
     for (const climate of this.workflowLand['climate']) {
       for (const climateList of this.monthesList) {
@@ -242,6 +259,7 @@ export class DetailTableComponent implements OnInit {
     }
 
   }
+
   prepareLandType() {
     for (const landTypeList of this.landTypeList) {
       if (landTypeList.id === this.workflowLand['landType']) {

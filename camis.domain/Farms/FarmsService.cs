@@ -146,7 +146,7 @@ namespace intapscamis.camis.domain.Farms
             return new PaginatorResponse<FarmOperatorResponse>
             {
                 TotalSize = Context.FarmOperator.Count(),
-                Items = farmOperators.Select(ParseFarmOperatorResponse).ToList()
+                Items = farmOperators.Select(MapFarmOperatorToResponse).ToList()
             };
         }
 
@@ -156,7 +156,7 @@ namespace intapscamis.camis.domain.Farms
             return new PaginatorResponse<FarmResponse>
             {
                 TotalSize = Context.Farm.Count(),
-                Items = farms.Select(ParseFarmResponse).ToList()
+                Items = farms.Select(MapFarmToResponse).ToList()
             };
         }
 
@@ -180,28 +180,7 @@ namespace intapscamis.camis.domain.Farms
             return new PaginatorResponse<FarmOperatorResponse>
             {
                 TotalSize = searchQuery.Count(),
-                Items = farmOperators.Select(ParseFarmOperatorResponse).ToList()
-            };
-        }
-
-        public PaginatorResponse<FarmResponse> SearchFarms2(string term, int skip, int take)
-        {
-            var searchQuery = Context.Farm.Where(f => string.Join("\n",
-                f.Type.Name,
-                f.Activity.Name,
-                f.Activity.Description,
-                f.InvestedCapital.ToString(),
-                f.Description,
-                f.Operator.Name,
-                f.Operator.Nationality,
-                f.Operator.Phone,
-                f.Operator.Email
-            ).ToLower().Contains(term.ToLower()));
-            var farms = searchQuery.Skip(skip).Take(take).AsEnumerable();
-            return new PaginatorResponse<FarmResponse>
-            {
-                TotalSize = searchQuery.Count(),
-                Items = farms.Select(ParseFarmResponse).ToList()
+                Items = farmOperators.Select(MapFarmOperatorToResponse).ToList()
             };
         }
 
@@ -215,39 +194,35 @@ namespace intapscamis.camis.domain.Farms
                 .Include(f => f.Type)
                 .Include(f => f.Activity)
                 .Include(f => f.Operator)
-                .ThenInclude(o => o.FarmOperatorRegistration) // FarmOperatorType
+                .ThenInclude(o => o.Type)
                 .Include(f => f.Operator)
-                .ThenInclude(o => o.OriginId) // FarmOperatorOrigin
-                .Include(f => f.Operator)
-                .Include(f => f.Operator)
-                .ThenInclude(o => o.FarmOperatorRegistration)
-                .ThenInclude(or => or.Type) // RegistrationType
+                .ThenInclude(o => o.Origin)
                 .Include(f => f.Operator)
                 .ThenInclude(o => o.FarmOperatorRegistration)
-                .ThenInclude(or => or.Document)
+                .ThenInclude(or => or.Authority)
+                .Include(f => f.Operator)
+                .ThenInclude(o => o.FarmOperatorRegistration)
+                .ThenInclude(or => or.Type)
                 .Include(f => f.FarmLand)
-                .ThenInclude(fl => fl.CertificateDoc)
-                .Include(f => f.FarmLand)
-                .ThenInclude(fl => fl.LeaseContractDoc)
                 .Include(f => f.FarmRegistration)
-                .ThenInclude(fr => fr.Authority) // RegistrationAuthority
+                .ThenInclude(fr => fr.Authority)
                 .Include(f => f.FarmRegistration)
-                .ThenInclude(fr => fr.Type) // RegistrationType
-                .Include(f => f.FarmRegistration)
-                .ThenInclude(fr => fr.Document)
+                .ThenInclude(fr => fr.Type)
                 .Where(f =>
                     (f.Type != null && f.Type.Name.ToLower().Contains(searchTerm)) ||
                     (f.Activity != null && f.Activity.Name.ToLower().Contains(searchTerm)) ||
                     (f.Activity != null && f.Activity.Description.ToLower().Contains(searchTerm)) ||
-                    f.InvestedCapital.ToString().Contains(searchTerm) ||
+                    (f.InvestedCapital.HasValue && f.InvestedCapital.Value.ToString().Contains(searchTerm)) ||
                     (f.Description != null && f.Description.ToLower().Contains(searchTerm)) ||
-                    (f.Operator != null && f.Operator.Name.ToLower().Contains(searchTerm)) ||
-                    (f.Operator != null && f.Operator.Nationality.ToLower().Contains(searchTerm)) ||
-                    (f.Operator != null && f.Operator.Phone.ToLower().Contains(searchTerm)) ||
-                    (f.Operator != null && f.Operator.Email.ToLower().Contains(searchTerm))
+                    (f.Operator != null && f.Operator.Name != null && f.Operator.Name.ToLower().Contains(searchTerm)) ||
+                    (f.Operator != null && f.Operator.Nationality != null &&
+                     f.Operator.Nationality.ToLower().Contains(searchTerm)) ||
+                    (f.Operator != null && f.Operator.Phone != null &&
+                     f.Operator.Phone.ToLower().Contains(searchTerm)) ||
+                    (f.Operator != null && f.Operator.Email != null && f.Operator.Email.ToLower().Contains(searchTerm))
                 )
-                .AsSplitQuery() // Prevents too many joins performance issues
-                .AsNoTracking(); // Read-only optimization
+                .AsSplitQuery()
+                .AsNoTracking();
 
             // Get total count
             var totalSize = baseQuery.Count();
@@ -269,19 +244,19 @@ namespace intapscamis.camis.domain.Farms
         public FarmOperatorResponse GetFarmOperator(Guid id)
         {
             var farmOperator = Context.FarmOperator.Find(id);
-            return ParseFarmOperatorResponse(farmOperator);
+            return MapFarmOperatorToResponse(farmOperator);
         }
 
         public FarmResponse GetFarm(Guid id)
         {
-            var farm = Context.Farm.Find(id);
-            return ParseFarmResponse(farm);
+            
+            return MapSingleFarmData(id);
         }
 
         public FarmResponse GetFarmByActivity(Guid activityId)
         {
             var farm = Context.Farm.First(f => f.ActivityId == activityId);
-            return ParseFarmResponse(farm);
+            return MapFarmToResponse(farm);
         }
 
 
@@ -670,7 +645,7 @@ namespace intapscamis.camis.domain.Farms
                 OtherTypeIds = farm.OtherTypeIds,
 
                 FarmLands = Context.FarmLand.Where(fl => fl.FarmId == farm.Id).AsEnumerable()
-                    .Select(ParseFarmLandResponse).ToList()
+                    .Select(MapFarmLandToResponse).ToList()
             };
 
             var farmRegistrations = Context.FarmRegistration.Where(fr => fr.FarmId == farm.Id);
@@ -809,7 +784,7 @@ namespace intapscamis.camis.domain.Farms
 
         private FarmResponse MapFarmToResponse(Farm farm)
         {
-            return new FarmResponse
+            var ret = new FarmResponse
             {
                 Id = farm.Id,
                 OperatorId = farm.OperatorId,
@@ -837,6 +812,7 @@ namespace intapscamis.camis.domain.Farms
                         Name = farm.Type.Name
                     }
             };
+            return ret;
         }
 
         private FarmLandResponse MapFarmLandToResponse(FarmLand land)
@@ -967,10 +943,35 @@ namespace intapscamis.camis.domain.Farms
         private DocumentResponse MapDocumentResponse(Document doc)
         {
             if (doc == null) return null;
-
-            // Reuse existing document parsing logic if available
-            // This should be a pure mapping function with no database access
             return DocumentService.ParseDocumentResponse(doc);
+        }
+
+        private FarmResponse MapSingleFarmData(Guid id)
+        {
+            
+            var baseQuery = Context.Farm
+                .Include(f => f.Type)
+                .Include(f => f.Activity)
+                .Include(f => f.Operator)
+                .ThenInclude(o => o.Type)
+                .Include(f => f.Operator)
+                .ThenInclude(o => o.Origin)
+                .Include(f => f.Operator)
+                .ThenInclude(o => o.FarmOperatorRegistration)
+                .ThenInclude(or => or.Authority)
+                .Include(f => f.Operator)
+                .ThenInclude(o => o.FarmOperatorRegistration)
+                .ThenInclude(or => or.Type)
+                .Include(f => f.FarmLand)
+                .Include(f => f.FarmRegistration)
+                .ThenInclude(fr => fr.Authority)
+                .Include(f => f.FarmRegistration)
+                .ThenInclude(fr => fr.Type)
+                .Where(f => f.Id==id)
+                .AsSplitQuery()
+                .AsNoTracking();
+            var farm = baseQuery.FirstOrDefault(e=>e.Id==id);
+            return MapFarmToResponse(farm);
         }
     }
 }

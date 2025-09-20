@@ -9,6 +9,7 @@ export interface RegisterUser {
     roles: number[];
     fullname: string;
     phoneNo: string;
+    email: string;
 }
 
 export interface UpdatePassword {
@@ -20,21 +21,26 @@ export interface ResetPassword {
     UserName: string;
     NewPassword: string;
 }
-
+export interface LookUpModel{
+  id: number;
+  name: string;
+}
 export interface UserModel {
     userName: string;
     fullName: string;
     phoneNo: string;
     status: number;
-    roles: string[];
+    roles: LookUpModel[];
+    email:string;
 }
 export interface UserDetailViewModal {
     userName: string;
     fullName: string;
     phoneNo: string;
     status: number;
-    roles: string[];
+    roles: LookUpModel[];
     lastSeen: string;
     regOn: string;
+    email:string;
 
 }

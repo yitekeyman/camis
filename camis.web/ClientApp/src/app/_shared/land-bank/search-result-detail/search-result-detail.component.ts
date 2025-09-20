@@ -9,6 +9,7 @@ import { FormBuilder, AbstractControl, FormGroup, Validators, ValidatorFn } from
 import swal from 'sweetalert2';
 import { CamisMapComponent } from '../../../_shared/camismap/camismap.component';
 import dialog from "../../dialog";
+import {ObjectKeyCasingService} from "../../../_services/object-key-casing.service";
 
 @Component({
   selector: 'app-search-result-detail',
@@ -58,7 +59,7 @@ export class SearchResultDetailComponent implements OnInit {
   @ViewChild('prepareBtnClose') prepareBtnClose: ElementRef;
 
   constructor(private router: Router, public landService: LandDataService, private activeRoute: ActivatedRoute,
-    private formBuilder: FormBuilder, private dialog: DialogService) {
+    private formBuilder: FormBuilder, private dialog: DialogService, private keyCase:ObjectKeyCasingService) {
 
     if (localStorage.getItem('role') === '4' ) {
       this.clerkRole = true;
@@ -91,6 +92,7 @@ export class SearchResultDetailComponent implements OnInit {
   getLandDetail() {
     dialog.loading();
     this.landService.GetLand(this.landID).subscribe(data => {
+      this.keyCase.camelCase(data);
       this.searchedLandDetail = data;
       this.getDependecies();
       dialog.close();
@@ -112,10 +114,12 @@ export class SearchResultDetailComponent implements OnInit {
 
   getDependecies() {
     this.landService.getAccessiblity().subscribe(data => {
+      this.keyCase.camelCase(data);
       this.accessiblitiesList = data;
       this.prepareAccessiblityData();
     });
     this.landService.getsoilTestTypeUrl().subscribe(data => {
+      this.keyCase.camelCase(data);
       this.soilTestTypesList = data;
       this.prepareSoilTestTypesList();
 

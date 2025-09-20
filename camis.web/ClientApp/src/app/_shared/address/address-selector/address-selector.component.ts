@@ -3,6 +3,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {AddressApiService} from '../../../_services/address-api.service';
 import dialog from '../../dialog';
 import {IAddressResponse, IAddressUnitResponse, ISchemeResponse} from '../interfaces';
+import {ObjectKeyCasingService} from "../../../_services/object-key-casing.service";
 
 @Component({
   selector: 'app-address-selector',
@@ -25,7 +26,7 @@ export class AddressSelectorComponent implements OnInit {
   @Output('onChange') changeNotification: EventEmitter<string | null> = new EventEmitter<string | null>();
   @Output('onSave') saveNotification: EventEmitter<string | null> = new EventEmitter<string | null>();
 
-  constructor(private api: AddressApiService) { }
+  constructor(private api: AddressApiService, private keyCase: ObjectKeyCasingService) { }
 
   ngOnInit() {
     this.schemes = [];
@@ -36,6 +37,7 @@ export class AddressSelectorComponent implements OnInit {
     }
 
     this.api.getAllSchemes().subscribe(schemes => {
+      this.keyCase.camelCase(schemes);
       this.schemes = schemes;
 
       if (!this.finalAddressId) {
@@ -59,6 +61,7 @@ export class AddressSelectorComponent implements OnInit {
     }
     else {
       this.api.getAddressUnits(selectedSchemeId).subscribe(units => {
+        this.keyCase.camelCase(units);
         this.selectedSchemeId = selectedSchemeId;
         this.finalAddressId = null;
 
@@ -101,6 +104,7 @@ export class AddressSelectorComponent implements OnInit {
       this.api
         .saveAddress({ parentId, unitId: unit.id, customAddressName })
         .subscribe(address => {
+          this.keyCase.camelCase(address);
           this.onAddressSelected(address.id, unit, i, undefined).catch(dialog.error);
         }, dialog.error);
       return;
@@ -119,6 +123,7 @@ export class AddressSelectorComponent implements OnInit {
     this.api
       .getAddresses(this.selectedSchemeId, parentId)
       .subscribe(addresses => {
+        this.keyCase.camelCase(addresses);
         this.addresses2d = this.addresses2d.slice(0, i + 1);
         this.addresses2d.push(addresses);
         this.onChange();

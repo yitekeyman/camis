@@ -20,7 +20,7 @@
         </td>
       </tr>
       <tr>
-        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Owner {{farm.operator.typeId === 1 ? 'Nationality' : 'Country of Origin'}}:</td>
+        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Owner {{farm.operator.typeId == 1 ? 'Nationality' : 'Country of Origin'}}:</td>
         <td style="width: 75%">
           {{farm.operator.nationality}}
         </td>
@@ -28,7 +28,7 @@
       <tr>
         <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Owner Type:</td>
         <td style="width: 75%">
-          {{opType(farm.operator.typeId) ? opType(farm.operator.typeId).name : null}}
+          {{farm.operator.typeId && opType(farm.operator.typeId)!=null? opType(farm.operator.typeId).name : null}}
         </td>
       </tr>
 
@@ -67,7 +67,7 @@
       <tr>
         <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Owner Origin:</td>
         <td style="width: 75%">
-          {{opOrigin(farm.operator.originId) ? opOrigin(farm.operator.originId).name : null}}
+          {{farm.operator.originId && opOrigin(farm.operator.originId)!=null ? opOrigin(farm.operator.originId).name : null}}
         </td>
       </tr>
       <tr>
@@ -95,11 +95,11 @@
         </td>
       </tr>
       <tr *ngFor="let reg of farm.operator.registrations">
-        <td class="text-muted" style="min-width: 140px; font-weight: bold">Owner's {{regType(reg.typeId) ? regType(reg.typeId).name : null}}:</td>
+        <td class="text-muted" style="min-width: 140px; font-weight: bold">Owner's {{regType(reg.typeId)!==null? regType(reg.typeId).name : null}}:</td>
         <td style="width: 75%">
           <div>
             <label class="text-muted">Issued by:</label>
-            <span>{{regAuth(reg.authorityId) ? regAuth(reg.authorityId).name : null}}</span>
+            <span>{{regAuth(reg.authorityId)!=null ? regAuth(reg.authorityId).name : null}}</span>
           </div>
           <div>
             <label class="text-muted">Registration Number:</label>
@@ -129,14 +129,14 @@
       <tr>
         <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Primary Farm Type:</td>
         <td style="width: 75%">
-          {{frType(farm.typeId) ? frType(farm.typeId).name : null}}
+          {{farm.typeId && frType(farm.typeId)!=null? frType(farm.typeId).name : null}}
         </td>
       </tr>
       <tr *ngIf="farm.otherTypeIds && farm.otherTypeIds.length">
         <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Other Farm Types:</td>
         <td style="width: 75%">
           <ul style="padding-left: 10px">
-            <li *ngFor="let typeId of farm.otherTypeIds">{{frType(typeId) ? frType(typeId).name : null}}</li>
+            <li *ngFor="let typeId of farm.otherTypeIds">{{frType(typeId)!=null ? frType(typeId).name : null}}</li>
           </ul>
         </td>
       </tr>
@@ -153,11 +153,11 @@
         </td>
       </tr>
       <tr *ngFor="let reg of farm.registrations">
-        <td class="text-muted" style="min-width: 140px; font-weight: bold">{{regType(reg.typeId) ? regType(reg.typeId).name : null}}:</td>
+        <td class="text-muted" style="min-width: 140px; font-weight: bold">{{regType(reg.typeId)!==null? regType(reg.typeId).name : null}}:</td>
         <td style="width: 75%">
           <div>
             <label class="text-muted">Issued by:</label>
-            <span>{{regAuth(reg.authorityId) ? regAuth(reg.authorityId).name : null}}</span>
+            <span>{{reg.authorityId && regAuth(reg.authorityId)!=null? regAuth(reg.authorityId).name : null}}</span>
           </div>
           <div>
             <label class="text-muted">Registration Number:</label>

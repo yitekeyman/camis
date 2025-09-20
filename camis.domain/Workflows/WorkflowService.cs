@@ -120,7 +120,7 @@ on mx.workflow_id=wi.workflow_id and mx.seq_no=wi.seq_no
 where 
 (wi.assigned_user={user.Id} or wi.assigned_role in ({roles}))
 ";
-            var workItems = Context.WorkItem.FromSqlRaw(sql);
+            var workItems = Context.WorkItem.FromSqlRaw(sql).ToList();
             var ret = new List<WorkflowResponse>();
             foreach (var workItem in workItems)
             {

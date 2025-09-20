@@ -63,13 +63,19 @@ namespace intapscamis.camis.domain.Admin
         public const int ConfigurationAdmin = 11;
     }
 
+    public class LookUpModel
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
+    }
     public class UserViewModel
     {
         public string UserName { get; set; }
         public string FullName { get; set; }
         public string PhoneNo { get; set; }
         public int Status { get; set; }
-        public string[] Roles { get; set; }
+        public IList<LookUpModel> Roles { get; set; } = new List<LookUpModel>(); 
+        public string Email { get; set; }
     }
 
     public class UserDetialViewModel
@@ -77,8 +83,9 @@ namespace intapscamis.camis.domain.Admin
         public string UserName { get; set; }
         public string FullName { get; set; }
         public string PhoneNo { get; set; }
+        public string Email { get; set; }
         public int Status { get; set; }
-        public string[] Roles { get; set; }
+        public IList<LookUpModel> Roles { get; set; } = new List<LookUpModel>(); 
         public string RegOn { get; set; }
         public string LastSeen { get; set; }
     }
@@ -105,6 +112,7 @@ namespace intapscamis.camis.domain.Admin
         public string FullName { get; set; }
         public string PhoneNo { get; set; }
         public int[] Roles { get; set; }
+        public string Email { get; set; }
     }
 
     public class ChangePasswordViewModel

@@ -19,6 +19,7 @@ namespace intapscamis.camis.data.Entities
         public string PhoneNo { get; set; }
         public int Status { get; set; }
         public long RegOn { get; set; }
+        public string Email { get; set; }
 
         public ICollection<UserAction> UserAction { get; set; }
         public ICollection<UserRole> UserRole { get; set; }

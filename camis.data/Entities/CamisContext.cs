@@ -2159,6 +2159,7 @@ namespace intapscamis.camis.data.Entities
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasDefaultValueSql("nextval(('sys.\"user_id_seq\"'::text)::regclass)");
+                entity.Property(e=>e.Email).HasColumnName("email");
 
                 entity.Property(e => e.FullName).HasColumnName("full_name");
 

@@ -8,14 +8,14 @@ namespace intapscamis.camis.domain.Admin
         void LoginUser(UserSession session, LoginViewModel loginView);
         void RegisterUser(UserSession session, RegisterViewModel registerViewModel);
         void ChangePassword(UserSession session, string username, string oldPassword, string newPassword);
-        IList<UserDetialViewModel> GetAllUsers(UserSession session);
+        IList<UserDetialViewModel> GetAllUsers(UserSession session, int status);
         void DeactivateUser(UserSession session, string username);
         void ActivateUser(UserSession session, string username);
         void UpdateUser(UserSession session, UserViewModel userModel);
-        void ResetPassword(UserSession getSession, string resetedUsername, string newPassword);
+        void ResetPassword(UserSession getSession, string resetUsername, string newPassword);
         bool CheckUser(UserSession userSession, string username);
         IList<UserActionViewModel> GetAllAction(UserSession getSession);
-        IList<UserViewModel> GetUsers(UserSession userSession, string query);
+        IList<UserViewModel> GetUsers(UserSession userSession, string query, int status);
         void AddUserRole(UserSession userSession, string username, int[] roles);
 
         object GetRoles(UserSession session);
@@ -45,7 +45,7 @@ namespace intapscamis.camis.domain.Admin
         public void ChangePassword(UserSession userSession, string username, string oldPassword, string newPassword)
         {
             _userService.SetSession(userSession);
-            _userService.ChangePasswrod(username, newPassword, oldPassword);
+            _userService.ChangePassword(username, newPassword, oldPassword);
         }
 
         public void ResetPassword(UserSession userSession, string username, string newPassword)
@@ -54,11 +54,11 @@ namespace intapscamis.camis.domain.Admin
             _userService.ResetPassword(username, newPassword);
         }
 
-        public IList<UserViewModel> GetUsers(UserSession userSession, string query)
+        public IList<UserViewModel> GetUsers(UserSession userSession, string query, int status)
         {
             _userService.SetSession(userSession);
 
-            return _userService.GetUsers(query);
+            return _userService.GetUsers(query, status);
         }
 
         public object GetRoles(UserSession session)
@@ -68,11 +68,11 @@ namespace intapscamis.camis.domain.Admin
             return _userService.GetRoles();
         }
 
-        public IList<UserDetialViewModel> GetAllUsers(UserSession userSession)
+        public IList<UserDetialViewModel> GetAllUsers(UserSession userSession, int status)
         {
             _userService.SetSession(userSession);
 
-            return _userService.GetAllUsers();
+            return _userService.GetAllUsers(status);
         }
 
         public IList<UserActionViewModel> GetAllAction(UserSession userSession)

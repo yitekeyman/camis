@@ -1,4 +1,13 @@
 
+<style>
+  .password-toggle {
+    cursor: pointer;
+    position: absolute;
+    right: 35px;
+    top: 255px;
+    color: #6c757d;
+  }
+</style>
 <div id="login">
   <div class="container">
     <div class="login-warper">
@@ -30,8 +39,10 @@
             <form [formGroup]="loginForm" (submit)="login()">
               <div >
                 <input type="text" class="username" id="username" placeholder="Username" formControlName="username"  [(ngModel)]="user.username">
-                <input type="password" class="password" id="password" placeholder="Password" formControlName="password"  [(ngModel)]="user.password">
-
+                <input [type]="showPassword ? 'text' : 'password'" class="password" id="password" placeholder="Password" formControlName="password"  [(ngModel)]="user.password">
+                <span class="password-toggle" (click)="togglePasswordVisibility()">
+                  <i [class]="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+                </span>
               </div>
               <div class="login-message" id="login-message">
 

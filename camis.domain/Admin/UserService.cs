@@ -18,17 +18,17 @@ namespace intapscamis.camis.domain.Admin
         void RevokeUserRole(string username, int[] roles);
         void AddUserRole(string username, int[] roles);
 
-        IList<UserDetialViewModel> GetAllUsers();
+        IList<UserDetialViewModel> GetAllUsers(int status);
         bool CheckUser(string username);
         void UpdateUser(UserViewModel userModle);
         void ActivateUser(string username);
         void DeactivateUser(string username);
         IList<UserActionViewModel> GetAllActions();
         User GetUser(string username);
-        IList<UserViewModel> GetUsers(string query);
+        IList<UserViewModel> GetUsers(string query, int status);
         bool HasRole(string username, int role);
-        void ResetPassword(string username, string newPasswrod);
-        void ChangePasswrod(string username, string oldPassword, string newPassword);
+        void ResetPassword(string username, string newPassword);
+        void ChangePassword(string username, string oldPassword, string newPassword);
         object GetRoles();
     }
 
@@ -74,7 +74,9 @@ namespace intapscamis.camis.domain.Admin
                 Username = userVm.Username,
                 FullName = userVm.FullName,
                 Password = userVm.Password.Hash(),
-                PhoneNo = userVm.PhoneNo
+                PhoneNo = userVm.PhoneNo,
+                Email = userVm.Email,
+                RegOn = DateTime.Now.Ticks
             };
 
 
@@ -95,7 +97,7 @@ namespace intapscamis.camis.domain.Admin
             _context.SaveChanges(_userSession.Username, (int) UserActionType.Register);
         }
 
-        public void ChangePasswrod(string username, string oldPassword, string newPassword)
+        public void ChangePassword(string username, string oldPassword, string newPassword)
         {
             var hashPassword = oldPassword.Hash();
 
@@ -178,9 +180,9 @@ namespace intapscamis.camis.domain.Admin
             _context.SaveChanges(_userSession.Username, userAction);
         }
 
-        public IList<UserViewModel> GetUsers(string filter)
+        public IList<UserViewModel> GetUsers(string filter, int status)
         {
-            var users = _context.User.Where(u => u.Username.Contains(filter) || u.FullName.Contains(filter));
+            var users = _context.User.Where(u => (u.Username.Contains(filter) || u.FullName.Contains(filter) || u.PhoneNo.Contains(filter)||u.Email.Contains(filter))&& u.Status==status).ToList();
             var userVms = new List<UserViewModel>();
 
             foreach (var user in users)
@@ -190,17 +192,18 @@ namespace intapscamis.camis.domain.Admin
                     UserName = user.Username,
                     FullName = user.FullName,
                     PhoneNo = user.PhoneNo,
+                    Email = user.Email,
                     Status = user.Status,
-                    Roles = _context.UserRole.Where(u => u.UserId == user.Id).Select(ur => ur.Role.Name).ToArray()
+                    Roles = _context.UserRole.Where(u => u.UserId == user.Id).Select(ur =>new LookUpModel{Id = ur.Role.Id,Name = ur.Role.Name}).ToArray()
                 });
             }
 
             return userVms;
         }
 
-        public IList<UserDetialViewModel> GetAllUsers()
+        public IList<UserDetialViewModel> GetAllUsers(int status)
         {
-            var users = _context.User.ToList();
+            var users = _context.User.Where(u=>u.Status==status).ToList();
 
             var userVms = new List<UserDetialViewModel>();
 
@@ -211,9 +214,11 @@ namespace intapscamis.camis.domain.Admin
                     UserName = user.Username,
                     FullName = user.FullName,
                     PhoneNo = user.PhoneNo,
+                    Email = user.Email,
                     Status = user.Status
                 };
-                userVm.Roles = _context.UserRole.Where(u => u.UserId == user.Id).Select(ur => ur.Role.Name).ToArray();
+                userVm.Roles = _context.UserRole.Where(u => u.UserId == user.Id)
+                    .Select(ur => new LookUpModel { Id = ur.Role.Id, Name = ur.Role.Name }).ToArray();
 
 
                 var time = _context.UserAction.Where(u => u.Username == user.Username && u.ActionTypeId == 1).Max(ua => ua.Timestamp);
@@ -265,6 +270,7 @@ namespace intapscamis.camis.domain.Admin
 
             user.FullName = userVm.FullName;
             user.PhoneNo = userVm.PhoneNo;
+            user.Email=userVm.Email;
 
             var userRoles = _context.UserRole.Where(u => u.UserId == user.Id);
 
@@ -279,7 +285,7 @@ namespace intapscamis.camis.domain.Admin
             
             foreach (var role in userVm.Roles)
             {
-                var ur = _context.Role.First(r => r.Name.Equals(role));
+                var ur = _context.Role.First(r => r.Id==role.Id);
      
                 var userRole = new UserRole { User = user, Role = ur};
 

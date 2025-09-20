@@ -12,12 +12,12 @@ export class UserServices {
 
     }
 
-    public getUsers() {
-        return this.apiService.get('admin/getusers');
+    public getUsers(status:number) {
+        return this.apiService.get(`admin/getusers?status=${status}`);
     }
 
-    public searchUsers(query: string) {
-        return this.apiService.get(`admin/search?query=${query}`);
+    public searchUsers(query: string, status:number) {
+        return this.apiService.get(`admin/search?query=${query}&status=${status}`);
     }
 
     public editUser(user: UserModel) {

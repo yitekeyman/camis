@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 using System.Linq;
 using intapscamis.camis.data.Entities;
@@ -11,6 +12,7 @@ using System.Diagnostics;
 using camis.types.Utils;
 using intapscamis.camis.domain.LandBankGood.ViewModel;
 using NetTopologySuite.Geometries;
+using Npgsql;
 
 namespace intapscamis.camis.domain.LandBank
 {
@@ -452,28 +454,37 @@ namespace intapscamis.camis.domain.LandBank
             ret.Area = 0;
             ret.CentroidX = 0;
             ret.CentroidY = 0;
-            Context.Database.OpenConnection();
-            var sql = $"Select {(dd? "ST_AsText(ST_Transform(geometry,4326))" : "ST_AsText(geometry)")} from lb.land_upin where land_id=@lid and upin=@upin";
-            var cmd = new Npgsql.NpgsqlCommand(sql, (Npgsql.NpgsqlConnection)Context.Database.GetDbConnection());
-            var plid = cmd.Parameters.Add("@lid", NpgsqlTypes.NpgsqlDbType.Uuid);
-            var pupin = cmd.Parameters.Add("@upin", NpgsqlTypes.NpgsqlDbType.Varchar);
-            plid.Value = l.Id;
-            
-            foreach (var u in l.LandUpin)
+            using (var tempContext = new CamisContext())
             {
-                ret.Upins.Add(u.Upin);
-                if (!string.IsNullOrEmpty(u.Profile))
+                foreach (var u in l.LandUpin)
                 {
-                    pupin.Value = u.Upin;
-                    var p = Newtonsoft.Json.JsonConvert.DeserializeObject<NrlaisInterfaceModel.Parcel>(u.Profile);
-                    if(geom)
-                        p.geometry = cmd.ExecuteScalar().ToString();
-                    ret.parcels.Add(u.Upin, p);
-                    ret.landHolderType = p.GetHolder().partyType;
+                    ret.Upins.Add(u.Upin);
+                    if (!string.IsNullOrEmpty(u.Profile))
+                    {
+                        var geometrySql = $"SELECT {(dd ? "ST_AsText(ST_Transform(geometry,4326))" : "ST_AsText(geometry)")} FROM lb.land_upin WHERE land_id=@lid AND upin=@upin";
+            
+                        // Open connection if needed
+                        if (tempContext.Database.GetDbConnection().State != ConnectionState.Open)
+                            tempContext.Database.OpenConnection();
+            
+                        using (var cmd = tempContext.Database.GetDbConnection().CreateCommand())
+                        {
+                            cmd.CommandText = geometrySql;
+                            cmd.Parameters.Add(new NpgsqlParameter("lid", l.Id));
+                            cmd.Parameters.Add(new NpgsqlParameter("upin", u.Upin));
+                
+                            var geometry = cmd.ExecuteScalar()?.ToString();
+                
+                            var p = Newtonsoft.Json.JsonConvert.DeserializeObject<NrlaisInterfaceModel.Parcel>(u.Profile);
+                            if (geom) p.geometry = geometry;
+                            ret.parcels.Add(u.Upin, p);
+                            ret.landHolderType = p.GetHolder().partyType;
+                        }
+                    }
+                    ret.Area += u.Area.Value;
+                    ret.CentroidX += u.CentroidX.Value;
+                    ret.CentroidY += u.CentroidY.Value;
                 }
-                ret.Area += u.Area.Value;
-                ret.CentroidX += u.CentroidX.Value;
-                ret.CentroidY += u.CentroidY.Value;
             }
 
             if (ret.parcels.Count > 0)
@@ -632,7 +643,8 @@ namespace intapscamis.camis.domain.LandBank
             var sql = $"Select l.* from lb.Land l {(cr==null?"":" where "+cr)}";
             var ret = new LandBankFacadeModel.LandSearchResult();
             ret.Result = new List<LandBankFacadeModel.LandData>();
-            foreach (var l in Context.Land.FromSqlRaw(sql))
+            var lands = Context.Land.FromSqlRaw(sql).ToList();
+            foreach (var l in lands)
             {
                 pupulateChildList(l);
                 ret.Result.Add(buildLandData(l,false,false));
@@ -782,3 +794,5 @@ namespace intapscamis.camis.domain.LandBank
         }
     }
 }
+
+

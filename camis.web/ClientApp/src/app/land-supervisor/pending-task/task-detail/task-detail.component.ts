@@ -1,14 +1,15 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Validators, FormBuilder, FormGroup, AbstractControl, FormArray, FormControl } from '@angular/forms';
+import {Component, OnInit, ElementRef, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router, RouterModule} from '@angular/router';
+import {Validators, FormBuilder, FormGroup, AbstractControl, FormArray, FormControl} from '@angular/forms';
 import swal from 'sweetalert2';
 
-import { DialogService } from '../../../_shared/dialog/dialog.service';
-import { LandDataService} from '../../../_services/land-data.service';
-import { LandBankWorkFlowLand, LandBankWorkItem } from '../../../_shared/land-bank/land.model';
-import { CamisMapComponent } from '../../../_shared/camismap/camismap.component';
-import { WorkflowApiService } from '../../../_services/workflow-api.service';
+import {DialogService} from '../../../_shared/dialog/dialog.service';
+import {LandDataService} from '../../../_services/land-data.service';
+import {LandBankWorkFlowLand, LandBankWorkItem} from '../../../_shared/land-bank/land.model';
+import {CamisMapComponent} from '../../../_shared/camismap/camismap.component';
+import {WorkflowApiService} from '../../../_services/workflow-api.service';
 import dialog from "../../../_shared/dialog";
+import {ObjectKeyCasingService} from "../../../_services/object-key-casing.service";
 
 @Component({
   selector: 'app-task-detail',
@@ -35,8 +36,10 @@ export class TaskDetailComponent implements OnInit {
   @ViewChild('rejectBtnClose') rejectBtnClose: ElementRef;
   @ViewChild('cancelBtnClose') cancelBtnClose: ElementRef;
   @ViewChild('camis_map') map: CamisMapComponent;
+
   constructor(private router: Router, private landService: LandDataService, private activeRoute: ActivatedRoute,
-    public formBuilder: FormBuilder, private dialog: DialogService, private workflowservice: WorkflowApiService) { }
+              public formBuilder: FormBuilder, private dialog: DialogService, private workflowservice: WorkflowApiService, private keyCase: ObjectKeyCasingService) {
+  }
 
   ngOnInit() {
 
@@ -47,21 +50,21 @@ export class TaskDetailComponent implements OnInit {
 
 // form group to retrieve data from the approve modal
     this.messageForm = this.formBuilder.group({
-      message : ['', Validators.compose([Validators.required])],
+      message: ['', Validators.compose([Validators.required])],
     });
 
     this.message = this.messageForm.controls['message'];
 
 // form group to retrieve data from the reject modal
     this.rejectMessageForm = this.formBuilder.group({
-      rejectMessage : ['', Validators.compose([Validators.required])]
+      rejectMessage: ['', Validators.compose([Validators.required])]
     });
 
     this.rejectMessage = this.rejectMessageForm.controls['rejectMessage'];
 
 // form group to retrieve data from the cancel modal
     this.cancelMessageForm = this.formBuilder.group({
-      cancelMessage : ['', Validators.compose([Validators.required])]
+      cancelMessage: ['', Validators.compose([Validators.required])]
     });
 
     this.cancelMessage = this.cancelMessageForm.controls['cancelMessage'];
@@ -71,7 +74,7 @@ export class TaskDetailComponent implements OnInit {
   getLandDetail() {
     dialog.loading();
     this.landService.GetUserWorkItems().subscribe(data => {
-
+      this.keyCase.camelCase(data);
       for (const workItem of data) {
         if (workItem.wfid === this.wfid) {
           this.userWorkItems = workItem;
@@ -92,11 +95,12 @@ export class TaskDetailComponent implements OnInit {
         }
       }
       dialog.close();
-    }, e=>{
+    }, e => {
       dialog.close();
     });
 
     this.landService.GetWorkFlowLand(this.wfid).subscribe(data => {
+      this.keyCase.camelCase(data);
       this.workflowLand = data;
       if (data.upins && data.upins.length > 0) {
         if (data.parcels[data.upins[0]]) {
@@ -108,7 +112,7 @@ export class TaskDetailComponent implements OnInit {
         }
       }
       dialog.close();
-    },e=>{
+    }, e => {
       dialog.close();
     });
   }
@@ -145,11 +149,11 @@ export class TaskDetailComponent implements OnInit {
               this.router.navigate(['/land-supervisor/land-dashboard']);
             });
         },
-          (err) => {
-            swal.close();
-            // error alert
-            this.dialog.error(err);
-          }
+        (err) => {
+          swal.close();
+          // error alert
+          this.dialog.error(err);
+        }
       );
     } else if (this.userWorkItems['workFlowType'] === 7) {
       swal({allowOutsideClick: false});
@@ -173,11 +177,11 @@ export class TaskDetailComponent implements OnInit {
               this.router.navigate(['/land-supervisor/land-dashboard']);
             });
         },
-          (err) => {
-            swal.close();
-            // error alert
-            this.dialog.error(err);
-          }
+        (err) => {
+          swal.close();
+          // error alert
+          this.dialog.error(err);
+        }
       );
     }
   }
@@ -210,11 +214,11 @@ export class TaskDetailComponent implements OnInit {
               this.router.navigate(['/land-supervisor/land-dashboard']);
             });
         },
-          (err) => {
-            swal.close();
-            // error alert
-            this.dialog.error(err);
-          }
+        (err) => {
+          swal.close();
+          // error alert
+          this.dialog.error(err);
+        }
       );
     } else if (this.userWorkItems['workFlowType'] === 7) {
       swal({allowOutsideClick: false});
@@ -240,11 +244,11 @@ export class TaskDetailComponent implements OnInit {
               this.router.navigate(['/land-supervisor/land-dashboard']);
             });
         },
-          (err) => {
-            swal.close();
-            // error alert
-            this.dialog.error(err);
-          }
+        (err) => {
+          swal.close();
+          // error alert
+          this.dialog.error(err);
+        }
       );
     }
 
@@ -264,20 +268,20 @@ export class TaskDetailComponent implements OnInit {
       this.landService.CancelRegistrationRequest(this.wfid, this.cancelNote).subscribe(
         () => {
 
-        // success
-        swal.close();
+          // success
+          swal.close();
 
-        swal({
-          position: 'center',
-          type: 'success',
-          title: 'Land approval request canceled successfully!',
-          showConfirmButton: false,
-          timer: 1500
-        }).then(
-          () => {
-            this.router.navigate(['/land-supervisor/land-dashboard']);
-          });
-      },
+          swal({
+            position: 'center',
+            type: 'success',
+            title: 'Land approval request canceled successfully!',
+            showConfirmButton: false,
+            timer: 1500
+          }).then(
+            () => {
+              this.router.navigate(['/land-supervisor/land-dashboard']);
+            });
+        },
         (err) => {
           swal.close();
           // error alert
@@ -294,20 +298,20 @@ export class TaskDetailComponent implements OnInit {
       this.landService.CancelPreparationRequest(this.wfid, this.cancelNote).subscribe(
         () => {
 
-        // success
-        swal.close();
+          // success
+          swal.close();
 
-        swal({
-          position: 'center',
-          type: 'success',
-          title: 'Land preparation request canceled successfully!',
-          showConfirmButton: false,
-          timer: 1500
-        }).then(
-          () => {
-            this.router.navigate(['/land-supervisor/land-dashboard']);
-          });
-      },
+          swal({
+            position: 'center',
+            type: 'success',
+            title: 'Land preparation request canceled successfully!',
+            showConfirmButton: false,
+            timer: 1500
+          }).then(
+            () => {
+              this.router.navigate(['/land-supervisor/land-dashboard']);
+            });
+        },
         (err) => {
           swal.close();
           // error alert

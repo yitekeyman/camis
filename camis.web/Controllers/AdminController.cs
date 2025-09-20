@@ -149,11 +149,11 @@ namespace intapscamis.camis.Controllers
 
         [Roles(UserRoles.Admin)]
         [HttpGet]
-        public IActionResult GetUsers()
+        public IActionResult GetUsers([FromQuery] int status)
         {
             try
             {
-                return Json(_userFacade.GetAllUsers(GetSession()));
+                return Json(_userFacade.GetAllUsers(GetSession(),status));
             }
             catch (Exception e)
             {
@@ -253,13 +253,13 @@ namespace intapscamis.camis.Controllers
 
         [Roles]
         [HttpGet]
-        public IActionResult Search(string query)
+        public IActionResult Search([FromQuery]string query, int status)
         {
             try
             {
-                if (string.IsNullOrEmpty(query)) return Json(_userFacade.GetAllUsers(GetSession()));
+                if (string.IsNullOrEmpty(query)) return Json(_userFacade.GetAllUsers(GetSession(), status));
 
-                return Json(_userFacade.GetUsers(GetSession(), query));
+                return Json(_userFacade.GetUsers(GetSession(), query,status));
             }
             catch (Exception e)
             {

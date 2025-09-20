@@ -76,11 +76,11 @@ export class FcFarmRegistrationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.api.getAllFarmOperatorTypes().subscribe(farmOperatorTypes => this.farmOperatorTypes = farmOperatorTypes, dialog.error);
-    this.api.getAllFarmOperatorOrigins().subscribe(farmOperatorOrigins => this.farmOperatorOrigins = farmOperatorOrigins, dialog.error);
-    this.api.getAllFarmTypes().subscribe(farmTypes => this.farmTypes = farmTypes, dialog.error);
-    this.api.getAllRegistrationAuthorities().subscribe(registrationAuthorities => this.registrationAuthorities = registrationAuthorities, dialog.error);
-    this.api.getAllRegistrationTypes().subscribe(registrationTypes => this.registrationTypes = registrationTypes, dialog.error);
+    this.api.getAllFarmOperatorTypes().subscribe(farmOperatorTypes => {this.keyCase.camelCase(farmOperatorTypes);this.farmOperatorTypes = farmOperatorTypes}, dialog.error);
+    this.api.getAllFarmOperatorOrigins().subscribe(farmOperatorOrigins =>{this.keyCase.camelCase(farmOperatorOrigins); this.farmOperatorOrigins = farmOperatorOrigins}, dialog.error);
+    this.api.getAllFarmTypes().subscribe(farmTypes => {this.keyCase.camelCase(farmTypes);this.farmTypes = farmTypes}, dialog.error);
+    this.api.getAllRegistrationAuthorities().subscribe(registrationAuthorities => {this.keyCase.camelCase(registrationAuthorities);this.registrationAuthorities = registrationAuthorities}, dialog.error);
+    this.api.getAllRegistrationTypes().subscribe(registrationTypes => {this.keyCase.camelCase(registrationTypes);this.registrationTypes = registrationTypes}, dialog.error);
 
     this.ar.params.subscribe(params => {
       this.workflowId = params.workflowId ? params.workflowId : null;
@@ -91,6 +91,7 @@ export class FcFarmRegistrationComponent implements OnInit {
 
             // fill data...
             this.api.getLastWorkItem(this.workflowId).subscribe(workItem => {
+              this.keyCase.camelCase(workItem);
               const f = workItem.data;
               if (!f) { return; }
               this.keyCase.camelCase(f);
@@ -169,7 +170,8 @@ export class FcFarmRegistrationComponent implements OnInit {
 
   loadOperators(skip = this.operators.length, take = 10) {
     return this.api.searchFarmOperators(this.operatorTerm, skip, take).subscribe(operatorsPaginator => {
-      this.totalOperators = operatorsPaginator.totalSize;
+this.keyCase.camelCase(operatorsPaginator);
+      this.totalOperators = operatorsPaginator.totalSize
       this.operators = this.operators.slice(0, skip).concat(operatorsPaginator.items);
       this.searching = false;
     }, dialog.error);
@@ -178,7 +180,7 @@ export class FcFarmRegistrationComponent implements OnInit {
 
   searchVentures(term: string): void {
     this.api.searchFarmOperators(term, 0, 25)
-      .subscribe(result => this.opVentureResults = result.items, dialog.error)
+      .subscribe(result => {this.keyCase.camelCase(result);this.opVentureResults = result.items}, dialog.error)
   }
 
   addVentures(): void {
@@ -225,6 +227,7 @@ export class FcFarmRegistrationComponent implements OnInit {
 
       dialog.loading();
       this.api.cancelFarmRegistration(this.workflowId, null).subscribe(res => {
+        this.keyCase.camelCase(res);
         if (res.success) {
           this.router.navigateByUrl(`clerk/dashboard`).catch(dialog.error);
           return dialog.success('The workflow has been cancelled successfully.');
@@ -261,6 +264,7 @@ export class FcFarmRegistrationComponent implements OnInit {
       this.api.requestNewFarmRegistration(body, message);
 
     req.subscribe(res => {
+      this.keyCase.camelCase(res);
       if (res.success) {
         this.router.navigateByUrl('clerk/dashboard').catch(dialog.error);
         return dialog.success('Your registration request has been sent to the supervisor successfully.');

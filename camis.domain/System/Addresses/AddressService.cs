@@ -23,14 +23,14 @@ namespace intapscamis.camis.domain.System.Addresses
     {
         public IList<AddressSchemeResponse> GetAllSchemes()
         {
-            var addressSchemes = Context.AddressScheme;
-            return addressSchemes.AsEnumerable().Select(addressScheme => new AddressSchemeResponse
-                {
-                    Id = addressScheme.Id,
-                    Name = addressScheme.Name,
-                    Addresses = GetAddresses(addressScheme.Id, null)
-                })
-                .ToList();
+            var addressSchemes = Context.AddressScheme.ToList();
+    
+            return addressSchemes.Select(addressScheme => new AddressSchemeResponse
+            {
+                Id = addressScheme.Id,
+                Name = addressScheme.Name,
+                Addresses = GetAddresses(addressScheme.Id, null)
+            }).ToList();
         }
 
         public IList<AddressUnitResponse> GetAddressUnits(int schemeId)
@@ -46,13 +46,13 @@ namespace intapscamis.camis.domain.System.Addresses
 
             IList<AddressResponse> viewModels = new List<AddressResponse>();
 
-            var schemeUnits = Context.AddressSchemeUnit.Where(asu => asu.Scheme.Id == addressScheme.Id);
+            var schemeUnits = Context.AddressSchemeUnit.Where(asu => asu.Scheme.Id == addressScheme.Id).ToList();
             foreach (var schemeUnit in schemeUnits)
             {
                 var addresses = Context.Address.Where(a =>
                         (a.ParentId == null && parentId == null || a.ParentId == parentId) &&
                         a.UnitId == schemeUnit.UnitId)
-                    .OrderBy(a => a.Name);
+                    .OrderBy(a => a.Name).ToList();
                 foreach (var address in addresses)
                 {
                     viewModels.Add(ParseAddressResponse(address, Context.AddressUnit.Find(address.UnitId)));

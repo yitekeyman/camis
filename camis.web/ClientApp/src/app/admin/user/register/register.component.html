@@ -1,47 +1,108 @@
 <div class="modal-content">
-    <div class="modal-header">
-        
-        <button type="button" class="close" (click)="closeForm()">
-            <span aria-hidden="true">&times;</span>
-        </button>
-        <h5 class="modal-title ">Register User</h5>
-    </div>
-    <form [formGroup]="registrationForm" id="registrationForm" (submit)="register()">
-        <div class="modal-body has-scroll" >
-            <div class="input-form" >
-                <label>Full Name:</label>
-                <input type="text" class="form-control" placeholder="First Name" id="user_first_name" formControlName="fullname" [(ngModel)]="userModel.fullname">
-            </div>
-            <div class="input-form">
-                <label>Phone No:</label>
-                <input type="text" class="form-control" placeholder="User Phone No" id="user_phone_no" formControlName="phoneno" [(ngModel)]="userModel.phoneNo">
-            </div>
-            <div class="input-form">
-                <label>User Role:</label>
-                <select class="form-control" formControlName="role"  [(ngModel)]="userModel.roles" id="user_role" multiple>
-                    <option *ngFor="let role of ROLES" [value]="role.id" >{{role.name}}</option>
-                </select>
+  <div class="modal-header">
 
-            </div>
-            <div class="input-form">
-                <label>Username:</label>
-                <input type="text" class="form-control" placeholder="Username" id="username" formControlName="username" [(ngModel)]="userModel.username" >
-            </div>
-            <div class="input-form">
-                <label>Password:</label>
-                <input type="password" class="form-control" placeholder="Password" id="user_pass" formControlName="password" [(ngModel)]="userModel.password">
-            </div>
-            <div class="input-form">
-                <label>Confirm Password:</label>
-                <input type="password" class="form-control" placeholder="Confirm Password" id="conf_pass" formControlName="confirmPassword" (keyup)="checkDiff()">
-                <span class="error confirmPassord">{{newPassConfirm}}</span>
-            </div>
+    <button type="button" class="close" (click)="closeForm()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <h5 class="modal-title ">Register User</h5>
+  </div>
+  <form [formGroup]="registrationForm" id="registrationForm" (submit)="register()">
+    <div class="modal-body has-scroll">
+      <div class="row">
+        <div class="input-form col-md-12">
+          <label>Full Name <span class="text-danger">*</span> <span *ngIf="registrationForm.get('fullname')?.invalid && registrationForm.get('fullname')?.touched"
+                                                                   class="error-message">
+            <i class="fa fa-exclamation-circle me-1"></i>
+            <span *ngIf="registrationForm.get('fullname')?.value==''">Full name is required</span>
+            <span *ngIf="registrationForm.get('fullname')?.value!=''"> Enter a valid full name (at least two words, only letters, spaces, hyphens, or apostrophes)</span>
+          </span></label>
+          <input type="text" class="form-control" placeholder="User First & Last Name" id="user_first_name"
+                 formControlName="fullname" [(ngModel)]="userModel.fullname">
+
         </div>
-        <div class="modal-footer ">
-            <div class="input-form align-right">
-                <button class="btn btn-default btn-sm" type="reset">Reset</button>
-                <button class="btn btn-success btn-sm" type="submit" [disabled]="!registrationForm.valid">Register</button>
-            </div>
+        <div class="input-form col-md-6">
+          <label>Mobile No <span class="text-danger">*</span> <span *ngIf="registrationForm.get('phoneno')?.invalid && registrationForm.get('phoneno')?.touched"
+                                                                   class="error-message">
+            <i class="fa fa-exclamation-circle me-1"></i> Phone number is required
+          </span></label>
+          <input type="text" class="form-control" placeholder="User Mobile No" id="user_phone_no"
+                 formControlName="phoneno" [(ngModel)]="userModel.phoneNo">
+
         </div>
-    </form>
+        <div class="input-form col-md-6">
+          <label>Email <span class="text-danger">*</span> <span *ngIf="registrationForm.get('email')?.invalid && registrationForm.get('email')?.touched"
+                                                               class="error-message">
+            <i class="fa fa-exclamation-circle me-1"></i>
+            <span *ngIf="registrationForm.get('email')?.value==''">Email address is required</span>
+            <span *ngIf="registrationForm.get('email')?.value!=''"> Enter a valid email address</span>
+          </span></label>
+          <input type="text" class="form-control" placeholder="User Email Address" id="user_email"
+                 formControlName="email" [(ngModel)]="userModel.email">
+
+        </div>
+        <div class="input-form col-md-12">
+          <label>User Role <span class="text-danger">*</span> <span *ngIf="registrationForm.get('role')?.invalid && registrationForm.get('role')?.touched"
+                                                                   class="error-message">
+            <i class="fa fa-exclamation-circle me-1"></i> At least one role must be selected
+          </span></label>
+          <div class="checkbox-group row">
+            <div *ngFor="let role of ROLES" class="role-label col-md-4" >
+              <input
+                type="checkbox"
+                class="form-check-input role-checkbox"
+                [id]="'role_' + role.id"
+                [value]="role.id"
+                [checked]="isRoleSelected(role.id)"
+                (change)="onRoleChange($event, role.id)">
+              <label class="form-check-label" [for]="'role_' + role.id">
+                {{ role.name }}
+              </label>
+            </div>
+          </div>
+          <div class="selected-count">
+            Selected: {{ getSelectedCount() }} of {{ ROLES.length }}
+          </div>
+
+
+        </div>
+        <div class="input-form col-md-12">
+          <label>Username <span class="text-danger">*</span> <span *ngIf="registrationForm.get('username')?.invalid && registrationForm.get('username')?.touched"
+                                                                  class="error-message">
+            <i class="fa fa-exclamation-circle me-1"></i> Username is required and must be at least 6 characters
+          </span></label>
+          <input type="text" class="form-control" placeholder="Username" id="username" formControlName="username"
+                 [(ngModel)]="userModel.username">
+
+        </div>
+        <div class="input-form col-md-12">
+          <label>Password <span class="text-danger">*</span>  <span *ngIf="registrationForm.get('password')?.invalid && registrationForm.get('password')?.touched"
+                                                                   class="error-message">
+            <i class="fa fa-exclamation-circle me-1"></i>Password is required
+          </span></label>
+          <input [type]="showPassword ? 'text' : 'password'" class="form-control" formControlName="password" placeholder="Create a password">
+          <span class="password-toggle" (click)="togglePasswordVisibility()">
+                  <i [class]="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+                </span>
+
+        </div>
+        <div class="input-form col-md-12">
+          <label>Confirm Password <span class="text-danger">*</span> <span *ngIf="registrationForm.get('confirmPassword')?.invalid && registrationForm.get('confirmPassword')?.touched"
+                                                                          class="error-message">
+            <i class="fa fa-exclamation-circle me-1"></i> Passwords must match
+          </span></label>
+          <input [type]="showConfirmPassword ? 'text' : 'password'" class="form-control" formControlName="confirmPassword" placeholder="Confirm your password">
+          <span class="password-toggle" (click)="toggleConfirmPasswordVisibility()">
+                  <i [class]="showConfirmPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+                </span>
+
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer ">
+      <div class="input-form align-right">
+        <button class="btn btn-default btn-sm" type="reset">Reset</button>
+        <button class="btn btn-success btn-sm" type="submit" [disabled]="!registrationForm.valid">Register</button>
+      </div>
+    </div>
+  </form>
 </div>

@@ -3,6 +3,7 @@ import {Router} from '@angular/router';
 
 import {FarmApiService} from '../../_services/farm-api.service';
 import dialog from '../../_shared/dialog';
+import {ObjectKeyCasingService} from "../../_services/object-key-casing.service";
 
 @Component({
   selector: 'app-fs-farm-list',
@@ -16,7 +17,7 @@ export class FsFarmListComponent implements OnInit {
   totalFarms = 0;
   farms: any[] = [];
 
-  constructor (private api: FarmApiService, public router: Router) {
+  constructor (private api: FarmApiService, public router: Router, private keyCaseService:ObjectKeyCasingService) {
   }
 
   ngOnInit(): void {
@@ -26,6 +27,7 @@ export class FsFarmListComponent implements OnInit {
 
   load(skip = this.farms.length, take = 10) {
     return this.api.searchFarms(this.term, skip, take).subscribe(farmsPaginator => {
+      this.keyCaseService.camelCase(farmsPaginator);
       this.totalFarms = farmsPaginator.totalSize;
       this.farms = this.farms.slice(0, skip).concat(farmsPaginator.items);
       this.loading = false;

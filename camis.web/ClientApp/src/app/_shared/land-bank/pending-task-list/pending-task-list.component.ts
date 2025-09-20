@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LandDataService } from '../../../_services/land-data.service';
 import { Router } from '@angular/router';
+import {ObjectKeyCasingService} from "../../../_services/object-key-casing.service";
 
 @Component({
   selector: 'app-pending-task-list',
@@ -16,7 +17,7 @@ export class PendingTaskListComponent implements OnInit {
 
   public userWorkItems: any[] = [];
 
-  constructor(private landService: LandDataService, private router: Router) {
+  constructor(private landService: LandDataService, private router: Router, private keyCase:ObjectKeyCasingService) {
 
     if (localStorage.getItem('role') === '4' ) {
       this.clerkRole = true;
@@ -32,6 +33,7 @@ export class PendingTaskListComponent implements OnInit {
 
   ngOnInit() {
     this.landService.GetUserWorkItems().subscribe(data => {
+      this.keyCase.camelCase(data);
       this.userWorkItems = data;
       console.log(this.userWorkItems);
     });

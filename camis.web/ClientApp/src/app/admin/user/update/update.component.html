@@ -1,37 +1,77 @@
 <div class="modal-content">
-    <div class="modal-header">
+  <div class="modal-header">
 
-        <button type="button" class="close" (click)="closeForm()">
-            <span aria-hidden="true">&times;</span>
-        </button>
-        <h5 class="modal-title ">Update User Information</h5>
+    <button type="button" class="close" (click)="closeForm()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <h5 class="modal-title ">Update User Information</h5>
+  </div>
+  <form [formGroup]="editForm" (submit)="editUser()" id="editForm">
+    <div class="modal-body has-scroll">
+      <div class="row">
+        <div class="input-form col-md-12">
+          <label>Username:</label>
+          <input type="text" class="form-control" placeholder="Username" id="username" formControlName="username"
+                 [(ngModel)]="editModel.userName">
+        </div>
+        <div class="input-form col-md-12">
+          <label>Full Name <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="edit_user_first_name" formControlName="fullname"
+                 [(ngModel)]="editModel.fullName"/>
+          <div *ngIf="editForm.get('fullname')?.invalid && editForm.get('fullname')?.touched"
+               class="error-message">
+            <i class="fa fa-exclamation-circle me-1"></i> Full Name is required
+          </div>
+        </div>
+        <div class="input-form col-md-12">
+          <label>Mobile No <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="edit_user_phone_no" formControlName="phoneno"
+                 [(ngModel)]="editModel.phoneNo">
+          <div *ngIf="editForm.get('phoneno')?.invalid && editForm.get('phoneno')?.touched"
+               class="error-message">
+            <i class="fa fa-exclamation-circle me-1"></i> Mobile number is required
+          </div>
+        </div>
+        <div class="input-form col-md-12">
+          <label>Email <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="edit_user_email" formControlName="email"
+                 [(ngModel)]="editModel.email">
+          <div *ngIf="editForm.get('email')?.invalid && editForm.get('email')?.touched"
+               class="error-message">
+            <i class="fa fa-exclamation-circle me-1"></i> Email address is required
+          </div>
+        </div>
+        <div class="input-form col-md-12">
+          <label>User Role <span class="text-danger">*</span></label>
+          <div class="checkbox-group row">
+            <div *ngFor="let role of ROLES" class="role-label col-md-4">
+              <input
+                type="checkbox"
+                class="form-check-input role-checkbox"
+                [id]="'role_' + role.id"
+                [value]="role.id"
+                [checked]="isRoleSelected(role.id)"
+                (change)="onRoleChange($event, role.id)">
+              <label class="form-check-label" [for]="'role_' + role.id">
+                {{ role.name }}
+              </label>
+            </div>
+          </div>
+          <div class="selected-count" >
+            Selected: {{ getSelectedCount() }} of {{ ROLES.length }}
+          </div>
+          <div *ngIf="editForm.get('role')?.invalid && editForm.get('role')?.touched"
+               class="error-message">
+            <i class="fa fa-exclamation-circle me-1"></i> At least one role must be selected
+          </div>
+        </div>
+      </div>
     </div>
-    <form [formGroup]="editForm" (submit)="editUser()" id="editForm">
-        <div class="modal-body has-scroll" >
-            <div class="input-form" >
-                <label>Full Name:</label>
-                <input type="text" class="form-control"  id="edit_user_first_name" formControlName="fullname" [(ngModel)]="editModel.fullName"/>
-            </div>
-            <div class="input-form">
-                <label>Phone No:</label>
-                <input type="text" class="form-control"  id="edit_user_phone_no" formControlName="phoneno" [(ngModel)]="editModel.phoneNo">
-            </div>
-            <div class="input-form">
-                <label>User Role:</label>
-                <select class="form-control" formControlName="role"   id="edit_user_role" [(ngModel)]="editModel.roles" multiple>
-                    <option *ngFor="let role of ROLES" [value]="role.name" >{{role.name}}</option>
-                </select>
-            </div>
-            <div class="input-form">
-                <label>Username:</label>
-                <input type="text" class="form-control"  placeholder="Username" id="username" formControlName="username" [(ngModel)]="editModel.userName">
-            </div>
-        </div>
-        <div class="modal-footer ">
-            <div class="input-form align-right">
-                <button class="btn btn-default btn-sm" type="reset">Reset</button>
-                <button class="btn btn-cis btn-sm" type="submit" [disabled]="!editForm.valid">Update</button>
-            </div>
-        </div>
-    </form>
+    <div class="modal-footer ">
+      <div class="input-form align-right">
+        <button class="btn btn-default btn-sm" type="reset">Reset</button>
+        <button class="btn btn-cis btn-sm" type="submit" [disabled]="!editForm.valid">Update</button>
+      </div>
+    </div>
+  </form>
 </div>

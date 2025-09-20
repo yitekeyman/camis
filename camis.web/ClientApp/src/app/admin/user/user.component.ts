@@ -22,6 +22,7 @@ export class UserComponent implements OnInit, AfterViewInit {
   public toolTip: any;
   public pager: any = {};
   pagedItems: any[];
+  status:number=1;
 
   public isEdit = false;
 
@@ -37,7 +38,7 @@ export class UserComponent implements OnInit, AfterViewInit {
   }
 
   public filterUsers(search: string) {
-    this.userService.searchUsers(search).subscribe(res => {
+    this.userService.searchUsers(search, this.status).subscribe(res => {
       this.users = res;
       if (this.users.length > 0)
         this.keyCase.camelCase(this.users);
@@ -46,7 +47,7 @@ export class UserComponent implements OnInit, AfterViewInit {
   }
 
   public getAllUsers() {
-    this.userService.getUsers().subscribe(res => {
+    this.userService.getUsers(this.status).subscribe(res => {
       this.users = res;
       if (this.users.length > 0)
         this.keyCase.camelCase(this.users);

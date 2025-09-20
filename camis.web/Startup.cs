@@ -34,6 +34,18 @@ namespace intapscamis.camis
 
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add CORS policy
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder
+                            .AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader();
+                    });
+            });
             // Updated for .NET 8 compatibility
             services.AddControllersWithViews(); // Replaces AddMvc()
 
@@ -45,7 +57,7 @@ namespace intapscamis.camis
 
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.IdleTimeout = TimeSpan.FromMinutes(180);
                 options.Cookie.Name = ".ASPNetCoreSession";
                 options.Cookie.Path = "/";
             });
@@ -108,15 +120,16 @@ namespace intapscamis.camis
                 }
             });
 
-            app.UseCors("AllowAll");
+            
             // app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
             app.UseDefaultFiles(options);
             app.UseCookiePolicy();
-            app.UseSession();
+           
             app.UseRouting(); // Required for endpoint routing
-
+            app.UseCors("AllowAll");
+            app.UseSession();
             app.UseEndpoints(endpoints => // Updated endpoint configuration
             {
                 endpoints.MapControllerRoute(

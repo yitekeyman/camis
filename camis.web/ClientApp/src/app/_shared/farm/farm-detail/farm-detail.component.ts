@@ -30,7 +30,7 @@ export class FarmDetailComponent implements OnInit {
 
   progressPercent: number;
 
-  constructor (
+  constructor(
     private api: FarmApiService,
     private projectApi: ProjectApiService,
     private keyCase: ObjectKeyCasingService
@@ -38,18 +38,20 @@ export class FarmDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.api.getAllFarmTypes().subscribe(frTypes => this.frTypes = frTypes, dialog.error);
-    this.api.getAllFarmOperatorTypes().subscribe(opTypes => this.opTypes = opTypes, dialog.error);
-    this.api.getAllFarmOperatorOrigins().subscribe(opOrigins => this.opOrigins = opOrigins, dialog.error);
-    this.api.getAllRegistrationAuthorities().subscribe(regAuths => this.regAuths = regAuths, dialog.error);
-    this.api.getAllRegistrationTypes().subscribe(regTypes => this.regTypes = regTypes, dialog.error);
+    this.api.getAllFarmTypes().subscribe(frTypes => {this.keyCase.camelCase(frTypes);this.frTypes = frTypes}, dialog.error);
+    this.api.getAllFarmOperatorTypes().subscribe(opTypes =>{this.keyCase.camelCase(opTypes); this.opTypes = opTypes}, dialog.error);
+    this.api.getAllFarmOperatorOrigins().subscribe(opOrigins =>{this.keyCase.camelCase(opOrigins); this.opOrigins = opOrigins}, dialog.error);
+    this.api.getAllRegistrationAuthorities().subscribe(regAuths =>{this.keyCase.camelCase(regAuths); this.regAuths = regAuths}, dialog.error);
+    this.api.getAllRegistrationTypes().subscribe(regTypes =>{this.keyCase.camelCase(regTypes); this.regTypes = regTypes}, dialog.error);
 
     this.keyCase.camelCase(this.farm);
+
 
     if (this.farm.activityPlan && this.farm.activityPlan.rootActivity) {
       this.plan = this.farm.activityPlan;
     } else if (!this.farm.activityPlan && this.farm.activityId) {
       this.projectApi.getPlanFromRootActivity(this.farm.activityId).subscribe(plan => {
+        this.keyCase.camelCase(plan);
         this.plan = plan;
       }, dialog.error);
     }
@@ -59,6 +61,7 @@ export class FarmDetailComponent implements OnInit {
     } else if (!this.farm.operator && this.farm.operatorId) {
       this.api.getFarmOperator(this.farm.operatorId)
         .subscribe(operator => {
+          this.keyCase.camelCase(operator);
           this.farm.operator = operator;
           this.farm.operator.ventures = this.farm.operator.ventures || []
           this.loading = false;
@@ -70,9 +73,13 @@ export class FarmDetailComponent implements OnInit {
 
 
   onRootActivityItemChange($event: IActivityItemChange): void {
-    if (!$event.activity) { return; }
+    if (!$event.activity) {
+      return;
+    }
 
-    if (!this.plan) { this.plan = {}; }
+    if (!this.plan) {
+      this.plan = {};
+    }
     this.plan.rootActivity = $event.activity;
   }
 
@@ -125,19 +132,27 @@ export class FarmDetailComponent implements OnInit {
 
   parseGender(gender: string): string {
     switch (gender) {
-      case 'F': return 'Female';
-      case 'M': return 'Male';
-      default: return 'Unknown.';
+      case 'F':
+        return 'Female';
+      case 'M':
+        return 'Male';
+      default:
+        return 'Unknown.';
     }
   }
 
   parseMartialStatus(martialStatus: number): string {
     switch (martialStatus) {
-      case 1: return 'Not Married';
-      case 2: return 'Married';
-      case 3: return 'Divorced';
-      case 4: return 'Widowed';
-      default: return 'Unknown.';
+      case 1:
+        return 'Not Married';
+      case 2:
+        return 'Married';
+      case 3:
+        return 'Divorced';
+      case 4:
+        return 'Widowed';
+      default:
+        return 'Unknown.';
     }
   }
 

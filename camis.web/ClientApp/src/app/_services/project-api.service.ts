@@ -1,19 +1,14 @@
 import {Injectable} from '@angular/core';
-import {QueryEncoder} from '@angular/http';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 
 import {ApiService} from './api.service';
 import {IActivityPlanTemplate} from "../_shared/project/activities/interfaces";
+import {HttpParams} from "@angular/common/http";
 
 @Injectable()
 export class ProjectApiService {
-
-  private qs: QueryEncoder;
-
   constructor(private api: ApiService) {
-    this.qs = new QueryEncoder();
   }
-
 
   getAllActivityProgressMeasuringUnits(): Observable<any> {
     return this.api.get(`Projects/ActivityProgressMeasuringUnits`);
@@ -62,20 +57,32 @@ export class ProjectApiService {
 
 
   searchReports(planId: string, term: string, skip: number, take: number): Observable<any> {
-    return this.api.get(`Projects/SearchReports/${planId}?term=${this.qs.encodeValue(term)}&skip=${this.qs.encodeValue(skip.toString())}&take=${this.qs.encodeValue(take.toString())}`);
+    return this.api.get(`Projects/SearchReports/${planId}`,{params:{term:term,skip:skip.toString(),take:take.toString() }});
   }
 
 
   calculateProgress(activityId: string, reportTime?: number) {
-    return this.api.get(`Projects/CalculateProgress/${activityId}${reportTime ? '?reportTime=' + this.qs.encodeValue('' + reportTime) : ''}`);
+    let params = new HttpParams();
+    if (reportTime){
+      params=params.set('reportTime', reportTime.toString());
+    }
+    return this.api.get(`Projects/CalculateProgress/${activityId}`,{params});
   }
 
   calculateResourceProgress(activityId: string, reportTime?: number) {
-    return this.api.get(`Projects/CalculateResourceProgress/${activityId}${reportTime ? '?reportTime=' + this.qs.encodeValue('' + reportTime) : ''}`);
+    let params = new HttpParams();
+    if (reportTime){
+      params=params.set('reportTime', reportTime.toString());
+    }
+    return this.api.get(`Projects/CalculateResourceProgress/${activityId}`,{params});
   }
 
   calculateOutcomeProgress(activityId: string, reportTime?: number) {
-    return this.api.get(`Projects/CalculateOutcomeProgress/${activityId}${reportTime ? '?reportTime=' + this.qs.encodeValue('' + reportTime) : ''}`);
+    let params = new HttpParams();
+    if (reportTime){
+      params=params.set('reportTime', reportTime.toString());
+    }
+    return this.api.get(`Projects/CalculateOutcomeProgress/${activityId}`,{params});
   }
 
 
@@ -85,60 +92,116 @@ export class ProjectApiService {
 
 
   requestNewProgressReport(body: any, message: string | null): Observable<any> {
-    return this.api.post(`Projects/RequestNewProgressReport${message ? '?description=' + this.qs.encodeValue(message) : ''}`, body);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Projects/RequestNewProgressReport`, body,{params});
   }
 
   acceptProgressReport(workflowId: string, message: string | null): Observable<any> {
-    return this.api.post(`Projects/AcceptProgressReport/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, null);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Projects/AcceptProgressReport/${workflowId}`, null,{params});
   }
 
   surveyProgressReport(workflowId: string, message: string | null): Observable<any> {
-    return this.api.post(`Projects/SurveyProgressReport/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, null);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Projects/SurveyProgressReport/${workflowId}`, null,{params});
   }
 
   surveyedProgressReport(workflowId: string, body: any, message: string | null): Observable<any> {
-    return this.api.post(`Projects/SurveyedProgressReport/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, body);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Projects/SurveyedProgressReport/${workflowId}`, body,{params});
   }
 
   encodeProgressReport(workflowId: string, body: any, message: string | null): Observable<any> {
-    return this.api.post(`Projects/EncodeProgressReport/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, body);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Projects/EncodeProgressReport/${workflowId}`, body,{params});
   }
 
   rejectProgressReport(workflowId: string, message: string | null): Observable<any> {
-    return this.api.post(`Projects/RejectProgressReport/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, null);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Projects/RejectProgressReport/${workflowId}`, null,{params});
   }
 
   reportProgressReport(workflowId: string, message: string | null): Observable<any> {
-    return this.api.post(`Projects/ReportProgressReport/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, null);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Projects/ReportProgressReport/${workflowId}`, null,{params});
   }
 
   cancelProgressReport(workflowId: string, message: string | null): Observable<any> {
-    return this.api.post(`Projects/CancelProgressReport/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, null);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Projects/CancelProgressReport/${workflowId}`, null,{params});
   }
 
   approveProgressReport(workflowId: string, message: string | null): Observable<any> {
-    return this.api.post(`Projects/ApproveProgressReport/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, null);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Projects/ApproveProgressReport/${workflowId}`, null,{params});
   }
 
 
   requestNewUpdatePlan(body: any, message: string | null): Observable<any> {
-    return this.api.put(`Projects/RequestNewUpdatePlan${message ? '?description=' + this.qs.encodeValue(message) : ''}`, body);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Projects/RequestNewUpdatePlan`, body,{params});
   }
 
   cancelUpdatePlan(workflowId: string, message: string | null): Observable<any> {
-    return this.api.put(`Projects/CancelUpdatePlan/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, null);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Projects/CancelUpdatePlan/${workflowId}`, null,{params});
   }
 
   requestUpdatePlan(workflowId: string, body: any, message: string | null): Observable<any> {
-    return this.api.put(`Projects/RequestUpdatePlan/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, body);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Projects/RequestUpdatePlan/${workflowId}`, body,{params});
   }
 
   rejectUpdatePlan(workflowId: string, message: string | null): Observable<any> {
-    return this.api.put(`Projects/RejectUpdatePlan/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, null);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Projects/RejectUpdatePlan/${workflowId}`, null,{params});
   }
 
   approveUpdatePlan(workflowId: string, message: string | null): Observable<any> {
-    return this.api.put(`Projects/ApproveUpdatePlan/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, null);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Projects/ApproveUpdatePlan/${workflowId}`, null,{params});
   }
 
 

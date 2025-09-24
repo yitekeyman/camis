@@ -65,7 +65,6 @@
     <None Include="Views\Cmss\Home.cshtml" />
     <None Include="Views\Cmss\ProcessSplit.cshtml" />
     <None Include="wwwroot\cmss\process_split.js" />
-    <None Include="wwwroot\style\cmss.css" />
   </ItemGroup>
 
   <ItemGroup>
@@ -88,6 +87,52 @@
     <_ContentIncludedByDefault Remove="ClientApp\dist\assets\data\Topography.json" />
     <_ContentIncludedByDefault Remove="ClientApp\dist\assets\data\WaterSourceType.json" />
     <_ContentIncludedByDefault Remove="ClientApp\dist\assets\data\WaterTestParameters.json" />
+    <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.eot" />
+    <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.svg" />
+    <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.ttf" />
+    <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.woff" />
+    <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.woff2" />
+    <_ContentIncludedByDefault Remove="wwwroot\fonts\FontAwesome.otf" />
+    <_ContentIncludedByDefault Remove="wwwroot\fonts\glyphicons-halflings-regular.eot" />
+    <_ContentIncludedByDefault Remove="wwwroot\fonts\glyphicons-halflings-regular.svg" />
+    <_ContentIncludedByDefault Remove="wwwroot\fonts\glyphicons-halflings-regular.ttf" />
+    <_ContentIncludedByDefault Remove="wwwroot\fonts\glyphicons-halflings-regular.woff" />
+    <_ContentIncludedByDefault Remove="wwwroot\fonts\weathericons-regular-webfont.eot" />
+    <_ContentIncludedByDefault Remove="wwwroot\fonts\weathericons-regular-webfont.svg" />
+    <_ContentIncludedByDefault Remove="wwwroot\fonts\weathericons-regular-webfont.ttf" />
+    <_ContentIncludedByDefault Remove="wwwroot\fonts\weathericons-regular-webfont.woff" />
+    <_ContentIncludedByDefault Remove="wwwroot\fonts\WeatherIcons-Regular.otf" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\bootbox.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\bootstrap-progressbar.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\bootstrap.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\Chart.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\custom.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\external.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\icheck.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\jquery.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\map.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\ol-debug.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\ol.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\proj4.js" />
+    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\Accessiblity.json" />
+    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\AgroEchologicalZone.json" />
+    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\ExistingLandUse.json" />
+    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\GroundWater.json" />
+    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\InvestmentType.json" />
+    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\json.json" />
+    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\landData.json" />
+    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\LandSearchResult.json" />
+    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\LandType.json" />
+    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\MoistureSource.json" />
+    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\RegionList.json" />
+    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\ReportType.json" />
+    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\soilTestType.json" />
+    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\SurfaceWater.json" />
+    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\Topography.json" />
+    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\WaterSourceType.json" />
+    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\WaterTestParameters.json" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

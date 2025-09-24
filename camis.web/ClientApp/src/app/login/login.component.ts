@@ -1,29 +1,35 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {LoginUser} from '../admin/user/user.model';
-import {AdminServices} from '../admin/admin.Services';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators, FormControl} from '@angular/forms';
 import dialog from '../_shared/dialog';
+import {AdminServices} from "../_services/admin.Services";
+import {LoginUser} from "../_model/user.model";
+import {CommonModule} from "@angular/common";
+import {DialogModule} from "../_shared/dialog/dialog.module";
+
 
 declare var $: any;
 
 @Component({
+
   selector: 'app-login',
-  templateUrl: './login.component.html'
+  imports:[CommonModule, ReactiveFormsModule, DialogModule],
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss']
 })
 
 export class LoginComponent implements OnInit {
 
   public loginForm: FormGroup;
   public loggedIn: boolean | false;
-  public user: LoginUser;
+  public user:LoginUser;
   public selectedRole: number;
   showPassword = false;
 
   public ROLES: any[];
 
 
-  constructor(public fb: FormBuilder, public router: Router, public adminService: AdminServices) {
+  constructor(public fb: FormBuilder, public router: Router, public adminService:AdminServices) {
     this.loginForm = fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
@@ -35,6 +41,7 @@ export class LoginComponent implements OnInit {
       username: '',
       password: ''
     };
+    this.selectedRole=0;
   }
 
   public login(): void {
@@ -51,8 +58,8 @@ export class LoginComponent implements OnInit {
         if (this.ROLES.length == 1) { // only one role, log the user with it
           this.selectedRole = this.ROLES[0].id;
           this.proceed();
-        } else {
-          $('#roleModal').show().addClass('in');
+        }else{
+          this.loginForm.addControl('role',new FormControl('', [Validators.required,Validators.min(1)]));
         }
       }, dialog.error);
 
@@ -64,24 +71,14 @@ export class LoginComponent implements OnInit {
 
     this.adminService.setUserRole({role: this.selectedRole}).subscribe(res => {
       localStorage.setItem('role', '' + this.selectedRole);
-
-      let path = null;
-      switch (Number(this.selectedRole)) {
-        case 1: path = 'admin'; break;
-        case 2: path = 'clerk'; break;
-        case 3: path = 'supervisor'; break;
-        case 4: path = 'land-clerk/land-dashboard'; break;
-        case 5: path = 'land-supervisor/land-dashboard'; break;
-        case 6: path = 'land-admin'; break;
-        case 7: path = 'land-certificate-issuer'; break;
-        case 8: path = 'mne-expert'; break;
-        case 9: path = 'mne-supervisor'; break;
-        case 10: path = 'mne-data-encoder'; break;
-        case 11: path = 'configuration-admin'; break;
-        default:
-          dialog.error({ message: 'Selected user role has no UI.' });
-          return;
+      for(let role of this.ROLES) {
+        if(role.id == this.selectedRole){
+          localStorage.setItem('roleName',role.name);
+        }
       }
+
+
+      let path = 'dashboard';
 
       this.router.navigateByUrl(path)
         .then(() => dialog.close())
@@ -90,7 +87,8 @@ export class LoginComponent implements OnInit {
   }
 
   public closeForm(): void {
-    $('#roleModal').hide();
+    // $('#roleModal').hide();
+    this.selectedRole=this.loginForm.value.role;
     this.proceed();
   }
   public cancelLogin(): void {

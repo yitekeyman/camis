@@ -1,22 +1,22 @@
 import {Injectable} from '@angular/core';
-import {QueryEncoder} from '@angular/http';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 
 import {ApiService} from './api.service';
 import {IWaitLandAssignmentRequest} from '../_shared/farm/interfaces';
+import {HttpParams} from "@angular/common/http";
 
 @Injectable()
 export class FarmApiService {
 
-  private qs: QueryEncoder;
+
 
   constructor(private api: ApiService) {
-    this.qs = new QueryEncoder();
+
   }
 
 
   getLandByUpin(upin: string): Observable<any> {
-    return this.api.get(`LandBank/GetLand?upin=${this.qs.encodeValue(upin)}`);
+    return this.api.get(`LandBank/GetLand`,{params:{upin:upin}});
   }
 
 
@@ -46,11 +46,11 @@ export class FarmApiService {
 
 
   searchFarmOperators(term: string, skip: number, take: number): Observable<any> {
-    return this.api.get(`Farms/SearchFarmOperators?term=${this.qs.encodeValue(term)}&skip=${this.qs.encodeValue(skip.toString())}&take=${this.qs.encodeValue(take.toString())}`);
+    return this.api.get(`Farms/SearchFarmOperators`,{params:{term:term,skip:skip.toString(),take:take.toString() }});
   }
 
   searchFarms(term: string, skip: number, take: number): Observable<any> {
-    return this.api.get(`Farms/SearchFarms?term=${this.qs.encodeValue(term)}&skip=${this.qs.encodeValue(skip.toString())}&take=${this.qs.encodeValue(take.toString())}`);
+    return this.api.get(`Farms/SearchFarms`,{params:{term:term,skip:skip.toString(),take:take.toString() }});
   }
 
 
@@ -73,74 +73,142 @@ export class FarmApiService {
 
 
   saveNewFarmRegistration(body: any, message: string | null): Observable<any> {
-    return this.api.post(`Farms/SaveNewFarmRegistration${message ? '?description=' + this.qs.encodeValue(message) : ''}`, body);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Farms/SaveNewFarmRegistration`, body, {params});
   }
 
   saveFarmRegistration(workflowId: string, body: any, message: string | null): Observable<any> {
-    return this.api.post(`Farms/SaveFarmRegistration/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, body);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Farms/SaveFarmRegistration/${workflowId}`, body,{params});
   }
 
   requestNewFarmRegistration(body: any, message: string | null): Observable<any> {
-    return this.api.post(`Farms/RequestNewFarmRegistration${message ? '?description=' + this.qs.encodeValue(message) : ''}`, body);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Farms/RequestNewFarmRegistration`, body,{params});
   }
 
   cancelFarmRegistration(workflowId: string, message: string | null): Observable<any> {
-    return this.api.post(`Farms/CancelFarmRegistration/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, null);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Farms/CancelFarmRegistration/${workflowId}`, null,{params});
   }
 
   requestFarmRegistration(workflowId: string, body: any, message: string | null): Observable<any> {
-    return this.api.post(`Farms/RequestFarmRegistration/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, body);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Farms/RequestFarmRegistration/${workflowId}`, body,{params});
   }
 
   rejectFarmRegistration(workflowId: string, message: string | null): Observable<any> {
-    return this.api.post(`Farms/RejectFarmRegistration/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, null);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Farms/RejectFarmRegistration/${workflowId}`, null,{params});
   }
 
   approveFarmRegistration(workflowId: string, message: string | null): Observable<any> {
-    return this.api.post(`Farms/ApproveFarmRegistration/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, null);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Farms/ApproveFarmRegistration/${workflowId}`, null,{params});
   }
 
 
   requestNewFarmModification(body: any, message: string | null): Observable<any> {
-    return this.api.put(`Farms/RequestNewFarmModification${message ? '?description=' + this.qs.encodeValue(message) : ''}`, body);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Farms/RequestNewFarmModification`, body,{params});
   }
 
   cancelFarmModification(workflowId: string, message: string | null): Observable<any> {
-    return this.api.put(`Farms/CancelFarmModification/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, null);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Farms/CancelFarmModification/${workflowId}`, null,{params});
   }
 
   requestFarmModification(workflowId: string, body: any, message: string | null): Observable<any> {
-    return this.api.put(`Farms/RequestFarmModification/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, body);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Farms/RequestFarmModification/${workflowId}`, body,{params});
   }
 
   rejectFarmModification(workflowId: string, message: string | null): Observable<any> {
-    return this.api.put(`Farms/RejectFarmModification/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, null);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Farms/RejectFarmModification/${workflowId}`, null,{params});
   }
 
   approveFarmModification(workflowId: string, message: string | null): Observable<any> {
-    return this.api.put(`Farms/ApproveFarmModification/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, null);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Farms/ApproveFarmModification/${workflowId}`, null,{params});
   }
 
 
   requestNewFarmDeletion(body: any, message: string | null): Observable<any> {
-    return this.api.put(`Farms/RequestNewFarmDeletion${message ? '?description=' + this.qs.encodeValue(message) : ''}`, body);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Farms/RequestNewFarmDeletion`, body,{params});
   }
 
   rejectFarmDeletion(workflowId: string, message: string | null): Observable<any> {
-    return this.api.put(`Farms/RejectFarmDeletion/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, null);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Farms/RejectFarmDeletion/${workflowId}`, null,{params});
   }
 
   approveFarmDeletion(workflowId: string, message: string | null): Observable<any> {
-    return this.api.put(`Farms/ApproveFarmDeletion/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, null);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Farms/ApproveFarmDeletion/${workflowId}`, null,{params});
   }
 
 
   newWaitLandAssignment(body: IWaitLandAssignmentRequest, message: string | null): Observable<any> {
-    return this.api.post(`Farms/NewWaitLandAssignment${message ? '?description=' + this.qs.encodeValue(message) : ''}`, body);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Farms/NewWaitLandAssignment`, body,{params});
   }
 
   waitLandAssignment(workflowId: string, body: IWaitLandAssignmentRequest, message: string | null): Observable<any> {
-    return this.api.post(`Farms/WaitLandAssignment/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, body);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Farms/WaitLandAssignment/${workflowId}`, body,{params});
   }
 
   getTransferStatus(workflowId: string): Observable<any> {
@@ -148,6 +216,10 @@ export class FarmApiService {
   }
 
   certifyLandAssignment(workflowId: string, body: any, message: string | null): Observable<any> {
-    return this.api.post(`Farms/CertifyLandAssignment/${workflowId}${message ? '?description=' + this.qs.encodeValue(message) : ''}`, body);
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Farms/CertifyLandAssignment/${workflowId}`, body,{params});
   }
 }

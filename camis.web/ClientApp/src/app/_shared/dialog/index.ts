@@ -1,7 +1,7 @@
-import swal, { SweetAlertOptions, SweetAlertResult } from 'sweetalert2';
 
+import  Swal, { SweetAlertOptions, SweetAlertResult } from "sweetalert2";
 
-const dialog = swal as typeof swal & {
+const dialog = Swal as typeof Swal & {
   confirm: (question: string, title?: string, overrideOptions?: SweetAlertOptions) => Promise<boolean | null>
   confirmResult: (question: string, title?: string, overrideOptions?: SweetAlertOptions) => Promise<SweetAlertResult>
   error: (e: any, overrideOptions?: SweetAlertOptions) => Promise<SweetAlertResult>
@@ -13,15 +13,14 @@ const dialog = swal as typeof swal & {
   warning: (e: any, overrideOptions?: SweetAlertOptions) => Promise<SweetAlertResult>
 };
 
-
 dialog.confirm = async (question: string, title?: string, overrideOptions?: SweetAlertOptions): Promise<boolean | null> => {
   const result = await dialog.confirmResult(question, title, overrideOptions);
   return result.dismiss && result.dismiss.toString().toLowerCase() == 'close' ? null : !!result.value;
 };
 
 dialog.confirmResult = async (question: string, title?: string, overrideOptions?: SweetAlertOptions): Promise<SweetAlertResult> => {
-  return swal(Object.assign({
-    type: 'question',
+  return Swal.fire(Object.assign({
+    icon: 'question',
     confirmButtonText: 'Yes',
     cancelButtonText: 'No',
     title,
@@ -34,8 +33,8 @@ dialog.confirmResult = async (question: string, title?: string, overrideOptions?
 };
 
 dialog.error = async (e: any, overrideOptions?: SweetAlertOptions): Promise<SweetAlertResult> => {
-  return swal(Object.assign({
-    type: 'error',
+  return Swal.fire(Object.assign({
+    icon: 'error',
     title: 'Error!',
     text: e && (e.message || (typeof e === 'string' ? e : JSON.stringify(e))) || 'Unknown error.',
     showCloseButton: true,
@@ -46,8 +45,8 @@ dialog.error = async (e: any, overrideOptions?: SweetAlertOptions): Promise<Swee
 };
 
 dialog.info = async (message: string, title?: string, overrideOptions?: SweetAlertOptions): Promise<SweetAlertResult> => {
-  return swal(Object.assign({
-    type: 'info',
+  return Swal.fire(Object.assign({
+    icon: 'info',
     title,
     text: message,
     showCloseButton: true,
@@ -58,14 +57,14 @@ dialog.info = async (message: string, title?: string, overrideOptions?: SweetAle
 };
 
 dialog.loading = (overrideOptions?: SweetAlertOptions): void => {
-  swal(Object.assign({
+  Swal.fire(Object.assign({
     allowOutsideClick: false,
     showCloseButton: false,
     showConfirmButton: false,
     showCancelButton: false,
   } as SweetAlertOptions, overrideOptions));
-  swal.disableButtons();
-  return swal.showLoading();
+  Swal.disableButtons();
+  Swal.showLoading();
 };
 
 dialog.prompt = async (question: string, title?: string, overrideOptions?: SweetAlertOptions): Promise<string | null> => {
@@ -74,8 +73,8 @@ dialog.prompt = async (question: string, title?: string, overrideOptions?: Sweet
 };
 
 dialog.promptResult = async (question: string, title?: string, overrideOptions?: SweetAlertOptions): Promise<SweetAlertResult> => {
-  return swal(Object.assign({
-    type: 'question',
+  return Swal.fire(Object.assign({
+    icon: 'question',
     input: 'text',
     title,
     text: question,
@@ -87,8 +86,8 @@ dialog.promptResult = async (question: string, title?: string, overrideOptions?:
 };
 
 dialog.success = async (message?: string, title = 'Success!', overrideOptions?: SweetAlertOptions): Promise<SweetAlertResult> => {
-  return swal(Object.assign({
-    type: 'success',
+  return Swal.fire(Object.assign({
+    icon: 'success',
     title,
     text: message,
     showCloseButton: true,
@@ -99,8 +98,8 @@ dialog.success = async (message?: string, title = 'Success!', overrideOptions?: 
 };
 
 dialog.warning = async (e: any, overrideOptions?: SweetAlertOptions): Promise<SweetAlertResult> => {
-  return swal(Object.assign({
-    type: 'warning',
+  return Swal.fire(Object.assign({
+    icon: 'warning',
     title: 'Warning!',
     text: e && (e.message || (typeof e === 'string' ? e : JSON.stringify(e))) || 'Unknown warning.',
     showCloseButton: true,
@@ -109,6 +108,5 @@ dialog.warning = async (e: any, overrideOptions?: SweetAlertOptions): Promise<Sw
     allowOutsideClick: false,
   } as SweetAlertOptions, overrideOptions));
 };
-
 
 export default dialog;

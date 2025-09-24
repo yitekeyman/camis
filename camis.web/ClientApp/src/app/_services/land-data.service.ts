@@ -1,7 +1,6 @@
-import { QueryEncoder } from '@angular/http';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { LandModel, Accessablity, SoilTestType, LandBankWorkItem,
   LandType, SearchResult, Month, AgroEchologicalZone,
   Topography, InvestmentType, MoistureSource, WaterTestParameters, ExistingLandUse,
@@ -27,10 +26,10 @@ export class LandDataService {
   groundWaterUrl = '../assets/data/GroundWater.json';
   surfaceWaterUrl = '../assets/data/SurfaceWater.json';
 
-  private qs: QueryEncoder;
+
 
   constructor(private api: ApiService, private http: HttpClient) {
-    this.qs = new QueryEncoder();
+
   }
 
   // get all the land detail informtions

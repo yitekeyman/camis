@@ -1,14 +1,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DialogComponent } from './dialog/dialog.component';
-import { DialogService } from './dialog.service';
 
 @NgModule({
   imports: [
-    CommonModule
+    CommonModule,DialogComponent
   ],
-  declarations: [DialogComponent],
-  providers: [DialogService],
+  declarations: [],
+  providers: [],
   exports: [
     DialogComponent,
   ]

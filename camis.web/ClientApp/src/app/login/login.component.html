@@ -1,100 +1,80 @@
-
-<style>
-  .password-toggle {
-    cursor: pointer;
-    position: absolute;
-    right: 35px;
-    top: 255px;
-    color: #6c757d;
-  }
-</style>
-<div id="login">
-  <div class="container">
-    <div class="login-warper">
-      <div class="parties">
-        <div class="camis">
-          <i class="fa fa-map-marker"></i>
-          <h1>CAMiS</h1>
-          <p>Commercial Agriculture Management Information System</p>
-        </div>
-        <div class="parties-logo">
-          <img src="/images/eu-logo.png" class="first" style="padding-right: 2em; height:70px" title="European Union"/>
-          <img src="/images/GIZ-logo.png" class="middle"/>
-          <img src="/images/ata-logo.png" class="middle"/>
-          <img src="/images/horticulture.png" class="last"/>
-        </div>
-      </div>
-      <div class="login-page">
-        <div>
-
-          <div class="login-content">
-            <div class="align-center login-icon">
-              <img src="/images/camis.png">
-              <p>Commercial Agriculture Management Information System</p>
+<div class="auth-main">
+  <div class="auth-wrapper v3">
+    <div class="auth-form">
+      <div class="card my-5">
+        <div class="card-body">
+          <a href="#" class="d-flex justify-content-center">
+            <img src="assets/images/camis_logo_2_3.png" alt="logo" style="height: 125px;"/>
+          </a>
+          <div class="row">
+            <div class="d-flex justify-content-center">
+              <div class="auth-header">
+                <h3 class="text-secondary mt-2"><b>Hi, Welcome Back</b></h3>
+                <p class="fs-4 mt-2">Enter your credentials to continue</p>
+              </div>
             </div>
-            <div class="align-center">
-              <h3>Please Login</h3>
-              <hr>
-            </div>
+          </div>
+          <div class="row">
             <form [formGroup]="loginForm" (submit)="login()">
-              <div >
-                <input type="text" class="username" id="username" placeholder="Username" formControlName="username"  [(ngModel)]="user.username">
-                <input [type]="showPassword ? 'text' : 'password'" class="password" id="password" placeholder="Password" formControlName="password"  [(ngModel)]="user.password">
-                <span class="password-toggle" (click)="togglePasswordVisibility()">
-                  <i [class]="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
-                </span>
+              <div class="input-form mb-3 col-md-12">
+                <label for="username">Username <span class="text-danger">*  </span> </label>
+                <input type="text" class="form-control" id="username" placeholder="Username" formControlName="username"
+                       [(ngModel)]="user.username"/>
               </div>
-              <div class="login-message" id="login-message">
+              <div class="input-form mb-3 col-md-12">
+                <label for="password">Password <span class="text-danger">* </span></label>
+                <input [type]="showPassword ? 'text' : 'password'" class="form-control" id="password"
+                       placeholder="Password" formControlName="password" [(ngModel)]="user.password"/>
+                <span class="password-toggle" id="button-addon" (click)="togglePasswordVisibility()">
+                  <i [class]="showPassword ? 'ti ti-eye-x' : 'ti ti-eye'"></i>
+                </span>
+
 
               </div>
-              <div class="align-right">
-                <button class="btn btn-defualt" type="reset">Clear</button>
-                <button class="btn btn-success" type="submit">Login</button>
+              <div class="input-group mb-3  col-md-12" *ngIf="ROLES?.length>1">
+                <select class="form-select" id="role" [(ngModel)]="selectedRole" formControlName="role">
+                  <option value="">Select Role</option>
+                  <option *ngFor="let role of ROLES" [value]="role.id">{{ role.name }}</option>
+                </select>
+                <button type="button" (click)="closeForm()" [disabled]="!loginForm.valid" id="button-addon2"
+                        class="btn btn-secondary">Confirm
+                </button>
+              </div>
+              <div class="d-grid mt-4">
+                <button type="submit" (click)="login()" class="btn btn-secondary"
+                        [disabled]="!(loginForm.valid && ROLES?.length<=0)">Sign In
+                </button>
               </div>
             </form>
           </div>
-          <div class="login-footer">
-            <div ><p class="align-center">powered by <a href="https://www.intaps.com">INTAPS Consultancy plc</a></p></div>
-
+        </div>
+        <div class="card-footer">
+          <div class="d-flex justify-content-center">
+            <p>Commercial Agriculture Management Information System</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-<div  id="roleModal"  class="modal fade">
-  <div class="modal-dialog">
-    <form (ngSubmit)="closeForm()" (reset)="cancelLogin()">
-      <div class="modal-content">
-        <div class="modal-header">
+<div class="contribitors">
+  <div class="contribitor-list">
 
-          <h5 class="modal-title ">Role Selection</h5>
-        </div>
-        <div class="modal-body">
-          <div *ngFor="let role of ROLES">
-            <ul class="nav">
-              <li>
-                <div class="input-form">
-                  <input class="form-check-input" type="radio" name="roleRadio" [id]="'role-radio-' + role.id" value={{role.id}} [(ngModel)]="selectedRole">
-                  <label class="form-check-label" [for]="'role-radio-' + role.id">{{role.name}}</label>
-                </div>
-              </li>
-            </ul>
+    <p class="d-flex justify-content-center mb-5">
+      <a href="" target="_blank">
+        <img src="assets/images/GIZ-logo.png" alt="giz"/>
+      </a>
+    </p>
 
-          </div>
-        </div>
-        <div class="modal-footer">
-          <ul class="nav">
-            <li id="addImgBtn" class="align-center addDocBtn">
-              <div class="input-group" style="display: flex">
-                <button type="submit" class="btn btn-success btn-sm">Ok</button>
-                <button type="reset" class="btn btn-warning btn-sm">Cancel</button>
-              </div>
-            </li>
-          </ul>
-        </div>
-
-      </div>
-    </form>
+    <p class="d-flex justify-content-center mb-5">
+      <a href="" target="_blank">
+        <img src="assets/images/eu-logo.png" alt="giz"/>
+      </a>
+    </p>
+    <p class="d-flex justify-content-center mb-5">
+      <a href="" target="_blank">
+        <img src="assets/images/horticulture.png" alt="giz"/>
+      </a>
+    </p>
   </div>
 </div>

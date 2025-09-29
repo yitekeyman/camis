@@ -25,6 +25,7 @@ export class LoginComponent implements OnInit {
   public user:LoginUser;
   public selectedRole: number;
   showPassword = false;
+  isLoggedIn = false;
 
   public ROLES: any[];
 
@@ -51,6 +52,7 @@ export class LoginComponent implements OnInit {
 
       localStorage.setItem('username', this.user.username);
       this.adminService.getUserRoles().subscribe(res2 => {
+        this.isLoggedIn = true;
         this.ROLES = res2;
 
         dialog.close();
@@ -78,7 +80,7 @@ export class LoginComponent implements OnInit {
       }
 
 
-      let path = 'dashboard';
+      let path = 'default/dashboard';
 
       this.router.navigateByUrl(path)
         .then(() => dialog.close())

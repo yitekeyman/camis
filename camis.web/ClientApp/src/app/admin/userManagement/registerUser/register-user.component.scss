@@ -1,0 +1,49 @@
+﻿.modal-body{
+  background: #FFFFFF;
+  max-height: calc(85vh - 100px);
+  overflow: auto;
+}
+
+.role-checkbox {
+  margin:0 4px 0 0;
+}
+.form-check-label{
+  font-size: 0.75rem;
+}
+.role-label {
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 6px;
+  transition: all 0.3s;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #e9ecef;
+}
+.role-label:hover {
+  background-color: #f8f9fa;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.form-check-label{
+  margin-bottom: 0;
+  cursor: pointer;
+
+}
+.selected-count {
+  font-size: 0.675rem;
+  color: #6c757d;
+  margin-top: 8px;
+}
+
+
+.password-toggle {
+  cursor: pointer;
+  position: absolute;
+  right: 15px;
+  top: 30px;
+  color: #6c757d;
+}
+.form-group {
+  position: relative;
+}

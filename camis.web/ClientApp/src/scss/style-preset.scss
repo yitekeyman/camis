@@ -104,10 +104,15 @@ File: style.css
       }
     }
     .page-link {
-      color: $pc-primary;
+      color: $pc-secondary;
       &:hover {
         background: shift-color($pc-primary, $soft-bg-level);
       }
+    }
+    .page-link .active{
+      color:#FFFFFF;
+      background: $pc-secondary;
+      border-color: $pc-secondary-dark;
     }
     .accordion-button:not(.collapsed) {
       color: $pc-primary;

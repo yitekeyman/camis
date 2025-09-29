@@ -13,19 +13,16 @@ import {ReportDetailComponent} from './report-detail/report-detail.component';
 
 @NgModule({
   declarations: [
-    ActivitiesComponent,
-    ActivityBarComponent,
-    ActivityItemComponent,
-    ActivityProgressComponent,
-    ReportDetailComponent,
   ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
-
     DocumentModule,
+    ActivitiesComponent,
+    ActivityProgressComponent,
+    ReportDetailComponent,
   ],
   exports: [
     ActivitiesComponent,

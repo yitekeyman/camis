@@ -20,6 +20,12 @@ import {ReportAPIService} from "./_services/report-api.service";
 import {DialogModule} from "./_shared/dialog/dialog.module";
 import {DialogService} from "./_shared/dialog/dialog.service";
 import {BrowserModule} from "@angular/platform-browser";
+import {DefaultComponent} from "./default/default.component";
+import {DefaultModule} from "./default/default.module";
+import {ToastrService} from "ngx-toastr";
+import {LoginComponent} from "./login/login.component";
+import {AdminModule} from "./admin/admin.module";
+import {AdminDashboardService} from "./_services/adminDashboard.service";
 
 @Component({
   selector: 'app-root',
@@ -31,7 +37,6 @@ import {BrowserModule} from "@angular/platform-browser";
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    DialogModule
   ],
   providers: [
     AddressApiService,
@@ -44,6 +49,7 @@ import {BrowserModule} from "@angular/platform-browser";
     WorkflowApiService,
     LandDataService,
     ReportAPIService,
+    AdminDashboardService
   ]
 })
 export class AppComponent {

@@ -3,9 +3,11 @@ import {Component, Input, OnInit} from '@angular/core';
 import {ProjectApiService} from '../../../_services/project-api.service';
 import {ObjectKeyCasingService} from '../../../_services/object-key-casing.service';
 import dialog from '../../dialog';
+import {CommonModule} from "@angular/common";
 
 @Component({
   selector: 'app-report-detail',
+  imports:[CommonModule],
   templateUrl: 'report-detail.component.html',
 })
 export class ReportDetailComponent implements OnInit {

@@ -4,9 +4,15 @@ import {ProjectApiService} from '../../../_services/project-api.service';
 import {IActivityItemChange} from './activity-item/interfaces';
 import {IActivityPlanTemplate} from './interfaces';
 import dialog from '../../dialog';
+import {CommonModule} from "@angular/common";
+import {ActivityBarComponent} from "./activity-bar/activity-bar.component";
+import {ActivityItemComponent} from "./activity-item/activity-item.component";
+import {ReactiveFormsModule} from "@angular/forms";
+import {ObjectKeyCasingService} from "../../../_services/object-key-casing.service";
 
 @Component({
   selector: 'app-activities',
+  imports:[CommonModule, ReactiveFormsModule,ActivityBarComponent, ActivityItemComponent],
   templateUrl: 'activities.component.html',
   styleUrls: ['activities.component.css']
 })
@@ -43,12 +49,13 @@ export class ActivitiesComponent implements OnInit {
     return !!this.progressVariables && !!this.activityPlanTemplates;
   }
 
-  constructor(private api: ProjectApiService) {
+  constructor(private api: ProjectApiService, private keyCase:ObjectKeyCasingService) {
   }
 
   ngOnInit(): void {
-    this.api.getAllActivityProgressMeasuringUnits().subscribe(units => this.progressMeasuringUnits = units, dialog.error);
+    this.api.getAllActivityProgressMeasuringUnits().subscribe(units =>{this.keyCase.camelCase(units);this.progressMeasuringUnits = units}, dialog.error);
     this.api.getAllActivityProgressVariables().subscribe(progressVariables => {
+      this.keyCase.camelCase(progressVariables);
       this.progressVariables = progressVariables;
 
       let progressVariableTypes = [];
@@ -61,11 +68,11 @@ export class ActivitiesComponent implements OnInit {
         .filter(value => value != null);
       this.progressVariableTypes = progressVariableTypes;
     }, dialog.error);
-    this.api.getAllActivityStatusTypes().subscribe(statuses => this.statusTypes = statuses, dialog.error);
-    this.api.getAllActivityVariableValueLists().subscribe(list => this.variableValueLists = list, dialog.error);
-    this.api.getAllActivityTags().subscribe(tags => this.activityTags = tags, dialog.error);
-    this.api.getAllActivityPlanDetailTags().subscribe(tags => this.activityPlanDetailTags = tags, dialog.error);
-    this.api.getAllActivityPlanTemplates().subscribe(templates => this.activityPlanTemplates = templates, dialog.error);
+    this.api.getAllActivityStatusTypes().subscribe(statuses => {this.keyCase.camelCase(statuses);this.statusTypes = statuses}, dialog.error);
+    this.api.getAllActivityVariableValueLists().subscribe(list => {this.keyCase.camelCase(list);this.variableValueLists = list}, dialog.error);
+    this.api.getAllActivityTags().subscribe(tags => {this.keyCase.camelCase(tags);this.activityTags = tags}, dialog.error);
+    this.api.getAllActivityPlanDetailTags().subscribe(tags => {this.keyCase.camelCase(tags);this.activityPlanDetailTags = tags}, dialog.error);
+    this.api.getAllActivityPlanTemplates().subscribe(templates =>{this.keyCase.camelCase(templates); this.activityPlanTemplates = templates}, dialog.error);
 
     this.calcTimes();
   }

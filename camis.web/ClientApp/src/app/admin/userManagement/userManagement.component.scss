@@ -1,0 +1,31 @@
+﻿// Add to your component decorator
+
+.modal {
+  background-color: rgba(0,0,0,0.5);
+}
+.modal.show {
+  display: block;
+}
+.page-link.active {
+  color: #fff;
+  background: #37882c;
+  border-color: #37882c;
+  &hover{
+    background: #37882c;
+  }
+}
+
+.page-link:hover {
+  color: #fff;
+  background: #71b220;
+  border-color: #71b220;
+}
+
+.page-link {
+  color: #37882c;
+  font-weight: 500;
+}
+.no-data{
+  color:greenyellow;
+  font-size: larger;
+}

@@ -58,6 +58,8 @@ dialog.info = async (message: string, title?: string, overrideOptions?: SweetAle
 
 dialog.loading = (overrideOptions?: SweetAlertOptions): void => {
   Swal.fire(Object.assign({
+    title: 'Loading...',
+    text:'Processing your request, please wait...',
     allowOutsideClick: false,
     showCloseButton: false,
     showConfirmButton: false,

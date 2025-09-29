@@ -1,7 +1,10 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {CommonModule} from "@angular/common";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
     selector: 'app-activity-bar',
+  imports:[CommonModule, ReactiveFormsModule, FormsModule],
     templateUrl: 'activity-bar.component.html',
     styleUrls: ['activity-bar.component.css']
 })

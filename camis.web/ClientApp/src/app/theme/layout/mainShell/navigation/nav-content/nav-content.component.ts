@@ -51,7 +51,7 @@ export class NavContentComponent implements OnInit {
             title: 'Dashboard',
             type: 'item',
             classes: 'nav-item',
-            url: '/dashboard',
+            url: '/default/dashboard',
             icon: 'ti ti-dashboard',
             breadcrumbs: false
           },
@@ -60,8 +60,9 @@ export class NavContentComponent implements OnInit {
             title: 'Pending Task',
             type: 'item',
             classes: 'nav-item',
-            url: '/pending-task',
+            url: '/default/pending-task',
             icon: 'ti ti-menu',
+            breadcrumbs: true
           }
         ]
       }
@@ -77,11 +78,12 @@ export class NavContentComponent implements OnInit {
         children: [
           {
             id: 'users',
-            title: 'User',
+            title: 'User Management',
             type: 'item',
             icon: 'ti ti-users',
             url: '/admin/user-management',
             classes: 'nav-item',
+            breadcrumbs: true
           },
           {
             id: 'activity-log',
@@ -90,6 +92,23 @@ export class NavContentComponent implements OnInit {
             icon: 'ti ti-device-desktop-analytics',
             url: '/admin/activity-log',
             classes: 'nav-item',
+            breadcrumbs: true
+          },
+          {
+            id: 'configuration-admin',
+            title: 'Configuration',
+            type: 'collapse',
+            icon: 'ti ti-settings-check',
+            children: [
+              {
+                id: 'activity-template',
+                title: 'Activity Template',
+                type: 'item',
+                url: '/admin/activity-template',
+                icon: 'ti ti-file-diff',
+                classes: 'nav-item'
+              }
+            ]
           }
         ]
       });
@@ -103,7 +122,7 @@ export class NavContentComponent implements OnInit {
           title: 'Search Land',
           type: 'item',
           classes: 'nav-item',
-          url: '/typography',
+          url: '/search-land',
           icon: 'ti ti-map-search'
         }
       ];
@@ -115,7 +134,7 @@ export class NavContentComponent implements OnInit {
           title: 'Register Land',
           type: 'item',
           classes: 'nav-item',
-          url: '/color',
+          url: '/edit-land',
           icon: 'ti ti-map-plus'
         });
       }

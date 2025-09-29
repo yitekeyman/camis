@@ -166,7 +166,7 @@ namespace intapscamis.camis.domain.Admin
             _context.User.Update(user);
 
             var userAction = _actionService.AddUserAction(_userSession, UserActionType.DeactivateUser);
-            _context.SaveChanges(_userSession.Username, userAction);
+            _context.SaveChanges();
         }
 
         public void ActivateUser(string username)
@@ -177,7 +177,7 @@ namespace intapscamis.camis.domain.Admin
             _context.User.Update(user);
 
             var userAction = _actionService.AddUserAction(_userSession, UserActionType.ActivateUser);
-            _context.SaveChanges(_userSession.Username, userAction);
+            _context.SaveChanges();
         }
 
         public IList<UserViewModel> GetUsers(string filter, int status)
@@ -222,7 +222,7 @@ namespace intapscamis.camis.domain.Admin
 
 
                 var time = _context.UserAction.Where(u => u.Username == user.Username && u.ActionTypeId == 1).Max(ua => ua.Timestamp);
-                var lastSeen = time ?? -1;
+                var lastSeen = time ?? 0;
                 var dt = new DateTime(lastSeen);
                 userVm.LastSeen = string.Format("{0:G}", dt);
                 var regDate = new DateTime(user.RegOn);
@@ -237,7 +237,7 @@ namespace intapscamis.camis.domain.Admin
 
         public IList<UserActionViewModel> GetAllActions()
         {
-            var actions = _context.UserAction.ToList().OrderByDescending(action => action.Id);
+            var actions = _context.UserAction.Where(a=>a.ActionTypeId!=1).OrderByDescending(action => action.Id).Take(500).ToList();
 
             var actionVms = new List<UserActionViewModel>();
 

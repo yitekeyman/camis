@@ -1,7 +1,7 @@
 <div class="auth-main">
   <div class="auth-wrapper v3">
     <div class="auth-form">
-      <div class="card my-5">
+      <div class="card my-3">
         <div class="card-body">
           <a href="#" class="d-flex justify-content-center">
             <img src="assets/images/camis_logo_2_3.png" alt="logo" style="height: 125px;"/>
@@ -31,16 +31,20 @@
 
 
               </div>
-              <div class="input-group mb-3  col-md-12" *ngIf="ROLES?.length>1">
+              <div class="input-form mb-3  col-md-12" *ngIf="isLoggedIn && ROLES?.length>1">
+                <label for="role">User Role <span class="text-danger">* </span></label>
                 <select class="form-select" id="role" [(ngModel)]="selectedRole" formControlName="role">
                   <option value="">Select Role</option>
                   <option *ngFor="let role of ROLES" [value]="role.id">{{ role.name }}</option>
                 </select>
-                <button type="button" (click)="closeForm()" [disabled]="!loginForm.valid" id="button-addon2"
+
+              </div>
+              <div class="d-grid mt-3" *ngIf="isLoggedIn && ROLES?.length>1">
+                <button type="button" (click)="closeForm()" [disabled]="!loginForm.valid"
                         class="btn btn-secondary">Confirm
                 </button>
               </div>
-              <div class="d-grid mt-4">
+              <div class="d-grid mt-3" *ngIf="!isLoggedIn">
                 <button type="submit" (click)="login()" class="btn btn-secondary"
                         [disabled]="!(loginForm.valid && ROLES?.length<=0)">Sign In
                 </button>

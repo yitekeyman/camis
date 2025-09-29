@@ -2,9 +2,13 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
 import {IActivityItemChange} from './interfaces';
 import {IActivityPlanTemplate} from '../interfaces';
+import {CommonModule} from "@angular/common";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {ObjectKeyCasingService} from "../../../../_services/object-key-casing.service";
 
 @Component({
   selector: 'app-activity-item',
+  imports:[CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: 'activity-item.component.html',
   styleUrls: ['activity-item.component.css']
 })
@@ -50,7 +54,7 @@ export class ActivityItemComponent implements OnInit {
   create_varNames: any = {};
   create_varTags: any = {};
 
-  create_newVar = '';
+  create_newVar = null;
   create_newVarName = '';
   create_newVarTarget = '';
   create_newVarWeight = '1';
@@ -68,13 +72,13 @@ export class ActivityItemComponent implements OnInit {
   edit_varNames: any = {};
   edit_varTags: any = {};
 
-  edit_newVar = '';
+  edit_newVar = null;
   edit_newVarName = '';
   edit_newVarTarget = '';
   edit_newVarWeight = '1';
   edit_newVarTag = '';
 
-  constructor() {
+  constructor(private keyCase:ObjectKeyCasingService) {
   }
 
   ngOnInit(): void {
@@ -95,7 +99,7 @@ export class ActivityItemComponent implements OnInit {
     return this.progressVariables.find(value => value.id == id) || null;
   }
 
-  getVariableValueList(variableId: number): any[] | null {
+  getVariableValueList(variableId: any): any[] | null {
     const ret = this.variableValueLists.filter(value => value.variableId == variableId);
     return ret.length ? ret : null;
   }

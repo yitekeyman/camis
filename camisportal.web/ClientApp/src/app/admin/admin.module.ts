@@ -23,8 +23,8 @@ import {RegionsSettingComponent} from "./regionsSetting/regionsSetting.component
 
 
 @NgModule({
-    declarations:[
-       AdminPostBidComponent,
+    declarations: [
+        AdminPostBidComponent,
         AdminHeaderComponent,
         AdminManageBidsComponent,
         AdminDashboardComponent,
@@ -36,7 +36,7 @@ import {RegionsSettingComponent} from "./regionsSetting/regionsSetting.component
         ResetPasswordComponent,
         RegionsSettingComponent
     ],
-    imports:[
+    imports: [
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
@@ -48,9 +48,13 @@ import {RegionsSettingComponent} from "./regionsSetting/regionsSetting.component
         InvestorProfileDetailModule,
         InvestorApplicationModule,
     ],
-    providers:[]
+    exports: [
+        AdminEditUserComponent,
+        ResetPasswordComponent
+    ],
+    providers: []
 })
 
 export class AdminModule {
-    
+
 }

@@ -62,8 +62,8 @@
 }
 
 .form-control {
-  font-size: 14px;
-  border-radius: 2px;
+  font-size: 0.85rem;
+  border-radius: 6px;
   border: 1px solid #cccccc;
   &:focus {
     border: 1px solid #4680ff;
@@ -544,10 +544,7 @@
 .input-group-dropdown [class*=btn-] {
   margin-bottom: 0;
 }
-.input-group-text{
-  background:#4680ff;
-  color:#fff
-}
+
 /* You can add global styles to this file, and also import other style files */
 .swal2-loading .swal2-confirm {
   border-left-color: green !important;
@@ -555,12 +552,14 @@
 }
 
 .swal2-loading {
-  padding: 0 !important;
   margin: 0 !important;
-  width: 350px !important;
+  width: 300px;
+  padding-top: 15px;
+  padding-bottom: 15px;
 }
 
 .swal2-popup .swal2-styled.swal2-confirm {
+  padding: 12px 15px;
   background-color: green !important;
   font-size: 15px !important;
   border-left-color: green !important;
@@ -586,4 +585,12 @@
 .swal2-popup .swal2-styled:focus {
   box-shadow: 0 0 0 2px #fff, 0 0 0 4px green !important;
 }
+.table td{
+  background: transparent;
+}
 
+.error-message {
+  color: red;
+  font-size: 0.65rem;
+  margin-top: 5px;
+}

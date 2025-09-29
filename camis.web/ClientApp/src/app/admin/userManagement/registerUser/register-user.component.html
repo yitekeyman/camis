@@ -1,0 +1,111 @@
+﻿<form [formGroup]="registrationForm" id="registrationForm" (submit)="register()">
+  <div class="modal-body">
+    <div class="row">
+      <div class="input-form col-md-12 mb-3">
+        <label>Full Name <span class="text-danger">*  </span> <span
+          *ngIf="registrationForm.get('fullname')?.invalid && registrationForm.get('fullname')?.touched"
+          class="error-message">
+            <i class="ti ti-exclamation-circle me-1"></i>
+            <span *ngIf="registrationForm.get('fullname')?.value==''">Full name is required</span>
+            <span *ngIf="registrationForm.get('fullname')?.value!=''"> Enter a valid full name (at least two words, only letters, spaces)</span>
+          </span></label>
+        <input type="text" class="form-control" placeholder="User First & Last Name" id="user_first_name"
+               formControlName="fullname" [(ngModel)]="userModel.fullname">
+
+      </div>
+      <div class="input-form col-md-6 mb-3">
+        <label>Mobile No <span class="text-danger">*  </span> <span
+          *ngIf="registrationForm.get('phoneno')?.invalid && registrationForm.get('phoneno')?.touched"
+          class="error-message">
+            <i class="ti ti-exclamation-circle me-1"></i> Phone number is required
+          </span></label>
+        <input type="text" class="form-control" placeholder="User Mobile No" id="user_phone_no"
+               formControlName="phoneno" [(ngModel)]="userModel.phoneNo">
+
+      </div>
+      <div class="input-form col-md-6 mb-3">
+        <label>Email <span class="text-danger">*  </span> <span
+          *ngIf="registrationForm.get('email')?.invalid && registrationForm.get('email')?.touched"
+          class="error-message">
+            <i class="ti ti-exclamation-circle me-1"></i>
+            <span *ngIf="registrationForm.get('email')?.value==''">Email address is required</span>
+            <span *ngIf="registrationForm.get('email')?.value!=''"> Enter a valid email address</span>
+          </span></label>
+        <input type="text" class="form-control" placeholder="User Email Address" id="user_email"
+               formControlName="email" [(ngModel)]="userModel.email">
+
+      </div>
+      <div class="input-form col-md-12 mb-3">
+        <label>User Role <span class="text-danger">*  </span> <span
+          *ngIf="registrationForm.get('role')?.invalid && registrationForm.get('role')?.touched"
+          class="error-message">
+            <i class="ti ti-exclamation-circle me-1"></i> At least one role must be selected
+          </span></label>
+        <div class="checkbox-group row">
+          <div *ngFor="let role of ROLES" class="role-label col-md-4">
+            <input
+              type="checkbox"
+              class="form-check-input role-checkbox"
+              [id]="'role_' + role.id"
+              [value]="role.id"
+              [checked]="isRoleSelected(role.id)"
+              (change)="onRoleChange($event, role.id)">
+            <label class="form-check-label" [for]="'role_' + role.id">
+              {{ role.name }}
+            </label>
+          </div>
+        </div>
+        <div class="selected-count">
+          Selected: {{ getSelectedCount() }} of {{ ROLES.length }}
+        </div>
+
+
+      </div>
+      <div class="input-form col-md-12 mb-3">
+        <label>Username <span class="text-danger">*  </span> <span
+          *ngIf="registrationForm.get('username')?.invalid && registrationForm.get('username')?.touched"
+          class="error-message">
+            <i class="ti ti-exclamation-circle me-1"></i> Username is required and must be at least 6 characters
+          </span></label>
+        <input type="text" class="form-control" placeholder="Username" id="username" formControlName="username"
+               [(ngModel)]="userModel.username"  [readonly]="isEditMode">
+
+      </div>
+      <div class="input-form col-md-12" *ngIf="!isEditMode">
+        <label>Password <span class="text-danger">*  </span> <span
+          *ngIf="registrationForm.get('password')?.invalid && registrationForm.get('password')?.touched"
+          class="error-message">
+            <i class="ti ti-exclamation-circle me-1"></i>Password is required
+          </span></label>
+        <div class="input-group">
+        <input [type]="showPassword ? 'text' : 'password'" class="form-control" formControlName="password"
+               placeholder="Create a password">
+        <span class="input-group-text btn-default" (click)="togglePasswordVisibility()">
+                  <i [class]="showPassword ? 'ti ti-eye-x' : 'ti ti-eye'"></i>
+                </span>
+        </div>
+      </div>
+      <div class="input-form col-md-12" *ngIf="!isEditMode">
+        <label>Confirm Password <span class="text-danger">*  </span> <span
+          *ngIf="registrationForm.get('confirmPassword')?.invalid && registrationForm.get('confirmPassword')?.touched"
+          class="error-message">
+            <i class="ti ti-exclamation-circle me-1"></i> Passwords must match
+          </span></label>
+        <div class="input-group">
+          <input [type]="showConfirmPassword ? 'text' : 'password'" class="form-control"
+                 formControlName="confirmPassword" placeholder="Confirm your password">
+          <span class="input-group-text" id="repass" (click)="toggleConfirmPasswordVisibility()">
+                  <i [class]="showConfirmPassword ? 'ti ti-eye-x' : 'ti ti-eye'"></i>
+                </span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer ">
+    <div class="btn-group align-right">
+      <button class="btn btn-warning btn-sm" type="reset">Reset</button>
+      <button class="btn btn-success btn-sm " type="submit" [disabled]="!registrationForm.valid">Save Change</button>
+    </div>
+  </div>
+</form>

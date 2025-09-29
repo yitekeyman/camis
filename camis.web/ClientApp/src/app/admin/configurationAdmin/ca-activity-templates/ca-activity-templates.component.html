@@ -1,0 +1,81 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-header">
+        <div class="row">
+          <div class="col-md-4">
+            <h5><i class="ti ti-file-diff"></i> Activity Template</h5>
+          </div>
+        </div>
+      </div>
+      <div class="card-body" style="min-height: calc(65vh)">
+        <div *ngIf="!templates.length">No templates have been added, yet.</div>
+
+        <!-- list -->
+        <div class="accordion" id="accordionFlushExample">
+          <div class="accordion-item" *ngFor="let template of templates; index as i">
+            <h2 class="accordion-header" [id]="'flush-heading-' + i">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      [attr.data-bs-target]="'#collapse-' + i"
+                      [attr.aria-expanded]="'false'"
+                      [attr.aria-controls]="'collapse-' + i">
+                {{i + 1}} | {{update_names[template.id] || template.name || 'Unnamed Template'}}
+              </button>
+            </h2>
+            <div [id]="'collapse-' + i"
+                 class="accordion-collapse collapse"
+                 [attr.aria-labelledby]="'flush-heading-' + i"
+                 data-bs-parent="#accordionFlushExample">
+              <div class="accordion-body">
+                <div style="display: flex; padding-bottom: 10px">
+                  <input
+                    [(ngModel)]="template.name"
+                    (keyup)="doUpdateNames()"
+                    class="form-control"
+                    title="Template Name"
+                    placeholder="Template Name"
+                    style="flex: auto" type="text"
+                  />
+                </div>
+
+                <app-activities
+                  [activity]="template.data"
+                  [reportingMode]="false"
+                  [readonlyMode]="false"
+                  (change)="!$event.activity || (template.tempActivity = $event.activity)"
+                ></app-activities>
+
+                <div style="text-align: right; padding-top: 10px">
+                  <button (click)="updateTemplate(template)" class="btn btn-sm btn-primary">
+                    <i class="fa fa-save"></i>&nbsp; Save Changes
+                  </button>
+                  <button (click)="deleteTemplate(template)" class="btn btn-sm btn-danger">
+                    <i class="fa fa-trash"></i>&nbsp; Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer pb-0">
+        <!-- adder -->
+        <div class="input-group">
+            <input
+              [(ngModel)]="create_name"
+              type="text"
+              placeholder="New Activity Template Name"
+              title="Use this to create a new activity template"
+              style="flex: auto"
+              class="form-control"/>
+
+            <button (click)="createTemplate()" type="button" class="btn btn-primary" title="Add a New Template"
+                    [disabled]="!create_name">
+              <i class="fa fa-plus"></i>&nbsp; Create Template
+            </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

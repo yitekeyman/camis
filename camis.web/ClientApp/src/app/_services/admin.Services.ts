@@ -1,6 +1,6 @@
-import {Router} from '@angular/router';
+  import {Router} from '@angular/router';
 import {ApiService} from './api.service';
-import {LoginUser, RegisterUser, UpdatePassword} from '../_model/user.model';
+import {LoginUser, RegisterUser, UpdatePassword,ResetPassword, UserModel} from '../_model/user.model';
 import {Injectable} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {ObjectKeyCasingService} from "./object-key-casing.service";
@@ -41,4 +41,25 @@ export class AdminServices {
     public updatePassword(user: UpdatePassword) {
         return this.apiService.post('admin/changepassword', user);
     }
+  public getUsers(status:number) {
+    return this.apiService.get(`admin/getusers?status=${status}`);
+  }
+
+  public searchUsers(query: string, status:number) {
+    return this.apiService.get(`admin/search?query=${query}&status=${status}`);
+  }
+
+  public editUser(user: UserModel) {
+    return this.apiService.post('admin/update', user);
+  }
+
+  public deactivateUser(username: any) {
+    return this.apiService.post('admin/deactivate', username);
+  }
+  public activateUser(username: any) {
+    return this.apiService.post('admin/activate', username);
+  }
+  public resetPass(user: ResetPassword) {
+    return this.apiService.post('admin/resetpassword', user);
+  }
 }

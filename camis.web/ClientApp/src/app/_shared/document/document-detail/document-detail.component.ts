@@ -2,10 +2,14 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {IDocument} from '../interfaces';
 import {IDocumentDetailOpenEvent} from './interfaces';
 import {configs} from '../../../app-config';
+import {CommonModule} from "@angular/common";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-document-detail',
-  templateUrl: './document-detail.component.html'
+  imports:[CommonModule, ReactiveFormsModule, FormsModule],
+  templateUrl: './document-detail.component.html',
+  styleUrls:['document-detail.component.scss']
 })
 export class DocumentDetailComponent implements OnInit {
 
@@ -41,5 +45,9 @@ export class DocumentDetailComponent implements OnInit {
 
     this.open.emit({ document: doc });
   }
-
+  getFileExtension(filename: string): string {
+    if (!filename) return '';
+    const match = filename.match(/\.([0-9a-z]+)$/i);
+    return match ? match[1] : '';
+  }
 }

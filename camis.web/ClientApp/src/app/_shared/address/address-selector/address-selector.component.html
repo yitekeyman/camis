@@ -1,21 +1,18 @@
 <div *ngIf="outputMode">
   <app-address-output [leafId]="finalAddressId"></app-address-output>
 
-  <button class="btn btn-default btn-sm" style="padding-top: 5px" (click)="outputMode = false">Change Address</button>
+  <button class="btn btn-outline-warning btn-sm align-right" (click)="outputMode = false">Change Address</button>
 </div>
 
 <div *ngIf="!outputMode" class="panel panel-default">
-  <div class="panel-heading">{{label}}</div>
-
   <div class="panel-body">
     <div class="form-group form-field">
       <label for="address-format-select">Address Format:</label>
       <select
         id="address-format-select"
         class="form-control dropdown"
-        (change)="onFormatChanged($event.target.value != null ? $event.target.value : null)"
-        [(ngModel)]="selectedSchemeId"
-      >
+        (change)="onFormatChanged($any($event.target).value != null ? $any($event.target).value : null)"
+        [(ngModel)]="selectedSchemeId" >
         <option [value]="null"></option>
         <option *ngFor="let scheme of schemes" [value]="scheme.id">
           {{scheme.name}}
@@ -25,9 +22,9 @@
 
     <hr />
 
-    <div *ngIf="selectedSchemeId == null || selectedSchemeId == 'null'" class="text-muted" style="padding-bottom: 15px">
-      Please, select an address format.
-    </div>
+    <p *ngIf="selectedSchemeId == null" class="text-muted" style="padding-bottom: 15px">
+      <small>Please, select an address format.</small>
+    </p>
 
     <div class="form-group form-field" *ngFor="let addressUnit of addressUnits; let i = index">
       <label [for]="'address-control-' + addressUnit.id">{{addressUnit.name}}: *</label>
@@ -36,7 +33,7 @@
         *ngIf="!addressUnit.custom"
         [id]="'address-' + addressUnit.id"
         class="form-control dropdown"
-        (change)="onAddressSelected($event.target.value, addressUnit, i, undefined)"
+        (change)="onAddressSelected($any($event.target).value, addressUnit, i, undefined)"
         [disabled]="i > addresses2d.length - 1"
         [(ngModel)]="addressUnit._selectedAddressId"
       >
@@ -52,10 +49,10 @@
         *ngIf="addressUnit.custom"
         [id]="'address-' + addressUnit.id"
         class="form-control"
-        (change)="onAddressSelected(_determineParentId(i), addressUnit, i, $event.target.value)"
+        (change)="onAddressSelected(_determineParentId(i), addressUnit, i,$any($event.target).value)"
         [disabled]="i > addresses2d.length - 1"
         [(ngModel)]="addressUnit._selectedAddressName"
-        (focus)="$event.target.setAttribute('list', 'address-datalist' + addressUnit.id)"
+        (focus)="$any($event.target).setAttribute('list', 'address-datalist' + addressUnit.id)"
       />
       <datalist *ngIf="addressUnit.custom" [id]="'address-datalist' + addressUnit.id">
         <ng-container *ngIf="i <= addresses2d.length - 1">
@@ -68,6 +65,6 @@
   </div>
 
   <div class="panel-footer align-right" *ngIf="!noFooter && schemes.length && addresses2d.length && finalAddressId">
-    <button class="btn btn-default btn-sm" (click)="onSave($event)">Save Address</button>
+    <button class="btn btn-primary btn-sm" (click)="onSave()">Save Address</button>
   </div>
 </div>

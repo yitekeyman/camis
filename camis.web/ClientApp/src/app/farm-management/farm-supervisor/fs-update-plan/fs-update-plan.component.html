@@ -1,0 +1,58 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card p-0">
+      <div class="card-header p-2">
+        <div class="row">
+          <div class="col-md-6">
+            <h5><i class="ti ti-clock-cog"></i> Reviewing Project Plan Update</h5>
+          </div>
+          <div class="col-md-6 justify-content-end">
+            <div class="btn-group" *ngIf="!loading && farm">
+              <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                      aria-expanded="false">
+                Actions
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="javascript:" (click)="rejectUpdatePlan()">Reject Plan Update</a></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="javascript:" (click)="approveUpdatePlan()">Approve Plan Update</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+  <div *ngIf="!loading">
+    <app-farm-detail [farm]="farm"></app-farm-detail>
+    <div class="col-md-12">
+      <div class="card p-2">
+        <div class="card-body">
+          <div style="display: flex">
+            <div style="flex: 3">
+              <label class="control-label" for="plan-status">Status *:</label>
+              <select [(ngModel)]="farm.activityPlan.statusId" class="form-control input-sm" id="plan-status" readonly>
+                <option *ngFor="let statusType of statusTypes" [value]="statusType.id">{{ statusType.name }}</option>
+              </select>
+            </div>
+
+            <div style="width: 15px"></div>
+
+            <div style="flex: 5">
+              <label class="control-label" for="plan-note">Note *:</label>
+              <textarea [(ngModel)]="farm.activityPlan.note" class="form-control input-sm" id="plan-note"
+                        readonly></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,92 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card p-1">
+      <div class="card-header p-2">
+        <div class="row">
+          <div class="col-md-4">
+            <h5><i class="ti ti-building-cottage"></i> Search Farms & Owners</h5>
+          </div>
+          <div class="col-md-5 pb-0">
+            <div class="input-group mb-0">
+               <span class="input-group-text">
+                  <i class="ti ti-search"></i>
+                </span>
+              <input [(ngModel)]="term" (keyup)="load(0)" class="form-control " type="search" name="search"
+                     placeholder="Search" title="Search">
+            </div>
+          </div>
+          <div class="col-md-3" style="text-align: right">
+            <button class="btn-success btn align-right" (click)="newFarmRegistration()">
+              Register New Farm & Owners
+            </button>
+
+          </div>
+        </div>
+      </div>
+      <div class="card-block p-1" style="min-height: calc(65vh)">
+        <div *ngIf="!loading && !farms.length" class="align-center">
+          <h1><i class="ti ti-exclamation-circle"></i></h1>
+          <p>{{ term ? ('No search results found for "' + term + '".') : 'No registered farms, yet.' }}</p>
+        </div>
+        <div class="table-responsive" *ngIf="!loading && farms.length">
+          <table id="datatable" class="table">
+            <caption class="title text-success">Showing {{ farms.length }}
+              of {{ totalFarms }} {{ term ? 'search result' : 'registered farm' }}{{ farms.length == 1 ? '' : 's' }}{{ term ? (' found for "' + term + '"') : null }}
+              .
+            </caption>
+            <thead>
+            <tr class="headings">
+              <th>
+                #
+              </th>
+              <th>Owner Name</th>
+              <th>Owner Type</th>
+              <th>Farm Type</th>
+              <th>Invested Capital</th>
+              <th style="width: 20%">Description</th>
+              <th class="align-center">
+                <span class="nobr">Action</span>
+              </th>
+            </tr>
+            </thead>
+
+            <tbody style="font-size: 0.775rem">
+            <tr class="even pointer" *ngFor="let farm of farms; index as i">
+              <td class="a-center ">
+                {{ i+1 }}
+              </td>
+              <td>
+                <label [for]="'farm-open-btn-' + farm.id">{{ farm.operator ? farm.operator.name : null }}</label>
+              </td>
+              <td>
+                <label
+                  [for]="'farm-open-btn-' + farm.id">{{ farm.operator ? farm.operator.type ? farm.operator.type.name : null : null }}</label>
+              </td>
+              <td>
+                <label [for]="'farm-open-btn-' + farm.id">{{ farm.type ? farm.type.name : null }}</label>
+              </td>
+              <td class="align-right">
+                <label [for]="'farm-open-btn-' + farm.id">{{ farm.investedCapital | currency:'Br ':'code'}}</label>
+              </td>
+              <td>
+                <label [for]="'farm-open-btn-' + farm.id">{{ farm.description }}</label>
+              </td>
+              <td class="text-nowrap">
+                <button [id]="'farm-open-btn-' + farm.id" class="btn btn-sm btn-outline-primary" title="Detail"
+                        (click)="openDetail(farm.id)">
+                  <i class="ti ti-eye"></i>
+                </button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card-footer pb-1">
+        <div class="text-center">
+          <button type="button" class="btn btn-outline-success btn-sm" (click)="load()">Load More...</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

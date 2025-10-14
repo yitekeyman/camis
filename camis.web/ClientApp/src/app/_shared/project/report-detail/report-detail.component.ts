@@ -4,10 +4,15 @@ import {ProjectApiService} from '../../../_services/project-api.service';
 import {ObjectKeyCasingService} from '../../../_services/object-key-casing.service';
 import dialog from '../../dialog';
 import {CommonModule} from "@angular/common";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {ActivitiesComponent} from "../activities/activities.component";
+import {ActivityProgressComponent} from "../activity-progress/activity-progress.component";
+import {ActivityItemComponent} from "../activities/activity-item/activity-item.component";
+import {DocumentModule} from "../../document/document.module";
 
 @Component({
   selector: 'app-report-detail',
-  imports:[CommonModule],
+  imports:[CommonModule, ReactiveFormsModule, FormsModule, ActivitiesComponent, ActivityProgressComponent, DocumentModule],
   templateUrl: 'report-detail.component.html',
 })
 export class ReportDetailComponent implements OnInit {

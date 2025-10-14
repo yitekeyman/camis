@@ -61,7 +61,7 @@ export class NavContentComponent implements OnInit {
             type: 'item',
             classes: 'nav-item',
             url: '/default/pending-task',
-            icon: 'ti ti-menu',
+            icon: 'ti ti-list-details',
             breadcrumbs: true
           }
         ]
@@ -119,26 +119,35 @@ export class NavContentComponent implements OnInit {
       const landBankChildren: NavigationItem[] = [
         {
           id: 'search-land',
-          title: 'Search Land',
+          title: 'Search Parcel',
           type: 'item',
           classes: 'nav-item',
-          url: '/search-land',
+          url: '/land-bank/search-parcel',
           icon: 'ti ti-map-search'
         }
       ];
 
       // Add Register Land only for role '2'
-      if (this.role === '2') {
+      if (this.role === '4') {
         landBankChildren.push({
           id: 'register-land',
-          title: 'Register Land',
+          title: 'Register New Parcel',
           type: 'item',
           classes: 'nav-item',
-          url: '/edit-land',
+          url: '/land-bank/register-parcel',
           icon: 'ti ti-map-plus'
         });
       }
-
+      if(['5', '6', '7'].includes(this.role || '')){
+        landBankChildren.push({
+          id: 'land-report',
+          title: 'Reports',
+          type: 'item',
+          classes: 'nav-item',
+          url: '/land-bank/reports',
+          icon: 'ti ti-report'
+        });
+      }
       NavigationItems.push({
         id: 'land-bank',
         title: 'Land Bank',
@@ -149,13 +158,13 @@ export class NavContentComponent implements OnInit {
     }
 
 // Add Farm Management section for roles 2,3
-    if (['2', '3'].includes(this.role || '')) {
+    if (['2', '3','6','7'].includes(this.role || '')) {
       const farmManagementChildren: NavigationItem[] = [
         {
           id: 'search-farm',
-          title: 'Search Farm',
+          title: 'Search Farm & Owners',
           type: 'item',
-          url: '/sample-page',
+          url: '/farm-management/search-farm',
           classes: 'nav-item',
           icon: 'ti ti-building-cottage'
         }
@@ -165,10 +174,10 @@ export class NavContentComponent implements OnInit {
       if (this.role === '2') {
         farmManagementChildren.push({
           id: 'register-farm',
-          title: 'Register Farm',
+          title: 'Register Farm & Owners',
           type: 'item',
           classes: 'nav-item',
-          url: '#',
+          url: '/farm-management/fc/farm/registration/new',
           icon: 'ti ti-tractor',
         });
       }

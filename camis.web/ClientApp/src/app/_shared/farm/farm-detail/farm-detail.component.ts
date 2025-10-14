@@ -1,14 +1,27 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 
 import {FarmApiService} from '../../../_services/farm-api.service';
 import {ProjectApiService} from '../../../_services/project-api.service';
 import {ObjectKeyCasingService} from '../../../_services/object-key-casing.service';
 import {IActivityItemChange} from '../../project/activities/activity-item/interfaces';
 import dialog from '../../dialog';
+import {CommonModule} from "@angular/common";
+import {ReactiveFormsModule} from "@angular/forms";
+import {AddressModule} from "../../address/address.module";
+import {DocumentModule} from "../../document/document.module";
+import {ProjectModule} from "../../project/project.module";
+import {
+  SimpleLandBankDetails
+} from "../../land-bank/search-result-detail/simple-land-bank-details/simple-land-bank-details.component";
+import {CamisMapComponent} from "../../camismap/camismap.component";
+import {LandDataService} from "../../../_services/land-data.service";
 
 @Component({
   selector: 'app-farm-detail',
+  imports: [CommonModule, ReactiveFormsModule, AddressModule, DocumentModule, ProjectModule, SimpleLandBankDetails, CamisMapComponent],
   templateUrl: 'farm-detail.component.html',
+  styleUrls: ['farm-detail.component.scss']
+
 })
 export class FarmDetailComponent implements OnInit {
 
@@ -20,6 +33,7 @@ export class FarmDetailComponent implements OnInit {
 
   loading = true;
 
+
   frTypes: any[] = [];
   opTypes: any[] = [];
   opOrigins: any[] = [];
@@ -29,23 +43,51 @@ export class FarmDetailComponent implements OnInit {
   plan: any = {};
 
   progressPercent: number;
+  @ViewChild('camis_map') map: CamisMapComponent;
 
   constructor(
     private api: FarmApiService,
     private projectApi: ProjectApiService,
-    private keyCase: ObjectKeyCasingService
+    private keyCase: ObjectKeyCasingService,
+    private landService: LandDataService
   ) {
   }
 
   ngOnInit(): void {
-    this.api.getAllFarmTypes().subscribe(frTypes => {this.keyCase.camelCase(frTypes);this.frTypes = frTypes}, dialog.error);
-    this.api.getAllFarmOperatorTypes().subscribe(opTypes =>{this.keyCase.camelCase(opTypes); this.opTypes = opTypes}, dialog.error);
-    this.api.getAllFarmOperatorOrigins().subscribe(opOrigins =>{this.keyCase.camelCase(opOrigins); this.opOrigins = opOrigins}, dialog.error);
-    this.api.getAllRegistrationAuthorities().subscribe(regAuths =>{this.keyCase.camelCase(regAuths); this.regAuths = regAuths}, dialog.error);
-    this.api.getAllRegistrationTypes().subscribe(regTypes =>{this.keyCase.camelCase(regTypes); this.regTypes = regTypes}, dialog.error);
+    this.api.getAllFarmTypes().subscribe(frTypes => {
+      this.keyCase.camelCase(frTypes);
+      this.frTypes = frTypes
+    }, dialog.error);
+    this.api.getAllFarmOperatorTypes().subscribe(opTypes => {
+      this.keyCase.camelCase(opTypes);
+      this.opTypes = opTypes
+    }, dialog.error);
+    this.api.getAllFarmOperatorOrigins().subscribe(opOrigins => {
+      this.keyCase.camelCase(opOrigins);
+      this.opOrigins = opOrigins
+    }, dialog.error);
+    this.api.getAllRegistrationAuthorities().subscribe(regAuths => {
+      this.keyCase.camelCase(regAuths);
+      this.regAuths = regAuths
+    }, dialog.error);
+    this.api.getAllRegistrationTypes().subscribe(regTypes => {
+      this.keyCase.camelCase(regTypes);
+      this.regTypes = regTypes
+    }, dialog.error);
 
     this.keyCase.camelCase(this.farm);
-
+    if (this.farm.farmLands) {
+      this.landService.GetLand(this.farm.farmLands[0].landId).subscribe(data => {
+        this.keyCase.camelCase(data);
+        let g = data.parcels[data.upins[0]];
+        if (g) {
+          let parts = g.geometry.split(";");
+          this.map.setWorkFlowGeomByWKT(parts[parts.length - 1]);
+        }
+      }, e => {
+        return dialog.error(e);
+      });
+    }
 
     if (this.farm.activityPlan && this.farm.activityPlan.rootActivity) {
       this.plan = this.farm.activityPlan;

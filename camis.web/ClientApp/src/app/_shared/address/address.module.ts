@@ -8,13 +8,14 @@ import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
-    AddressOutputComponent,
-    AddressSelectorComponent,
+
   ],
   imports: [
     CommonModule,
     RouterModule,
-    FormsModule
+    FormsModule,
+    AddressOutputComponent,
+    AddressSelectorComponent,
   ],
   exports: [
     AddressOutputComponent,

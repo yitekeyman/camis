@@ -1,0 +1,33 @@
+﻿.accordion-body{
+  padding: 0;
+  font-size: 0.775rem;
+  background: #fff;
+}
+
+.accordion-body label{
+  font-size: 0.800rem;
+  font-weight: 600;
+}
+.accordion-body ul{
+  margin: 0;
+  list-style: none;
+  padding-left: 0;
+}
+.accordion-body .card-body ul li{
+  padding:3px 5px 3px;
+  border-bottom: 1px dashed #37882c;
+}
+.accordion-body ul li i{
+  color: #37882c;
+  font-size: 1rem;
+}
+.fit-content {
+  width: max-content;
+  white-space: nowrap;
+}
+.accordion-button{
+  background-color: #fff;
+}
+.accordion-header{
+  font-size: 1rem;
+}

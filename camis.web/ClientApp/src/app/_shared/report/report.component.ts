@@ -6,10 +6,13 @@ import 'rxjs/add/operator/catch';
 
 import { $ } from 'protractor';
 import { fail } from 'assert';
+import {CommonModule} from "@angular/common";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 declare var proj4: any;
 @Component({
   selector: 'app-camis-report',
+  imports:[CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './report.component.html'
 })
 
@@ -35,7 +38,7 @@ export class ReportComponent implements OnInit, OnChanges {
   ngOnInit() {
   }
   generateReport(rep: String, par: String) {
-    
+
 
       this._http.post('/api/report/generatereport?report_name=' + this.rep, par,
         {
@@ -48,6 +51,6 @@ export class ReportComponent implements OnInit, OnChanges {
         e => {
           this.el.nativeElement.innerHTML = "Failed to load report";
         });
-    
+
   }
 }

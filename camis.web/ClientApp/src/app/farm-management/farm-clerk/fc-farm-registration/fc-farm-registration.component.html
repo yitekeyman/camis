@@ -1,0 +1,489 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card p-0 ">
+      <div class="card-header p-2">
+        <div class="row">
+          <div class="col-md-6">
+            <h5><i class="ti ti-tractor"></i> Commercial Farm Registration</h5>
+          </div>
+          <div class="col-md-6 align-right">
+            <div class="btn-group" *ngIf="step">
+              <button class="btn btn-secondary" type="button" (click)="onSave()">
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="card-block p-0" style="min-height: calc(68vh)">
+        <form method="post" (submit)="dumpSubmit($event)">
+          <div class="card m-0" [id]="'farm-reg-panel'" *ngIf="step == 1" style="min-height: calc(68vh)">
+            <div class="card-header p-3">
+              <h5>Step 1 of 4: Start</h5>
+            </div>
+            <div class="card-body" style="min-width: calc(70vh);">
+              <div class="row">
+                <div class="col-md-4 "></div>
+                <div class="col-md-4 mt-5">
+                  <h4 class="align-center">How would you like to proceed?</h4>
+                  <hr>
+                  <div class="form-control mt-2">
+                    <input type="radio" id="new-operator" (click)="howOperator = 'NEW'; step = 2"
+                           [checked]="howOperator === 'NEW'" class="form-check-inline">
+                    <label for="new-operator" class="control-label">Register
+                      New Farm Owner</label>
+                  </div>
+                  <div class="form-control mt-2">
+                    <input type="radio" id="existing-operator" (click)="howOperator = 'EXISTING'; step = 2"
+                           [checked]="howOperator === 'EXISTING'" class="form-check-inline">
+                    <label for="existing-operator" class="control-label">Select
+                      from Registered Farm Owners</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-2 align-right">
+              <button type="button" class="btn btn-outline-warning" (click)="cancel()">
+                Cancel
+              </button>
+              <button type="button" class="btn btn-primary" (click)="step = 2" [disabled]="!howOperator">
+                Next Step
+              </button>
+            </div>
+          </div>
+          <div class="card m-0" [id]="'farm-reg-panel'" *ngIf="step == 2 && howOperator == 'NEW'"
+               style="min-height: calc(70vh)">
+            <div class="card-header">
+              <h5>Step 2 of 4: Register New Farm Owner</h5>
+            </div>
+            <div class="card-body" style="min-height: calc(70vh)">
+              <div class="row">
+                <div class="col-md-8">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="control-label" for="op-type">Owner Type:<span class="text-danger">(*)&nbsp;</span>
+                          <span *ngIf="!opType" class="error-message">
+                            <i class="ti ti-exclamation-circle me-1"></i>
+                            This field is required
+                          </span></label>
+                        <select [(ngModel)]="opType" name="op-type" id="op-type" class="form-select" required
+                                (change)="onOrgTypeChange()">
+                          <option *ngFor="let type of farmOperatorTypes" [value]="type.id">{{ type.name }}</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="control-label" for="op-name">Owner Name:<span class="text-danger">(*)&nbsp;</span>
+                          <span *ngIf="!opName" class="error-message">
+                            <i class="ti ti-exclamation-circle me-1"></i>
+                            This field is required
+                          </span>
+                        </label>
+                        <input [(ngModel)]="opName" type="text" name="op-name" id="op-name" class="form-control"
+                               required placeholder="Enter operator name">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="control-label" for="op-origin">Owner Origin:<span class="text-danger">(*)&nbsp;</span>
+                          <span *ngIf="!opOriginId" class="error-message">
+                            <i class="ti ti-exclamation-circle me-1"></i>
+                            This field is required
+                          </span></label>
+                        <select [(ngModel)]="opOriginId" name="op-origin" id="op-origin" class="form-select" required>
+                          <option *ngFor="let origin of farmOperatorOrigins" [value]="origin.id">{{ origin.name }}
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="control-label"
+                               for="op-nationality">{{ opType == '1' ? 'Nationality' : 'Country of Origin' }}:<span class="text-danger">(*)&nbsp;</span>
+                          <span *ngIf="!opNationality" class="error-message">
+                            <i class="ti ti-exclamation-circle me-1"></i>
+                            This field is required
+                          </span></label>
+                        <input [(ngModel)]="opNationality" type="text" name="op-nationality" id="op-nationality"
+                               class="form-control" required placeholder="Enter {{opType==='1' ? 'nationality':'country of origin'}}">
+                      </div>
+                    </div>
+                    <div class="col-md-6" *ngIf="opType == '1'">
+                      <div class="form-group">
+                        <label class="control-label" for="op-gender">Gender:<span class="text-danger">(*)&nbsp;</span>
+                          <span *ngIf="!opGender" class="error-message">
+                            <i class="ti ti-exclamation-circle me-1"></i>
+                            This field is required
+                          </span></label>
+                        <select [(ngModel)]="opGender" name="op-gender" id="op-gender" class="form-select" required>
+                          <option value="F">Female</option>
+                          <option value="M">Male</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6" *ngIf="opType == '1'">
+                      <div class="form-group">
+                        <label class="control-label" for="op-martial-status">Martial Status:<span class="text-danger">&nbsp;*&nbsp;</span>
+                          <span *ngIf="!opMartialStatus" class="error-message">
+                            <i class="ti ti-exclamation-circle me-1"></i>
+                            This field is required
+                          </span></label>
+                        <select [(ngModel)]="opMartialStatus" name="op-martial-status" id="op-martial-status"
+                                class="form-select" required>
+                          <option [value]="1">Not Married</option>
+                          <option [value]="2">Married</option>
+                          <option [value]="3">Divorced</option>
+                          <option [value]="4">Widowed</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6" *ngIf="opType == '1'">
+                      <div class="form-group">
+                        <label class="control-label" for="op-birthdate">Date of Birth:<span class="text-danger">(*)&nbsp;</span>
+                          <span *ngIf="!opBirthdate" class="error-message">
+                            <i class="ti ti-exclamation-circle me-1"></i>
+                            This field is required
+                          </span></label>
+                        <input [(ngModel)]="opBirthdate" type="date" name="op-birthdate" id="op-birthdate"
+                               class="form-control" required>
+                      </div>
+                    </div>
+                    <div class="col-md-6" *ngIf="opType == '6'">
+                      <div class="form-group">
+                        <label class="control-label" for="op-venture-search">Ventures:<span class="text-danger">(*)&nbsp;</span>
+                          <span *ngIf="!opVentures" class="error-message">
+                            <i class="ti ti-exclamation-circle me-1"></i>
+                            This field is required
+                          </span></label>
+                        <div *ngIf="opVentures.length">
+                          <p><small class="text-muted">{{ opVentures.length }} Selected Venture:</small></p>
+                          <div *ngFor="let farmOperatorId of opVentures; index as i" class="btn-group me-2"
+                               style="zoom:75%">
+                            <a
+                              [href]="'farm-management/fc/farm-operator/' + farmOperatorId"
+                              target="_blank"
+                              rel="noopener"
+                              class="btn btn-sm btn-secondary">Owner {{ i + 1 }} </a>
+
+                            <button type="button" (click)="removeFromVentures(farmOperatorId)"
+                                    class="btn btn-sm btn-outline-warning">
+                              <i class="ti ti-trash"></i>
+                            </button>
+                          </div>
+                        </div>
+                        <div class="panel panel-body panel-default" style="margin-top: 5px">
+                          <input
+                            (keyup)="searchVentures($any($event.target).value)"
+                            (change)="searchVentures($any($event.target).value)"
+                            (blur)="searchVentures($any($event.target).value)"
+                            type="search"
+                            name="op-venture-search"
+                            id="op-venture-search"
+                            class="form-control"
+                            style="flex-grow: 1"
+                            placeholder="Search"
+                          >
+                          <div style="padding-top: 5px">
+                            <select
+                              [(ngModel)]="opVentureResultSelections"
+                              type="search"
+                              name="op-venture-results"
+                              id="op-venture-results"
+                              class="form-select"
+                              multiple
+                            >
+                              <option *ngFor="let result of opVentureResults" [value]="result.id">{{ result.name }}
+                              </option>
+                            </select>
+                            <div style="text-align: right; padding-top: 5px">
+                              <button type="button" (click)="addVentures()" class="btn btn-primary btn-sm"
+                                      style="margin-right: 0">
+                                Add Selected
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="control-label" for="op-capital">Capital:<span class="text-danger">(*)&nbsp;</span>
+                          <span *ngIf="!opCapital" class="error-message">
+                            <i class="ti ti-exclamation-circle me-1"></i>
+                            This field is required
+                          </span></label>
+                        <input [(ngModel)]="opCapital" type="number" name="op-capital" id="op-capital"
+                               class="form-control" required placeholder="Enter initial capital">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="control-label" for="op-phone">Phone:<span class="text-danger">(*)&nbsp;</span>
+                          <span *ngIf="!opPhone" class="error-message">
+                            <i class="ti ti-exclamation-circle me-1"></i>
+                            This field is required
+                          </span></label>
+                        <input [(ngModel)]="opPhone" type="tel" name="op-phone" id="op-phone" class="form-control" required placeholder="Enter valid mobile no" pattern="+251-(000)-000000">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="control-label" for="op-email">Email:&nbsp;
+                          <span *ngIf="!validEmail" class="error-message">
+                            <i class="ti ti-exclamation-circle me-1"></i>
+                            Enter valid email address
+                          </span></label>
+                        <input [(ngModel)]="opEmail" type="email" name="op-email" id="op-email" class="form-control" (keyup)="validateEmail()">
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+
+                  <div class="form-group">
+                    <label class="control-label">
+                      Address:<span class="text-danger">(*)&nbsp;</span>
+                      <span *ngIf="!opAddress" class="error-message">
+                            <i class="ti ti-exclamation-circle me-1"></i>
+                            Address field is required
+                          </span>
+                    </label>
+                    <app-address-selector [finalAddressId]="opAddress" (onChange)="opAddress = $event">
+                    </app-address-selector>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <app-authority-registrar
+                    title="Supportive License/Registration Documents"
+                    [registrations]="opRegistrations"
+                    [registrationTypes]="registrationTypes"
+                    [registrationAuthorities]="registrationAuthorities"
+                    (change)="$event.registrations && (opRegistrations = $event.registrations)"
+                  ></app-authority-registrar>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-2">
+              <div class="row">
+                <div class="col-md-6 justify-content-start">
+                  <button type="button" class="btn btn-secondary" (click)="step = 1">
+                    Back
+                  </button>
+                </div>
+                <div class="col-md-6 align-right">
+                  <button type="button" class="btn btn-primary" (click)="step = 3"
+                          [disabled]="!opName || !opNationality || !opType || !opAddress || !opCapital || !opPhone || (opType==='1' && (opGender && opMartialStatus && opBirthdate)) || (opType==='6' && opVentures) || !validEmail">
+                    Next
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="card m-0" [id]="'farm-reg-panel'" *ngIf="step == 2 && howOperator == 'EXISTING'"
+               style="min-height: calc(70vh)">
+            <div class="card-header">
+              <h5>Step 2 of 4: Select from Registered Farm Owners</h5>
+            </div>
+            <div class="card-body pt-0" style="min-height: calc(70vh)">
+              <div class="row p-0">
+                <div class="col-md-2 mb-0"></div>
+                <div class="col-md-8 align-center p-0 mb-0">
+                  <div class="input-group p-2">
+                    <input [(ngModel)]="operatorTerm" (keyup)="loadOperators(0)" class="form-control btn-round"
+                           type="search" name="operatorSearch" placeholder="Search" title="Search">
+                    <span class="input-group-btn">
+                    <button class="btn btn-outline-success" type="button" (click)="loadOperators(0)">
+                        <i class="ti ti-search"></i>&nbsp;
+                    </button>
+                    </span>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div *ngIf="searching" class="align-center"><h2>Searching...</h2></div>
+                  <div *ngIf="!searching && !operators.length" class="align-center">
+                    <h2><i class="ti ti-exclamation-circle"></i></h2>
+                    <p>{{ operatorTerm ? ('No search results found for "' + operatorTerm + '".') : 'No registered farm operators, yet.' }}</p>
+                  </div>
+                  <div *ngIf="!searching && operators.length">
+                    <table class="table ">
+                      <caption class="title text-success">Showing {{ operators.length }}
+                        of {{ totalOperators }} {{ operatorTerm ? 'search result' : 'registered farm operator' }}{{ operators.length == 1 ? '' : 's' }}{{ operatorTerm ? (' found for "' + operatorTerm + '"') : null }}
+                        .
+                      </caption>
+                      <thead>
+                      <tr>
+                        <th>
+                          #
+                        </th>
+                        <th>Name</th>
+                        <th>Nationality</th>
+                        <th>Type</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                      </tr>
+                      </thead>
+
+                      <tbody>
+                      <tr *ngFor="let operator of operators">
+                        <td>
+                          <input [(ngModel)]="selectedOperatorId" (change)="step = 3" [value]="operator.id"
+                                 [id]="'operator-result-' + operator.id" class="radio-inline" type="radio"
+                                 name="operatorsRadio" title="Select Row">
+                        </td>
+                        <td>
+                          <label [for]="'operator-result-' + operator.id">{{ operator.name }}</label>
+                        </td>
+                        <td>
+                          <label [for]="'operator-result-' + operator.id">{{ operator.nationality }}</label>
+                        </td>
+                        <td>
+                          <label
+                            [for]="'operator-result-' + operator.id">{{ opTypeName(operator.typeId).name }}</label>
+                        </td>
+                        <td>
+                          <label [for]="'operator-result-' + operator.id">{{ operator.email }}</label>
+                        </td>
+                        <td>
+                          <label [for]="'operator-result-' + operator.id">{{ operator.phone }}</label>
+                        </td>
+                      </tr>
+                      </tbody>
+                    </table>
+
+                    <div class="align-center" *ngIf="totalOperators > operators.length">
+                      <button type="button" class="btn btn-outline-success btn-sm" (click)="loadOperators()">Load
+                        More...
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <div class="card-footer p-2">
+              <div class="row">
+                <div class="col-md-6 justify-content-start">
+                  <button type="button" class="btn btn-secondary" (click)="step = 1">
+                    Back
+                  </button>
+                </div>
+                <div class="col-md-6 align-right">
+                  <button type="button" class="btn btn-primary" (click)="step = 3" [disabled]="!selectedOperatorId">
+                    Next
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="card m-0" [id]="'farm-reg-panel'" *ngIf="step == 3" style="min-height: calc(70vh)">
+            <div class="card-header">
+              <h5>Step 3 of 4: Commercial Farm Details</h5>
+            </div>
+            <div class="card-body" style="min-height: calc(70vh)">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="control-label" for="fr-type">Primary Farm Type:<span class="text-danger">(*)&nbsp;</span>
+                      <span *ngIf="!opVentures" class="error-message">
+                            <i class="ti ti-exclamation-circle me-1"></i>
+                            This field is required
+                          </span></label>
+                    <select [(ngModel)]="frType" name="fr-type" id="fr-type" class="form-select" required>
+                      <option *ngFor="let type of farmTypes" [value]="type.id">{{ type.name }}</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" for="fr-other-types">Other Farm Types:</label>
+                    <select [(ngModel)]="frOtherTypeIds" name="fr-other-types" id="fr-other-types" class="form-select"
+                            multiple>
+                      <option *ngFor="let type of farmTypes" [value]="type.id">
+                        {{ type.name }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="control-label" for="fr-invested-capital">Invested Capital:<span class="text-danger">(*)&nbsp;</span>
+                      <span *ngIf="!frInvestedCapital" class="error-message">
+                            <i class="ti ti-exclamation-circle me-1"></i>
+                            This field is required
+                          </span></label>
+                    <input [(ngModel)]="frInvestedCapital" type="number" name="fr-invested-capital"
+                           id="fr-invested-capital"
+                           class="form-control" required placeholder="Enter invested capital">
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" for="fr-description">Description: </label>
+                    <textarea [(ngModel)]="frDescription" type="number" name="fr-description" id="fr-description"
+                              class="form-control"></textarea>
+                  </div>
+                </div>
+
+                <div class="col-md-12">
+                  <app-authority-registrar
+                    title="Farm Registrations"
+                    [registrations]="frRegistrations"
+                    [registrationTypes]="registrationTypes"
+                    [registrationAuthorities]="registrationAuthorities"
+                    (change)="$event.registrations && (frRegistrations = $event.registrations)"
+                  ></app-authority-registrar>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer p-2">
+              <div class="row">
+                <div class="col-md-6 justify-content-start">
+                  <button type="button" class="btn btn-secondary" (click)="step = 2">
+                    Back
+                  </button>
+                </div>
+                <div class="col-md-6 align-right">
+                  <button type="button" class="btn btn-primary" (click)="step = 4" [disabled]="!frType || !frInvestedCapital">
+                    Next
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card m-0" [id]="'farm-reg-panel'" *ngIf="step == 4" style="min-height: calc(70vh)">
+            <div class="card-header">
+              <h5>Step 4 of 4: Business Plan</h5>
+            </div>
+            <div class="card-body" style="min-height: calc(70vh)">
+              <app-fc-project-detail-registration [plan]="plan"></app-fc-project-detail-registration>
+              <hr>
+
+              <app-document-selector
+                title="Business Plan Documents"
+                [documents]="plan.documents"
+              ></app-document-selector>
+            </div>
+            <div class="card-footer p-2">
+              <div class="row">
+                <div class="col-md-6 justify-content-start">
+                  <button type="button" class="btn btn-secondary" (click)="step = 3">
+                    Back
+                  </button>
+                </div>
+                <div class="col-md-6 align-right">
+                  <button type="button" class="btn btn-primary" (click)="onSubmit($event)"
+                          [disabled]="!plan.statusId || !plan.note || !plan.rootActivity">
+                    Submit for Approval
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

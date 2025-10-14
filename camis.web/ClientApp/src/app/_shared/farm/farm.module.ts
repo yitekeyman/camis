@@ -11,24 +11,23 @@ import {AuthorityRegistrarComponent} from './authority-registrar/authority-regis
 import {FarmDetailComponent} from './farm-detail/farm-detail.component';
 
 @NgModule({
-    declarations: [
-        AuthorityRegistrarComponent,
-        FarmDetailComponent,
-    ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        RouterModule,
-
-        AddressModule,
-        ProjectModule,
-        DocumentModule,
-    ],
-    exports: [
-        AuthorityRegistrarComponent,
-        FarmDetailComponent,
-    ],
-    providers: []
+  declarations: [],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+    AuthorityRegistrarComponent,
+    FarmDetailComponent,
+    AddressModule,
+    ProjectModule,
+    DocumentModule,
+  ],
+  exports: [
+    AuthorityRegistrarComponent,
+    FarmDetailComponent,
+  ],
+  providers: []
 })
-export class FarmModule { }
+export class FarmModule {
+}

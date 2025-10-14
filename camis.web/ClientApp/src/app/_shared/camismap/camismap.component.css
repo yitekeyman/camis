@@ -1,9 +1,78 @@
-.landBank_map_preview{
-    min-height: 300px;
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  transition: all 0.3s ease;
+  border-right: 8px;
 }
-.board .x_content {
-    min-height: 405px!important;
-  }
-  #camis_map {
-    height: 400px!important;
-  }
+.ol-viewport, .ol-layers, .ol-layer{
+  border-right: 8px;
+}
+.map-container.full-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background: white;
+}
+#camis_map {
+  width: 100%;
+  height: 100%;
+  background: #f9f8f8;
+}
+.ol-layer{
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+.ol-layer canvas{
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+.map-controls-overlay {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 8px 12px;
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.control-group label {
+  font-size: 11px;
+  font-weight: bold;
+  margin-bottom: 2px;
+  color: #333;
+}
+
+.form-control-sm {
+  font-size: 12px;
+  padding: 4px 8px;
+  height: 28px;
+  min-width: 120px;
+}
+.full-screen-toggle {
+  z-index: 10000;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.full-screen-toggle:hover {
+  background: rgba(255, 255, 255, 1);
+}

@@ -1,4 +1,5 @@
-<div *ngFor="let pair of pairs">
-  <label class="text-muted">{{pair.unit}}:</label>
-  <span>{{pair.value}}</span>
-</div>
+
+        <ul style="list-style: none; border-radius: 10px;background: rgba(226.8, 239.8, 211.4, 0.5);" class="mb-2 ps-1">
+          <li class="p-2" style="border-bottom: 1px dashed rgba(0,255,0,0.5)" *ngFor="let pair of pairs"> <span><i class="ti ti-list-details" style="color:#37882c"></i>&nbsp;<b>{{pair.unit}}:</b>&nbsp;{{pair.value}}</span></li>
+        </ul>
+

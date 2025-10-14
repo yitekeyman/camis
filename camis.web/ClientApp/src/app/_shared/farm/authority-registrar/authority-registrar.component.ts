@@ -4,9 +4,13 @@ import {IRegistrationAuthority, IRegistrationType} from '../interfaces';
 import {IDocument} from '../../document/interfaces';
 import {ISingleDocumentSelectorChangeEvent} from '../../document/single-document-selector/interfaces';
 import dialog from '../../dialog';
+import {CommonModule} from "@angular/common";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {DocumentModule} from "../../document/document.module";
 
 @Component({
   selector: 'app-authority-registrar',
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, DocumentModule],
   templateUrl: 'authority-registrar.component.html',
 })
 export class AuthorityRegistrarComponent implements OnInit {

@@ -1,0 +1,81 @@
+﻿<div class="card">
+  <div class="card-header p-3">
+    <div class="row">
+      <div class="col-md-12">
+        <h5><i class="ti ti-list-details"></i> {{ user }}'s Pending Tasks</h5>
+      </div>
+    </div>
+  </div>
+  <div class="card-body p-0" style="min-height: calc(65vh)">
+    <div class="table-responsive">
+      <table id="datatable" class="table">
+        <thead>
+        <tr class="headings">
+          <th>
+            #
+          </th>
+          <th class="column-title">Task</th>
+          <th class="column-title">Message</th>
+          <th class="column-title">Forwarded From</th>
+          <th class="column-title">Time Stamp</th>
+          <th class="column-title">Status</th>
+          <th class="align-right">Action</th>
+        </tr>
+        </thead>
+        <tbody *ngIf="pagedItems?.length>0" >
+        <tr class="even pointer with-data" *ngFor="let wf of pagedItems;index as i">
+          <td class="a-center ">
+            {{(pager.currentPage - 1) * pager.pageSize + i + 1}}
+          </td>
+          <td class=" ">{{wf.type.name}} <br/><small>{{wf.type.description}}</small></td>
+          <td class=" ">{{wf.description}}
+           </td>
+          <td class=" ">{{wf.action.username}}</td>
+          <td class=" ">{{wf.action.timeStr}}</td>
+          <td> <span class="excerpt" *ngIf="wf.asyncMsgValue$ | async">
+            {{wf.asyncMsgValue$ | async}}
+          </span></td>
+          <td class="align-right">
+            <div class="btn-group">
+                <button type="button" class="btn  btn-sm btn-outline-success" (click)="workOnThis({ workflowId: wf.id, workflowTypeId: wf.typeId, currentState: wf.currentState })">Work On This</button>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+        <tbody *ngIf="pagedItems?.length==0">
+        <tr class="no-data">
+          <td colspan="6" style="height: calc(56vh)">
+
+            <div class="align-center mt-5 ">
+              <i class="ti ti-exclamation-circle"></i>
+              <h1>Sorry!</h1>
+              <p>There is no pending tasks</p>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card-footer pb-0">
+    <div class="justify-content-end">
+      <nav aria-label="..." *ngIf="pager.pages && pager.pages.length">
+        <ul class="pagination justify-content-end">
+          <li class="page-item" [class.disabled]="pager.currentPage === 1">
+            <a class="page-link" href="javascript:" tabindex="-1" (click)="setPage(1)"><i class="ti ti-chevron-left-pipe"></i></a>
+          </li>
+          <li class="page-item" [class.disabled]="pager.currentPage === 1">
+            <a class="page-link" href="javascript:" (click)="setPage(pager.currentPage - 1)"><i class="ti ti-chevron-left"></i></a>
+          </li>
+          <li *ngFor="let page of pager.pages" class="page-item"><a class="page-link"  [class.active]="pager.currentPage === page" href="javascript:" (click)="setPage(page)">{{page}}</a></li>
+          <li class="page-item" [class.disabled]="pager.currentPage === pager.totalPages">
+            <a class="page-link" href="javascript:" (click)="setPage(pager.currentPage + 1)"><i class="ti ti-chevron-compact-right"></i></a>
+          </li>
+          <li class="page-item" [class.disabled]="pager.currentPage === pager.totalPages">
+            <a class="page-link" href="javascript:" (click)="setPage(pager.totalPages)"><i class="ti ti-chevron-right-pipe"></i></a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>

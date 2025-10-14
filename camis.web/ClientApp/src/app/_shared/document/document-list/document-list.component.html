@@ -1,31 +1,49 @@
 <div class="document-list" *ngIf="documents">
-    <table class="table table-striped table-responsive jambo_table bulk_action">
-        <thead>
+    <table class="table p-0 m-0">
+        <thead *ngIf="title">
         <tr>
             <th colspan="3">
-                <i class="fa fa-file-text"></i>&nbsp; {{title}}
+                <i class="ti ti-file-text"></i>&nbsp; {{title}}
             </th>
         </tr>
         </thead>
-        <tbody>
-        <tr *ngFor="let doc of documents; index as i">
-            <td class="text-muted text-nowrap" style="width: 50px; font-weight: bold">
-                {{i + 1}}
-            </td>
-            <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">
-                <a (click)="openDoc($event, doc)" [href]="getLink(doc)" target="_blank">
-                    <div><i class="fa fa-file-o fa-3x"></i></div>
-                    <div style="padding-top: 5px">{{doc.filename || 'Open Document'}}</div>
-                </a>
-            </td>
-            <td style="width: 75%">
-                <label class="text-muted">Ref.:</label> {{doc.ref}}
-                <br/>
-                <label class="text-muted">Date:</label> {{doc.date | date}}
-                <br/>
-                <label class="text-muted">Note:</label> {{doc.note}}
-            </td>
+        <tbody *ngIf="documents?.length>0">
+        <tr *ngFor="let doc of documents; index as i" >
+          <td class="ps-0 pe-0 pb-1 pt-1">
+            <table class="table mb-0">
+              <tbody>
+              <tr>
+                <td id="doc-icon">
+                  <a (click)="openDoc($event, doc)" [href]="getLink(doc)" target="_blank">
+                    <i class="ti ti-file-type-{{getFileExtension(doc.filename)}}"></i>
+                  </a>
+
+                </td>
+                <td id="doc-ref">
+                  <a (click)="openDoc($event, doc)" [href]="getLink(doc)" target="_blank">
+                    {{doc.filename || 'Open Document'}}
+                  </a>
+                  <ul class="mb-0 ps-1">
+                    <li> <i class="ti ti-checkbox"></i> &nbsp; <span><b>Ref.: </b>&nbsp; {{doc.ref}}</span></li>
+                    <li><i class="ti ti-checkbox"></i> &nbsp; <span><b>Date: </b>&nbsp; {{doc.date | date}}</span></li>
+                    <li><i class="ti ti-checkbox"></i> &nbsp; <span><b>Note: </b>&nbsp; {{doc.note || '[n/a]'}}</span></li>
+                  </ul>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </td>
         </tr>
         </tbody>
+      <tbody *ngIf="documents?.length==0">
+      <tr class="no-data">
+        <td class="ali">
+          <div class="align-center mt-5 ">
+            <i class="ti ti-exclamation-circle"></i>
+            <p>There is no document uploaded</p>
+          </div>
+        </td>
+      </tr>
+      </tbody>
     </table>
 </div>

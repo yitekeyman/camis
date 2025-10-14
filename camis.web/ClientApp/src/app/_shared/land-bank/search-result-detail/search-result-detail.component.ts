@@ -1,19 +1,31 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { LandDataService} from '../../../_services/land-data.service';
-import { LandType, Month, SoilTestType, Accessablity, SearchResult, LandPreparationModel,
+import {Component, OnInit, ElementRef, ViewChild} from '@angular/core';
+import {Router, ActivatedRoute} from '@angular/router';
+import {LandDataService} from '../../../_services/land-data.service';
+import {
+  LandType, Month, SoilTestType, Accessablity, SearchResult, LandPreparationModel,
   Topography, AgroEchologicalZone, ExistingLandUse, InvestmentType, MoistureSource,
-  GroundWater, SurfaceWater, WaterTestParameters} from '../../../_shared/land-bank/land.model';
-import { DialogService } from '../../dialog/dialog.service';
-import { FormBuilder, AbstractControl, FormGroup, Validators, ValidatorFn } from '@angular/forms';
-import swal from 'sweetalert2';
-import { CamisMapComponent } from '../../../_shared/camismap/camismap.component';
+  GroundWater, SurfaceWater, WaterTestParameters
+} from '../../../_shared/land-bank/land.model';
+import {DialogService} from '../../dialog/dialog.service';
+import {
+  FormBuilder,
+  AbstractControl,
+  FormGroup,
+  Validators,
+  ValidatorFn,
+  ReactiveFormsModule,
+  FormsModule
+} from '@angular/forms';
+import {CamisMapComponent} from '../../../_shared/camismap/camismap.component';
 import dialog from "../../dialog";
 import {ObjectKeyCasingService} from "../../../_services/object-key-casing.service";
+import {CommonModule} from "@angular/common";
+import {DocumentListComponent} from "../../document/document-list/document-list.component";
 
 @Component({
   selector: 'app-search-result-detail',
   templateUrl: './search-result-detail.component.html',
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, CamisMapComponent, DocumentListComponent],
   styleUrls: ['./search-result-detail.component.css']
 })
 export class SearchResultDetailComponent implements OnInit {
@@ -45,7 +57,7 @@ export class SearchResultDetailComponent implements OnInit {
   moistureSourceList: MoistureSource[] = [];
   grounWaterList: GroundWater[] = [];
   surfaceWaterList: SurfaceWater[] = [];
-  groundWater: any;
+  groundWater: any[]=[];
   surfaceWater: any[] = [];
   waterSourceParamList: WaterTestParameters[] = [];
   waterSourceParams: any[] = [];
@@ -59,9 +71,9 @@ export class SearchResultDetailComponent implements OnInit {
   @ViewChild('prepareBtnClose') prepareBtnClose: ElementRef;
 
   constructor(private router: Router, public landService: LandDataService, private activeRoute: ActivatedRoute,
-    private formBuilder: FormBuilder, private dialog: DialogService, private keyCase:ObjectKeyCasingService) {
+              private formBuilder: FormBuilder, private dialog: DialogService, private keyCase: ObjectKeyCasingService) {
 
-    if (localStorage.getItem('role') === '4' ) {
+    if (localStorage.getItem('role') === '4') {
       this.clerkRole = true;
       this.loginRole = 'land-clerk';
     }
@@ -73,11 +85,11 @@ export class SearchResultDetailComponent implements OnInit {
 
   ngOnInit() {
     this.activeRoute.params.subscribe(params => {
-      this.landID = params.landID;
+      this.landID = params['landID'];
       this.getLandDetail();
     });
     this.prepareForm = this.formBuilder.group({
-      splitNumberControl : ['', Validators.compose([Validators.required, this.positiveNumberValidator()])],
+      splitNumberControl: ['', Validators.compose([Validators.required, this.positiveNumberValidator()])],
     });
 
     this.splitNumberControl = this.prepareForm.controls['splitNumberControl'];
@@ -96,15 +108,15 @@ export class SearchResultDetailComponent implements OnInit {
       this.searchedLandDetail = data;
       this.getDependecies();
       dialog.close();
-      var g = data.parcels[data.upins[0]];
+      let g = data.parcels[data.upins[0]];
       if (g) {
-        var parts = g.geometry.split(";");
-        this.map.setWorkFlowGeomByWKT(parts[parts.length-1]);
+        let parts = g.geometry.split(";");
+        this.map.setWorkFlowGeomByWKT(parts[parts.length - 1]);
       }
-      console.log(this.searchedLandDetail);
+      //console.log(this.searchedLandDetail);
 
-    },e=>{
-      dialog.close();
+    }, e => {
+      return dialog.error(e);
     });
   }
 
@@ -180,6 +192,7 @@ export class SearchResultDetailComponent implements OnInit {
     }
 
   }
+
   prepareSoilTestTypesList() {
     for (const soilTests of this.searchedLandDetail['soilTests']) {
       for (const soilTestList of this.soilTestTypesList) {
@@ -191,6 +204,7 @@ export class SearchResultDetailComponent implements OnInit {
     }
 
   }
+
   prepareMonth() {
     for (const climate of this.searchedLandDetail['climate']) {
       for (const climateList of this.monthesList) {
@@ -202,6 +216,7 @@ export class SearchResultDetailComponent implements OnInit {
     }
 
   }
+
   prepareLandType() {
     for (const landTypeList of this.landTypeList) {
       if (landTypeList.id === this.searchedLandDetail['landType']) {
@@ -210,6 +225,7 @@ export class SearchResultDetailComponent implements OnInit {
       }
     }
   }
+
   prepareTopography() {
     for (const topography of this.searchedLandDetail['topography']) {
       for (const topographyList of this.topographyList) {
@@ -220,6 +236,7 @@ export class SearchResultDetailComponent implements OnInit {
       }
     }
   }
+
   prepareAgroEchologyZone() {
     for (const agroEchologies of this.searchedLandDetail['agroEchologyZone']) {
       for (const agroEchologyList of this.agroEchologyList) {
@@ -230,6 +247,7 @@ export class SearchResultDetailComponent implements OnInit {
       }
     }
   }
+
   prepareExistingLand() {
     for (const existLand of this.searchedLandDetail['existLandUse']) {
       for (const existLandList of this.existingLandList) {
@@ -239,6 +257,7 @@ export class SearchResultDetailComponent implements OnInit {
       }
     }
   }
+
   prepareInvestmentType() {
     for (const investmentType of this.searchedLandDetail['investmentType']) {
       for (const investmentList of this.investmentTypeList) {
@@ -248,6 +267,7 @@ export class SearchResultDetailComponent implements OnInit {
       }
     }
   }
+
   prepareMoistureSource() {
     for (const moistureSourceList of this.moistureSourceList) {
       if (moistureSourceList.id === this.searchedLandDetail['moistureSource']) {
@@ -255,13 +275,17 @@ export class SearchResultDetailComponent implements OnInit {
       }
     }
   }
+
   prepareGroundWater() {
-    for (const groundWaterList of this.grounWaterList) {
-      if (groundWaterList.id === this.searchedLandDetail.irrigationValues['groundWater']) {
-        this.groundWater = groundWaterList.name;
+    for (const gw of this.searchedLandDetail.irrigationValues['groundWater']) {
+      for (const groundWaterList of this.grounWaterList) {
+        if (groundWaterList.id === gw) {
+          this.groundWater.push(groundWaterList.name) ;
+        }
       }
     }
   }
+
   prepareSurfaceWater() {
     for (const sWater of this.searchedLandDetail.irrigationValues['surfaceWater']) {
       for (const sWaterList of this.surfaceWaterList) {
@@ -272,6 +296,7 @@ export class SearchResultDetailComponent implements OnInit {
       }
     }
   }
+
   prepareWaterSourceParams() {
     for (const waterSource of this.searchedLandDetail.irrigationValues['waterSourceParameter']) {
       for (const waterSourceList of this.waterSourceParamList) {
@@ -291,14 +316,14 @@ export class SearchResultDetailComponent implements OnInit {
   positiveNumberValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } => {
       const isNotOk = Number(control.value) <= 0;
-      return isNotOk ? { nonPositive: { value: control.value } } : null;
+      return isNotOk ? {nonPositive: {value: control.value}} : null;
     };
   }
 
   requestPreparation() {
     this.prepareBtnClose.nativeElement.click();
-    swal({allowOutsideClick: false});
-    swal.showLoading();
+
+    dialog.loading();
 
     const numberOfSplit = this.prepareForm.controls['splitNumberControl'].value;
 
@@ -307,28 +332,15 @@ export class SearchResultDetailComponent implements OnInit {
 
     this.landService.RequestLandPreparation(this.prepareModel).subscribe(
       () => {
-
-      // success
-      swal.close();
-
-      swal({
-        position: 'center',
-        type: 'success',
-        title: 'Land successfully sent to be prepared!',
-        showConfirmButton: false,
-        timer: 1500
-      }).then(
-        () => {
-          this.router.navigate([`/${this.loginRole}/land-dashboard`]);
-        });
-    },
+        dialog.success('Land successfully sent to be prepared!').then(() => {
+          this.router.navigate([`/land-bank/search-parcel`]);
+        })
+      },
       (err) => {
-        swal.close();
-        // error alert
-        this.dialog.error(err);
+        return dialog.error(err);
       }
     );
-    console.log(this.prepareModel);
+    //console.log(this.prepareModel);
   }
 
 

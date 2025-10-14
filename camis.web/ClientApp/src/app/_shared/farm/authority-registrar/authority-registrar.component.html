@@ -1,6 +1,6 @@
 <!-- AUTHORITY REGISTRATION INPUTS (for Farms and Farm Operators) -->
 <div class="authority-registrar" *ngIf="registrations">
-    <table class="table table-striped table-responsive jambo_table bulk_action">
+    <table class="table">
         <thead>
         <tr>
             <th colspan="6">
@@ -28,11 +28,11 @@
             </td>
             <td>
               <div class="btn-group">
-                <a (click)="editReg(i)" class="btn btn-primary btn-sm" role="button" data-toggle="modal" href="#edit-dialog">
-                  <i class="fa fa-pencil"></i>
-                </a>
-                <button (click)="removeReg(i)" class="btn btn-warning btn-sm">
-                  <i class="fa fa-trash"></i>
+                <button type="button" (click)="editReg(i)" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editDialog">
+                  <i class="ti ti-edit"></i>
+                </button>
+                <button type="button" (click)="removeReg(i)" class="btn btn-outline-warning btn-sm">
+                  <i class="ti ti-trash-x"></i>
                 </button>
               </div>
             </td>
@@ -40,12 +40,12 @@
         <tr>
             <td class="text-muted"><i>New</i></td>
             <td>
-                <select [(ngModel)]="add_type" title="Reg. Type *" class="form-control" required>
+                <select [(ngModel)]="add_type" title="Reg. Type *" class="form-select" required>
                     <option *ngFor="let type of registrationTypes" [value]="type.id">{{type.name}}</option>
                 </select>
             </td>
             <td>
-                <select [(ngModel)]="add_authority" title="Reg. Auth *" class="form-control" required>
+                <select [(ngModel)]="add_authority" title="Reg. Auth *" class="form-select" required>
                     <option *ngFor="let auth of registrationAuthorities" [value]="auth.id">{{auth.name}}</option>
                 </select>
             </td>
@@ -59,22 +59,23 @@
                 >
             </td>
             <td>
-                <a href="#add-document-dialog" class="btn btn-default" role="button" type="button" data-toggle="modal">
-                  {{add_document.doc ? 'Change Document' : 'Select Document'}}
-                </a>
+              <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addDocumentDialog">
+                {{add_document.doc ? 'Change Document' : 'Select Document'}}
+              </button>
             </td>
             <td>
-                <div style="padding-bottom: 10px">
+                <div class="btn-group" style="padding-bottom: 10px">
                     <button
                             (click)="addRegistration(docSelector)"
-                            class="btn btn-success"
+                            class="btn btn-primary btn-sm"
                             [disabled]="!_noDuplicate || this.add_type == undefined || this.add_authority == undefined || this.add_number == undefined"
                     >
-                        <i class="fa fa-plus"></i>&nbsp; Add
+                      Add
                     </button>
+                  <button class="btn btn-sm btn-outline-warning" (click)="clear(docSelector)">Clear</button>
                 </div>
                 <div>
-                    <a (click)="clear(docSelector)">Clear</a>
+
                 </div>
             </td>
         </tr>
@@ -82,14 +83,12 @@
     </table>
 </div>
 
-<div id="add-document-dialog" class="modal fade" role="dialog">
+<div id="addDocumentDialog" class="modal fade" tabindex="-1" aria-labelledby="addDocumentDialogLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title">
-          {{add_document.doc ? 'Change Document' : 'Select Document'}}
-        </h4>
+        <h4 class="modal-title" id="addDocumentDialogLabel"> {{add_document.doc ? 'Change Document' : 'Select Document'}}</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <app-single-document-selector
@@ -100,77 +99,85 @@
         ></app-single-document-selector>
       </div>
       <div class="modal-footer right">
-        <button type="button" class="btn btn-default" (click)="add_document = { doc: null }" data-dismiss="modal" aria-hidden="true">Clear</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Save</button>
+        <button type="button" class="btn btn-outline-warning btn-md" (click)="add_document = { doc: null }"  data-bs-dismiss="modal">Clear</button>
+        <button type="button" class="btn btn-primary btn-md"  data-bs-dismiss="modal" >Save</button>
       </div>
     </div>
   </div>
 </div>
 
-<div id="edit-dialog" class="modal fade" role="dialog">
+<div id="editDialog" class="modal fade" tabindex="-1" aria-labelledby="editDialogLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title">
-          Edit
-        </h4>
+        <h4 class="modal-title" id="editDialogLabel"> Edit Document</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <div style="padding-bottom: 15px">
-          <label>Type: *</label>
-          <br/>
-          <select [(ngModel)]="edit_type" title="Reg. Type *" class="form-control" required>
-            <option *ngFor="let type of registrationTypes" [value]="type.id">{{type.name}}</option>
-          </select>
-        </div>
-        <div style="padding-bottom: 15px">
-          <label>Authority: *</label>
-          <br/>
-          <select [(ngModel)]="edit_authority" title="Reg. Auth *" class="form-control" required>
-            <option *ngFor="let auth of registrationAuthorities" [value]="auth.id">{{auth.name}}</option>
-          </select>
-        </div>
-        <div style="padding-bottom: 15px">
-          <label>Number: *</label>
-          <br/>
-          <input
-            [disabled]="!_noDuplicate"
-            [(ngModel)]="edit_number"
-            type="text"
-            placeholder="Reg. Number *"
-            class="form-control"
-          >
-        </div>
-
-        <div>
-          <div *ngIf="!editingEditDocument">
-            <span *ngIf="!edit_document.doc">No document was selected previously.</span>
-            <app-document-detail *ngIf="edit_document.doc" [document]="edit_document.doc"></app-document-detail>
-          </div>
-          <div *ngIf="!editingEditDocument" class="right">
-            <button class="btn btn-default" (click)="editingEditDocument = true">
-              {{edit_document.doc ? 'Edit' : 'Add'}} Document
-            </button>
-          </div>
-
-          <app-single-document-selector
-            *ngIf="editingEditDocument"
-            title="Choose a Document"
-            [document]="edit_document.doc"
-            (change)="chooseEditDocument($event)"
-          ></app-single-document-selector>
-          <div *ngIf="editingEditDocument" class="right">
-            <button class="btn btn-default btn-sm" (click)="editingEditDocument = false">
-              Done {{edit_document.doc ? 'Edit' : 'Add'}}ing Document
-            </button>
-          </div>
-        </div>
+        <table class="table mb-0">
+          <tbody>
+          <tr>
+            <td> <label>Type: *</label></td>
+            <td>
+              <select [(ngModel)]="edit_type" title="Reg. Type *" class="form-select" required>
+                <option *ngFor="let type of registrationTypes" [value]="type.id">{{type.name}}</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td> <label>Authority: *</label></td>
+            <td>
+              <select [(ngModel)]="edit_authority" title="Reg. Auth *" class="form-select" required>
+                <option *ngFor="let auth of registrationAuthorities" [value]="auth.id">{{auth.name}}</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td> <label>Number: *</label></td>
+            <td>
+              <input
+                [disabled]="!_noDuplicate"
+                [(ngModel)]="edit_number"
+                type="text"
+                placeholder="Reg. Number *"
+                class="form-control"
+              >
+            </td>
+          </tr>
+          <tr *ngIf="!editingEditDocument">
+            <td colspan="2">
+              <span *ngIf="!edit_document.doc">No document was selected previously.</span>
+              <app-document-detail *ngIf="edit_document.doc" [document]="edit_document.doc"></app-document-detail>
+            </td>
+          </tr>
+          <tr >
+            <td colspan="2" class="align-center">
+              <div *ngIf="!editingEditDocument">
+              <button class="btn btn-outline-secondary btn-sm" (click)="editingEditDocument = true">
+                {{edit_document.doc ? 'Edit' : 'Add'}} Document
+              </button>
+              </div>
+              <app-single-document-selector
+                *ngIf="editingEditDocument"
+                title="Choose a Document"
+                [document]="edit_document.doc"
+                (change)="chooseEditDocument($event)"
+              ></app-single-document-selector>
+              <div *ngIf="editingEditDocument" class="align-center">
+                <button class="btn btn-primary btn-sm" (click)="editingEditDocument = false">
+                  Done {{edit_document.doc ? 'Edit' : 'Add'}}ing Document
+                </button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
       </div>
       <div class="modal-footer right">
-        <button type="button" class="btn btn-default" (click)="cancelEdit()" data-dismiss="modal" aria-hidden="true">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="doEdit()" data-dismiss="modal" aria-hidden="true">Save</button>
+        <button type="button" class="btn btn-default" (click)="cancelEdit()" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+        <button type="button" class="btn btn-primary btn-md" (click)="doEdit()" data-bs-dismiss="modal" aria-label="Close">Save</button>
       </div>
     </div>
   </div>
 </div>
+

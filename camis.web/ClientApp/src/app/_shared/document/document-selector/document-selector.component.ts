@@ -1,9 +1,12 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {IDocument} from '../interfaces';
 import {IDocumentSelectorChangeEvent} from './interfaces';
+import {CommonModule} from "@angular/common";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
     selector: 'app-document-selector',
+  imports:[CommonModule, ReactiveFormsModule, FormsModule],
     templateUrl: 'document-selector.component.html',
 })
 export class DocumentSelectorComponent implements OnInit {

@@ -1,335 +1,730 @@
-import {Component, Input, OnInit, ElementRef} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-//Open layer
+import { Component, Input, OnInit, ElementRef, OnDestroy } from '@angular/core';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+// OpenLayers imports
 import OlMap from 'ol/Map';
 import OlView from 'ol/View';
-import {fromLonLat} from 'ol/proj';
-import OLTileWMS from "ol/source/TileWMS";
-import OlTileLayer from 'ol/layer/Tile';
-import {register} from 'ol/proj/proj4';
-import GeoJSON from 'ol/format/GeoJSON'
+import OLTileWMS from 'ol/source/TileWMS';
+import { register } from 'ol/proj/proj4';
+import GeoJSON from 'ol/format/GeoJSON';
 import WKT from 'ol/format/WKT';
-import {OSM, Vector as VectorSource} from 'ol/source';
-import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
-import {Fill, Stroke, Style} from 'ol/style';
+import { Vector as VectorSource } from 'ol/source';
+import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
+import { Fill, Stroke, Style } from 'ol/style';
 import XYZ from 'ol/source/XYZ';
+import Feature from 'ol/Feature';
+import Geometry from 'ol/geom/Geometry';
 
-//End: Open Layer
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {ApiService} from '../../_services/api.service';
-import {} from 'googlemaps';
-
-
-import {LandDataService} from '../../_services/land-data.service';
-import {$} from 'protractor';
-import {fail} from 'assert';
-
+// Services
+import { ApiService } from '../../_services/api.service';
+import { LandDataService } from '../../_services/land-data.service';
+import {FullScreenService} from "../../_services/full-screen.service";
 
 declare var proj4: any;
 
+interface WmsLayerConfig {
+  name: string;
+  layerName: string;
+  visible: boolean;
+}
+
+interface BoundingBox {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+}
+
 @Component({
   selector: 'app-camis-map',
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, HttpClientModule],
   templateUrl: './camismap.component.html',
   styleUrls: ['./camismap.component.css']
 })
+export class CamisMapComponent implements OnInit, OnDestroy {
+  @Input() id = 1;
 
+  private view!: OlView;
+  private map!: OlMap;
 
-export class CamisMapComponent implements OnInit {
+  // Vector layers
+  private nrlaisSource!: VectorSource;
+  private workflowSource!: VectorSource;
+  private splitSource!: VectorSource;
 
-  view: OlView;
-  map: OlMap;
-  land: LandDataService;
-  api: ApiService;
-  mapConfig: any;
+  // Styles
+  private nrlaisStyle!: Style;
+  private workflowStyle!: Style;
+  private splitStyle!: Style;
 
+  // Configuration
+  zoomMargin = 1.3;
+  mapType = 'satellite';
+  backTo = 'Kebele';
+  private layers: any[] = [];
 
-  nrlais_features: VectorSource;
-  nrlais_style: any;
-
-  workflow_features: VectorSource;
-  workflow_style: any;
-
-  split_features: VectorSource;
-  split_style: any;
-
-  zoomMargin: number = 1.3;
-  mapType: string = 'satellite';
-  backTo: string = 'Kebele';
-  layer = [];
-
-  constructor(public _http: HttpClient, land: LandDataService, api: ApiService, private el: ElementRef) {
-    this.api = api;
-    this.land = land;
-    if (localStorage.getItem('mapType') != null) {
-      this.mapType = localStorage.getItem('mapType');
-    }
-    if (localStorage.getItem('backTo') != null) {
-      this.backTo = localStorage.getItem('backTo');
-    }
+  // Connectivity monitoring
+  private onlineListener!: () => void;
+  private offlineListener!: () => void;
+  private isUsingOfflineLayer = false;
+  isFullScreen = false;
+  constructor(
+    private http: HttpClient,
+    private land: LandDataService,
+    private api: ApiService,
+    private elementRef: ElementRef,
+    private fullScreenService: FullScreenService
+  ) {
+    this.loadSettings();
   }
 
-  @Input('id')
-  id = 1;
-
-  ngOnInit() {
+  ngOnInit(): void {
+    console.log('Initializing map component, online status:', navigator.onLine);
+    this.initializeVectorSources();
     this.initMap();
+    this.setupResizeHandler();
+    this.setupConnectivityMonitoring();
   }
 
-  defineNrlaisLayer() {
-    this.nrlais_features = new VectorSource({
-      features: []
-    });
-    this.nrlais_style = new Style({
-      stroke: new Stroke({
-        color: 'blue',
-        lineDash: [4],
-        width: 3
-      }),
-      fill: new Fill({
-        color: 'rgba(0, 0, 255, 0.1)'
-      })
-    });
-    var nrlais_features_layer = new VectorLayer({
-      source: this.nrlais_features,
-      style: () => this.nrlais_style
-    });
-    return nrlais_features_layer;
+  ngOnDestroy(): void {
+    if (this.map) {
+      this.map.setTarget(null);
+    }
+    window.removeEventListener('resize', this.onWindowResize.bind(this));
+    // Remove connectivity listeners
+    if (this.onlineListener) {
+      window.removeEventListener('online', this.onlineListener);
+    }
+    if (this.offlineListener) {
+      window.removeEventListener('offline', this.offlineListener);
+    }
   }
 
-  defineWorkFlowLayer(): any {
-    this.workflow_features = new VectorSource({
-      features: []
-    });
-
-    this.workflow_style = new Style({
-      stroke: new Stroke({
-        color: 'blue',
-        lineDash: [4],
-        width: 3
-      }),
-      fill: new Fill({
-        color: 'rgba(0, 355, 255, 0.1)'
-      })
-    });
-
-    var workflow_features_layer = new VectorLayer({
-      source: this.workflow_features,
-      style: () => this.workflow_style
-    });
-    return workflow_features_layer;
+  private setupResizeHandler(): void {
+    window.addEventListener('resize', this.onWindowResize.bind(this));
   }
 
-  defineSplitLayer(): any {
-    this.split_features = new VectorSource({
-      features: []
-    });
-
-    this.split_style = new Style({
-      stroke: new Stroke({
-        color: 'red',
-        width: 3
-      }),
-      fill: new Fill({
-        color: 'rgba(255, 0, 0, 0.1)'
-      })
-    });
-
-    var ret = new VectorLayer({
-      source: this.split_features,
-      style: () => this.split_style
-    });
-    return ret;
+  private onWindowResize(): void {
+    // Debounce the resize event
+    setTimeout(() => {
+      if (this.map) {
+        this.map.updateSize();
+      }
+    }, 250);
   }
 
-  initMap() {
+  private setupConnectivityMonitoring(): void {
+    this.onlineListener = () => {
+      console.log('Internet connection restored');
+      this.isUsingOfflineLayer = false;
+      // Reload the map layers when connection is restored
+      setTimeout(() => {
+        this.rebuildLayers();
+      }, 1000);
+    };
+
+    this.offlineListener = () => {
+      console.log('Internet connection lost');
+      this.isUsingOfflineLayer = true;
+      setTimeout(() => {
+        this.rebuildLayers();
+      }, 100);
+    };
+
+    window.addEventListener('online', this.onlineListener);
+    window.addEventListener('offline', this.offlineListener);
+  }
+
+  private rebuildLayers(): void {
+    console.log('Rebuilding layers, online:', navigator.onLine);
+    this.buildLayers();
+    if (this.map) {
+      this.map.setLayers(this.layers);
+      this.map.updateSize();
+      // Re-zoom to extent after rebuilding layers
+      // setTimeout(() => {
+      //   this.zoomToExtent();
+      // }, 500);
+    }
+  }
+
+  private loadSettings(): void {
+    this.mapType = localStorage.getItem('mapType') || 'satellite';
+    this.backTo = localStorage.getItem('backTo') || 'Kebele';
+  }
+
+  private initializeVectorSources(): void {
+    // NRLais layer
+    this.nrlaisSource = new VectorSource({ features: [] });
+    this.nrlaisStyle = new Style({
+      stroke: new Stroke({ color: 'blue', lineDash: [4], width: 3 }),
+      fill: new Fill({ color: 'rgba(0, 0, 255, 0.1)' })
+    });
+
+    // Workflow layer
+    this.workflowSource = new VectorSource({ features: [] });
+    this.workflowStyle = new Style({
+      stroke: new Stroke({ color: 'green', lineDash: [4], width: 3 }),
+      fill: new Fill({ color: 'rgba(0, 255, 0, 0.1)' })
+    });
+
+    // Split layer
+    this.splitSource = new VectorSource({ features: [] });
+    this.splitStyle = new Style({
+      stroke: new Stroke({ color: 'red', width: 3 }),
+      fill: new Fill({ color: 'rgba(255, 0, 0, 0.1)' })
+    });
+  }
+
+  private initMap(): void {
+    this.setupProjection();
+    this.createView();
+    this.buildLayers();
+    this.createMap();
+    this.zoomToExtent();
+  }
+
+  private setupProjection(): void {
     proj4.defs('EPSG:20137', '+proj=utm +zone=37 +ellps=clrk80 +units=m +no_defs');
-
     register(proj4);
-    this.mapConfig =
-      {
-        server: `http://${window.location && window.location.hostname || 'localhost'}:8080/`,
-        layers: [
-          {
-            name: "Country",
-            wms: "nrlais/wms?service=WMS&version=1.1.0&request=GetMap&layers=nrlais:ne_10m_admin_0_countries",
-            type:"text/xml"
-          },
-          {
-            name: "Region",
-            wms: "nrlais/wms?service=WMS&version=1.1.0&request=GetMap&layers=nrlais:t_regions",
-            type:"text/xml"
-          },
-          {
-            name: "Woreda",
-            wms: "nrlais/wms?service=WMS&version=1.1.0&request=GetMap&layers=nrlais:t_woredas",
-            type:"text/xml"
-          },
-          {
-            name: "Kebele",
-            wms: "nrlais/wms?service=WMS&version=1.1.0&request=GetMap&layers=nrlais:t_kebeles",
-            type:"text/xml"
-          },
-          {
-            name: "Land",
-            wms: "camis/wms?service=WMS&version=1.1.0&request=GetMap&layers=layers=camis:v_gs_land",
-            type:"text/xml"
-          },
-        ],
-      };
+  }
 
+  private createView(): void {
     this.view = new OlView({
       center: [335320.696579432, 1294832.60257192],
+      zoom: 10,
       resolution: 300,
       projection: 'EPSG:20137',
       maxResolution: 10000,
       minResolution: 0.1,
-
     });
-    this.buildLayers();
+  }
+
+  private createMap(): void {
+    const mapElement = this.elementRef.nativeElement.querySelector('#camis_map');
+    console.log('Map element:', mapElement);
+
+    if (!mapElement) {
+      console.error('Map element #camis_map not found!');
+      return;
+    }
 
     this.map = new OlMap({
-      target: 'camis_map',
-      layers: this.layer,
+      target: mapElement,
+      layers: this.layers,
       view: this.view,
     });
-    this.zoomToExtent();
+
+    console.log('Map created with layers:', this.layers.length);
   }
 
-  createMap() {
+  private buildLayers(): void {
+    console.log('Building layers, online status:', navigator.onLine);
+    this.layers = [];
 
+    this.addBaseLayer();
+    this.addWmsLayers();
+    this.addVectorLayers();
+
+    console.log('Total layers built:', this.layers.length);
   }
 
-  zoomToExtent() {
-
-    this.api.get("map/GetLandMapBound").subscribe(bbox => {
-      var dw = this.el.nativeElement.firstChild.clientWidth;
-      var dh = this.el.nativeElement.firstChild.clientHeight;
-      var hres = (bbox.x2 - bbox.x1) * this.zoomMargin / dw;
-      var vres = (bbox.y2 - bbox.y1) * this.zoomMargin / dh;
-      var res = (vres > hres ? vres : hres) * 1.2;
-      this.view.animate({
-        center: [(bbox.x2 + bbox.x1) / 2, (bbox.y2 + bbox.y1) / 2],
-        resolution: res,
-        projection: "EPSG:20137",
-      });
-    });
-  }
-
-  zoomToSetExtent(ext: any) {
-    var dw = this.el.nativeElement.firstChild.clientWidth;
-    var dh = this.el.nativeElement.firstChild.clientHeight;
-    var hres = (ext[2] - ext[0]) * this.zoomMargin / dw;
-    var vres = (ext[3] - ext[1]) * this.zoomMargin / dh;
-    var res = vres > hres ? vres : hres;
-    this.view.animate({
-      center: [(ext[2] + ext[0]) / 2, (ext[3] + ext[1]) / 2],
-      resolution: res,
-      projection: "EPSG:20137",
-    });
-  }
-
-  zoomToParcel(upin: String, ready: any) {
-    ready();
-  }
-
-  public setNrlaisParcel(upin: String) {
-    if (upin == null)
+  private addBaseLayer(): void {
+    if (!this.mapType) {
+      console.warn('No map type specified');
       return;
-    var wms_url = `map/WfsGet?service=WFS&version=1.0.0&request=GetFeature&typeName=nrlais:nrlais_inventory.t_parcels&maxFeatures=50&outputFormat=application/json&CQL_FILTER=upid='${upin}'`;
-    this.api.get(wms_url).subscribe(d => {
-      if (d.error)
-        console.log(`Error reading geojson for upin:${upin}\n${d.error}`);
-      else {
-        var fs = (new GeoJSON()).readFeatures(d.response);
-        this.nrlais_features.clear();
-        this.nrlais_features.addFeatures(fs);
-        var extent = this.nrlais_features.getExtent();
-        this.zoomToSetExtent(extent);
-      }
-    });
-  }
-
-  public setWorkFlowGeomByWKT(wkt: String) {
-    this.workflow_features.clear();
-    var fs = (new WKT()).readFeatures(wkt);
-    this.workflow_features.addFeatures(fs);
-    var extent = this.workflow_features.getExtent();
-    this.zoomToSetExtent(extent);
-  }
-
-  public setSplitGeomsByWKT(wkts: String[]) {
-    this.split_features.clear();
-    wkts.forEach(wkt => {
-      var fs = (new WKT()).readFeatures(wkt);
-      this.split_features.addFeatures(fs);
-    });
-    var extent = this.split_features.getExtent();
-    this.zoomToSetExtent(extent);
-  }
-
-  public buildLayers() {
-    var layers = [];
-    let mapTypes = '';
-    if (this.mapType == 'satellite') {
-      mapTypes = new XYZ({
-        url: 'http://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}'
-      })
-    } else if (this.mapType == 'roadmap') {
-      mapTypes = new XYZ({
-        url: 'http://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}'
-      })
-    } else if (this.mapType == 'hybrid') {
-      mapTypes = new XYZ({
-        url: 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}'
-      })
-    } else {
-      mapTypes = '';
     }
-    for (let l of this.mapConfig.layers) {
-      var wmsLayer = new OlTileLayer({
-        source: new OLTileWMS({
-          url: this.mapConfig.server + l.wms,
-          params: {},
-          serverType: 'geoserver'
-        })
+
+    // Check internet connectivity
+    if (!navigator.onLine) {
+      console.log('Offline detected, using offline base layer');
+      this.addOfflineBaseLayer();
+      this.isUsingOfflineLayer = true;
+      return;
+    }
+
+    console.log('Online detected, using Google Maps base layer');
+    // If online, try to load Google Maps
+    this.addOnlineBaseLayer();
+    this.isUsingOfflineLayer = false;
+  }
+
+  private addOnlineBaseLayer(): void {
+    const googleUrls: { [key: string]: string } = {
+      satellite: 'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+      hybrid: 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+      roadmap: 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}'
+    };
+
+    const url = googleUrls[this.mapType] || googleUrls['roadmap'];
+    console.log('Using Google Maps URL:', url);
+
+    const baseLayer = new TileLayer({
+      source: new XYZ({
+        url,
+        attributions: 'Google Maps',
+        // Add error handling for cases where Google is blocked but internet exists
+        tileLoadFunction: (tile, src) => {
+          const imageTile = tile as any;
+          const img = imageTile.getImage();
+          img.src = src;
+          img.onerror = () => {
+            console.warn('Google Maps tile failed to load, falling back to offline layer');
+            this.isUsingOfflineLayer = true;
+            this.fallbackToOfflineBaseLayer();
+          };
+        }
+      })
+    });
+
+    baseLayer.set('name', 'google-base-layer');
+    this.layers.push(baseLayer);
+    console.log('Added online base layer');
+  }
+
+  private addOfflineBaseLayer(): void {
+    console.log('Creating offline base layer');
+
+    // Create a simple blank layer as offline base
+    const offlineLayer = new TileLayer({
+      source: new XYZ({
+        attributions: 'Offline Base Map',
+        tileLoadFunction: (tile, src) => {
+          // Create a blank tile
+          const imageTile = tile as any;
+          const canvas = document.createElement('canvas');
+          canvas.width = 256;
+          canvas.height = 256;
+          const context = canvas.getContext('2d');
+          if (context) {
+            // Fill with light gray background
+            context.fillStyle = '#f8f8f8';
+            context.fillRect(0, 0, 256, 256);
+
+            // Add a grid pattern
+            context.strokeStyle = '#e0e0e0';
+            context.lineWidth = 1;
+
+            // Draw grid lines
+            for (let i = 0; i < 256; i += 16) {
+              context.beginPath();
+              context.moveTo(i, 0);
+              context.lineTo(i, 256);
+              context.stroke();
+
+              context.beginPath();
+              context.moveTo(0, i);
+              context.lineTo(256, i);
+              context.stroke();
+            }
+
+            // Add "Offline Map" text
+            context.fillStyle = '#666666';
+            context.font = 'bold 16px Arial';
+            context.textAlign = 'center';
+            context.fillText('Offline Map', 128, 128);
+
+            context.font = '12px Arial';
+            context.fillText('No internet connection', 128, 150);
+          }
+          imageTile.getImage().src = canvas.toDataURL();
+        }
+      })
+    });
+
+    offlineLayer.set('name', 'offline-base-layer');
+    this.layers.push(offlineLayer);
+    console.log('Added offline base layer');
+  }
+
+  private fallbackToOfflineBaseLayer(): void {
+    console.log('Falling back to offline base layer');
+
+    // Remove any existing base layers
+    this.layers = this.layers.filter(layer => {
+      const layerName = layer.get('name');
+      return !(layerName === 'google-base-layer' || layerName === 'offline-base-layer');
+    });
+
+    // Add offline layer
+    this.addOfflineBaseLayer();
+    this.isUsingOfflineLayer = true;
+
+    // Update the map
+    if (this.map) {
+      this.map.setLayers(this.layers);
+      this.map.updateSize();
+      console.log('Map updated with offline layer');
+    }
+  }
+
+  private addWmsLayers(): void {
+    const wmsConfigs: WmsLayerConfig[] = [
+      {name:'Counter', layerName:'nrlais:ne_10m_admin_0_countries', visible:true},
+      { name: 'Region', layerName: 'nrlais:t_regions', visible: this.backTo === 'Region'|| this.backTo ==='Woreda'||this.backTo ==='Kebele'||this.backTo ==='Land'},
+      { name: 'Woreda', layerName: 'nrlais:t_woredas', visible: this.backTo === 'Woreda' || this.backTo ==='Kebele'||this.backTo ==='Land'},
+      { name: 'Kebele', layerName: 'nrlais:t_kebeles', visible: this.backTo === 'Kebele'||this.backTo ==='Land' },
+      { name: 'Land', layerName: 'camis:v_gs_land', visible: this.backTo === 'Land' }
+    ];
+
+    const visibleConfigs = wmsConfigs.filter(config => config.visible);
+    console.log('Adding WMS layers:', visibleConfigs.map(c => c.name));
+
+    visibleConfigs.forEach(config => this.createWmsLayer(config));
+  }
+
+  private createWmsLayer(config: WmsLayerConfig): void {
+    try {
+      console.log('Creating WMS layer:', config.layerName);
+
+      const wmsSource = new OLTileWMS({
+        url: '/geoserver/wms',
+        params: {
+          'LAYERS': config.layerName,
+          'TILED': true,
+          'VERSION': '1.1.1',
+          'FORMAT': 'image/png',
+          'TRANSPARENT': true
+        },
+        serverType: 'geoserver',
+        crossOrigin: 'anonymous'
       });
 
-      if (this.mapType != "") {
-        if (l.name == this.backTo && mapTypes != '') {
-          layers.push(new TileLayer({
-            source: mapTypes
-          }))
+      const wmsLayer = new TileLayer({
+        source: wmsSource,
+        visible: true,
+        opacity: 0.7
+      });
 
-        }
-        if ((this.backTo == "Region" && l.name == "Region") || (this.backTo == "Woreda" && l.name == "Woreda") || (this.backTo == "Kebele" && l.name == "Kebele")) {
-          layers.push(wmsLayer);
-        }
+      wmsLayer.set('name', `wms-${config.name.toLowerCase()}`);
 
-        if (l.name == "Land") {
-          layers.push(wmsLayer);
-        }
-      } else {
-        layers.push(wmsLayer);
-      }
+      wmsSource.on('tileloaderror', (error) => {
+        console.error(`Failed to load WMS layer: ${config.layerName}`, error);
+      });
+
+      wmsSource.on('tileloadstart', () => {
+        console.log(`Loading WMS tile: ${config.layerName}`);
+      });
+
+      this.layers.push(wmsLayer);
+      console.log(`WMS layer ${config.name} added successfully`);
+    } catch (error) {
+      console.error(`Error creating layer ${config.name}:`, error);
     }
-
-
-    layers.push(this.defineNrlaisLayer());
-    layers.push(this.defineWorkFlowLayer());
-    layers.push(this.defineSplitLayer());
-    this.layer = layers;
   }
 
-  public googleMapSetting() {
+  private addVectorLayers(): void {
+    console.log('Adding vector layers');
+
+    this.layers.push(
+      this.createVectorLayer(this.nrlaisSource, this.nrlaisStyle, 'nrlais-vector'),
+      this.createVectorLayer(this.workflowSource, this.workflowStyle, 'workflow-vector'),
+      this.createVectorLayer(this.splitSource, this.splitStyle, 'split-vector')
+    );
+
+    console.log('Vector layers added');
+  }
+
+  private createVectorLayer(source: VectorSource, style: Style, name: string) {
+    const layer = new VectorLayer({
+      source,
+      style: () => style
+    });
+    layer.set('name', name);
+    return layer;
+  }
+
+  private zoomToExtent(): void {
+    console.log('Zooming to extent');
+
+    this.api.get('map/GetLandMapBound').subscribe({
+      next: (response: any) => {
+        console.log('Raw API response:', response);
+
+        // Handle different response formats
+        let bbox: BoundingBox;
+
+        if (this.isBoundingBox(response)) {
+          // Direct bounding box object
+          bbox = response;
+        } else if (response.data && this.isBoundingBox(response.data)) {
+          // Wrapped in data property
+          bbox = response.data;
+        } else if (response.bbox || response.bounds) {
+          // Different property names
+          const bboxData = response.bbox || response.bounds;
+          bbox = {
+            x1: bboxData.minX || bboxData.x1 || bboxData.left,
+            y1: bboxData.minY || bboxData.y1 || bboxData.bottom,
+            x2: bboxData.maxX || bboxData.x2 || bboxData.right,
+            y2: bboxData.maxY || bboxData.y2 || bboxData.top
+          };
+        } else {
+          console.warn('Unexpected API response format:', response);
+          this.useDefaultView();
+          return;
+        }
+
+        console.log('Processed bounding box:', bbox);
+
+        // Validate bounding box values
+        if (!this.isValidBoundingBox(bbox)) {
+          console.warn('Invalid bounding box received, using default view');
+          this.useDefaultView();
+          return;
+        }
+
+        const resolution = this.calculateResolution(bbox);
+
+        // Validate resolution
+        if (isNaN(resolution) || !isFinite(resolution)) {
+          console.warn('Invalid resolution calculated, using default view');
+          this.useDefaultView();
+          return;
+        }
+
+        this.view.animate({
+          center: [(bbox.x2 + bbox.x1) / 2, (bbox.y2 + bbox.y1) / 2],
+          resolution,
+          duration: 1000
+        });
+        console.log('Zoom animation started with resolution:', resolution);
+      },
+      error: (error) => {
+        console.error('Failed to get map bounds:', error);
+        this.useDefaultView();
+      }
+    });
+  }
+
+  private isValidBoundingBox(bbox: BoundingBox): boolean {
+    return (
+      bbox &&
+      typeof bbox.x1 === 'number' && !isNaN(bbox.x1) &&
+      typeof bbox.x2 === 'number' && !isNaN(bbox.x2) &&
+      typeof bbox.y1 === 'number' && !isNaN(bbox.y1) &&
+      typeof bbox.y2 === 'number' && !isNaN(bbox.y2) &&
+      bbox.x2 > bbox.x1 &&
+      bbox.y2 > bbox.y1
+    );
+  }
+
+  private isBoundingBox(obj: any): obj is BoundingBox {
+    return (
+      obj &&
+      typeof obj.x1 === 'number' &&
+      typeof obj.x2 === 'number' &&
+      typeof obj.y1 === 'number' &&
+      typeof obj.y2 === 'number'
+    );
+  }
+
+  private useDefaultView(): void {
+    console.log('Using default map view');
+    this.view.animate({
+      center: [335320.696579432, 1294832.60257192],
+      zoom: 10,
+      duration: 1000
+    });
+  }
+
+  private calculateResolution(bbox: BoundingBox): number {
+    const mapElement = this.elementRef.nativeElement.querySelector('#camis_map');
+
+    if (!mapElement) {
+      console.warn('Map element not found for resolution calculation');
+      return 300; // Default resolution
+    }
+
+    const width = mapElement.clientWidth || 800;
+    const height = mapElement.clientHeight || 600;
+
+    console.log('Map dimensions:', { width, height });
+    console.log('Bounding box dimensions:', {
+      width: bbox.x2 - bbox.x1,
+      height: bbox.y2 - bbox.y1
+    });
+
+    // Validate bounding box dimensions
+    const bboxWidth = bbox.x2 - bbox.x1;
+    const bboxHeight = bbox.y2 - bbox.y1;
+
+    if (bboxWidth <= 0 || bboxHeight <= 0 || !isFinite(bboxWidth) || !isFinite(bboxHeight)) {
+      console.warn('Invalid bounding box dimensions:', { bboxWidth, bboxHeight });
+      return 300; // Default resolution
+    }
+
+    const horizontalRes = (bboxWidth * this.zoomMargin) / width;
+    const verticalRes = (bboxHeight * this.zoomMargin) / height;
+
+    const resolution = Math.max(horizontalRes, verticalRes) * 1.2;
+    console.log('Calculated resolution:', resolution);
+    return resolution;
+  }
+
+  private zoomToSetExtent(extent: number[]): void {
+    // Validate extent array
+    if (!extent || extent.length !== 4 ||
+      extent.some(val => isNaN(val) || !isFinite(val)) ||
+      extent[0] >= extent[2] || extent[1] >= extent[3]) {
+      console.warn('Invalid extent provided for zoom:', extent);
+      return;
+    }
+
+    const mapElement = this.elementRef.nativeElement.querySelector('#camis_map');
+    const width = mapElement?.clientWidth || 800;
+    const height = mapElement?.clientHeight || 600;
+
+    const extentWidth = extent[2] - extent[0];
+    const extentHeight = extent[3] - extent[1];
+
+    const horizontalRes = (extentWidth * this.zoomMargin) / width;
+    const verticalRes = (extentHeight * this.zoomMargin) / height;
+
+    const resolution = Math.max(horizontalRes, verticalRes);
+
+    this.view.animate({
+      center: [(extent[2] + extent[0]) / 2, (extent[3] + extent[1]) / 2],
+      resolution,
+      duration: 1000
+    });
+  }
+
+  // Public methods
+  public googleMapSetting(): void {
+    console.log('Updating map settings:', { mapType: this.mapType, backTo: this.backTo });
+
     localStorage.setItem('mapType', this.mapType);
     localStorage.setItem('backTo', this.backTo);
-    this.buildLayers();
-    document.querySelector('div#camis_map').innerHTML = "";
-    this.map = new OlMap({
-      target: 'camis_map',
-      layers: this.layer,
-      view: this.view,
+
+    this.rebuildLayers();
+  }
+
+  public setNrlaisParcel(upin: string): void {
+    if (!upin) return;
+
+    console.log('Setting NRLais parcel for UPIN:', upin);
+
+    const wmsUrl = `map/WfsGet?service=WFS&version=1.0.0&request=GetFeature&typeName=nrlais:nrlais_inventory.t_parcels&maxFeatures=50&outputFormat=application/json&CQL_FILTER=upid='${upin}'`;
+
+    this.api.get(wmsUrl).subscribe({
+      next: (data: any) => {
+        if (data.error) {
+          console.error(`Error reading geojson for upin:${upin}`, data.error);
+          return;
+        }
+
+        const features = new GeoJSON().readFeatures(data.response);
+        console.log(`Loaded ${features.length} features for parcel ${upin}`);
+
+        this.nrlaisSource.clear();
+        this.nrlaisSource.addFeatures(features);
+
+        const extent = this.nrlaisSource.getExtent();
+        if (extent[0] !== Infinity && extent[1] !== Infinity) {
+          this.zoomToSetExtent(extent);
+        } else {
+          console.warn('Invalid extent for parcel, skipping zoom');
+        }
+      },
+      error: (error) => {
+        console.error(`Failed to load parcel for upin:${upin}`, error);
+      }
     });
-    this.zoomToExtent();
+  }
+
+  public setWorkFlowGeomByWKT(wkt: string): void {
+    console.log('Setting workflow geometry from WKT');
+
+    this.workflowSource.clear();
+    const features = new WKT().readFeatures(wkt);
+    this.workflowSource.addFeatures(features);
+
+    const extent = this.workflowSource.getExtent();
+    if (extent[0] !== Infinity && extent[1] !== Infinity) {
+      this.zoomToSetExtent(extent);
+    }
+  }
+
+  public setSplitGeomsByWKT(wkts: string[]): void {
+    console.log('Setting split geometries from WKT array, count:', wkts.length);
+
+    this.splitSource.clear();
+    wkts.forEach(wkt => {
+      const features = new WKT().readFeatures(wkt);
+      this.splitSource.addFeatures(features);
+    });
+
+    const extent = this.splitSource.getExtent();
+    if (extent[0] !== Infinity && extent[1] !== Infinity) {
+      this.zoomToSetExtent(extent);
+    }
+  }
+  public toggleFullScreen(): void {
+    this.isFullScreen = !this.isFullScreen;
+
+    if (this.isFullScreen) {
+      this.enterFullScreen();
+    } else {
+      this.exitFullScreen();
+    }
+  }
+
+  private enterFullScreen(): void {
+    const mapContainer = this.elementRef.nativeElement.querySelector('.map-container');
+    if (mapContainer) {
+      mapContainer.classList.add('full-screen');
+    }
+
+    // Update map size after entering full screen
+    setTimeout(() => {
+      if (this.map) {
+        this.map.updateSize();
+      }
+    }, 300);
+  }
+
+  private exitFullScreen(): void {
+    const mapContainer = this.elementRef.nativeElement.querySelector('.map-container');
+    if (mapContainer) {
+      mapContainer.classList.remove('full-screen');
+    }
+
+    // Update map size after exiting full screen
+    setTimeout(() => {
+      if (this.map) {
+        this.map.updateSize();
+      }
+    }, 300);
+  }
+  public testGeoServerConnection(): void {
+    const testUrl = '/geoserver/wms?service=WMS&version=1.1.1&request=GetCapabilities';
+
+    this.http.get(testUrl, { responseType: 'text' }).subscribe({
+      next: () => console.log('GeoServer connection successful'),
+      error: (error) => console.error('GeoServer connection failed:', error)
+    });
+  }
+
+  // Debug method to check current layer status
+  public debugLayers(): void {
+    console.log('=== MAP DEBUG INFO ===');
+    console.log('Online status:', navigator.onLine);
+    console.log('Using offline layer:', this.isUsingOfflineLayer);
+    console.log('Total layers:', this.layers.length);
+
+    this.layers.forEach((layer, index) => {
+      const name = layer.get('name') || 'unnamed-layer';
+      const visible = layer.getVisible();
+      const opacity = layer.getOpacity();
+      console.log(`Layer ${index}: ${name}, visible: ${visible}, opacity: ${opacity}`);
+    });
+
+    console.log('Map target:', this.map?.getTarget());
+    console.log('View center:', this.view?.getCenter());
+    console.log('View resolution:', this.view?.getResolution());
+    console.log('=====================');
   }
 }

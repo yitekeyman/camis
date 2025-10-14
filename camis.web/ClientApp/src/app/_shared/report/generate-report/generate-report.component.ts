@@ -1,4 +1,4 @@
-import { FormGroup, AbstractControl, FormBuilder, FormsModule, FormControl } from '@angular/forms';import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {FormGroup, AbstractControl, FormBuilder, FormsModule, FormControl, ReactiveFormsModule} from '@angular/forms';import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormArray,Validators } from '@angular/forms';
 import {Router} from '@angular/router';
 import swal from 'sweetalert2';
@@ -8,9 +8,13 @@ import { ReportAPIService } from '../../../_services/report-api.service';
 import { ReportRequestModel, ReportResponseModel } from '../report.model';
 import { DialogService } from '../../dialog/dialog.service';
 import { Accessablity, MoistureSource, ExistingLandUse } from '../../land-bank/land.model';
+import {CommonModule} from "@angular/common";
+import {ActivityProgressComponent} from "../../project/activity-progress/activity-progress.component";
+import {ProjectModule} from "../../project/project.module";
 
 @Component({
     selector : "app-generate-report",
+  imports:[CommonModule, ReactiveFormsModule, FormsModule, ProjectModule],
     templateUrl : "./generate-report.component.html",
     styleUrls : ["./generate-report.component.css"],
     encapsulation : ViewEncapsulation.None
@@ -46,7 +50,7 @@ export class GenerateReportComponent implements OnInit {
     regionError:string="";
 
     constructor(private router : Router, public formBuilder : FormBuilder,
-        public reportService : ReportAPIService, 
+        public reportService : ReportAPIService,
         public landService : LandDataService,
         public farmService : FarmApiService,
         private dialog : DialogService)
@@ -64,7 +68,7 @@ export class GenerateReportComponent implements OnInit {
             dates: this.formBuilder.array([
                 this.initdate(),
                 ]),
-            
+
             farmSizes : this.formBuilder.array([
                 this.initSize(),
             ]),
@@ -72,7 +76,7 @@ export class GenerateReportComponent implements OnInit {
             endDate : [''],
             farmId : [''],
             startYear : [''],
-            endYear : [''], 
+            endYear : [''],
 
 
         });
@@ -121,7 +125,7 @@ export class GenerateReportComponent implements OnInit {
             this.existingLandList = data;
         })
 
-        
+
     }
 
     getAllFarms(){
@@ -147,11 +151,11 @@ export class GenerateReportComponent implements OnInit {
         var arr = [];
         for (let index = 2000; index < 2025; index++) {
            arr.push(index);
-            
+
         }
         return arr;
     }
-    
+
         addDate() {
         const control = <FormArray>this.reportForm.controls['dates'];
         control.push(this.initdate());
@@ -198,7 +202,7 @@ export class GenerateReportComponent implements OnInit {
             endYear : vals.endYear,
             startYear : vals.startYear,
             farmId : vals.farmId
-            
+
         };
         this.response = null;
         console.log(this.request);
@@ -240,7 +244,7 @@ export class GenerateReportComponent implements OnInit {
             this.zoneList = data;
         })
 
-  
+
     }
 
     zoneSelected(value : string){
@@ -253,7 +257,7 @@ export class GenerateReportComponent implements OnInit {
     GetLandType(id : any){
         var res = this.landTypes.filter(function(val){
             return val.id == id;
-        })[0];  
+        })[0];
         return res.name;
     }
 
@@ -298,7 +302,7 @@ export class GenerateReportComponent implements OnInit {
             a.click();
         }, (err) => {
             this.dialog.error(err);
-           
+
 
         })
       }

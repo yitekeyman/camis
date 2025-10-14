@@ -22,7 +22,7 @@
             <td>{{doc.ref}}</td>
             <td>{{doc.date | date}}</td>
             <td>{{doc.note}}</td>
-            <td><button (click)="removeDoc(i)" class="btn btn-warning btn-sm"><i class="fa fa-trash"></i></button></td>
+            <td class="align-right"><button (click)="removeDoc(i)" class="btn btn-warning btn-sm"><i class="ti ti-trash"></i></button></td>
         </tr>
         <tr *ngIf="max > documents.length">
             <td class="text-muted"><i>New</i></td>
@@ -36,20 +36,20 @@
                 <input [(ngModel)]="add_date" type="date" placeholder="Date *" class="form-control">
             </td>
             <td>
-                <textarea [(ngModel)]="add_note" placeholder="Note" class="form-control"></textarea>
+                <textarea [(ngModel)]="add_note" placeholder="Note" rows="1" class="form-control"></textarea>
             </td>
             <td>
-                <div style="padding-bottom: 10px">
-                    <button 
-                            (click)="addDocument()" 
-                            class="btn btn-success"
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-success"
+                            (click)="addDocument()"
                             [disabled]="!add_file || !add_ref || !add_date"
                     >
-                        <i class="fa fa-plus"></i>&nbsp; Add
+                        Add
                     </button>
-                </div>
-                <div>
-                    <a (click)="clear()">Clear</a>
+                  <button type="button" class="btn btn-sm btn-outline-warning"
+                          (click)="clear()">
+                    Clear
+                  </button>
                 </div>
             </td>
         </tr>

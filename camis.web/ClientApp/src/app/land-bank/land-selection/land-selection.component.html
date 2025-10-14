@@ -1,0 +1,104 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card p-0">
+      <div class="card-header p-2">
+        <div class="row">
+          <div class="col-md-6">
+            <h4><i class="ti ti-map-plus"></i> Commercial Farm Details</h4>
+          </div>
+          <div class="col-md-6 " style="text-align: right">
+            <div class="btn-group" *ngIf="!loading && data">
+              <button class="btn btn-secondary" type="button" data-bs-toggle="modal"
+                      data-bs-target="#landAssignmentDialog">
+                Assignment New Parcel
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <div *ngIf="!loading && data">
+    <app-farm-detail *ngIf="data" [farm]="data"></app-farm-detail>
+  </div>
+</div>
+
+<div id="landAssignmentDialog" class="modal fade" tabindex="-1" aria-labelledby="landAssignmentDialogLabel"
+     aria-hidden="true">
+  <div class="modal-dialog " style="max-width: 65%">
+    <div class="modal-content">
+      <div class="row">
+        <div class="col-md-5 pe-0">
+          <div class="modal-header">
+            <h4 class="modal-title" id="landAssignmentDialogLabel"> Select Parcel for this Farm</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-2" style="height: 73vh;overflow-y: auto">
+            <div class="form-group">
+              <label class="control-label" for="inp">Enter Land UPIN:</label>
+              <input [(ngModel)]="upin" list="UPINsList" (keyup)="loadLand()" (change)="loadLand()" class="form-control"
+                     id="inp" type="search" placeholder="UPIN">
+              <datalist id="UPINsList">
+                <option *ngFor="let UPIN of allUPINs" [value]="UPIN">{{ UPIN }}</option>
+              </datalist>
+            </div>
+            <div *ngIf="data.landTransferRequest.landID">
+              <hr/>
+
+              <div class="form-group">
+                <label for="leaseFrom">Lease Start Date:</label>
+                <input [(ngModel)]="data.landTransferRequest.leaseFrom" id="leaseFrom" type="date"
+                       class="form-control"/>
+              </div>
+
+              <div class="form-group">
+                <label for="leaseTo">Lease End Date:</label>
+                <input [(ngModel)]="data.landTransferRequest.leaseTo" id="leaseTo" type="date" class="form-control"/>
+              </div>
+
+              <div class="form-group">
+                <label for="leaseRight">Lease Right:</label>
+                <select [(ngModel)]="data.landTransferRequest.right" id="leaseRight" class="form-select">
+                  <option [value]="1" selected>Lease From State</option>
+                  <option [value]="2">Lease From Private</option>
+                  <option [value]="3">Private</option>
+                  <option [value]="4">Contract Farming</option>
+                  <option [value]="5">Sub-lease</option>
+                </select>
+              </div>
+
+              <div class="form-group" *ngIf="data.landTransferRequest.right != 4">
+                <label for="yearlyLeaseRate">Yearly Lease Rate (ETB per ha):</label>
+                <input [(ngModel)]="yearlyLeaseRate" placeholder="Yearly Lease Rate (ETB per ha)" id="yearlyLeaseRate"
+                       type="number" class="form-control"/>
+              </div>
+
+              <div class="form-group" *ngIf="data.landTransferRequest.right == 5">
+                <label for="landSectionArea">Land Section Area (ha):</label>
+                <input [(ngModel)]="data.landTransferRequest.landSectionArea" placeholder="Land Section Area (ha)"
+                       id="landSectionArea" type="number" class="form-control"/>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer right">
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            <button type="button" class="btn btn-primary btn-md" (click)="selectLand()" [disabled]="
+            !data.landTransferRequest.landID ||
+            !data.landTransferRequest.leaseFrom ||
+            !data.landTransferRequest.leaseFrom ||
+            data.landTransferRequest.right == null ||
+            (data.landTransferRequest.right != 4 && yearlyLeaseRate == null) ||
+            !data.landTransferRequest.farmer
+          " data-bs-dismiss="modal" aria-label="Close">Save
+            </button>
+          </div>
+        </div>
+        <div class="col-md-7 p-2">
+          <app-camis-map #camis_map></app-camis-map>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

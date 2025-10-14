@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { LandDataService } from '../../../_services/land-data.service';
-import { Router } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {LandDataService} from '../../../_services/land-data.service';
+import {Router} from '@angular/router';
 import {ObjectKeyCasingService} from "../../../_services/object-key-casing.service";
+import dialog from "../../dialog";
 
 @Component({
   selector: 'app-pending-task-list',
@@ -17,9 +18,9 @@ export class PendingTaskListComponent implements OnInit {
 
   public userWorkItems: any[] = [];
 
-  constructor(private landService: LandDataService, private router: Router, private keyCase:ObjectKeyCasingService) {
+  constructor(private landService: LandDataService, private router: Router, private keyCase: ObjectKeyCasingService) {
 
-    if (localStorage.getItem('role') === '4' ) {
+    if (localStorage.getItem('role') === '4') {
       this.clerkRole = true;
       this.loginRole = 'land-clerk';
       this.user = 'Clerk';
@@ -29,25 +30,31 @@ export class PendingTaskListComponent implements OnInit {
       this.loginRole = 'land-supervisor';
       this.user = 'Supervisor';
     }
-   }
+  }
 
   ngOnInit() {
+  this.getTasks();
+  }
+
+  public getTasks() {
+    dialog.loading();
     this.landService.GetUserWorkItems().subscribe(data => {
       this.keyCase.camelCase(data);
       this.userWorkItems = data;
-      console.log(this.userWorkItems);
-    });
+      for (const workItems of this.userWorkItems) {
+        this.noItem = false;
+        if (workItems.workFlowType !== 4) {
+          this.noItem = true;
+        }
+        this.noItem = false;
+        if (workItems.workFlowType !== 7) {
+          this.noItem = true;
+        }
+      }
+      dialog.close();
+    }, dialog.error);
 
-    for (const workItems of this.userWorkItems) {
-      this.noItem = false;
-      if (workItems.workFlowType !== 4) {
-        this.noItem = true;
-      }
-      this.noItem = false;
-      if (workItems.workFlowType !== 7) {
-        this.noItem = true;
-      }
-    }
+
   }
 
   editLand(wfid: string) {

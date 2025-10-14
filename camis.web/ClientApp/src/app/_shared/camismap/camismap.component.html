@@ -1,35 +1,29 @@
-<div class="tab-pane board map-search">
-    <div class="x_panel">
-        <!-- <div class="x_title"> -->
-            <!-- <h2>
-                <i class="fa fa-map-marker">
-                Map
-                </i>
-            </h2> -->
+<div class="map-container">
+  <div id="camis_map"></div>
 
-            <!-- <div class="clearfix"></div> -->
-        <!-- </div> -->
-
-    <div class="x_content">
-        <div id="camis_map"></div>
-        <div class="col-md-6">
-          <span>Map Type</span>
-          <select [(ngModel)]="mapType" class="form-control" (change)="googleMapSetting()">
-            <option  value="satellite">Satellite Map</option>
-            <option  value="roadmap">Google Roadmap</option>
-            <option  value="hybrid">Google Hybrid</option>
-            <option  value="">Off Google Map</option>
-          </select>
-        </div>
-        <div class="col-md-6">
-          <span>Map Back To</span>
-          <select [(ngModel)]="backTo" class="form-control" (change)="googleMapSetting()">
-            <option  value="Land">Back To Land</option>
-            <option  value="Kebele">Back To Kebele</option>
-            <option  value="Woreda">Back To Woreda</option>
-            <option  value="Region">Back To Region</option>
-          </select>
-        </div>
+  <!-- Overlay controls -->
+  <div class="map-controls-overlay">
+    <div class="control-group">
+      <select [(ngModel)]="mapType" class="form-control form-control-sm" (change)="googleMapSetting()">
+        <option value="satellite">Satellite</option>
+        <option value="roadmap">Roadmap</option>
+        <option value="hybrid">Hybrid</option>
+        <option value="">No Base Map</option>
+      </select>
     </div>
-</div>
+
+    <div class="control-group">
+      <select [(ngModel)]="backTo" class="form-control form-control-sm" (change)="googleMapSetting()">
+        <option value="Land">Land</option>
+        <option value="Kebele">Kebele</option>
+        <option value="Woreda">Woreda</option>
+        <option value="Region">Region</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <button class="full-screen-toggle" (click)="toggleFullScreen()">
+        <i [class]="isFullScreen ? 'ti ti-arrows-minimize' : 'ti ti-arrows-maximize' "></i>
+      </button>
+    </div>
+  </div>
 </div>

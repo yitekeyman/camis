@@ -1,9 +1,12 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {IDocument} from '../../document/interfaces';
 import {IDocumentSelectorChangeEvent} from './interfaces';
+import {CommonModule} from "@angular/common";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
     selector: 'app-landbank-document-selector',
+  imports:[CommonModule, ReactiveFormsModule, FormsModule],
     templateUrl: 'landbank-document-selector.component.html',
     styleUrls: ['landbank-document-selector.component.css']
 })

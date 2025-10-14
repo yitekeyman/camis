@@ -1,13 +1,16 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Observable} from 'rxjs/observable';
+import {Observable} from 'rxjs';
 
 import {IDashboardStates, IWorkflowOpenEvent} from './interfaces';
 import {WorkflowApiService} from '../../../_services/workflow-api.service';
 import dialog from '../../dialog';
 import {ObjectKeyCasingService} from "../../../_services/object-key-casing.service";
+import {CommonModule} from "@angular/common";
+import {ReactiveFormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-dashboard',
+  imports:[CommonModule, ReactiveFormsModule],
   templateUrl: 'dashboard.component.html'
 })
 export class DashboardComponent implements OnInit {

@@ -4,9 +4,14 @@ import {AddressApiService} from '../../../_services/address-api.service';
 import dialog from '../../dialog';
 import {IAddressResponse, IAddressUnitResponse, ISchemeResponse} from '../interfaces';
 import {ObjectKeyCasingService} from "../../../_services/object-key-casing.service";
+import {CommonModule} from "@angular/common";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {AddressOutputComponent} from "../address-output/address-output.component";
+import {AddressModule} from "../address.module";
 
 @Component({
   selector: 'app-address-selector',
+  imports:[CommonModule, ReactiveFormsModule, FormsModule, AddressOutputComponent],
   templateUrl: './address-selector.component.html'
 })
 export class AddressSelectorComponent implements OnInit {

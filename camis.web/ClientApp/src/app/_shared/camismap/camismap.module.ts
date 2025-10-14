@@ -7,12 +7,13 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
     declarations: [
-      CamisMapComponent
+
     ],
     imports: [
         CommonModule,
         RouterModule,
-        FormsModule
+        FormsModule,
+      CamisMapComponent
     ],
     exports: [
       CamisMapComponent

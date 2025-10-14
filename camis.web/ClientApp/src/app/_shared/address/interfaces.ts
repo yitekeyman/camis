@@ -33,5 +33,5 @@ export interface IAddressResponse {
 
 export interface IAddressPairResponse {
   unit: string;
-  name: string;
+  value: string;
 }

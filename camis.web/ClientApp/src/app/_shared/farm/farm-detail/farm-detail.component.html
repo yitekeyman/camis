@@ -1,238 +1,310 @@
-<div *ngIf="loading" class="align-center"><h2>Loading...</h2></div>
-<div *ngIf="!loading">
 
-  <!-- FARM OPERATOR INFORMATION -->
-  <div class="farm-operator" *ngIf="farm && farm.operator">
-    <table class="table table-striped table-responsive jambo_table bulk_action">
-      <thead>
-      <tr>
-        <th colspan="2">
-          <i class="fa fa-user"></i>&nbsp;
-          Investor Information
-        </th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Owner Name:</td>
-        <td style="width: 75%">
-          {{farm.operator.name}}
-        </td>
-      </tr>
-      <tr>
-        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Owner {{farm.operator.typeId == 1 ? 'Nationality' : 'Country of Origin'}}:</td>
-        <td style="width: 75%">
-          {{farm.operator.nationality}}
-        </td>
-      </tr>
-      <tr>
-        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Owner Type:</td>
-        <td style="width: 75%">
-          {{farm.operator.typeId && opType(farm.operator.typeId)!=null? opType(farm.operator.typeId).name : null}}
-        </td>
-      </tr>
-
-      <tr *ngIf="farm.operator.typeId == 1">
-        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Gender:</td>
-        <td style="width: 75%">
-          {{parseGender(farm.operator.gender)}}
-        </td>
-      </tr>
-      <tr *ngIf="farm.operator.typeId == 1">
-        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Martial Status:</td>
-        <td style="width: 75%">
-          {{parseMartialStatus(farm.operator.martialStatus)}}
-        </td>
-      </tr>
-      <tr *ngIf="farm.operator.typeId == 1">
-        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Birthdate:</td>
-        <td style="width: 75%">
-          {{farm.operator.birthdate | date}}
-        </td>
-      </tr>
-
-      <tr *ngIf="farm.operator.typeId == 6">
-        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Venture Owners:</td>
-        <td style="width: 75%">
-          <div *ngFor="let farmOperatorId of farm.operator.ventures; index as i" style="padding: 0 0 10px">
-            <a
-              [href]="'/clerk/farm-operator/' + farmOperatorId"
-              target="_blank"
-              rel="noopener"
-            >Owner #{{i + 1}} (click to view)</a>
-          </div>
-        </td>
-      </tr>
-
-      <tr>
-        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Owner Origin:</td>
-        <td style="width: 75%">
-          {{farm.operator.originId && opOrigin(farm.operator.originId)!=null ? opOrigin(farm.operator.originId).name : null}}
-        </td>
-      </tr>
-      <tr>
-        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Owner Capital:</td>
-        <td style="width: 75%">
-          {{farm.operator.capital}}
-        </td>
-      </tr>
-      <tr>
-        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Owner Email:</td>
-        <td style="width: 75%">
-          {{farm.operator.email}}
-        </td>
-      </tr>
-      <tr>
-        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Owner Phone:</td>
-        <td style="width: 75%">
-          {{farm.operator.phone}}
-        </td>
-      </tr>
-      <tr>
-        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Address:</td>
-        <td style="width: 75%">
-          <app-address-output [leafId]="farm.operator.addressId"></app-address-output>
-        </td>
-      </tr>
-      <tr *ngFor="let reg of farm.operator.registrations">
-        <td class="text-muted" style="min-width: 140px; font-weight: bold">Owner's {{regType(reg.typeId)!==null? regType(reg.typeId).name : null}}:</td>
-        <td style="width: 75%">
-          <div>
-            <label class="text-muted">Issued by:</label>
-            <span>{{regAuth(reg.authorityId)!=null ? regAuth(reg.authorityId).name : null}}</span>
-          </div>
-          <div>
-            <label class="text-muted">Registration Number:</label>
-            <span>{{reg.registrationNumber}}</span>
-          </div>
-          <div *ngIf="reg.document">
-            <app-document-detail [document]="reg.document"></app-document-detail>
-          </div>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- FARM INFORMATION -->
-  <div class="farm" *ngIf="farm && farm.typeId">
-    <table class="table table-striped table-responsive jambo_table bulk_action">
-      <thead>
-      <tr>
-        <th colspan="2">
-          <i class="fa fa-money"></i>&nbsp;
-          Investment Information
-        </th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Primary Farm Type:</td>
-        <td style="width: 75%">
-          {{farm.typeId && frType(farm.typeId)!=null? frType(farm.typeId).name : null}}
-        </td>
-      </tr>
-      <tr *ngIf="farm.otherTypeIds && farm.otherTypeIds.length">
-        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Other Farm Types:</td>
-        <td style="width: 75%">
-          <ul style="padding-left: 10px">
-            <li *ngFor="let typeId of farm.otherTypeIds">{{frType(typeId)!=null ? frType(typeId).name : null}}</li>
-          </ul>
-        </td>
-      </tr>
-      <tr>
-        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Invested Capital:</td>
-        <td style="width: 75%">
-          {{farm.investedCapital}}
-        </td>
-      </tr>
-      <tr>
-        <td class="text-muted text-nowrap" style="min-width: 140px; font-weight: bold">Description:</td>
-        <td style="width: 75%">
-          {{farm.description}}
-        </td>
-      </tr>
-      <tr *ngFor="let reg of farm.registrations">
-        <td class="text-muted" style="min-width: 140px; font-weight: bold">{{regType(reg.typeId)!==null? regType(reg.typeId).name : null}}:</td>
-        <td style="width: 75%">
-          <div>
-            <label class="text-muted">Issued by:</label>
-            <span>{{reg.authorityId && regAuth(reg.authorityId)!=null? regAuth(reg.authorityId).name : null}}</span>
-          </div>
-          <div>
-            <label class="text-muted">Registration Number:</label>
-            <span>{{reg.registrationNumber}}</span>
-          </div>
-          <div *ngIf="reg.document">
-            <app-document-detail [document]="reg.document"></app-document-detail>
-          </div>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- FARM LANDS -->
-  <div *ngIf="farm && farm.farmLands && farm.farmLands.length">
-    <table class="table table-striped table-responsive jambo_table bulk_action">
-      <thead>
-      <tr>
-        <th colspan="3">
-          <i class="fa fa-map"></i>&nbsp;
-          Investment Lands
-        </th>
-      </tr>
-      <tr>
-        <th style="width: 25%">Land</th>
-        <th style="width: 37.5%">Certificate Document</th>
-        <th style="width: 37.5%">Lease Contract Document</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let farmLand of farm.farmLands">
-        <td>
-          <a target="_blank" class="btn btn-default" [routerLink]="'/land-clerk/land-dashboard/land-detail/' + farmLand.landId">
-            Open Land &nbsp;<i class="fa fa-expand"></i>
-          </a>
-        </td>
-        <td>
-          <div *ngIf="!farmLand.certificateDoc">No certificate, yet.</div>
-          <app-document-detail *ngIf="farmLand.certificateDoc" [document]="farmLand.certificateDoc"></app-document-detail>
-        </td>
-        <td>
-          <div *ngIf="!farmLand.leaseContractDoc">No lease contract, yet.</div>
-          <app-document-detail *ngIf="farmLand.leaseContractDoc" [document]="farmLand.leaseContractDoc"></app-document-detail>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- FARM ACTIVITIES -->
-  <div *ngIf="plan && plan.rootActivity">
-    <h4 class="title">Project Plan</h4>
-
-    <div style="padding-bottom: 15px">
-      <app-activity-progress
-        *ngIf="plan && plan.rootActivity && plan.rootActivity.id"
-        [activity]="plan.rootActivity"
-        (calc)="progressPercent = $event"
-      ></app-activity-progress>
-      <app-activities
-        *ngIf="plan && plan.rootActivity"
-        [activity]="plan.rootActivity"
-        [progressPercent]="progressPercent"
-        (change)="onRootActivityItemChange($event)"
-      ></app-activities>
+    <div class="col-md-12" *ngIf="farm.farmLands">
+      <div class="card p-0">
+        <div class="card-body p-0" style="height: 255px">
+          <app-camis-map #camis_map></app-camis-map>
+        </div>
+      </div>
     </div>
-  </div>
+    <div class="col-md-12">
+      <div class="card p-2">
+        <div class="card-block p-0">
+          <div class="accordion" id="accordionPanelsStayOpenExample">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
+                        aria-controls="panelsStayOpen-collapseOne">
+                  Investor Profile
+                </button>
+              </h2>
+              <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show"
+                   aria-labelledby="panelsStayOpen-headingOne">
+                <div class="accordion-body">
+                  <table class="table mb-0">
+                    <tbody>
+                    <tr>
+                      <td class="align-right" style="width: 20%"><label>Name:</label></td>
+                      <td>
+                        {{ farm.operator.name }}
+                      </td>
+                      <td rowspan="6">
+                        <label>Address:</label>
+                        <app-address-output [leafId]="farm.operator.addressId"></app-address-output>
+                      </td>
 
-  <!-- FARM BUSINESS PLAN DOCUMENTS -->
-  <app-document-list
-    *ngIf="plan && plan.documents && plan.documents.length"
-    title="Plan Documents"
-    [documents]="plan.documents"
-  ></app-document-list>
+                    </tr>
+                    <tr>
+                      <td class="align-right"><label>Investment Origin:</label></td>
+                      <td colspan="2" style="width: 75%">
+                        {{ farm.operator.originId && opOrigin(farm.operator.originId) != null ? opOrigin(farm.operator.originId).name : null }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="align-right">
+                        <label>Owners {{ farm.operator.typeId == 1 ? 'Nationality' : 'Country of Origin' }}:</label></td>
+                      <td>
+                        {{ farm.operator.nationality }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="align-right"><label>Ownership Type:</label></td>
+                      <td>
+                        {{ farm.operator.typeId && opType(farm.operator.typeId) != null ? opType(farm.operator.typeId).name : null }}
+                      </td>
+                    </tr>
+                    <tr *ngIf="farm.operator.typeId == 1">
+                      <td class="align-right"><label>Gender:</label></td>
+                      <td>
+                        {{ parseGender(farm.operator.gender) }}
+                      </td>
+                    </tr>
+                    <tr *ngIf="farm.operator.typeId == 1">
+                      <td class="align-right"><label>Martial Status:</label></td>
+                      <td>
+                        {{ parseMartialStatus(farm.operator.martialStatus) }}
+                      </td>
+                    </tr>
+                    <tr *ngIf="farm.operator.typeId == 1">
+                      <td class="align-right"><label>Date of Birth:</label></td>
+                      <td>
+                        {{ farm.operator.birthdate | date }}
+                      </td>
+                      <td></td>
+                    </tr>
 
-  <div style="height: 40px"></div>
-</div>
+                    <tr *ngIf="farm.operator.typeId == 6">
+                      <td class="align-right"><label>Venture Owners:</label></td>
+                      <td>
+                        <a *ngFor="let farmOperatorId of farm.operator.ventures; index as i"
+                           [href]="'/farm-management/fc/farm-operator/'+farmOperatorId" target="_blank" rel="noopener"> <span
+                          class="badge text-bg-info">Owners #{{i+1}}</span></a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="align-right"><label>Initial Capital:</label></td>
+                      <td>
+                        {{ farm.operator.capital | currency:'Br' }}
+                      </td>
+                      <td *ngIf="farm.operator.typeId===1"></td>
+                    </tr>
+                    <tr>
+                      <td class="align-right"><label>Email:</label></td>
+                      <td>
+                        {{ farm.operator.email }}
+                      </td>
+                      <td *ngIf="farm.operator.typeId===1"></td>
+                    </tr>
+                    <tr>
+                      <td class="align-right"><label>Phone:</label></td>
+                      <td>
+                        {{ farm.operator.phone }}
+                      </td>
+                      <td></td>
+                    </tr>
+                    </tbody>
+                  </table>
+                  <table class="table mb-0">
+                    <thead>
+                    <tr>
+                      <th>Supportive License/Registrations Documents</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                      <td>
+                        <div class="row">
+                          <div class="col-md-4" *ngFor="let reg of farm.operator.registrations">
+                            <div class="card p-0">
+                              <div class="card-header p-2">
+                                <h4>Owner's {{ regType(reg.typeId) !== null ? regType(reg.typeId).name : null }}</h4>
+                              </div>
+                              <div class="card-body p-2">
+                                <ul>
+                                  <li><label>
+                                    Issuer:</label> {{ regAuth(reg.authorityId) != null ? regAuth(reg.authorityId).name : null }}
+                                  </li>
+                                  <li><label>Registration No:</label>{{ reg.registrationNumber }}
+                                  </li>
+                                </ul>
+                                <div *ngIf="reg.document">
+                                  <app-document-detail [document]="reg.document"></app-document-detail>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                <button class="accordion-button " type="button" data-bs-toggle="collapse"
+                        data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true"
+                        aria-controls="panelsStayOpen-collapseTwo">
+                  Farm Information
+                </button>
+              </h2>
+              <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show"
+                   aria-labelledby="panelsStayOpen-headingTwo">
+                <div class="accordion-body">
+                  <table class="table mb-0">
+                    <tbody>
+                    <tr>
+                      <td><label>Primary Farm Type:</label></td>
+                      <td>
+                        {{ farm.typeId && frType(farm.typeId) != null ? frType(farm.typeId).name : null }}
+                      </td>
+                      <td><label>Invested Capital: </label> {{ farm.investedCapital |currency:'Br ' }}</td>
+                    </tr>
+                    <tr>
+                      <td><label>Other Farm Types:</label></td>
+                      <td>
+                        <ul *ngIf="farm.otherTypeIds && farm.otherTypeIds.length">
+                          <li
+                            *ngFor="let typeId of farm.otherTypeIds"><i class="ti ti-square-rounded-check"></i> {{ frType(typeId) != null ? frType(typeId).name : null }}
+                          </li>
+                        </ul>
+                      </td>
+                      <td><label>Description:</label>
+                        <p>{{ farm.description }}</p>
+                      </td>
+                    </tr>
+                    </tbody>
+
+                  </table>
+                  <table class="table mb-0">
+                    <thead>
+                    <tr>
+                      <th>Farm Supportive Documents</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                      <td>
+                        <div class="row">
+                          <div class="col-md-4" *ngFor="let reg of farm.registrations">
+                            <div class="card p-0">
+                              <div class="card-header p-2">
+                                <h4>{{ regType(reg.typeId) !== null ? regType(reg.typeId).name : null }}</h4>
+                              </div>
+                              <div class="card-body p-2">
+                                <ul>
+                                  <li><label>Issuer:</label> {{ reg.authorityId && regAuth(reg.authorityId) != null ? regAuth(reg.authorityId).name : null }}
+                                  </li>
+                                  <li><label>Registration No:</label>{{ reg.registrationNumber }}
+                                  </li>
+                                </ul>
+                                <div *ngIf="reg.document">
+                                  <app-document-detail [document]="reg.document"></app-document-detail>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+                <button class="accordion-button " type="button" data-bs-toggle="collapse"
+                        data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="true"
+                        aria-controls="panelsStayOpen-collapseThree">
+                  Farm Parcel
+                </button>
+              </h2>
+              <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse show"
+                   aria-labelledby="panelsStayOpen-headingThree">
+                <div class="accordion-body">
+                  <table class="table">
+                    <thead>
+                    <tr>
+                      <th style="width:50%">Land</th>
+                      <th>Land Certificate</th>
+                      <th>Lease Aggrement</th>
+                    </tr>
+                    </thead>
+                    <tbody *ngIf="farm.farmLands">
+                    <tr *ngFor="let farmLand of farm.farmLands">
+                      <td>
+                        <app-simple-land-bank-details [landID]="farmLand.landId"></app-simple-land-bank-details>
+                      </td>
+                      <td>
+                        <div *ngIf="!farmLand.certificateDoc">No certificate, yet.</div>
+                        <app-document-detail *ngIf="farmLand.certificateDoc"
+                                             [document]="farmLand.certificateDoc"></app-document-detail>
+                      </td>
+                      <td>
+                        <div *ngIf="!farmLand.leaseContractDoc">No lease contract, yet.</div>
+                        <app-document-detail *ngIf="farmLand.leaseContractDoc"
+                                             [document]="farmLand.leaseContractDoc"></app-document-detail>
+                      </td>
+                    </tr>
+                    </tbody>
+                    <tbody *ngIf="!farm.farmLands">
+                    <tr class="no-data">
+                      <td colspan="3">
+                        <div class="align-center mt-5 ">
+                          <i class="ti ti-exclamation-circle"></i>
+                          <h1>Sorry!</h1>
+                          <p>There is no parcel assignend</p>
+                        </div>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="col-md-12">
+      <div class="card p-2">
+        <div class="card-block p-0">
+          <div class="row">
+            <div [class]="plan && plan.documents && plan.documents.length?'col-md-9':'col-md-12'">
+              <div class="card">
+                <div class="card-header p-2">
+                  <h4>Buisness Plan & Activities</h4>
+                </div>
+                <div class="card-body p-1">
+                  <div *ngIf="plan && plan.rootActivity">
+                    <app-activity-progress
+                      *ngIf="plan && plan.rootActivity && plan.rootActivity.id"
+                      [activity]="plan.rootActivity"
+                      (calc)="progressPercent = $event"
+                    ></app-activity-progress>
+                    <app-activities
+                      *ngIf="plan && plan.rootActivity"
+                      [activity]="plan.rootActivity"
+                      [progressPercent]="progressPercent"
+                      (change)="onRootActivityItemChange($event)"
+                    ></app-activities>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="col-md-3" *ngIf="plan && plan.documents && plan.documents.length">
+              <app-document-list
+                *ngIf="plan && plan.documents && plan.documents.length"
+                title="Proposal Documents"
+                [documents]="plan.documents"
+              ></app-document-list>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>

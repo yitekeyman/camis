@@ -1,17 +1,18 @@
-import {FormGroup, AbstractControl, FormBuilder, FormsModule} from '@angular/forms';
+import {FormGroup, AbstractControl, FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import swal from 'sweetalert2';
-
-import {DialogService} from '../../../_shared/dialog/dialog.service';
 import {LandDataService} from '../../../_services/land-data.service';
 import {PagerService} from '../../../_services/pager.service';
 
-import {LandModel, SearchLandModel, ResultViewModel} from '../../../_shared/land-bank/land.model';
+import {SearchLandModel, ResultViewModel} from '../../../_shared/land-bank/land.model';
 import {ObjectKeyCasingService} from "../../../_services/object-key-casing.service";
+import {CommonModule} from "@angular/common";
+import dialog from "../../dialog";
+import {CamisMapComponent} from "../../camismap/camismap.component";
 
 @Component({
   selector: 'app-search-land',
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, CamisMapComponent],
   templateUrl: './search-land.component.html',
   styleUrls: ['./search-land.component.css']
 })
@@ -20,13 +21,10 @@ export class SearchLandComponent implements OnInit {
   searchForm: FormGroup;
   searchModel: SearchLandModel;
   keyword: AbstractControl;
-  searchValue = [];
   landId = '';
   searchedResult: ResultViewModel[] = null;
   pager: any = {};
-  defaultPager: any = {};
   pagedItems: any[];
-  defaultPagedItems: any[];
   defaultLandType: any;
   defaultSearch: ResultViewModel[] = null;
 
@@ -40,30 +38,24 @@ export class SearchLandComponent implements OnInit {
   selectedLandId: number;
   landTypeList: any[] = [];
 
-  constructor(private router: Router, public formBuilder: FormBuilder, public landService: LandDataService,
-              private dialog: DialogService, private pagerService: PagerService, private keyCase: ObjectKeyCasingService) {
+  constructor(private router: Router, public formBuilder: FormBuilder, public landService: LandDataService, private pagerService: PagerService, private keyCase: ObjectKeyCasingService) {
 
     this.searchForm = this.formBuilder.group({
       keyword: [''],
       selectedLandType: ['']
     });
 
-    this.keyword = this.searchForm.controls.keyword;
-    this.selectedLandType = this.searchForm.controls.selectedLandType;
+    this.keyword = this.searchForm.controls['keyword'];
+    this.selectedLandType = this.searchForm.controls['selectedLandType'];
 
-    // if (localStorage.getItem('inputUpin') !== undefined ) {
-    //   this.keyword.setValue(localStorage.getItem('inputUpin'));
-    // }
-    // if (localStorage.getItem('landType') !== undefined ) {
-    //   this.selectedLandType.setValue(localStorage.getItem('landType'));
-    // }
+    const role = localStorage.getItem('role');
 
-    if (localStorage.getItem('role') === '4') {
+    if (role === '4') {
       this.clerkRole = true;
-      this.loginRole = 'land-clerk';
+      this.loginRole = role;
     }
-    if (localStorage.getItem('role') === '5') {
-      this.loginRole = 'land-supervisor';
+    if (role === '5') {
+      this.loginRole = role;
     }
 
 
@@ -80,23 +72,15 @@ export class SearchLandComponent implements OnInit {
 
     this.landService.getLandType().subscribe(data => {
       this.landType = data.filter(d => d.id !== 1); // todo: SLI-temp
-      console.log();
+
 
       this.defaultLandType = this.landType[0].id;
 
-      this.searchModel.landType = this.defaultLandType;
+      this.searchModel.landType = this.defaultLandType ;
       this.searchModel.areaMin = 0;
       this.searchModel.areaMax = 0;
-      this.keyCase.PascalCase(this.searchModel);
-      this.landService.SearchLand(this.searchModel).subscribe(resp => {
-        this.keyCase.camelCase(resp);
-        this.defaultSearch = resp.result;
-        this.noDefaultSearchResult = this.defaultSearch.length == 0;
-
-        console.log(this.defaultSearch);
-        // this.setPage(1);
-      });
-
+      this.selectedLandType.setValue(this.defaultLandType)
+      this.searchResult();
     });
 
   }
@@ -105,92 +89,60 @@ export class SearchLandComponent implements OnInit {
     localStorage.setItem('landType', this.selectedLandType.value);
     localStorage.setItem('inputUpin', this.keyword.value);
 
-    this.router.navigate([`${this.loginRole}/land-dashboard/land-detail/${landID}`]);
+    this.router.navigate([`land-bank/parcel-details/${landID}`]);
   }
 
-  selectChangeHandler(selectedLandType: number) {
-    // console.log(this.selectedLandType.value);
-    for (const type of this.landType) {
-      if (selectedLandType == 0) {
-        this.searchedResult = null;
-        this.noSearchResult = false;
-
-        this.searchModel.landType = null;
-
-        return;
-      }
-      if (type.name === selectedLandType) {
-        this.selectedLandId = type.id;
-      }
-    }
-
-    this.searchModel.landType = this.selectedLandId;
-
+  selectChangeHandler() {
+    if (this.selectedLandId == 0)
+      return;
     this.searchResult();
 
   }
 
   searchResult() {
 
-    swal({allowOutsideClick: false});
-    swal.disableButtons();
-    swal.showLoading();
+    dialog.loading();
     this.searchedResult = [];
+    this.searchModel.landType = this.selectedLandType.value;
     this.searchModel.upin = this.keyword.value;
-    this.keyCase.PascalCase(this.searchModel);
+   this.keyCase.PascalCase(this.searchModel);
     this.landService.SearchLand(this.searchModel).subscribe(resp => {
-      this.keyCase.camelCase(resp);
+        this.keyCase.camelCase(resp);
         this.searchedResult = resp.result;
-
         this.setPage(1);
-
-        swal.close();
-
-        this.noSearchResult = this.searchedResult.length == 0;
-
-        this.prepareLandType();
-
+        dialog.close();
       },
       (err) => {
-        swal.close();
-        // error alert
-        this.dialog.error(err);
+        return dialog.error(err);
       }
     );
 
   }
 
-  setPage(page: number) {
-    console.log(page);
-
-    this.pager = this.pagerService.getPager(this.searchedResult.length, page);
-    console.log(this.defaultPager);
-    this.pagedItems = this.searchedResult.slice(this.pager.startIndex, this.pager.endIndex + 1);
-
-    // this.defaultPager = this.pagerService.getPager(this.defaultSearch.length, page);
-    // this.defaultPagedItems = this.defaultSearch.slice(this.defaultPager.startIndex, this.defaultPager.endIndex + 1);
-
-
-    console.log(this.defaultPagedItems);
-  }
-
-  prepareLandType() {
-    for (const result of this.searchedResult) {
-      for (const type of this.landType) {
-        if (result.landType === type['id']) {
-          result.landType = type['name'];
-        }
-      }
+  public setPage(page: number) {
+    if (page < 1 || page > this.pager.totalPages) {
+      return;
     }
 
+    this.pager = this.pagerService.getPager(this.searchedResult.length, page);
+    this.pagedItems = this.searchedResult.slice(this.pager.startIndex, this.pager.endIndex + 1);
+
+  }
+
+  prepareLandType(id) {
+    for (const type of this.landType) {
+      if (id === type['id']) {
+        return type['name'];
+      }
+    }
   }
 
   editLand(wfid: string) {
     // routerLink="/land-clerk/pending-task/edit-land/:wfid"
-    this.router.navigate([`${this.loginRole}/pending-task/edit-land/${wfid}`]);
+    this.router.navigate([`land-bank/task/edit-parcel-info/${wfid}`]);
   }
 
   goToRegistration() {
-    this.router.navigate([`${this.loginRole}/new-land/new-land-form`]);
+    this.router.navigate([`land-bank/register-parcel`]);
   }
 }

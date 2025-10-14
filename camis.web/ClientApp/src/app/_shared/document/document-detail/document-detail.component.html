@@ -1,18 +1,25 @@
 <div *ngIf="document">
+  <table class="table mb-0">
+    <tbody>
+    <tr>
+      <td id="doc-icon">
+        <a (click)="openDoc($event, document)" [href]="getLink(document)" target="_blank">
+          <i class="ti ti-file-type-{{getFileExtension(document.filename)}}"></i>
+        </a>
 
-  <div style="margin: 5px 0 0">
-    <a (click)="openDoc($event, document)" [href]="getLink(document)" target="_blank">
-      <i class="fa fa-file-text"></i>&nbsp;
-      {{document.filename || 'Open Document'}}
-    </a>
-  </div>
-
-  <div style="padding: 2px 0 0 18px; margin: 0">
-    <span style="font-style: italic">Ref.:</span> {{document.ref}}
-    <br />
-    <span style="font-style: italic">Date:</span> {{document.date | date}}
-    <br />
-    <span style="font-style: italic">Note:</span> {{document.note || '[n/a]'}}
-  </div>
-
+      </td>
+      <td id="doc-ref">
+        <a (click)="openDoc($event, document)" [href]="getLink(document)" target="_blank">
+          {{document.filename || 'Open Document'}}
+        </a>
+        <ul class="mb-0 ps-1">
+          <li> <i class="ti ti-checkbox"></i> &nbsp; <span><b>Ref.: </b>&nbsp; {{document.ref}}</span></li>
+          <li><i class="ti ti-checkbox"></i> &nbsp; <span><b>Date: </b>&nbsp; {{document.date | date}}</span></li>
+          <li><i class="ti ti-checkbox"></i> &nbsp; <span><b>Note: </b>&nbsp; {{document.note || '[n/a]'}}</span></li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
 </div>
+

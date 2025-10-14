@@ -1,0 +1,39 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card p-0">
+      <div class="card-header p-2">
+        <div class="row">
+          <div class="col-md-6">
+            <h5><i class="ti ti-tractor"></i> Farm & Owners Details</h5>
+          </div>
+          <div class="col-md-6 " style="text-align: right">
+            <div class="btn-group">
+              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                      aria-expanded="false">
+                Actions <i class="ti ti-caret-down"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="javascript:" (click)="newFarmRegistrationStep3(farm.operatorId)">Add
+                  Farm</a></li>
+                <li><a class="dropdown-item" href="javascript:" (click)="newFarmModification(farm.id)">Edit
+                  Investment</a></li>
+                <li><a class="dropdown-item" href="javascript:" (click)="newUpdatePlan(plan.id)"> Update Plan</a></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="javascript:" (click)="askDelete(farm)"> Delete</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+  <div *ngIf="!loading && farm">
+    <app-farm-detail *ngIf="farm" [farm]="farm"></app-farm-detail>
+  </div>
+
+</div>
+

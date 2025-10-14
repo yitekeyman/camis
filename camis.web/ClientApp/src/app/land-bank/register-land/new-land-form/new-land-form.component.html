@@ -1,0 +1,365 @@
+<div class="card p-1">
+  <div class="row ">
+    <div class="col-sm-8 p-2">
+      <div class="card-header p-2">
+        <h5><i class="ti ti-map-plus"></i> Register New Parcel</h5>
+      </div>
+      <form [formGroup]="newLandFGroup" class="new-land-form form" (submit)="saveNewLand()">
+        <div class="card-body p-0 m-0" style="height: calc(65vh)">
+          <div class="card m-0" style="height: calc(65Vh)" *ngIf="formWizardStep === 1">
+            <div class="card-header p-3">
+              <h5>Step 1 of 4: General</h5>
+            </div>
+            <div class="card-body" style="height: calc(65Vh); overflow-y: auto">
+              <div class="row">
+                <div class="input-form col-md-4">
+                  <div formArrayName="uPINs">
+                    <div class="form-titles">
+                      <label>
+                        UPINs * <span class="error-message"
+                                      *ngIf="!newLandFGroup.controls.uPINs.valid && newLandFGroup.controls.uPINs.touched"><i
+                        class="ti ti-exclamation-circle"></i> UPIN is required</span>
+                      </label>
+
+                    </div>
+
+                    <!-- Check the correct way to iterate your form array -->
+                    <div *ngFor="let itemrow of newLandFGroup.controls.uPINs.controls; let i=index">
+                      <div class="form-group">
+                        <input type="text" [formControlName]="i" class="form-control"
+                               placeholder="enter upin #{{ i + 1 }}"
+                               (change)="onUpinChanged($event)" required>
+
+                      </div>
+                    </div>
+
+
+                  </div>
+                  <div formArrayName="agroEchologyZone">
+                    <div *ngFor="let agroEcho of agroEchologicalZone; let i=index">
+                      <div class="form-group">
+                        <label>{{ agroEcho.name }}: </label>
+                        <input type="text" class="form-control" [formControlName]="i"
+                               placeholder="Enter {{agroEcho.name}}">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-5">
+                  <div class="form-group" formArrayName="investmentType">
+                    <div class="form-titles">
+                      <label>Land suitable for: </label>
+                    </div>
+
+                    <div class="form-check newland_checkbox" *ngFor="let invest of investment; let i=index">
+                      <label class="form-check-label checkbox-container">
+                        <input type="checkbox" class="form-check-input" [formControlName]="i"> {{ invest.name }}
+                        <span class="checkmark"></span>
+                      </label>
+                    </div>
+
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group" formArrayName="accessablity">
+                    <div class="form-titles">
+                      <label>Accessible by: </label>
+                    </div>
+
+                    <div class="row form-check newland_checkbox">
+                      <div class="col-sm-3" *ngFor="let access of accessablity; let i=index">
+                        <label class="form-check-label checkbox-container">
+                          <input type="checkbox" class="form-check-input" [formControlName]="i"> {{ access.name }}
+                          <span class="checkmark"></span>
+                        </label>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="card m-0" style="height: calc(65Vh)" *ngIf="formWizardStep === 2">
+            <div class="card-header p-3">
+              <h5>Step 2 of 4: Environmental Info</h5>
+            </div>
+            <div class="card-body" style="height: calc(65Vh); overflow-y: auto">
+              <div class="row">
+                <div class="col-md-12 mt-0">
+                  <div class="card p-0">
+                    <div class="card-header p-3">
+                      <h5>Moisture Source</h5>
+                    </div>
+                    <div class="card-body m-0 p-2">
+                      <div class="row">
+                        <div class="col-sm-6" *ngFor="let moisture of moistureSrc; let i=index">
+                          <div class="form-check newland_checkbox">
+                            <label class="form-check-label checkbox-container">
+                              <input type="radio" class="form-check-input" [value]="moisture.id"
+                                     formControlName="moistureSource"
+                                     (change)="selectedMoistureSource($event, i)">
+                              {{ moisture.name }}
+                              <span class="radiobutton"></span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-12 mt-0" *ngIf="selectedMoisture?.value === 'on' && selectedMoisture?.index === 1 ">
+                  <div class="row" [formGroup]="irrigationValues">
+                    <div class="col-sm-12 mt-0" formArrayName="waterSourceParameter">
+                      <div class="card p-0">
+                        <div class="card-header p-3">
+                          <h5>Generalized Water Sampling Parameters</h5>
+                        </div>
+                        <div class="card-body m-0 p-2">
+                          <div class="row">
+                            <div class="col-sm-6" *ngFor="let water of waterParams; let i=index">
+                              <div class="form-group">
+                                <label>{{ water.name }}: </label>
+                                <input type="number" class="form-control" placeholder="{{water.name}} value"
+                                       [formControlName]="i">
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-sm-12 mt-0">
+                      <div class="card p-0">
+                        <div class="card-header p-3">
+                          <h5>Irrigation Water Source</h5>
+                        </div>
+                        <div class="card-body m-0 p-2">
+                          <div class="row">
+                            <div class="col-sm-6" formArrayName="groundWater">
+                              <div class="card-header p-1">
+                                <h6>Ground Water</h6>
+                              </div>
+                              <div class="form-check newland_checkbox" *ngFor="let gWater of groundWater; let i=index">
+
+                                <label class="form-check-label checkbox-container">
+                                  <input type="checkbox" class="form-check-input" [formControlName]="i">
+                                  {{ gWater.name }}
+
+                                  <span class="checkmark"></span>
+                                </label>
+                              </div>
+                            </div>
+                            <div class="col-sm-6" formArrayName="surfaceWater">
+                              <div class="card-header p-1">
+                                <h6>Surface Water</h6>
+                              </div>
+                              <div class="form-check newland_checkbox" *ngFor="let sWater of surfaceWater; let i=index">
+                                <label>{{ sWater.name }}: </label>
+
+                                <input type="text" class="form-control" placeholder="{{sWater.name}}"
+                                       [formControlName]="i">
+                              </div>
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-12 mt-0">
+                  <div class="card p-0">
+                    <div class="card-header p-3">
+                      <h5>Topography</h5>
+                    </div>
+                    <div class="card-body m-0 p-2">
+                      <div class="row" formArrayName="topography">
+                        <div class="col-sm-6" *ngFor="let topography of topographies; let i=index">
+                          <div class="form-group">
+                            <label>{{ topography.name }}: </label>
+                            <input type="number" class="form-control" id="topography"
+                                   placeholder="{{topography.name}} value"
+                                   [formControlName]="i">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-12 mt-0">
+                  <div class="card p-0">
+                    <div class="card-header p-3">
+                      <h5>Soil chemical and physical properties:</h5>
+                    </div>
+                    <div class="card-body m-0 p-2">
+                      <div class="row" formArrayName="soilTests">
+                        <div class="col-sm-6" *ngFor="let soilType of soilTests; let i=index">
+                          <div class="form-group">
+                            <label>{{ soilType.name }}: </label>
+                            <input *ngIf="soilType.id !== 11 && soilType.id !== 12" type="number" class="form-control"
+                                   id="soilTest" placeholder="{{soilType.name}} value"
+                                   [formControlName]="i">
+                            <input *ngIf="soilType.id === 11 || soilType.id === 12" type="text" class="form-control"
+                                   id="soilTest"
+                                   placeholder="{{soilType.name}} value"
+                                   [formControlName]="i">
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card m-0" style="height: calc(65Vh)" *ngIf="formWizardStep === 3">
+            <div class="card-header p-3">
+              <h5>Step 3 of 4: Climatology: </h5>
+            </div>
+            <div class="card-body" style="height: calc(65Vh); overflow-y: auto">
+              <table class="table">
+                <thead>
+                <tr class="headings">
+                  <th class="column-title">Months</th>
+                  <th class="column-title">Mean Monthly precipitation, mm</th>
+                  <th class="column-title">Mean Minimum Temperature (°c)</th>
+                  <th class="column-title">Mean Maximum Temperature (°c)</th>
+                  <th class="column-title">Average Temperature (°c)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let months of json;let i=index">
+                  <td>
+                    {{ months.name }}
+                  </td>
+
+                  <td>
+                    <div class="form-group" formArrayName="precipitation">
+                      <input type="number" class="form-control" id="precipitation" [formControlName]="i"
+                             placeholder="in mm">
+                    </div>
+                  </td>
+                  <td>
+                    <div class="form-group" formArrayName="temp_low">
+                      <input type="number" class="form-control" id="temp_low" [formControlName]="i" placeholder="in °C">
+                    </div>
+                  </td>
+                  <td>
+                    <div class="form-group" formArrayName="temp_high">
+                      <input type="number" class="form-control" id="temp_high" [formControlName]="i"
+                             placeholder="in °C">
+                    </div>
+                  </td>
+                  <td>
+                    <div class="form-group" formArrayName="temp_avg">
+                      <input type="number" class="form-control" id="temp_avg" [formControlName]="i" placeholder="in °C">
+                    </div>
+                  </td>
+
+
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card m-0" style="height: calc(65Vh)" *ngIf="formWizardStep === 4">
+            <div class="card-header p-3">
+              <h5>Step 4 of 4: Final</h5>
+            </div>
+            <div class="card-body" style="height: calc(65Vh); overflow-y: auto">
+              <div class="row m-0 p-0">
+                <div class="col-md-12 mt-0" formArrayName="existLandUse">
+
+                  <div class="card-header p-3">
+                    <h5>Existing Land Use </h5>
+                  </div>
+                  <div class="card-body m-0 p-2">
+                    <div class="row">
+                      <div class="col-sm-4" *ngFor="let land of existingLand; let i=index">
+                        <div class="form-check newland_checkbox">
+                          <label class="form-check-label checkbox-container">
+                            <input type="checkbox" class="form-check-input" [formControlName]="i"> {{ land.name }}
+                            <span class="checkmark"></span>
+                          </label>
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group ">
+                    <div class="form-titles question p-3"
+                         style="border-right: 10px; background: #f9f8f8; border: 1px solid lightgray;">
+                      <div class="row">
+                        <div class="col-sm-8">
+                          <label>Is the land part of Agricultural Economy zone? </label>
+                        </div>
+                        <div class="col-sm-4">
+                          <label class="form-check-label checkbox-container" style="float: right; margin-left: 15px;">
+                            <input type="radio" class="form-check-input" value="No"
+                                   formControlName="isAgriculturalZone">
+                            No
+                            <span class="radiobutton"></span>
+                          </label>
+
+                          <label class="form-check-label checkbox-container" style="float: right">
+                            <input type="radio" class="form-check-input" value="Yes"
+                                   formControlName="isAgriculturalZone">
+                            Yes
+                            <span class="radiobutton"></span>
+
+                          </label>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <app-landbank-document-selector title="Upload documents"
+                                                  [documents]="land.uploadDocument"></app-landbank-document-selector>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="description">Description: </label>
+                    <textarea class="form-control" id="description" rows="3" formControlName="description"
+                              required></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer p-2">
+          <div class="row m-0">
+            <div class="col-md-6 justify-content-start">
+              <button type="button" class="btn btn-secondary" *ngIf="formWizardStep !== 1" (click)="previousStep()">
+                Back
+              </button>
+            </div>
+            <div class="col-md-6 align-right">
+              <button type="button" class="btn btn-primary" (click)="nextStep()" *ngIf="formWizardStep !== 4">
+                Next
+              </button>
+              <button type="submit" class="btn btn-success newandButton" [disabled]="!newLandFGroup.valid"
+                      *ngIf="formWizardStep === 4">Request
+                Approval
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="col-sm-4 p-0">
+      <app-camis-map #camis_map></app-camis-map>
+    </div>
+  </div>
+</div>

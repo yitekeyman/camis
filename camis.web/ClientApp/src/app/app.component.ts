@@ -26,6 +26,7 @@ import {ToastrService} from "ngx-toastr";
 import {LoginComponent} from "./login/login.component";
 import {AdminModule} from "./admin/admin.module";
 import {AdminDashboardService} from "./_services/adminDashboard.service";
+import {FullScreenService} from "./_services/full-screen.service";
 
 @Component({
   selector: 'app-root',
@@ -49,7 +50,8 @@ import {AdminDashboardService} from "./_services/adminDashboard.service";
     WorkflowApiService,
     LandDataService,
     ReportAPIService,
-    AdminDashboardService
+    AdminDashboardService,
+    FullScreenService
   ]
 })
 export class AppComponent {

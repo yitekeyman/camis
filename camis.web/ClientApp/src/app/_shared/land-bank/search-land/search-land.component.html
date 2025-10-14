@@ -1,188 +1,129 @@
-<div class="tab-pane board map-search">
-  <div class="x_panel landBank_x_panel">
-    <div class="x_title">
-      <h2>
-        <i class="fa fa-search">
-          Search for land
-        </i>
-      </h2>
 
-      <div class="title_right">
-        <div class="align-right row">
-          <form class="from col-sm-12" [formGroup]="searchForm" (ngSubmit)="searchResult()">
-            <div class="col-sm-1"></div>
-
-            <div class="col-sm-5 top_search">
-
-              <div class="input-group" id="search">
-                <input class="form-control my-0 py-1 lime-border" type="text" formControlName="keyword" placeholder="using upin"
-                  aria-label="Search">
+<div class="row">
+  <div class="col-md-7 p-2">
+    <div class="card-header p-2">
+      <div class="row">
+        <div class="col-md-3">
+          <h5><i class="ti ti-map-search"></i> Search Land Bank</h5>
+        </div>
+        <div class="col-md-9 pb-0">
+          <form class="from" [formGroup]="searchForm" (ngSubmit)="searchResult()">
+            <div class="row">
+              <div class="col-md-8">
+                <div class="input-group mb-0">
+                  <input class="form-control" type="text" formControlName="keyword" placeholder="Search Parcel Using UPIN"
+                         aria-label="Search">
 
 
-                <span class="input-group-btn">
-                  <button class="btn btn-round btn-default" type="submit">
-                    <i class="fa fa-search"></i>&nbsp;
+                  <button class="btn btn-outline-success btn-sm" type="submit">
+                    <i class="ti ti-search"></i>
                   </button>
-                </span>
+                </div>
               </div>
-
-            </div>
-
-            <div class="col-sm-5 top_search">
-
-              <div class="input-group" id="search">
-                <select class="land-type-select" (change)="selectChangeHandler($event.target.value)">
-                  <option value="0">--- Select land status ---</option>
-                  <option *ngFor="let type of landType">{{type.name}}</option>
+              <div class="col-md-4">
+                <select formControlName="selectedLandType" [(ngModel)]="selectedLandId" class="form-select" (change)="selectChangeHandler()">
+                  <option value="0">Land Status</option>
+                  <option *ngFor="let type of landType" [value]="type.id">{{type.name}}</option>
                 </select>
               </div>
-
-            </div>
-            <div class="col-sm-1"></div>
-            <div class="col-sm-12">
-              <div *ngIf="searchedResult !== null">{{searchedResult.length}} results found</div>
             </div>
 
           </form>
-
         </div>
+
       </div>
     </div>
-
-    <div *ngIf="searchedResult === null">
-      <table class="table table-striped jambo_table bulk_action" id="tclick" *ngIf="defaultSearch != null && !noDefaultSearchResult">
-        <thead>
-
+    <div class="card-body p-0" style="height: calc(65vh);">
+      <div class="table-responsive" style="height: calc(64vh); overflow-y: auto">
+        <table id="datatable" class="table">
+          <thead>
           <tr class="headings">
+            <th> # </th>
             <th class="column-title">UPINs</th>
             <th class="column-title">Description</th>
             <th class="column-title">Land Status</th>
             <th class="column-title">Area (ha)</th>
             <th class="column-title">Land Holder</th>
-            <!-- <th class="column-title" *ngIf="clerkRole"></th> -->
+            <th>Action</th>
           </tr>
-        </thead>
+          </thead>
 
-        <tbody *ngFor="let defaultResult of defaultSearch">
+          <tbody *ngIf="pagedItems?.length>0">
+          <tr class="even pointer with-data" *ngFor="let defaultResult of pagedItems;index as i" >
+            <td class="a-center ">
+              {{ (pager.currentPage - 1) * pager.pageSize + i + 1 }}
+            </td>
+            <td > {{defaultResult.upins}}</td>
+            <td>{{defaultResult.description}}</td>
+            <td>{{prepareLandType(defaultResult.landType)}}</td>
+            <td>{{defaultResult.area}}</td>
+            <td>{{defaultResult.holdership}}</td>
+            <td class="align-center">
+              <div class="btn-group">
+                <button class='btn btn-outline-warning btn-sm editButton' data-toggle='tooltip' title='Edit Parcel'
+                        *ngIf="clerkRole && defaultResult.landType===1" (click)="editLand(defaultResult.wID)">
+                  <span class='ti ti-edit'> </span></button>
+                <button class='btn btn-outline-success btn-sm' data-toggle='tooltip' title='View Land details'
+                        (click)="showLandDetail(defaultResult.landID)"><span class='ti ti-eye'> </span></button>
 
-          <!-- <tr routerLink="/land-clerk/land-dashboard/land-detail/{{result.landID}}"> -->
-          <tr>
 
-            <td (click)="showLandDetail(defaultResult.landID)">
-              {{defaultResult.upins}}
+              </div>
             </td>
-            <td (click)="showLandDetail(defaultResult.landID)">
-              {{defaultResult.description}}
-            </td>
-            <td (click)="showLandDetail(defaultResult.landID)">
-              {{defaultResult.landType}}
-            </td>
-            <td (click)="showLandDetail(defaultResult.landID)">
-              {{defaultResult.area}}
-            </td>
-            <td (click)="showLandDetail(defaultResult.landID)">
-              {{defaultResult.holdership}}
-            </td>
-            <!-- <td style="padding: 2px;" *ngIf="clerkRole">
-              <button class="btn btn-primary edit-button" (click)="editLand(defaultResult.wfid)">
-                <i class="fa fa-edit" style="font-size: 13px;"></i>
-              </button>
-            </td> -->
           </tr>
-        </tbody>
+          </tbody>
+          <tbody *ngIf="pagedItems?.length==0">
+          <tr class=" no-data">
+            <td colspan="7" style="height: calc(56vh)">
 
-      </table>
+              <div class="align-center mt-5" *ngIf="!clerkRole">
+                <i class="ti ti-exclamation-circle"></i>
+                <h2>Sorry!</h2>
+                <p>There is no recored found, please try later</p>
 
-      <div class="alert alert-danger" *ngIf="defaultSearch === null && noDefaultSearchResult">There is no identified land to display!
-        Go to <a class="goto-link" (click)="goToRegistration()">land profile registration</a> to register identified land!
+              </div>
+              <div class="align-center mt-5 no-data" *ngIf="clerkRole">
+                <i class="ti ti-exclamation-circle"></i>
+                <h2>Sorry!</h2>
+                <p>There is no identified parcel to display!</p>
+                <p>Go to <a  href="javascript:" class="goto-link" (click)="goToRegistration()"><b>Land Profile Registration</b></a> to register identified land!</p>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
       </div>
-
     </div>
-
-    <!-- <div class="alert alert-success" *ngIf="searchedResult === null">Use the above fields to search for a land!</div> -->
-
-    <div class="alert alert-danger" *ngIf="noSearchResult">
-      No result found!
+    <div class="card-footer p-1">
+      <div class="justify-content-end">
+        <nav aria-label="..." *ngIf="pager.pages && pager.pages.length">
+          <ul class="pagination justify-content-end">
+            <li class="page-item" [class.disabled]="pager.currentPage === 1">
+              <a class="page-link" href="javascript:" tabindex="-1" (click)="setPage(1)"><i
+                class="ti ti-chevron-left-pipe"></i></a>
+            </li>
+            <li class="page-item" [class.disabled]="pager.currentPage === 1">
+              <a class="page-link" href="javascript:" (click)="setPage(pager.currentPage - 1)"><i
+                class="ti ti-chevron-left"></i></a>
+            </li>
+            <li *ngFor="let page of pager.pages" class="page-item"><a class="page-link"
+                                                                      [class.active]="pager.currentPage === page"
+                                                                      href="javascript:"
+                                                                      (click)="setPage(page)">{{ page }}</a></li>
+            <li class="page-item" [class.disabled]="pager.currentPage === pager.totalPages">
+              <a class="page-link" href="javascript:" (click)="setPage(pager.currentPage + 1)"><i
+                class="ti ti-chevron-compact-right"></i></a>
+            </li>
+            <li class="page-item" [class.disabled]="pager.currentPage === pager.totalPages">
+              <a class="page-link" href="javascript:" (click)="setPage(pager.totalPages)"><i
+                class="ti ti-chevron-right-pipe"></i><i
+                class="fa  fa-arrows-v"></i></a>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </div>
-
-    <table class="table table-striped jambo_table bulk_action" id="tclick" *ngIf="searchedResult != null && !noSearchResult">
-      <thead>
-
-        <tr class="headings">
-          <th class="column-title">UPINs</th>
-          <th class="column-title">Description</th>
-          <th class="column-title">Land Status</th>
-          <th class="column-title">Area (ha)</th>
-          <th class="column-title">Holdership</th>
-          <th class="column-title" *ngIf="clerkRole"></th>
-        </tr>
-      </thead>
-
-      <tbody *ngFor="let result of pagedItems">
-
-        <!-- <tr routerLink="/land-clerk/land-dashboard/land-detail/{{result.landID}}"> -->
-        <tr>
-
-          <td (click)="showLandDetail(result.landID)">
-            {{result.upins}}
-          </td>
-          <td (click)="showLandDetail(result.landID)">
-            {{result.description}}
-          </td>
-          <td (click)="showLandDetail(result.landID)">
-            {{result.landType}}
-          </td>
-          <td (click)="showLandDetail(result.landID)">
-            {{result.area}}
-          </td>
-          <td (click)="showLandDetail(result.landID)">
-            {{result.holdership}}
-          </td>
-          <td style="padding: 2px;" *ngIf="clerkRole">
-            <button class="btn btn-primary edit-button" (click)="editLand(result.wid)">
-              <i class="fa fa-edit" style="font-size: 13px;"></i>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-
-    </table>
-
   </div>
-
-  <div class="col-sm-6 col-sm-offset-3" *ngIf="searchedResult != null && !noSearchResult">
-    <nav aria-label="Page navigation" class="pagination-nav">
-      <ul *ngIf="pager.pages && pager.pages.length" class="pagination pagination-centered">
-        <li [ngClass]="{disabled:pager.currentPage === 1}">
-          <a aria-label="previous" (click)="setPage(1)">
-            <span aria-hidden="true">First</span>
-          </a>
-        </li>
-        <li [ngClass]="{disabled:pager.currentPage === 1}">
-          <a aria-label="previous" (click)="setPage(pager.currentPage - 1)">
-            <span aria-hidden="true">&laquo;</span>
-          </a>
-        </li>
-
-        <li *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
-          <a (click)="setPage(page)">
-            <span aria-hidden="true">{{page}}</span>
-          </a>
-        </li>
-
-        <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
-          <a aria-label="next" (click)="setPage(pager.currentPage + 1)">
-            <span aria-hidden="true">&raquo;</span>
-          </a>
-        </li>
-        <li [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
-          <a aria-label="previous" (click)="setPage(pager.totalPages)">
-            <span aria-hidden="true">Last</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
+  <div class="col-md-5 p-0">
+    <app-camis-map></app-camis-map>
   </div>
-
-
 </div>

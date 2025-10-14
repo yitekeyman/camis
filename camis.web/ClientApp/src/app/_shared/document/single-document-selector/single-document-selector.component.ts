@@ -1,9 +1,12 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {IDocument} from '../interfaces';
 import {ISingleDocumentSelectorChangeEvent} from './interfaces';
+import {CommonModule} from "@angular/common";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-single-document-selector',
+  imports:[CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './single-document-selector.component.html'
 })
 export class SingleDocumentSelectorComponent implements OnInit {

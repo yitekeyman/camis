@@ -2,10 +2,14 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {IDocument} from '../interfaces';
 import {IDocumentListOpenEvent} from './interfaces';
 import {configs} from '../../../app-config';
+import {CommonModule} from "@angular/common";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
     selector: 'app-document-list',
-    templateUrl: 'document-list.component.html',
+    imports:[CommonModule, FormsModule, ReactiveFormsModule],
+    templateUrl: './document-list.component.html',
+  styleUrls:['document-list.component.scss']
 })
 export class DocumentListComponent implements OnInit {
 
@@ -42,5 +46,9 @@ export class DocumentListComponent implements OnInit {
 
         this.open.emit({ document: doc });
     }
-
+  getFileExtension(filename: string): string {
+    if (!filename) return '';
+    const match = filename.match(/\.([0-9a-z]+)$/i);
+    return match ? match[1] : '';
+  }
 }

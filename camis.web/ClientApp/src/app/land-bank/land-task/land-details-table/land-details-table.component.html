@@ -1,0 +1,299 @@
+﻿<div class="card p-0">
+
+  <div class="row">
+    <div class="col-md-7 p-2">
+      <div class="card-header p-2">
+        <div class="row">
+          <div class="col-md-8">
+            <h5><i class="ti ti-map-2"></i> Parcel Details</h5>
+          </div>
+          <div class="col-md-4" style="text-align: right">
+            <div class="btn-group">
+              <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                      aria-expanded="false">
+                Actions <i class="ti ti-caret-down"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole===4">Edit Parcel</a></li>
+                <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole===5" (click)="approveRequest()">Approve
+                  Request</a></li>
+                <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole===5" (click)="rejectRequest()">Reject
+                  Request</a></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole===5" (click)="cancelRequest()"> Cancel
+                  Request</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body p-2" style="height: calc(65vh);">
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="alert alert-primary d-flex align-items-center p-1 mb-1">
+              <table class="table p-0 m-0">
+                <tbody>
+                <tr>
+                  <td class="m-0 p-1"
+                      style="vertical-align: middle; font-size: 2rem; border-right: 2px solid rgba(0,0,0,0.25); text-align: center;color:rgba(0,255,0,0.75)">
+                    <i class="ti ti-bell-ringing-filled"></i>
+                  </td>
+                  <td class="m-0" style="font-size: 0.75rem; vertical-align: middle">
+                    <b>Sent by: </b> {{ userWorkItems.sentUserName }}<br/>
+                    <b>Date: </b> {{ userWorkItems.workItemDate | date }}<br/>
+                    <b>Note: </b> {{ userWorkItems.description }}
+                  </td>
+                  <td class="m-0" style="vertical-align: middle; text-align: right;">
+                    <span *ngIf="isAgricultural === 'No'"
+                          style="color: red"> The land is not in agricultural zone</span>
+                    <span *ngIf="isAgricultural === 'Yes'" style="color: green"> The land is in agricultural zone</span>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="accordion" id="accordionPanelsStayOpenExample" style="max-height: calc(52vh); overflow-y: auto">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                          data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
+                          aria-controls="panelsStayOpen-collapseOne">
+                    Parcel Profile
+                  </button>
+                </h2>
+                <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show"
+                     aria-labelledby="panelsStayOpen-headingOne">
+                  <div class="accordion-body">
+                    <table class="table" id="datatable">
+                      <tbody>
+                      <tr>
+                        <td><label>UPINs:</label></td>
+                        <td>
+                          <ul *ngFor="let upin of workflowLand.upins">
+                            <li class="detail-value"><i class="ti ti-square-rounded-check-filled"></i>&nbsp;{{ upin }}
+                            </li>
+                          </ul>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><label>Land Holder:</label></td>
+                        <td>{{ workflowLand.holdership }}</td>
+                      </tr>
+                      <tr>
+                        <td><label>Area:</label></td>
+                        <td>{{ getArea() }}</td>
+                      </tr>
+                      <tr>
+                        <td><label>Location:</label></td>
+                        <td>{{ workflowLand.centroidX }}° E<br/> {{ workflowLand.centroidY }}° N</td>
+                      </tr>
+                      <tr>
+                        <td><label>Accessible By:</label></td>
+                        <td>
+                          <ul *ngFor="let access of accessiblities">
+                            <li class="detail-value"><i class="ti ti-square-rounded-check-filled"></i>&nbsp;{{ access }}
+                            </li>
+                          </ul>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><label>Land Suitable For:</label></td>
+                        <td>
+                          <ul *ngFor="let investment of investmentTypes">
+                            <li class="detail-value"><i
+                              class="ti ti-square-rounded-check-filled"></i>&nbsp;{{ investment }}
+                            </li>
+                          </ul>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><label>Moisture Source:</label></td>
+                        <td>
+
+                          <p class="detail-value">{{ moistureSources }}</p>
+
+
+                          <div class="nested-content" *ngIf="moistureSources === 'Irrigated'">
+                            <div class="nested-detail-infos">
+                              <table class="table mb-1 p-0">
+                                <thead>
+                                <tr>
+                                  <th colspan="2">Generalized Water Sampling Parameters</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let water of waterSourceParams">
+                                  <td>{{ water.name }}:</td>
+                                  <td>{{ water.result }}</td>
+                                </tr>
+                                </tbody>
+                              </table>
+                              <table class="table mb-1 p-0">
+                                <thead>
+                                <tr>
+                                  <th>Ground Water</th>
+                                  <th>Surface Water</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                  <td>
+                                    <ul >
+                                      <li *ngFor="let gw of groundWater"><i
+                                        class="ti ti-square-rounded-check-filled"></i>&nbsp;{{ gw }}
+                                      </li>
+                                    </ul>
+                                  </td>
+                                  <td class="p-0">
+                                    <table class="table m-0 p-0">
+
+                                      <tbody>
+                                      <tr *ngFor="let sWater of surfaceWater">
+                                        <td>{{ sWater.name }}</td>
+                                        <td>{{ sWater.result }}</td>
+                                      </tr>
+                                      </tbody>
+                                    </table>
+                                  </td>
+
+                                </tr>
+                                </tbody>
+                              </table>
+
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><label>Topography:</label></td>
+                        <td>
+                          <ul>
+                            <li class="detail-value" *ngFor="let topo of topography"><i
+                              class="ti ti-square-rounded-check-filled"></i>&nbsp;{{ topo.name }} :  {{ topo.result }}
+                            </li>
+                          </ul>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><label>Agro-Echology Zone:</label></td>
+                        <td>
+                          <ul>
+                            <li class="detail-value" *ngFor="let agro of agroEchologyZones"><i
+                              class="ti ti-square-rounded-check-filled"></i>&nbsp;{{ agro.name }} : {{ agro.result }}
+                            </li>
+                          </ul>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><label>Existing Land Use:</label></td>
+                        <td>
+                          <ul>
+                            <li class="detail-value" *ngFor="let eLand of existingLandes"><i
+                              class="ti ti-square-rounded-check-filled"></i>&nbsp;{{ eLand }}
+                            </li>
+                          </ul>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><label>Description:</label></td>
+                        <td>{{ workflowLand.description }}</td>
+                      </tr>
+                      <tr>
+                        <td><label>Land Status:</label></td>
+                        <td>{{ landType }}</td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                  <button class="accordion-button " type="button" data-bs-toggle="collapse"
+                          data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true"
+                          aria-controls="panelsStayOpen-collapseTwo">
+                    Soil Chemical & Physical Properties
+                  </button>
+                </h2>
+                <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show"
+                     aria-labelledby="panelsStayOpen-headingTwo">
+                  <div class="accordion-body">
+                    <table class="table">
+                      <tbody>
+                      <tr *ngFor="let soil of soilTestTypes">
+                        <td><label>{{ soil.name }}:</label></td>
+                        <td>{{ soil.result }}</td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+                  <button class="accordion-button " type="button" data-bs-toggle="collapse"
+                          data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="true"
+                          aria-controls="panelsStayOpen-collapseThree">
+                    Climatology
+                  </button>
+                </h2>
+                <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse show"
+                     aria-labelledby="panelsStayOpen-headingThree">
+                  <div class="accordion-body">
+                    <table class="table">
+                      <thead>
+                      <tr class="headings">
+                        <th class="column-title">Month</th>
+                        <th class="column-title">Precipitation (cm)</th>
+                        <th class="column-title">Mean Min Temperature (°c)</th>
+                        <th class="column-title">Mean Max Temperature (°c)</th>
+                        <th class="column-title">Average Temperature (°c)</th>
+                      </tr>
+                      </thead>
+
+                      <tbody>
+                      <tr *ngFor="let climate of climates">
+                        <td>{{ climate.month }}</td>
+                        <td>{{ climate.precipitation }} cm</td>
+                        <td>{{ climate.temp_low }} °c</td>
+                        <td>{{ climate.temp_high }} °c</td>
+                        <td>{{ climate.temp_avg }} °c</td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="panelsStayOpen-headingFour">
+                  <button class="accordion-button " type="button" data-bs-toggle="collapse"
+                          data-bs-target="#panelsStayOpen-collapseFour" aria-expanded="true"
+                          aria-controls="panelsStayOpen-collapseFour">
+                    Supportive Documents
+                  </button>
+                </h2>
+                <div id="panelsStayOpen-collapseFour" class="accordion-collapse collapse show"
+                     aria-labelledby="panelsStayOpen-headingFour">
+                  <div class="accordion-body">
+                    <app-document-list title="" [documents]="workflowLand.uploadDocument">
+                    </app-document-list>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-5 p-0">
+      <app-camis-map #camis_map></app-camis-map>
+    </div>
+  </div>
+
+
+</div>

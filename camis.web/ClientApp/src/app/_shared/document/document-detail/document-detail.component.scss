@@ -1,0 +1,24 @@
+﻿#doc-icon{
+  border-right: 2px solid rgba(0, 0, 0, 0.2);
+  vertical-align: middle;
+  text-align: center;
+}
+#doc-icon i{
+  font-size: 3.25rem;
+  color: #37882c;
+}
+
+#doc-ref ul{
+  font-size: 0.75rem;
+  color: rgba(0,0,0,0.75);
+  list-style: none;
+}
+#doc-ref li{
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
+}
+.table{
+  border-radius: 10px;
+  background: rgba(226.8, 239.8, 211.4, 0.5);
+  border-bottom-color:transparent;
+}
+

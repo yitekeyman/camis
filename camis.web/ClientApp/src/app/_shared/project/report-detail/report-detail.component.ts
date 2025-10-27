@@ -7,7 +7,6 @@ import {CommonModule} from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ActivitiesComponent} from "../activities/activities.component";
 import {ActivityProgressComponent} from "../activity-progress/activity-progress.component";
-import {ActivityItemComponent} from "../activities/activity-item/activity-item.component";
 import {DocumentModule} from "../../document/document.module";
 
 @Component({

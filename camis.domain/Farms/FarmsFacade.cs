@@ -36,6 +36,7 @@ namespace intapscamis.camis.domain.Farms
         Document InWorkItemOperatorRegistrationFile(Guid workItemId, int regId);
         Document InWorkItemActivityPlanFile(Guid workItemId, Guid documentId);
         Document InWorkItemActivityPlanFileForPlanUpdate(Guid workItemId, Guid documentId);
+        Document InWorkItemOperatorPhoto(Guid workItemId, Guid photoId);
         
         Guid SaveNewFarmRegistration(FarmRequest body, string description);
         void SaveFarmRegistration(Guid workflowId, FarmRequest body, string description);
@@ -59,6 +60,7 @@ namespace intapscamis.camis.domain.Farms
         void WaitLandAssignment(Guid workflowId, FarmRequest body, string description);
         int GetTransferStatus(Guid workflowId);
         void CertifyLandAssignment(Guid workflowId, FarmRequest body, string description);
+        FarmResponse GetFarmByLandId(Guid id);
     }
 
     public class FarmsFacade : CamisFacade, IFarmsFacade
@@ -208,7 +210,12 @@ namespace intapscamis.camis.domain.Farms
             PassContext(_service, _context);
             return _service.InWorkItemActivityPlanFile(workItemId, documentId);
         }
-        
+
+        public Document InWorkItemOperatorPhoto(Guid workItemId, Guid photoId)
+        {
+            PassContext(_service, _context);
+            return _service.InWorkItemOperatorPhoto(workItemId, photoId);
+        }
         public Document InWorkItemActivityPlanFileForPlanUpdate(Guid workItemId, Guid documentId)
         {
             PassContext(_service, _context);
@@ -478,6 +485,12 @@ namespace intapscamis.camis.domain.Farms
                     LandAssignmentWorkflow.ParameterizedTriggers.Certify, body,
                     description ?? "Certify a farm registration's land.", null);
             });
+        }
+
+        public FarmResponse GetFarmByLandId(Guid id)
+        {
+            PassContext(_service, _context);
+            return _service.GetFarmByLandId(id);
         }
     }
 }

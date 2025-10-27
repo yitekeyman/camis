@@ -1,0 +1,39 @@
+
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card p-0">
+      <div class="card-header p-2">
+        <div class="row">
+          <div class="col-md-6">
+            <h5><i class="ti ti-tractor"></i>&nbsp;&nbsp;Commercial Farm & Investment Details</h5>
+          </div>
+          <div class="col-md-6 " style="text-align: right">
+            <div class="btn-group">
+              <button class="btn btn-custom-light me-2" type="button" *ngIf="plan && plan.id" (click)="goToReports(plan.id)" >View Progress Reports</button>
+              <button class="btn btn-custom dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                      aria-expanded="false" *ngIf="farm && farm.activityId">
+                Actions <i class="ti ti-caret-down"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li *ngIf="['8'].includes(loginRole || '')"><a class="dropdown-item" href="javascript:"
+                                                                                  (click)="surveyProgressReport()">Start Survey</a></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li *ngIf="['8'].includes(loginRole || '')"><a class="dropdown-item" href="javascript:" (click)="cancelProgressReport()">Cancel Report</a></li>
+
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+  <div *ngIf="!loading && farm">
+    <app-farm-detail *ngIf="farm" [farm]="farm"></app-farm-detail>
+  </div>
+
+</div>
+

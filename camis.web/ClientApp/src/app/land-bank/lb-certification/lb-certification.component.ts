@@ -8,10 +8,13 @@ import dialog from '../../_shared/dialog';
 import {CommonModule} from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {FarmDetailComponent} from "../../_shared/farm/farm-detail/farm-detail.component";
+import {
+  SingleDocumentSelectorComponent
+} from "../../_shared/document/single-document-selector/single-document-selector.component";
 
 @Component({
   selector: 'app-lb-certification',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, FarmDetailComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, FarmDetailComponent, SingleDocumentSelectorComponent],
   templateUrl: 'lb-certification.component.html'
 })
 export class LbCertificationComponent implements OnInit {
@@ -33,7 +36,7 @@ export class LbCertificationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.ar.params.subscribe(params => this.workflowId = params.workflowId, dialog.error)
+    this.ar.params.subscribe(params => this.workflowId = params['workflowId'], dialog.error)
       .add(this.api.getLastWorkItem(this.workflowId).subscribe(workItem => {
         if (workItem) {
           this.keyCase.camelCase(workItem.data);
@@ -44,15 +47,17 @@ export class LbCertificationComponent implements OnInit {
   }
 
 
-  chooseCertificationDocument($event: ISingleDocumentSelectorChangeEvent): void {
-    if ($event.document || $event.document === null) {
-      this.certification.doc = $event.document;
+  chooseCertificationDocument(event: any): void {
+    const document = event.document || (event as ISingleDocumentSelectorChangeEvent)?.document;
+    if (document) {
+      this.certification.doc = document;
     }
   }
 
-  chooseLeaseContractDocument($event: ISingleDocumentSelectorChangeEvent): void {
-    if ($event.document || $event.document === null) {
-      this.leaseContract.doc = $event.document;
+  chooseLeaseContractDocument(event: any): void {
+    const document = event.document || (event as ISingleDocumentSelectorChangeEvent)?.document;
+    if (document) {
+      this.leaseContract.doc = document;
     }
   }
 

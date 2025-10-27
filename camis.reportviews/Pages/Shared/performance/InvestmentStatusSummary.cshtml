@@ -10,58 +10,59 @@
     var i = 1;
     var type = (int)Model.Request.SelectedReportType;
     var lookup = Model.LocationLookup;
-
-
 }
 
-<table class="table table-striped jambo_table bulk_action" id="tclick">
+<table class="table" id="tclick">
     <thead>
 
-        <tr class="headings">
-            <th class="column-title">No</th>
-            <th class="column-title">@Model.AddressType</th>
-            <th class="column-title numberValue">Number Of Active Farms</th>
-            <th class="column-title numberValue">Number of Undeveoped Farms </th>
-            <th class="column-title numberValue">Number of Inactive Farms</th>
+    <tr class="headings">
+        <th class="column-title">No</th>
+        <th class="column-title">@Model.AddressType</th>
+        <th class="column-title ">Number Of Active Farms</th>
+        <th class="column-title ">Number of Undeveloped Farms</th>
+        <th class="column-title ">Number of Inactive Farms</th>
 
 
-        </tr>
+    </tr>
 
     </thead>
     <tbody>
-        @foreach (var item in Model.InvestmentStatusSummary)
-        {
-
+    @foreach (var item in Model.InvestmentStatusSummary)
+    {
         <tr>
 
             <td class="column-title">@(i++)</td>
             <td>
-            @if (lookup.ContainsKey(item.location))
-            {
-                <p> @lookup[item.location] (@item.location)  </p>
-            }
-            else
-            {
-                <p> @item.location </p>
-            }
-                </td>
+                @if (lookup.ContainsKey(item.location))
+                {
+                    <p> @lookup[item.location] (@item.location) </p>
+                }
+                else
+                {
+                    <p> @item.location </p>
+                }
+            </td>
             <td class="column-title numberValue">@item.activeFarms</td>
             <td class="column-title numberValue">@(item.totalNoOfFarms - item.developedFarms)</td>
             <td class="column-title numberValue">@(item.totalNoOfFarms - item.activeFarms)</td>
 
         </tr>
-        }
-        @if(Model.InvestmentStatusSummary.Count() > 0){
-            var item2 = Model.InvestmentStatusSummary;
-            <tr>
-
-                <td class="column-title"></td>
-                <td class="column-title">Total</td>
-                <td class="column-title numberValue">@item2.Sum(m => m.activeFarms)</td>
-                <td class="column-title numberValue">@(item2.Sum(m => m.totalNoOfFarms) - item2.Sum(m => m.developedFarms))</td>
-                <td class="column-title numberValue">@(item2.Sum(m => m.totalNoOfFarms) - item2.Sum(m => m.activeFarms))</td>
-
-            </tr>
-        }
+    }
     </tbody>
+
+    @if (Model.InvestmentStatusSummary.Count() > 0)
+    {
+        var item2 = Model.InvestmentStatusSummary;
+        <tfoot>
+        <tr>
+
+            <td class="column-title"></td>
+            <td class="column-title">Total</td>
+            <td class="column-title numberValue">@item2.Sum(m => m.activeFarms)</td>
+            <td class="column-title numberValue">@(item2.Sum(m => m.totalNoOfFarms) - item2.Sum(m => m.developedFarms))</td>
+            <td class="column-title numberValue">@(item2.Sum(m => m.totalNoOfFarms) - item2.Sum(m => m.activeFarms))</td>
+
+        </tr>
+        </tfoot>
+    }
 </table>

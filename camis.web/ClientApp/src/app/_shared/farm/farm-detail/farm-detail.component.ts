@@ -76,7 +76,7 @@ export class FarmDetailComponent implements OnInit {
     }, dialog.error);
 
     this.keyCase.camelCase(this.farm);
-    if (this.farm.farmLands) {
+    if (this.farm.farmLands?.length > 0) {
       this.landService.GetLand(this.farm.farmLands[0].landId).subscribe(data => {
         this.keyCase.camelCase(data);
         let g = data.parcels[data.upins[0]];
@@ -197,5 +197,11 @@ export class FarmDetailComponent implements OnInit {
         return 'Unknown.';
     }
   }
-
+  getPhotoSource(): string {
+    if (this.farm?.operator?.photo?.file) {
+      // Convert base64 string to data URL for display
+      return `data:${this.farm.operator.photo.mimetype};base64,${(this.farm.operator.photo.file)}`;
+    }
+    return 'assets/images/user/user_profile.PNG';
+  }
 }

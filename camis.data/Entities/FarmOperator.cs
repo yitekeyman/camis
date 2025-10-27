@@ -24,8 +24,9 @@ namespace intapscamis.camis.data.Entities
         public int? MartialStatus { get; set; }
         public long? Birthdate { get; set; }
         public Guid[] Ventures { get; set; }
-
+        public Guid? PhotoId { get; set; }
         public Address Address { get; set; }
+        public Document Photo { get; set; }
         public FarmOperatorOrigin Origin { get; set; }
         public FarmOperatorType Type { get; set; }
         public ICollection<Farm> Farm { get; set; }

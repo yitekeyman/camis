@@ -1,0 +1,35 @@
+﻿.table{
+  font-size: 0.755rem;
+}
+
+label{
+  font-size: 0.800rem;
+  font-weight: 600;
+}
+ ul{
+  margin: 0;
+  list-style: none;
+  padding-left: 0;
+}
+ .card-body ul li{
+  padding:3px 5px 3px;
+  border-bottom: 1px dashed #37882c;
+}
+ ul li i{
+  color: #37882c;
+  font-size: 1rem;
+}
+.fit-content {
+  width: max-content;
+  white-space: nowrap;
+}
+.accordion-button{
+  background-color: #fff;
+}
+
+img{
+  max-width: 100%;
+}
+.table th{
+  color: #37882c;
+}

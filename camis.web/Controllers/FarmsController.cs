@@ -30,7 +30,7 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -45,7 +45,7 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -60,7 +60,7 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -75,7 +75,7 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -90,7 +90,7 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -100,12 +100,12 @@ namespace intapscamis.camis.Controllers
             try
             {
                 _facade.SetSession(GetSession());
-                return Json(_facade.GetFarmOperators(skip??0, take??100));
+                return Json(_facade.GetFarmOperators(skip ?? 0, take ?? 100));
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -115,12 +115,12 @@ namespace intapscamis.camis.Controllers
             try
             {
                 _facade.SetSession(GetSession());
-                return Json(_facade.GetFarms(skip??0, take??100));
+                return Json(_facade.GetFarms(skip ?? 0, take ?? 100));
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -135,42 +135,42 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
-        
+
         [HttpGet]
         public IActionResult SearchFarmOperators(string term, int? skip, int? take)
         {
             try
             {
                 _facade.SetSession(GetSession());
-                return Json(_facade.SearchFarmOperators(term??"", skip??0, take??100));
+                return Json(_facade.SearchFarmOperators(term ?? "", skip ?? 0, take ?? 100));
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
-        
+
         [HttpGet]
         public IActionResult SearchFarms(string term, int? skip, int? take)
         {
             try
             {
                 _facade.SetSession(GetSession());
-                return Json(_facade.SearchFarms(term??"", skip??0, take??100));
+                return Json(_facade.SearchFarms(term ?? "", skip ?? 0, take ?? 100));
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
-        
-        
+
+
         [HttpGet]
         public IActionResult FarmOperator(string id)
         {
@@ -182,10 +182,10 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
-        
+
         [HttpGet]
         public IActionResult Farm(string id)
         {
@@ -197,10 +197,10 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
-        
+
         [HttpGet]
         public IActionResult FarmByActivity(string id)
         {
@@ -212,11 +212,11 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
-        
-        
+
+
         [Roles(UserRoles.FarmClerk, UserRoles.FarmSupervisor, UserRoles.LandAdmin, UserRoles.LandCertificateIssuer)]
         [HttpGet]
         public IActionResult LastWorkItem(string id)
@@ -229,10 +229,10 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
-        
+
         [HttpGet]
         public IActionResult InWorkItemRegistrationFile(string id, int regId)
         {
@@ -245,10 +245,10 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
-        
+
         [HttpGet]
         public IActionResult InWorkItemOperatorRegistrationFile(string id, int regId)
         {
@@ -261,10 +261,10 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
-        
+
         [HttpGet]
         public IActionResult InWorkItemActivityPlanFile(string id, string documentId)
         {
@@ -277,10 +277,10 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
-        
+
         [HttpGet]
         public IActionResult InWorkItemActivityPlanFileForPlanUpdate(string id, string documentId)
         {
@@ -293,7 +293,7 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -306,12 +306,12 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 var workflowId = _facade.SaveNewFarmRegistration(body, description);
-                return Json(new {success = true, workflowId});
+                return Json(new { success = true, workflowId });
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -323,12 +323,12 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 _facade.SaveFarmRegistration(id.ToGuid(), body, description);
-                return Json(new {success = true});
+                return Json(new { success = true });
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -340,12 +340,12 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 var workflowId = _facade.RequestNewFarmRegistration(body, description);
-                return Json(new {success = true, workflowId});
+                return Json(new { success = true, workflowId });
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -357,12 +357,12 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 _facade.CancelFarmRegistration(id.ToGuid(), description);
-                return Json(new {success = true});
+                return Json(new { success = true });
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -374,12 +374,12 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 _facade.RequestFarmRegistration(id.ToGuid(), body, description);
-                return Json(new {success = true});
+                return Json(new { success = true });
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -391,12 +391,12 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 _facade.RejectFarmRegistration(id.ToGuid(), description);
-                return Json(new {success = true});
+                return Json(new { success = true });
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -408,12 +408,12 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 _facade.ApproveFarmRegistration(id.ToGuid(), description);
-                return Json(new {success = true});
+                return Json(new { success = true });
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -426,12 +426,12 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 var workflowId = _facade.RequestNewFarmModification(body, description);
-                return Json(new {success = true, workflowId});
+                return Json(new { success = true, workflowId });
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -443,12 +443,12 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 _facade.CancelFarmModification(id.ToGuid(), description);
-                return Json(new {success = true});
+                return Json(new { success = true });
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -460,15 +460,15 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 _facade.RequestFarmModification(id.ToGuid(), body, description);
-                return Json(new {success = true});
+                return Json(new { success = true });
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
-        
+
         [Roles(UserRoles.FarmSupervisor)]
         [HttpPut]
         public IActionResult RejectFarmModification(string id, string description)
@@ -477,12 +477,12 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 _facade.RejectFarmModification(id.ToGuid(), description);
-                return Json(new {success = true});
+                return Json(new { success = true });
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -494,12 +494,12 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 _facade.ApproveFarmModification(id.ToGuid(), description);
-                return Json(new {success = true});
+                return Json(new { success = true });
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -513,12 +513,12 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 var workflowId = _facade.RequestNewFarmDeletion(body, description);
-                return Json(new {success = true, workflowId});
+                return Json(new { success = true, workflowId });
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -531,12 +531,12 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 _facade.RejectFarmDeletion(id.ToGuid(), description);
-                return Json(new {success = true});
+                return Json(new { success = true });
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
@@ -549,15 +549,15 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 _facade.ApproveFarmDeletion(id.ToGuid(), description);
-                return Json(new {success = true});
+                return Json(new { success = true });
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
-        
+
 
         [Roles(UserRoles.LandAdmin)]
         [HttpPost]
@@ -567,15 +567,15 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 _facade.NewWaitLandAssignment(body, description);
-                return Json(new {success = true});
+                return Json(new { success = true });
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
-        
+
         [Roles(UserRoles.LandAdmin)]
         [HttpPost]
         public IActionResult WaitLandAssignment(string id, [FromBody] FarmRequest body, string description)
@@ -584,15 +584,15 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 _facade.WaitLandAssignment(id.ToGuid(), body, description);
-                return Json(new {success = true});
+                return Json(new { success = true });
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
-        
+
         [Roles(UserRoles.LandAdmin, UserRoles.LandCertificateIssuer)]
         [HttpGet]
         public IActionResult TransferStatus(string id)
@@ -601,16 +601,16 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 var status = _facade.GetTransferStatus(id.ToGuid());
-                return Json(new {success = true, status});
+                return Json(new { success = true, status });
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
 
-        [Roles(UserRoles.LandCertificateIssuer)]
+        [Roles(UserRoles.LandAdmin, UserRoles.LandCertificateIssuer)]
         [HttpPost]
         public IActionResult CertifyLandAssignment(string id, [FromBody] FarmRequest body, string description)
         {
@@ -618,12 +618,26 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 _facade.CertifyLandAssignment(id.ToGuid(), body, description);
-                return Json(new {success = true});
+                return Json(new { success = true });
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {success = false, message = e.Message});
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+        [HttpGet]
+        public IActionResult FarmByLandId(string id)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                return Json(_facade.GetFarmByLandId(id.ToGuid()));
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
             }
         }
     }

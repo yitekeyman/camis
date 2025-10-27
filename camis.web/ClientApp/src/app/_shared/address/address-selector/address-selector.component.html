@@ -7,10 +7,9 @@
 <div *ngIf="!outputMode" class="panel panel-default">
   <div class="panel-body">
     <div class="form-group form-field">
-      <label for="address-format-select">Address Format:</label>
       <select
         id="address-format-select"
-        class="form-control dropdown"
+        class="form-select"
         (change)="onFormatChanged($any($event.target).value != null ? $any($event.target).value : null)"
         [(ngModel)]="selectedSchemeId" >
         <option [value]="null"></option>
@@ -32,7 +31,7 @@
       <select
         *ngIf="!addressUnit.custom"
         [id]="'address-' + addressUnit.id"
-        class="form-control dropdown"
+        class="form-select"
         (change)="onAddressSelected($any($event.target).value, addressUnit, i, undefined)"
         [disabled]="i > addresses2d.length - 1"
         [(ngModel)]="addressUnit._selectedAddressId"

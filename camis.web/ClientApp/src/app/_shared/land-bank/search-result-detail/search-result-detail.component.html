@@ -239,6 +239,21 @@
             </div>
           </div>
         </div>
+        <div class="accordion-item" *ngIf="this.searchedLandDetail['landType']===3 && farm">
+          <h2 class="accordion-header" id="panelsStayOpen-headingFive">
+            <button class="accordion-button " type="button" data-bs-toggle="collapse"
+                    data-bs-target="#panelsStayOpen-collapseFive" aria-expanded="true"
+                    aria-controls="panelsStayOpen-collapseFive">
+              Parcel Assign to
+            </button>
+          </h2>
+          <div id="panelsStayOpen-collapseFive" class="accordion-collapse collapse show"
+               aria-labelledby="panelsStayOpen-headingFive">
+            <div class="accordion-body p-1">
+             <app-simple-farm-details [farm]="farm"></app-simple-farm-details>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

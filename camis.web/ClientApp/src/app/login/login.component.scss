@@ -19,3 +19,45 @@
 .form-select{
   font-size: 0.875rem;
 }
+
+.contribitors>.title {
+  z-index          : 3;
+  width            : 250px;
+  transform        : rotate(-90deg);
+  transform-origin : bottom left;
+  position         : absolute;
+  left             : calc(100% - 3.8rem);
+  bottom           : 0;
+}
+
+.contribitors>.title p {
+  display        : block;
+  font-weight    : 600;
+  font-size      : 0.875rem;
+  text-transform : uppercase;
+  letter-spacing : .35em;
+  padding-left   : 4.6rem;
+  color          : rgba(255, 255, 255,1);
+  position       : relative;
+}
+
+
+.contribitors>.title p::before {
+  content          : "";
+  display          : block;
+  height           : 1px;
+  width            : 4rem;
+  background-color : rgba(255, 255, 255, 1);
+  position         : absolute;
+  top              : calc(50% - 1px);
+  left             : 0;
+}
+.contribitor-list img{
+  opacity: 0.3;
+  transition: 0.3s;
+  filter: grayscale(500);
+}
+.contribitor-list img:hover{
+  filter: none;
+  opacity: 1;
+}

@@ -1,0 +1,53 @@
+﻿<div class="card p-1">
+  <div class="card-header p-2" *ngIf="headerButton">
+    <div class="row">
+      <div class="col-md-6">
+      </div>
+      <div class="col-md-6 align-right">
+        <button class="btn btn-sm btn-custom-light" (click)="closeModal()">Back</button>
+      </div>
+    </div>
+  </div>
+  <div class="card-body p-0">
+    <table class="table mb-0">
+      <tbody *ngIf="auditLogItem">
+      <tr>
+        <td style="width: 50%"><b>Full-Name:</b>&nbsp;{{ auditLogItem.fullName }}</td>
+        <td><b>Username:</b>&nbsp;{{ auditLogItem.userName }}</td>
+      </tr>
+      <tr>
+        <td><b>Action:</b>&nbsp;{{ auditLogItem.action }}</td>
+        <td><b>Date:</b>&nbsp;{{ auditLogItem.actionTime }}</td>
+      </tr>
+      <tr>
+        <td colspan="2"><b>Affected Table:</b>&nbsp;{{ auditLogItem.auditLog.tableName }}</td>
+      </tr>
+      <tr>
+        <td>
+          <h5>Old Values</h5>
+          <div *ngIf="auditLogItem.auditLog && auditLogItem.auditLog.oldValues">
+            <!-- Use the pipe to pre-process the data -->
+            <app-interactive-json-viewer
+              [data]="processedOldValues">
+            </app-interactive-json-viewer>
+          </div>
+          <div *ngIf="!auditLogItem.auditLog?.oldValues" class="text-muted">
+            No old values
+          </div>
+        </td>
+        <td>
+          <h5>New Values</h5>
+          <div *ngIf="auditLogItem.auditLog && auditLogItem.auditLog.newValues">
+            <app-interactive-json-viewer
+              [data]="processedNewValues">
+            </app-interactive-json-viewer>
+          </div>
+          <div *ngIf="!auditLogItem.auditLog?.newValues" class="text-muted">
+            No new values
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

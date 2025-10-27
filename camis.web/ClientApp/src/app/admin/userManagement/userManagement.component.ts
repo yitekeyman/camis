@@ -1,5 +1,5 @@
 ﻿import {CommonModule} from "@angular/common";
-import {Component, OnInit, ViewChild, TemplateRef} from "@angular/core";
+import {Component, OnInit} from "@angular/core";
 import {AdminServices} from "../../_services/admin.Services";
 import dialog from "../../_shared/dialog";
 import {UserDetailViewModal} from "../../_model/user.model";
@@ -9,8 +9,6 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {RegisterUserComponent} from "./registerUser/register-user.component";
 import {PagerService} from "../../_services/pager.service";
 import {ResetPassComponent} from "./resetPassword/reset-pass.component";
-
-
 
 @Component({
   selector: "app-user-management",

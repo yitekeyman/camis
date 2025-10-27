@@ -17,6 +17,10 @@ export class AddressOutputComponent implements OnInit {
   @Input('leafId')
   leafId: string;
 
+  @Input() phone: string=null;
+  @Input() email: string=null;
+  @Input() isDisplay:boolean=false;
+
   pairs: IAddressPairResponse[] = [];
 
   constructor(private api: AddressApiService, private keyCase:ObjectKeyCasingService) { }

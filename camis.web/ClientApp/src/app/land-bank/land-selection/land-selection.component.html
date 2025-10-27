@@ -7,8 +7,8 @@
             <h4><i class="ti ti-map-plus"></i> Commercial Farm Details</h4>
           </div>
           <div class="col-md-6 " style="text-align: right">
-            <div class="btn-group" *ngIf="!loading && data">
-              <button class="btn btn-secondary" type="button" data-bs-toggle="modal"
+            <div *ngIf="!loading && data">
+              <button class="btn btn-custom" type="button" data-bs-toggle="modal"
                       data-bs-target="#landAssignmentDialog">
                 Assignment New Parcel
               </button>
@@ -25,7 +25,7 @@
 </div>
 
 <div id="landAssignmentDialog" class="modal fade" tabindex="-1" aria-labelledby="landAssignmentDialogLabel"
-     aria-hidden="true">
+     aria-hidden="true" *ngIf="data && data.landTransferRequest">
   <div class="modal-dialog " style="max-width: 65%">
     <div class="modal-content">
       <div class="row">

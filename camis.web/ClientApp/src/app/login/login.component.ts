@@ -6,6 +6,7 @@ import {AdminServices} from "../_services/admin.Services";
 import {LoginUser} from "../_model/user.model";
 import {CommonModule} from "@angular/common";
 import {DialogModule} from "../_shared/dialog/dialog.module";
+import {ObjectKeyCasingService} from "../_services/object-key-casing.service";
 
 
 declare var $: any;
@@ -13,7 +14,7 @@ declare var $: any;
 @Component({
 
   selector: 'app-login',
-  imports:[CommonModule, ReactiveFormsModule, DialogModule],
+  imports: [CommonModule, ReactiveFormsModule, DialogModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
@@ -22,7 +23,7 @@ export class LoginComponent implements OnInit {
 
   public loginForm: FormGroup;
   public loggedIn: boolean | false;
-  public user:LoginUser;
+  public user: LoginUser;
   public selectedRole: number;
   showPassword = false;
   isLoggedIn = false;
@@ -30,7 +31,7 @@ export class LoginComponent implements OnInit {
   public ROLES: any[];
 
 
-  constructor(public fb: FormBuilder, public router: Router, public adminService:AdminServices) {
+  constructor(public fb: FormBuilder, public router: Router, public adminService: AdminServices, private keyCase: ObjectKeyCasingService) {
     this.loginForm = fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
@@ -42,15 +43,17 @@ export class LoginComponent implements OnInit {
       username: '',
       password: ''
     };
-    this.selectedRole=0;
+    this.selectedRole = 0;
   }
 
   public login(): void {
     dialog.loading();
 
     this.adminService.login(this.user).subscribe(res => {
-
+      this.keyCase.camelCase(res);
+      localStorage.setItem('fullname', JSON.stringify(res.fullName));
       localStorage.setItem('username', this.user.username);
+
       this.adminService.getUserRoles().subscribe(res2 => {
         this.isLoggedIn = true;
         this.ROLES = res2;
@@ -60,8 +63,8 @@ export class LoginComponent implements OnInit {
         if (this.ROLES.length == 1) { // only one role, log the user with it
           this.selectedRole = this.ROLES[0].id;
           this.proceed();
-        }else{
-          this.loginForm.addControl('role',new FormControl('', [Validators.required,Validators.min(1)]));
+        } else {
+          this.loginForm.addControl('role', new FormControl('', [Validators.required, Validators.min(1)]));
         }
       }, dialog.error);
 
@@ -73,9 +76,9 @@ export class LoginComponent implements OnInit {
 
     this.adminService.setUserRole({role: this.selectedRole}).subscribe(res => {
       localStorage.setItem('role', '' + this.selectedRole);
-      for(let role of this.ROLES) {
-        if(role.id == this.selectedRole){
-          localStorage.setItem('roleName',role.name);
+      for (let role of this.ROLES) {
+        if (role.id == this.selectedRole) {
+          localStorage.setItem('roleName', role.name);
         }
       }
 
@@ -90,12 +93,14 @@ export class LoginComponent implements OnInit {
 
   public closeForm(): void {
     // $('#roleModal').hide();
-    this.selectedRole=this.loginForm.value.role;
+    this.selectedRole = this.loginForm.value.role;
     this.proceed();
   }
+
   public cancelLogin(): void {
     $('#roleModal').hide().removeClass('in');
   }
+
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }

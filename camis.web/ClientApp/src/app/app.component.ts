@@ -27,6 +27,8 @@ import {LoginComponent} from "./login/login.component";
 import {AdminModule} from "./admin/admin.module";
 import {AdminDashboardService} from "./_services/adminDashboard.service";
 import {FullScreenService} from "./_services/full-screen.service";
+import {JsonFormatPipe} from "./_services/json-format.pipe";
+import {ExportService} from "./_services/export.service";
 
 @Component({
   selector: 'app-root',
@@ -51,7 +53,9 @@ import {FullScreenService} from "./_services/full-screen.service";
     LandDataService,
     ReportAPIService,
     AdminDashboardService,
-    FullScreenService
+    FullScreenService,
+    JsonFormatPipe,
+    ExportService
   ]
 })
 export class AppComponent {

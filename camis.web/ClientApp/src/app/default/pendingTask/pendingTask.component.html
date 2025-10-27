@@ -1,6 +1,7 @@
 <div class="row">
   <div class="col-sm-12">
-    <app-lb-pending-task *ngIf="loginRole==='4' ||loginRole==='5'"></app-lb-pending-task>
-    <app-fm-pending-task *ngIf="loginRole==='2' ||loginRole==='3' ||loginRole==='6' ||loginRole==='7' "></app-fm-pending-task>
+    <app-lb-pending-task *ngIf="['4','5','1'].includes(loginRole || '')"></app-lb-pending-task>
+    <app-fm-pending-task *ngIf="['2','3','6','7'].includes(loginRole || '')"></app-fm-pending-task>
+    <app-mne-pending-task *ngIf="(['8','9','10'].includes(loginRole || ''))"></app-mne-pending-task>
   </div>
 </div>

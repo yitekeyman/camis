@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using intapscamis.camis.data.Entities;
 using intapscamis.camis.domain.Admin;
 using intapscamis.camis.domain.Documents;
@@ -57,6 +58,8 @@ namespace intapscamis.camis.domain.Farms
         Document InWorkItemOperatorRegistrationFile(Guid workItemId, int regId);
         Document InWorkItemActivityPlanFile(Guid workItemId, Guid documentId);
         Document InWorkItemActivityPlanFileForPlanUpdate(Guid workItemId, Guid documentId);
+        Document InWorkItemOperatorPhoto(Guid workItemId, Guid photoId);
+        FarmResponse GetFarmByLandId(Guid id);
     }
 
     public class FarmsService : CamisService, IFarmsService
@@ -249,7 +252,6 @@ namespace intapscamis.camis.domain.Farms
 
         public FarmResponse GetFarm(Guid id)
         {
-            
             return MapSingleFarmData(id);
         }
 
@@ -262,6 +264,10 @@ namespace intapscamis.camis.domain.Farms
 
         public FarmOperator CreateFarmOperator(FarmOperatorRequest data)
         {
+            Document photo = null;
+            if (data.Photo != null)
+                photo = _documentService.CreateDocument(data.Photo);
+
             var email = !string.IsNullOrEmpty(data.Email)
                 ? new MailAddress(data.Email).Address
                 : ""; // validates the email
@@ -276,7 +282,8 @@ namespace intapscamis.camis.domain.Farms
                 Phone = data.Phone,
                 Email = email,
                 OriginId = data.OriginId,
-                Capital = data.Capital
+                Capital = data.Capital,
+                PhotoId = photo?.Id ?? null,
             };
 
             if (data.TypeId == 1)
@@ -300,6 +307,7 @@ namespace intapscamis.camis.domain.Farms
             {
                 farmOperator.Ventures = new Guid[] { };
             }
+
 
             Context.FarmOperator.Add(farmOperator);
 
@@ -374,6 +382,15 @@ namespace intapscamis.camis.domain.Farms
 
             var farmOperator = Context.FarmOperator.First(fo => fo.Id == data.Id.ToGuid());
 
+
+            var oldPhoto = Context.Document.Where(p => p.Id == farmOperator.PhotoId);
+            Context.Remove(oldPhoto);
+            Context.SaveChanges();
+
+            Document photo = null;
+            if (data.Photo != null)
+                photo = _documentService.CreateDocument(data.Photo);
+
             farmOperator.Name = data.Name;
             farmOperator.Nationality = data.Nationality;
             farmOperator.TypeId = data.TypeId;
@@ -382,6 +399,7 @@ namespace intapscamis.camis.domain.Farms
             farmOperator.Email = email;
             farmOperator.OriginId = data.OriginId;
             farmOperator.Capital = data.Capital;
+            farmOperator.PhotoId = photo?.Id ?? null;
 
             if (data.TypeId == 1)
             {
@@ -517,6 +535,7 @@ namespace intapscamis.camis.domain.Farms
             Context.Document.RemoveRange(opRegDocuments);
             Context.SaveChanges();
 
+
             Context.FarmOperator.Remove(Context.FarmOperator.First(fo => fo.Id == data.Id.ToGuid()));
 
             Context.SaveChanges(_session.Username, (int)UserActionType.DeleteFarmOperator);
@@ -616,6 +635,21 @@ namespace intapscamis.camis.domain.Farms
             return DocumentService.ParseDocument(documentRequest);
         }
 
+        public Document InWorkItemOperatorPhoto(Guid workItemId, Guid photoId)
+        {
+            var dataStr = Context.WorkItem.Find(workItemId).Data;
+            if (dataStr == null) return null;
+            var data = JsonConvert.DeserializeObject<FarmRequest>(dataStr);
+
+            var documentRequest = data?.Operator?.Photo;
+            if (documentRequest?.Id != null && documentRequest.File == null)
+            {
+                return _documentService.GetDocument(documentRequest.Id);
+            }
+
+            return DocumentService.ParseDocument(documentRequest);
+        }
+
         public Document InWorkItemActivityPlanFileForPlanUpdate(Guid workItemId, Guid documentId)
         {
             var dataStr = Context.WorkItem.Find(workItemId).Data;
@@ -631,7 +665,15 @@ namespace intapscamis.camis.domain.Farms
             return DocumentService.ParseDocument(documentRequest);
         }
 
-
+       public  FarmResponse GetFarmByLandId(Guid id)
+       {
+           var farmland=Context.FarmLand.FirstOrDefault(l=>l.LandId==id);
+           if (farmland != null)
+           {
+               return GetFarm(farmland.FarmId);
+           }
+           return null;
+       }
         private FarmResponse ParseFarmResponse(Farm farm)
         {
             var res = new FarmResponse
@@ -720,7 +762,9 @@ namespace intapscamis.camis.domain.Farms
                 Phone = farmOperator.Phone,
                 Email = farmOperator.Email,
                 OriginId = farmOperator.OriginId,
-                Capital = farmOperator.Capital
+                Capital = farmOperator.Capital,
+                PhotoId = farmOperator.PhotoId,
+                Photo = DocumentService.ParseDocumentResponse(_documentService.GetDocument(farmOperator.PhotoId))
             };
 
             switch (farmOperator.TypeId)
@@ -830,6 +874,7 @@ namespace intapscamis.camis.domain.Farms
 
         private FarmRegistrationResponse MapFarmRegistrationToResponse(FarmRegistration reg)
         {
+            var document = MapDocumentResponse(_documentService.GetDocument(reg.DocumentId));
             return new FarmRegistrationResponse
             {
                 Id = reg.Id,
@@ -854,13 +899,14 @@ namespace intapscamis.camis.domain.Farms
                         Name = reg.Type.Name
                     },
 
-                Document = MapDocumentResponse(reg.Document)
+                Document = reg.Document == null ? document : MapDocumentResponse(reg.Document)
             };
         }
 
         private FarmOperatorResponse MapFarmOperatorToResponse(FarmOperator op)
         {
             if (op == null) return null;
+
 
             var response = new FarmOperatorResponse
             {
@@ -873,6 +919,7 @@ namespace intapscamis.camis.domain.Farms
                 Email = op.Email,
                 OriginId = op.OriginId,
                 Capital = op.Capital,
+                PhotoId = op.PhotoId,
 
                 Type = op.Type == null
                     ? null
@@ -907,11 +954,17 @@ namespace intapscamis.camis.domain.Farms
                 response.Ventures = op.Ventures;
             }
 
+            if (op.PhotoId != null)
+            {
+                response.Photo = DocumentService.ParseOperatorPhotoResponse(_documentService.GetDocument(op.PhotoId));
+            }
+
             return response;
         }
 
         private FarmOperatorRegistrationResponse MapOperatorRegistrationToResponse(FarmOperatorRegistration reg)
         {
+            var document = MapDocumentResponse(_documentService.GetDocument(reg.DocumentId));
             return new FarmOperatorRegistrationResponse
             {
                 Id = reg.Id,
@@ -936,7 +989,7 @@ namespace intapscamis.camis.domain.Farms
                         Name = reg.Type.Name
                     },
 
-                Document = MapDocumentResponse(reg.Document)
+                Document = reg.Document == null ? document : MapDocumentResponse(reg.Document)
             };
         }
 
@@ -948,7 +1001,6 @@ namespace intapscamis.camis.domain.Farms
 
         private FarmResponse MapSingleFarmData(Guid id)
         {
-            
             var baseQuery = Context.Farm
                 .Include(f => f.Type)
                 .Include(f => f.Activity)
@@ -967,10 +1019,10 @@ namespace intapscamis.camis.domain.Farms
                 .ThenInclude(fr => fr.Authority)
                 .Include(f => f.FarmRegistration)
                 .ThenInclude(fr => fr.Type)
-                .Where(f => f.Id==id)
+                .Where(f => f.Id == id)
                 .AsSplitQuery()
                 .AsNoTracking();
-            var farm = baseQuery.FirstOrDefault(e=>e.Id==id);
+            var farm = baseQuery.FirstOrDefault(e => e.Id == id);
             return MapFarmToResponse(farm);
         }
     }

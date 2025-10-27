@@ -13,5 +13,6 @@ namespace intapscamis.camis.data.Entities
         public string KeyValues { get; set; }
         public string OldValues { get; set; }
         public string NewValues { get; set; }
+        public UserAction UserActionNavigation { get; set; }
     }
 }

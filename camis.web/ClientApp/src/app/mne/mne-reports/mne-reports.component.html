@@ -1,0 +1,85 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card p-1">
+      <div class="card-header p-2">
+        <div class="row">
+          <div class="col-md-4">
+            <h5><i class="ti ti-device-desktop-analytics"></i> &nbsp;&nbsp;Submitted Reports</h5>
+          </div>
+          <div class="col-md-5 pb-0">
+            <div class="input-group mb-0">
+               <span class="input-group-text">
+                  <i class="ti ti-search"></i>
+                </span>
+              <input [(ngModel)]="term" (keyup)="load(0)" class="form-control " type="search" name="search"
+                     placeholder="Search" title="Search">
+            </div>
+          </div>
+          <div class="col-md-3" style="text-align: right">
+
+          </div>
+        </div>
+      </div>
+      <div class="card-block p-1" style="min-height: calc(65vh)">
+        <div *ngIf="!loading && !reports.length" class="align-center">
+          <p> {{ term ? ('No search results found for "' + term + '".') : 'No submitted reports, yet.' }}</p>
+        </div>
+
+        <div *ngIf="!loading && reports.length && plan && plan.rootActivity">
+          <div class="title text-success">Latest progress report:</div>
+          <app-activity-progress [activity]="plan.rootActivity"></app-activity-progress>
+        </div>
+        <div class="table-responsive" *ngIf="!loading && reports.length">
+          <table class="table">
+            <caption class="title text-success">Showing {{ reports.length }}
+              of {{ totalReports }} {{ term ? 'search result' : 'submitted report' }}{{ reports.length == 1 ? '' : 's' }}{{ term ? (' found for "' + term + '"') : null }}
+              .
+            </caption>
+            <thead>
+            <tr class="">
+              <th>#</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Progress</th>
+              <th>Note</th>
+              <th>Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let report of reports; index as i">
+              <td>
+                <label [for]="'report-open-btn-' + report.id">{{ i + 1 }}</label>
+              </td>
+              <td>
+                <label [for]="'report-open-btn-' + report.id">{{ report.reportTime | date }}</label>
+              </td>
+              <td>
+                <label
+                  [for]="'report-open-btn-' + report.id">{{ report.reportStatus ? report.reportStatus.name : null }}</label>
+              </td>
+              <td>
+                <label [for]="'report-open-btn-' + report.id">{{ report.calculatedProgress | percent }}</label>
+              </td>
+              <td>
+                <label [for]="'report-open-btn-' + report.id">{{ report.note }}</label>
+              </td>
+              <td class="text-nowrap align-right">
+                <button [id]="'report-open-btn-' + report.id" class="btn btn-sm btn-custom-light" title="Detail"
+                        (click)="openDetail(report.id)">
+                  <i class="ti ti-eye"></i>
+                </button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card-footer pb-1">
+        <div class="text-center">
+          <button type="button" class="btn btn-custom-light btn-sm" (click)="load()">Load More...</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

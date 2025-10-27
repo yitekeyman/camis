@@ -11,6 +11,7 @@ namespace intapscamis.camis.domain.Documents.Models
         public string Mimetype { get; set; }
         public int? Type { get; set; }
         public string Filename { get; set; }
+        public byte[] File { get; set; }
         
         // only for viewing documents from a custom url (esp. in work items)
         public string OverrideFilePath { get; set; }

@@ -2,6 +2,7 @@
 import {LandBankComponent} from "./land-bank.component";
 import {NgModule} from "@angular/core";
 import {LbCertificationComponent} from "./lb-certification/lb-certification.component";
+import {GenerateReportComponent} from "../_shared/report/generate-report/generate-report.component";
 
 const routes: Routes = [{
   path: '',
@@ -43,6 +44,7 @@ const routes: Routes = [{
       path: 'task/certification/:workflowId',
       loadComponent: () =>import('./lb-certification/lb-certification.component').then((c) => c.LbCertificationComponent)
     },
+
   ]
 }];
 

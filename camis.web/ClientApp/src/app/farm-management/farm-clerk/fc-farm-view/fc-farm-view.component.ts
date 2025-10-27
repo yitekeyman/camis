@@ -22,8 +22,11 @@ export class FcFarmViewComponent implements OnInit {
   farm: any;
 
   plan: any;
+  loginRole='0';
 
-  constructor (private api: FarmApiService, private projectApi: ProjectApiService, private router: Router, private ar: ActivatedRoute, private keyCase:ObjectKeyCasingService) {}
+  constructor (private api: FarmApiService, private projectApi: ProjectApiService, private router: Router, private ar: ActivatedRoute, private keyCase:ObjectKeyCasingService) {
+    this.loginRole=localStorage.getItem("role");
+  }
 
   ngOnInit(): void {
     dialog.loading();

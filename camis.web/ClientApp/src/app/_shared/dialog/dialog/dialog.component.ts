@@ -3,10 +3,11 @@ import {DialogService} from '../dialog.service';
 import {Observable} from 'rxjs';
 import {IDialog, IDialogButton} from '../interfaces';
 import {CommonModule} from "@angular/common";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-dialog',
-  imports:[CommonModule],
+  imports:[CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './dialog.component.html',
   styleUrls: ['./dialog.component.css']
 })

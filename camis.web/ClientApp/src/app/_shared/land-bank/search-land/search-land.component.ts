@@ -4,7 +4,7 @@ import {Router} from '@angular/router';
 import {LandDataService} from '../../../_services/land-data.service';
 import {PagerService} from '../../../_services/pager.service';
 
-import {SearchLandModel, ResultViewModel} from '../../../_shared/land-bank/land.model';
+import {SearchLandModel, ResultViewModel} from '../land.model';
 import {ObjectKeyCasingService} from "../../../_services/object-key-casing.service";
 import {CommonModule} from "@angular/common";
 import dialog from "../../dialog";

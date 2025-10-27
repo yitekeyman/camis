@@ -4,11 +4,11 @@
       <div class="card-header p-2">
         <div class="row">
           <div class="col-md-6">
-            <h5><i class="ti ti-tractor"></i> Commercial Farm Registration</h5>
+            <h5><i class="ti ti-tractor"></i> &nbsp;&nbsp;Commercial Farm & Investment Details</h5>
           </div>
           <div class="col-md-6 align-right">
             <div class="btn-group" *ngIf="step">
-              <button class="btn btn-secondary" type="button" (click)="onSave()">
+              <button class="btn btn-custom-light" type="button" (click)="onSave()">
                 Save Changes
               </button>
             </div>
@@ -54,12 +54,12 @@
           </div>
           <div class="card m-0" [id]="'farm-reg-panel'" *ngIf="step == 2 && howOperator == 'NEW'"
                style="min-height: calc(70vh)">
-            <div class="card-header">
+            <div class="card-header p-3">
               <h5>Step 2 of 4: Register New Farm Owner</h5>
             </div>
             <div class="card-body" style="min-height: calc(70vh)">
               <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-7">
                   <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
@@ -227,7 +227,7 @@
                             <i class="ti ti-exclamation-circle me-1"></i>
                             This field is required
                           </span></label>
-                        <input [(ngModel)]="opPhone" type="tel" name="op-phone" id="op-phone" class="form-control" required placeholder="Enter valid mobile no" pattern="+251-(000)-000000">
+                        <input [(ngModel)]="opPhone" type="tel" name="op-phone" id="op-phone" class="form-control" required placeholder="Enter valid mobile no">
                       </div>
                     </div>
                     <div class="col-md-6">
@@ -237,16 +237,16 @@
                             <i class="ti ti-exclamation-circle me-1"></i>
                             Enter valid email address
                           </span></label>
-                        <input [(ngModel)]="opEmail" type="email" name="op-email" id="op-email" class="form-control" (keyup)="validateEmail()">
+                        <input [(ngModel)]="opEmail" type="email" name="op-email" id="op-email" class="form-control" plaseholder="Enter Email Address" (keyup)="validateEmail()">
                       </div>
 
                     </div>
                   </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
 
                   <div class="form-group">
-                    <label class="control-label">
+                    <label class="control-label" *ngIf="!opAddress">
                       Address:<span class="text-danger">(*)&nbsp;</span>
                       <span *ngIf="!opAddress" class="error-message">
                             <i class="ti ti-exclamation-circle me-1"></i>
@@ -255,6 +255,18 @@
                     </label>
                     <app-address-selector [finalAddressId]="opAddress" (onChange)="opAddress = $event">
                     </app-address-selector>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="card p-1">
+                    <div class="card-body p-1">
+                      <img [src]="getPhotoSource()" style="max-width: 100%; max-height: 300px; object-fit: cover;" class="profile-image">
+                    </div>
+                    <div class="card-footer p-1">
+                      <input type="file" id="opPhoto" name="opPhoto" style="display: none"
+                             (change)="readPhotoFile($event)" accept="image/*">
+                      <button class="btn btn-success btn-sm w-100" (click)="changePhoto()">Upload Profile</button>
+                    </div>
                   </div>
                 </div>
                 <div class="col-md-12">
@@ -277,7 +289,7 @@
                 </div>
                 <div class="col-md-6 align-right">
                   <button type="button" class="btn btn-primary" (click)="step = 3"
-                          [disabled]="!opName || !opNationality || !opType || !opAddress || !opCapital || !opPhone || (opType==='1' && (opGender && opMartialStatus && opBirthdate)) || (opType==='6' && opVentures) || !validEmail">
+                          [disabled]="(!opName || !opNationality || !opType || !opAddress || !opCapital || !opPhone || ((opType==='1' && (!opGender || !opMartialStatus || !opBirthdate)) || (opType==='6' && !opVentures)) || !validEmail)">
                     Next
                   </button>
                 </div>
@@ -287,7 +299,7 @@
           </div>
           <div class="card m-0" [id]="'farm-reg-panel'" *ngIf="step == 2 && howOperator == 'EXISTING'"
                style="min-height: calc(70vh)">
-            <div class="card-header">
+            <div class="card-header p-3">
               <h5>Step 2 of 4: Select from Registered Farm Owners</h5>
             </div>
             <div class="card-body pt-0" style="min-height: calc(70vh)">
@@ -383,7 +395,7 @@
             </div>
           </div>
           <div class="card m-0" [id]="'farm-reg-panel'" *ngIf="step == 3" style="min-height: calc(70vh)">
-            <div class="card-header">
+            <div class="card-header p-3">
               <h5>Step 3 of 4: Commercial Farm Details</h5>
             </div>
             <div class="card-body" style="min-height: calc(70vh)">
@@ -391,7 +403,7 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <label class="control-label" for="fr-type">Primary Farm Type:<span class="text-danger">(*)&nbsp;</span>
-                      <span *ngIf="!opVentures" class="error-message">
+                      <span *ngIf="!frType" class="error-message">
                             <i class="ti ti-exclamation-circle me-1"></i>
                             This field is required
                           </span></label>
@@ -454,7 +466,7 @@
             </div>
           </div>
           <div class="card m-0" [id]="'farm-reg-panel'" *ngIf="step == 4" style="min-height: calc(70vh)">
-            <div class="card-header">
+            <div class="card-header p-3">
               <h5>Step 4 of 4: Business Plan</h5>
             </div>
             <div class="card-body" style="min-height: calc(70vh)">

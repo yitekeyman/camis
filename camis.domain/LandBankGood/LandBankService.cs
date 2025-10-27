@@ -732,8 +732,7 @@ namespace intapscamis.camis.domain.LandBank
             land.CentroidY = latlng.lat;
 
         }
-
-
+        
         public LandAttributeName GetLandAttributeName()
         {
             LandAttributeName attribName = new LandAttributeName();

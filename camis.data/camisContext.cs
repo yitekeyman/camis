@@ -24,7 +24,7 @@ namespace intapscamis.camis.data.Entities
         {
             UserAction.Add(userAction);
             base.SaveChanges();
-            var auditEntries = OnBeforeSaveChanges(username, userAction.Id);
+            var auditEntries = OnBeforeSaveChanges(username, userAction);
             base.SaveChanges();
             OnAfterSaveChanges(auditEntries);
         }
@@ -38,14 +38,14 @@ namespace intapscamis.camis.data.Entities
                 Timestamp = DateTime.Now.Ticks
             };
             UserAction.Add(userAction);
-            var auditEnries = OnBeforeSaveChanges(username, userAction.Id);
+            var auditEnries = OnBeforeSaveChanges(username, userAction);
             base.SaveChanges();
             OnAfterSaveChanges(auditEnries);
 
             return userAction;
         }
 
-        private List<AuditEntry> OnBeforeSaveChanges(string username, long actionId)
+        private List<AuditEntry> OnBeforeSaveChanges(string username, UserAction actionId)
         {
             ChangeTracker.DetectChanges();
             var auditEntries = new List<AuditEntry>();

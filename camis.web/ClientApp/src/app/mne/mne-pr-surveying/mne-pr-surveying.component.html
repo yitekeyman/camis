@@ -1,0 +1,38 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card p-0">
+      <div class="card-header p-2">
+        <div class="row">
+          <div class="col-md-5">
+            <h5><i class="ti ti-tractor"></i>&nbsp;&nbsp;Commercial Farm & Investment Details</h5>
+          </div>
+          <div class="col-md-7 " style="text-align: right">
+            <div>
+              <button class="btn btn-custom me-2" type="button" *ngIf="plan && plan.id" (click)="goToReports(plan.id)">
+                View Progress Reports
+              </button>
+              <button  class="btn btn-custom-light me-2" type="button" *ngIf="loginRole==='8' && farm && farm.activityId"
+                      (click)="cancelProgressReport()">Cancel Report
+              </button>
+              <button  class="btn btn-custom" type="button" *ngIf="loginRole==='8' && farm && farm.activityId"
+                      (click)="surveyedProgressReport()" [disabled]="!surveyDocs.length">Submit for Data Encoder
+              </button>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+  <div class="col-md-12">
+    <app-document-selector
+      title="Upload Survey Documents *"
+      [documents]="surveyDocs"
+    ></app-document-selector>
+  </div>
+  <div *ngIf="!loading && farm">
+    <app-farm-detail *ngIf="farm" [farm]="farm"></app-farm-detail>
+  </div>
+</div>

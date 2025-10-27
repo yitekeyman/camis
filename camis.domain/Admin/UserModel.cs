@@ -1,6 +1,7 @@
 ﻿﻿using System;
+ using intapscamis.camis.domain.Workflows.Models;
 
-namespace intapscamis.camis.domain.Admin
+ namespace intapscamis.camis.domain.Admin
 {
     public enum UserActionType
     {
@@ -96,8 +97,33 @@ namespace intapscamis.camis.domain.Admin
         public string FullName { get; set; }
         public string Action { get; set; }
         public string ActionTime { get; set; }
+        public long Id{get; set; }
+        public AuditLogViewModel AuditLog { get; set; }=new AuditLogViewModel();
     }
 
+    public class AuditLogViewModel
+    {
+        public long Id { get; set; }
+        public string UserName { get; set; }
+        public string TableName { get; set; }
+        public string OldValues { get; set; }
+        public string NewValues { get; set; }
+        public long UserAction{get;set;}
+    }
+
+    public class SingleUserDetailsViewModel
+    {
+        public long Id { get; set; }
+        public string UserName { get; set; }
+        public string FullName { get; set; }
+        public string PhoneNo { get; set; }
+        public string Email { get; set; }
+        public int Status { get; set; }
+        public IList<LookUpModel> Roles { get; set; } = new List<LookUpModel>(); 
+        public string RegOn { get; set; }
+        public string LastSeen { get; set; }
+        public List<UserActionViewModel> Actions { get; set; } = new List<UserActionViewModel>();
+    }
     public class LoginViewModel
     {
         public string UserName { get; set; }
@@ -105,6 +131,11 @@ namespace intapscamis.camis.domain.Admin
         public long Role { get; set; }
     }
 
+    public class LoginReturnViewModel
+    {
+        public string UserName { get; set; }
+        public string FullName { get; set; }
+    }
     public class RegisterViewModel
     {
         public string Username { get; set; }
@@ -131,5 +162,39 @@ namespace intapscamis.camis.domain.Admin
     {
         public string UserName { get; set; }
         public int[] Roles { get; set; }
+    }
+
+    public class DashboardViewModel
+    {
+        public ParcelStat IdentifiedParcels { get; set; }=new ParcelStat();
+        public ParcelStat PreparedParcel { get; set; }=new ParcelStat();
+        public ParcelStat TransferredParcel { get; set; }=new ParcelStat();
+        public ParcelStat IrrigatedParcel { get; set; }=new ParcelStat();
+        public IList<ParcelStat> ParcelSuitableFor { get; set; } = new List<ParcelStat>();
+        public InvestmentStat InvestmentDataStat { get; set; }=new InvestmentStat();
+    }
+
+    public class ParcelStat
+    {
+        public LookUpModel ParcelStatus { get; set; } = new LookUpModel();
+        public int TotalParcels { get; set; }
+        public double TotalArea { get; set; }
+    }
+
+    public class InvestmentStat
+    {
+        public double InvestedCapital { get; set; }
+        public double InvestorCapital { get; set; }
+        public int TotalInvestors { get; set; }
+        public InvestorStat EthiopianOrigin { get; set; } = new InvestorStat();
+        public InvestorStat Local { get; set; } = new InvestorStat();
+        public InvestorStat ForeignOrigin { get; set; } = new InvestorStat();
+    }
+
+    public class InvestorStat
+    {
+        public int TotalInvestors { get; set; }
+        public double InvestorCapital { get; set; }
+        public double InvestmentCapital { get; set; }
     }
 }

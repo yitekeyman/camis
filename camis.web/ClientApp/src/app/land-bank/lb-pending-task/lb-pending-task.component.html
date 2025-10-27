@@ -31,7 +31,7 @@
           <td class=" ">{{ list.description }}</td>
           <td class=" "><b *ngIf="loginRole==='4'">Message from supervisor: </b><b  *ngIf="loginRole==='5'">Message from registrar: </b> {{list.workItemNote}}.</td>
           <td class=" ">{{list.sentUserName}}</td>
-          <td class=" ">{{list.workItemDate | date}}</td>
+          <td class=" "><span [title]="list.workItemDate">{{keyCase.convertDate(list.workItemDate)}}</span></td>
 
           <td class="align-center">
             <div class="btn-group">

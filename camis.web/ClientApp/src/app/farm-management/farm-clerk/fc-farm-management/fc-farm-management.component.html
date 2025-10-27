@@ -16,7 +16,7 @@
             </div>
           </div>
           <div class="col-md-3" style="text-align: right">
-            <button class="btn-success btn align-right" (click)="newFarmRegistration()">
+            <button class="btn-custom btn align-right" (click)="newFarmRegistration()" *ngIf="loginRole=='2'">
               Register New Farm & Owners
             </button>
 
@@ -72,7 +72,7 @@
                 <label [for]="'farm-open-btn-' + farm.id">{{ farm.description }}</label>
               </td>
               <td class="text-nowrap">
-                <button [id]="'farm-open-btn-' + farm.id" class="btn btn-sm btn-outline-primary" title="Detail"
+                <button [id]="'farm-open-btn-' + farm.id" class="btn btn-sm btn-custom-light" title="Detail"
                         (click)="openDetail(farm.id)">
                   <i class="ti ti-eye"></i>
                 </button>

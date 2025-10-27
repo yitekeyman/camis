@@ -24,5 +24,7 @@ namespace intapscamis.camis.data.Entities
         public ICollection<UserRole> UserRole { get; set; }
         public ICollection<WorkItem> WorkItem { get; set; }
         public ICollection<Workflow> Workflow { get; set; }
+        public ICollection<AuditLog> AuditLog { get; set; }
+        public virtual ActionType ActionTypeNavigation { get; set; }
     }
 }

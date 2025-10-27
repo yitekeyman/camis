@@ -1,0 +1,79 @@
+﻿<div class="row">
+  <div class="col-md-6" *ngIf="!showAuditLogModal">
+    <div class="card p-0">
+      <div class="card-header p-2">
+        <h5>Profile Deatils</h5>
+      </div>
+      <div class="card-body p-1">
+        <table class="table mb-0">
+          <tbody>
+          <tr>
+            <td><b>Full-Name:</b></td>
+            <td>{{profileDetails.fullName}}</td>
+          </tr>
+          <tr>
+            <td><b>Username:</b></td>
+            <td>{{profileDetails.userName}} </td>
+          </tr>
+          <tr>
+            <td><b>Mobile No:</b></td>
+            <td>{{profileDetails.phoneNo ||'[n/a]'}} </td>
+          </tr>
+          <tr>
+            <td><b>Email:</b></td>
+            <td>{{profileDetails.email ||'[n/a]'}}  </td>
+          </tr>
+          <tr>
+            <td><b>Roles:</b></td>
+            <td>
+              <span class="badge text-bg-info me-2" *ngFor="let r of profileDetails.roles">{{r.name}}</span>
+            </td>
+          </tr>
+          <tr>
+            <td><b>Registered On:</b></td>
+            <td>{{profileDetails.regOn}} </td>
+          </tr>
+          <tr>
+            <td><b>Last Seen:</b></td>
+            <td>{{profileDetails.lastSeen}} </td>
+          </tr>
+          <tr>
+            <td><b>Status:</b></td>
+            <td>{{profileDetails.staus == 1 ? "Active" : "Inactive" }} </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6" *ngIf="!showAuditLogModal">
+    <div class="card p-0">
+      <div class="card-header p-2">
+        <h5>Activity Log</h5>
+      </div>
+      <div class="card-body p-0" style="max-height: calc(72vh); overflow-y: auto">
+        <table class="table mb-0">
+          <thead>
+          <tr>
+            <th>#</th>
+            <th>Activity</th>
+            <th>TimeStamp</th>
+            <th>Action</th>
+          </tr>
+          </thead>
+          <tbody *ngIf="profileDetails.actions">
+          <tr *ngFor="let ac of profileDetails.actions; index as i">
+            <td>{{i+1}}</td>
+            <td>{{ac.action}}</td>
+            <td>{{ac.actionTime}}</td>
+            <td class="align-right"><button type="button" class="btn btn-sm btn-custom-light" *ngIf="ac.auditLog" (click)="showAuditLog(ac)"><i class="ti ti-eye"></i></button></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-12" *ngIf="showAuditLogModal">
+    <app-auditLog-detail *ngIf="showAuditLogModal" [auditLogItem]="auditDetails" (closeAuditLogDetails)="closeAuditLog()" [headerButton]="true"></app-auditLog-detail>
+  </div>
+</div>

@@ -1,18 +1,18 @@
 <div *ngIf="activity">
 
   <div class="item" [title]="activity.description">
-    <a class="name" [href]="'#detailDialog' + localId" role="button" type="button" data-toggle="modal">{{activity.name}}</a>
+    <a class="name" href="javascript:"  data-bs-toggle="modal" [attr.data-bs-target]="'#detailDialog'+localId">{{activity.name}}</a>
 
-    <a *ngIf="!readonly && !isRoot" [href]="'#deleteDialog' + localId" role="button" data-toggle="modal" type="button" title="Delete activity."><i class="fa fa-trash"></i></a>
-    <a *ngIf="!readonly" (click)="updateEditFields()" [href]="'#editDialog' + localId" role="button" type="button" data-toggle="modal" title="Edit activity."><i class="fa fa-pencil"></i></a>
+    <a *ngIf="!readonly && !isRoot" href="javascript:" data-bs-toggle="modal" [attr.data-bs-target]="'#deleteDialog' + localId" title="Delete activity."><i class="ti ti-trash"></i></a>
+    <a *ngIf="!readonly" (click)="updateEditFields()" href="javascript:" data-bs-toggle="modal" [attr.data-bs-target]="'#editDialog' + localId" title="Edit activity."><i class="ti ti-pencil"></i></a>
 
     <span *ngIf="!readonly && reportingMode" class="text-muted" style="border-right: 1px solid rgba(0,0,0,0.14)"></span>
 
-    <a *ngIf="reportingMode" [href]="'#reportDialog' + localId" role="button" type="button" data-toggle="modal" title="Enter the progress for this activity."><i class="fa fa-clock-o"></i></a>
+    <a *ngIf="reportingMode"  href="javascript:" data-bs-toggle="modal" [attr.data-bs-target]="'#reportDialog' + localId" title="Enter the progress for this activity."><i class="ti ti-clock"></i></a>
 
     <span *ngIf="!readonly" class="text-muted" style="border-right: 1px solid rgba(0,0,0,0.14)"></span>
 
-    <a *ngIf="!readonly" [href]="'#createDialog' + localId" role="button" type="button" data-toggle="modal" title="Create child activity."><i class="fa fa-plus"></i></a>
+    <a *ngIf="!readonly"  href="javascript:" data-bs-toggle="modal" [attr.data-bs-target]="'#createDialog' + localId" title="Create child activity."><i class="ti ti-plus"></i></a>
   </div>
 
   <div class="nanny">
@@ -44,12 +44,13 @@
 
 
   <!-- Detail -->
-  <div [id]="'detailDialog' + localId" class="modal fade" role="dialog">
+  <div [id]="'detailDialog' + localId" class="modal fade"  [attr.aria-labelledby]="'detailDialog'+localId+'Label'" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
           <h4 class="modal-title">Activity: {{activity.name}}</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <h5 class="title">General Information</h5>
@@ -124,19 +125,20 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-custom-light" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Create -->
-  <div *ngIf="!readonly" [id]="'createDialog' + localId" class="modal fade" role="dialog">
+  <div *ngIf="!readonly" [id]="'createDialog' + localId" class="modal fade"  [attr.aria-labelledby]="'createDialog'+localId+'Label'" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
           <h4 class="modal-title">Create a Child Activity</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div>
@@ -351,12 +353,12 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancel</button>
           <button
             (click)="create()"
             type="button"
             class="btn btn-primary"
-            data-dismiss="modal"
+            data-bs-dismiss="modal"
             [disabled]="addFromTemplate == 'YES' ? (!selectedTemplateId) : (!create_name || !create_weight)"
           >Create</button>
         </div>
@@ -365,12 +367,13 @@
   </div>
 
   <!-- Edit -->
-  <div *ngIf="!readonly" [id]="'editDialog' + localId" class="modal fade" role="dialog">
+  <div *ngIf="!readonly" [id]="'editDialog' + localId" class="modal fade" [attr.aria-labelledby]="'editDialog'+localId+'Label'" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
           <h4 class="modal-title">Edit Activity: {{activity.name}}</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <h5 class="title">General Information</h5>
@@ -557,12 +560,12 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancel</button>
           <button
             (click)="edit()"
             type="button"
             class="btn btn-primary"
-            data-dismiss="modal"
+            data-bs-dismiss="modal"
             [disabled]="!edit_name || !edit_weight"
           >Save Changes</button>
         </div>
@@ -571,12 +574,13 @@
   </div>
 
   <!-- Delete -->
-  <div *ngIf="!readonly" [id]="'deleteDialog' + localId" class="modal fade" role="dialog">
+  <div *ngIf="!readonly" [id]="'deleteDialog' + localId" class="modal fade" [attr.aria-labelledby]="'deleteDialog'+localId+'Label'" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
           <h4 class="modal-title text-danger">Confirm Deletion</h4>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
         </div>
         <div class="modal-body">
           <p class="text-warning">Are you sure you want to delete this activity and all of its subactivities?</p>
@@ -602,12 +606,13 @@
   </div>
 
   <!-- Report -->
-  <div *ngIf="reportingMode" [id]="'reportDialog' + localId" class="modal fade" role="dialog">
+  <div *ngIf="reportingMode" [id]="'reportDialog' + localId" class="modal fade" [attr.aria-labelledby]="'reportDialog'+localId+'Label'" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
           <h4 class="modal-title">Progress for Activity: {{activity.name}}</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <p style="display: flex; padding-top: 15px">

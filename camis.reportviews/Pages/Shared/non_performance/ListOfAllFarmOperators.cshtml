@@ -8,34 +8,33 @@
     var i = 1;
     var type = (int)Model.Request.SelectedReportType;
     var uids = Model.OperatorList.Select(m => m.Id).Distinct();
-
 }
 
-<table class="table table-striped jambo_table bulk_action" id="tclick">
+<table class="table" id="tclick">
     <thead>
 
-        <tr class="headings">
-            <th class="column-title">No</th>
+    <tr class="headings">
+        <th class="column-title">#</th>
 
-            <th class="column-title">Name</th>
+        <th class="column-title">Name</th>
 
-            <th class="column-title">Nationality</th>
-            <th class="column-title">Type</th>
-            <th class="column-title">Phone</th>
-            <th class="column-title">Email</th>
-            <th class="column-title numberValue">Investment Capital</th>
+        <th class="column-title">Nationality</th>
+        <th class="column-title">Type</th>
+        <th class="column-title">Phone</th>
+        <th class="column-title">Email</th>
+        <th class="column-title ">Investment Capital</th>
 
-            <th class="column-title">Origin</th>
+        <th class="column-title">Origin</th>
 
-            <th class="column-title">Registration</th>
+        <th class="column-title">Registration</th>
 
-        </tr>
+    </tr>
     </thead>
     <tbody>
-        @foreach (var id in uids)
-        {
-            var all = Model.OperatorList.Where(m => m.Id == id).ToList();
-            var item = all.FirstOrDefault();
+    @foreach (var id in uids)
+    {
+        var all = Model.OperatorList.Where(m => m.Id == id).ToList();
+        var item = all.FirstOrDefault();
         <tr>
             <td class="column-title">@(i++)</td>
             <td class="column-title">@item.Name   </td>
@@ -46,15 +45,15 @@
             <td class="column-title numberValue">@item.InvestedCapital</td>
             <td class="column-title">@item.Origin</td>
             <td class="column-title">
-                @foreach(var r in all)
+                @foreach (var r in all)
                 {
                     <p>@r.RegistrationType | @r.LicenseNumber | @r.Authroity </p>
                 }
             </td>
 
         </tr>
-        }
-        @*@foreach (var item in Model.OperatorList)
+    }
+    @*@foreach (var item in Model.OperatorList)
         {
             <tr>
                 <td class="column-title">@(i++)</td>
@@ -71,22 +70,23 @@
 
             </tr>
         }*@
-        @if (Model.OperatorList.Count() > 0)
-        {
-
-            <tr>
-                <td class="column-title"></td>
-                <td class="column-title"></td>
-                <td class="column-title"></td>
-                <td class="column-title"></td>
-                <td class="column-title"></td>
-                <td class="column-title"></td>
-                <td class="column-title numberValue">@Math.Round(Model.OperatorList.Sum(m => m.InvestedCapital), 2)</td>
-                <td class="column-title"></td>
-                <td class="column-title"></td>
-
-            </tr>
-
-        }
     </tbody>
+    @if (Model.OperatorList.Count() > 0)
+    {
+        <tfoot>
+        <tr>
+            <td class="column-title"></td>
+            <td class="column-title"></td>
+            <td class="column-title"></td>
+            <td class="column-title"></td>
+            <td class="column-title"></td>
+            <td class="column-title"></td>
+            <td class="column-title numberValue">@Math.Round(Model.OperatorList.Sum(m => m.InvestedCapital), 2)</td>
+            <td class="column-title"></td>
+            <td class="column-title"></td>
+
+        </tr>
+        </tfoot>
+    }
+
 </table>

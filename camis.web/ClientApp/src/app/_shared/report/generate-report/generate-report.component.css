@@ -1,24 +1,20 @@
-.landBank_x_panel{
-    min-height: 91.5vh;
+
+.table, p{
+  font-size: 0.775rem;
 }
-.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, 
-.table>thead>tr>th{
-    cursor: pointer;
-}
-.land-type-select {
-    padding: 7px!important;
-    border: 1px solid rgba(221,226,232,.49)!important;
-    border-radius: 25px!important; width: 100%;
-}
-#search{
-    width: 100%;
-}
+
 .edit-button{
     padding: 0 4px!important;
     z-index: 1000!important;
 }
-.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th{
+.table>tbody>tr>th,  .table>thead>tr>th,.table>thead>tr>td{
+  text-align: center;
+}
+ .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th{
     padding: 4px!important;
+}
+.table>tfoot>tr>td, .table>tfoot>tr>th{
+  font-weight: 500;
 }
 .pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover{
     background-color: #046904!important;
@@ -41,7 +37,7 @@
     .pagination-nav{
         left: 20%;
         transform: translate(-20%, 0);
-    }    
+    }
 }
 .goto-link {
     color: black;
@@ -49,14 +45,11 @@
     text-decoration: underline;
 }
 
-.form-label {
+.form-label, label {
     text-align: left !important;
+  font-weight: 500 !important;
+  font-size: 0.775rem;
 }
-
-.generate {
-    margin-left: 25px;
-}
-
 td.column-title.numberValue {
     text-align: right !important;
     margin-right: 1em !important;
@@ -66,23 +59,11 @@ th.column-title.numberValue {
     text-align: right !important;
     margin-right: 1em !important;
 }
-
-.table>thead>tr>th {
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
-}
-
-.table>tbody>tr>td {
-    padding-top: 6px !important;
-    padding-bottom: 6px !important;
-}
-
 .report-title {
     text-align:  center;
-    padding-top: 15px;
-    padding-bottom: 15px;
 }
 
-.title-center {
-    text-align: center;
+
+.dropdown-item{
+  font-size: 0.775rem;
 }

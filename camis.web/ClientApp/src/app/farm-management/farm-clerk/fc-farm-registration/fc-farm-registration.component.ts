@@ -14,19 +14,20 @@ import {DocumentModule} from "../../../_shared/document/document.module";
 import {AddressModule} from "../../../_shared/address/address.module";
 import {AuthorityRegistrarComponent} from "../../../_shared/farm/authority-registrar/authority-registrar.component";
 import {AddressSelectorComponent} from "../../../_shared/address/address-selector/address-selector.component";
+import {IDocument} from "../../../_shared/document/interfaces";
 
 @Component({
-    selector: 'app-fc-farm-registration',
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-      FcProjectDetailRegistrationComponent,
-      DocumentModule,
-      AddressSelectorComponent,
-      AuthorityRegistrarComponent
-    ],
-    templateUrl: 'fc-farm-registration.component.html'
+  selector: 'app-fc-farm-registration',
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    FcProjectDetailRegistrationComponent,
+    DocumentModule,
+    AddressSelectorComponent,
+    AuthorityRegistrarComponent
+  ],
+  templateUrl: 'fc-farm-registration.component.html'
 })
 export class FcFarmRegistrationComponent implements OnInit {
 
@@ -59,7 +60,17 @@ export class FcFarmRegistrationComponent implements OnInit {
   opVentures: string[] = [];
   opVentureResults: any[] = []; // only in UI
   opVentureResultSelections: string[] = []; // only in UI
-
+  opPhotoId: string = null;
+  opPhoto: IDocument = {
+    file: undefined,
+    filename: '',
+    mimetype: '',
+    date: null,
+    note: '',
+    ref: '',
+    id: ''
+  };
+  opPhotoFile = "";
   searching = true;
   operatorTerm = '';
   totalOperators = 0;
@@ -82,12 +93,12 @@ export class FcFarmRegistrationComponent implements OnInit {
       activityPlanDetails: [],
       children: []
     },
-    statusId:'',
-    note:'',
+    statusId: '',
+    note: '',
     documents: []
   };
 
-  constructor (
+  constructor(
     private api: FarmApiService,
     private router: Router,
     private ar: ActivatedRoute,
@@ -97,11 +108,26 @@ export class FcFarmRegistrationComponent implements OnInit {
 
   ngOnInit(): void {
     dialog.loading();
-    this.api.getAllFarmOperatorTypes().subscribe(farmOperatorTypes => {this.keyCase.camelCase(farmOperatorTypes);this.farmOperatorTypes = farmOperatorTypes}, dialog.error);
-    this.api.getAllFarmOperatorOrigins().subscribe(farmOperatorOrigins =>{this.keyCase.camelCase(farmOperatorOrigins); this.farmOperatorOrigins = farmOperatorOrigins}, dialog.error);
-    this.api.getAllFarmTypes().subscribe(farmTypes => {this.keyCase.camelCase(farmTypes);this.farmTypes = farmTypes}, dialog.error);
-    this.api.getAllRegistrationAuthorities().subscribe(registrationAuthorities => {this.keyCase.camelCase(registrationAuthorities);this.registrationAuthorities = registrationAuthorities}, dialog.error);
-    this.api.getAllRegistrationTypes().subscribe(registrationTypes => {this.keyCase.camelCase(registrationTypes);this.registrationTypes = registrationTypes}, dialog.error);
+    this.api.getAllFarmOperatorTypes().subscribe(farmOperatorTypes => {
+      this.keyCase.camelCase(farmOperatorTypes);
+      this.farmOperatorTypes = farmOperatorTypes
+    }, dialog.error);
+    this.api.getAllFarmOperatorOrigins().subscribe(farmOperatorOrigins => {
+      this.keyCase.camelCase(farmOperatorOrigins);
+      this.farmOperatorOrigins = farmOperatorOrigins
+    }, dialog.error);
+    this.api.getAllFarmTypes().subscribe(farmTypes => {
+      this.keyCase.camelCase(farmTypes);
+      this.farmTypes = farmTypes
+    }, dialog.error);
+    this.api.getAllRegistrationAuthorities().subscribe(registrationAuthorities => {
+      this.keyCase.camelCase(registrationAuthorities);
+      this.registrationAuthorities = registrationAuthorities
+    }, dialog.error);
+    this.api.getAllRegistrationTypes().subscribe(registrationTypes => {
+      this.keyCase.camelCase(registrationTypes);
+      this.registrationTypes = registrationTypes
+    }, dialog.error);
 
     this.ar.params.subscribe(params => {
       this.workflowId = params['workflowId'] ? params['workflowId'] : null;
@@ -114,7 +140,9 @@ export class FcFarmRegistrationComponent implements OnInit {
             this.api.getLastWorkItem(this.workflowId).subscribe(workItem => {
               this.keyCase.camelCase(workItem);
               const f = workItem.data;
-              if (!f) { return; }
+              if (!f) {
+                return;
+              }
               this.keyCase.camelCase(f);
 
               // step 1 [& step 2]
@@ -144,6 +172,8 @@ export class FcFarmRegistrationComponent implements OnInit {
                 this.opBirthdate = o.birthdate && new Date(o.birthdate).toISOString().slice(0, 10) || this.opBirthdate;
 
                 this.opVentures = o.ventures || []
+                this.opPhoto=o.photo;
+                this.opPhotoId=o.photoId;
               }
 
               // step 3
@@ -183,7 +213,9 @@ export class FcFarmRegistrationComponent implements OnInit {
             }, dialog.error);
           }
 
-          if (!this.step) { this.step = 1; }
+          if (!this.step) {
+            this.step = 1;
+          }
           dialog.close();
         });
     }, dialog.error);
@@ -192,7 +224,7 @@ export class FcFarmRegistrationComponent implements OnInit {
 
   loadOperators(skip = this.operators.length, take = 10) {
     return this.api.searchFarmOperators(this.operatorTerm, skip, take).subscribe(operatorsPaginator => {
-this.keyCase.camelCase(operatorsPaginator);
+      this.keyCase.camelCase(operatorsPaginator);
       this.totalOperators = operatorsPaginator.totalSize
       this.operators = this.operators.slice(0, skip).concat(operatorsPaginator.items);
       this.searching = false;
@@ -200,7 +232,7 @@ this.keyCase.camelCase(operatorsPaginator);
   }
 
   onOrgTypeChange() {
-    if(this.opType==='6'){
+    if (this.opType === '6') {
       this.searchVentures('');
     }
   }
@@ -208,7 +240,11 @@ this.keyCase.camelCase(operatorsPaginator);
   searchVentures(term: string): void {
     dialog.loading();
     this.api.searchFarmOperators(term, 0, 25)
-      .subscribe(result => {this.keyCase.camelCase(result);this.opVentureResults = result.items; dialog.close()}, dialog.error)
+      .subscribe(result => {
+        this.keyCase.camelCase(result);
+        this.opVentureResults = result.items;
+        dialog.close()
+      }, dialog.error)
   }
 
   addVentures(): void {
@@ -335,7 +371,9 @@ this.keyCase.camelCase(operatorsPaginator);
           martialStatus: Number(this.opMartialStatus),
           birthdate: new Date(this.opBirthdate).getTime(),
 
-          ventures: this.opType == '6' ? this.opVentures : []
+          ventures: this.opType == '6' ? this.opVentures : [],
+          photo:this.opPhoto,
+          photoId:this.opPhotoId,
         };
         break;
       case 'EXISTING':
@@ -346,6 +384,7 @@ this.keyCase.camelCase(operatorsPaginator);
     this.keyCase.PascalCase(body);
     return body;
   }
+
   opTypeName(opTypeId: number): any {
     for (const type of this.farmOperatorTypes) {
       if (type.id == opTypeId) {
@@ -354,21 +393,94 @@ this.keyCase.camelCase(operatorsPaginator);
     }
     return null;
   }
-validEmail=true;
+
+  validEmail = true;
+
   validateEmail() {
     const value = this.opEmail
     if (!value) {
-      this.validEmail= true;
+      this.validEmail = true;
       return;
     }
     const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const valid = regex.test(value);
 
     if (!valid) {
-      this.validEmail= false;
-    }else{
-      this.validEmail=true;
+      this.validEmail = false;
+    } else {
+      this.validEmail = true;
     }
   }
 
+  getPhotoSource(): string {
+    if (this.opPhoto.file) {
+      // Convert base64 string to data URL for display
+      return `data:${this.opPhoto.mimetype};base64,${this.opPhoto.file}`;
+    }
+    return 'assets/images/user/avatar.jpg';
+  }
+
+  readPhotoFile(e: any): void {
+    const file = e.target.files[0] as File;
+
+    if (!file) {
+      this.opPhoto.file = undefined;
+      return;
+    }
+
+    // Check if the file is an image
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file (JPEG, PNG, GIF, etc.)');
+      this.resetPhoto();
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = (ev) => {
+      const result = (ev.target as any).result;
+      // Convert to base64 and remove data URL prefix if present
+      const base64String = result.includes('base64,')
+        ? result.split('base64,')[1]
+        : btoa(result);
+
+      this.opPhoto.file = base64String;
+    };
+
+    reader.onerror = (error) => {
+      console.error('Error reading file:', error);
+      this.resetPhoto();
+    };
+
+    // Use readAsDataURL for better image handling
+    reader.readAsDataURL(file);
+
+    this.opPhoto.filename = file.name;
+    this.opPhoto.mimetype = file.type;
+    this.opPhoto.date = new Date().getTime();
+    this.opPhoto.note = "Profile Photo";
+    this.opPhoto.ref = "Photo";
+    this.opPhoto.id = '';
+  }
+
+  changePhoto(): void {
+    // Trigger the file input click
+    const fileInput = document.getElementById('opPhoto') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  }
+
+  resetPhoto(): void {
+    this.opPhoto.file = undefined;
+    this.opPhoto.filename = '';
+    this.opPhoto.mimetype = '';
+    this.opPhoto.date = null;
+
+    // Reset the file input
+    const fileInput = document.getElementById('opPhoto') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  }
 }

@@ -5,7 +5,7 @@ import {
   LandType, Month, SoilTestType, Accessablity, SearchResult, LandPreparationModel,
   Topography, AgroEchologicalZone, ExistingLandUse, InvestmentType, MoistureSource,
   GroundWater, SurfaceWater, WaterTestParameters
-} from '../../../_shared/land-bank/land.model';
+} from '../land.model';
 import {DialogService} from '../../dialog/dialog.service';
 import {
   FormBuilder,
@@ -16,16 +16,18 @@ import {
   ReactiveFormsModule,
   FormsModule
 } from '@angular/forms';
-import {CamisMapComponent} from '../../../_shared/camismap/camismap.component';
+import {CamisMapComponent} from '../../camismap/camismap.component';
 import dialog from "../../dialog";
 import {ObjectKeyCasingService} from "../../../_services/object-key-casing.service";
 import {CommonModule} from "@angular/common";
 import {DocumentListComponent} from "../../document/document-list/document-list.component";
+import {SimpleFarmDetailsComponent} from "../../farm/farm-detail/simple-farm-details/simple-farm-details.component";
+import {FarmApiService} from "../../../_services/farm-api.service";
 
 @Component({
   selector: 'app-search-result-detail',
   templateUrl: './search-result-detail.component.html',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, CamisMapComponent, DocumentListComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, CamisMapComponent, DocumentListComponent, SimpleFarmDetailsComponent],
   styleUrls: ['./search-result-detail.component.css']
 })
 export class SearchResultDetailComponent implements OnInit {
@@ -67,11 +69,12 @@ export class SearchResultDetailComponent implements OnInit {
   splitNumberControl: AbstractControl;
 
   prepareModel: LandPreparationModel;
+  farm:any=null;
   @ViewChild('camis_map') map: CamisMapComponent;
   @ViewChild('prepareBtnClose') prepareBtnClose: ElementRef;
 
   constructor(private router: Router, public landService: LandDataService, private activeRoute: ActivatedRoute,
-              private formBuilder: FormBuilder, private dialog: DialogService, private keyCase: ObjectKeyCasingService) {
+              private formBuilder: FormBuilder, private dialog: DialogService, private keyCase: ObjectKeyCasingService, private farmService:FarmApiService) {
 
     if (localStorage.getItem('role') === '4') {
       this.clerkRole = true;
@@ -106,6 +109,12 @@ export class SearchResultDetailComponent implements OnInit {
     this.landService.GetLand(this.landID).subscribe(data => {
       this.keyCase.camelCase(data);
       this.searchedLandDetail = data;
+      if(this.searchedLandDetail['landType']===3){
+        this.farmService.getFarmByLandId(this.landID).subscribe(res=>{
+          this.keyCase.camelCase(res);
+          this.farm = res;
+        })
+      }
       this.getDependecies();
       dialog.close();
       let g = data.parcels[data.upins[0]];

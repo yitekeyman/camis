@@ -912,8 +912,8 @@
   color: #37882c;
   font-weight: 500;
 }
-.no-data {
-  color:rgba(0,0,0,0.6);
+.no-data i, .no-data h1, .no-data p{
+  color:rgba(0,0,0,0.3);
 }
 .no-data i{
   font-size:4rem;
@@ -922,3 +922,44 @@ table tbody .with-data{
   font-size: 10pt;
 }
 
+.btn-custom {
+  background: rgb(215, 231.2, 212.8);
+  color: #37882c;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+.btn-custom:hover{
+  background:  #37882c;
+  color: #FFFFFF;
+}
+.btn-custom-light{
+
+  background: rgb(215, 231.2, 212.8);
+  color: #72b325;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+.btn-custom-light:hover{
+  background:  #72b325;
+  color: #FFFFFF;
+}
+.card-header h5{
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 1.5rem;
+}
+.card-header h5 i{
+  color: #37882c;
+  font-weight: 500;
+  font-size: 1.5rem;
+}
+.btn:disabled{
+  cursor:not-allowed;
+  pointer-events: auto;
+}

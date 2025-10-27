@@ -62,11 +62,12 @@ namespace intapscamis.camis.domain.Farms.Models
         public string Gender { get; set; } // 'F' = Female, 'M' = Male
         public int? MartialStatus { get; set; } // 1 = Not Married, 2 = Married, 3 = Divorced, 4 = Widowed
         public long? Birthdate { get; set; } // javascript date format (in millis)
-        
+
         // if TypeId == 6:
         public Guid[] Ventures { get; set; } = { };
+        public Guid? PhotoId { get; set; }
 
-
+        public DocumentResponse Photo { get; set; }
         public ICollection<FarmOperatorRegistrationResponse> Registrations { get; set; }
 
         public FarmOperatorTypeResponse Type { get; set; }

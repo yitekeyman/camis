@@ -126,8 +126,7 @@ namespace intapscamis.camis.domain.Farms.Models
             }
             return equals;
         }
-
-
+        
     }
 
     public class DateParam

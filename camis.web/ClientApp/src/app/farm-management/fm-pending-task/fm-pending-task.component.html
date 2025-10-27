@@ -31,7 +31,7 @@
           <td class=" ">{{wf.description}}
            </td>
           <td class=" ">{{wf.action.username}}</td>
-          <td class=" ">{{wf.action.timeStr}}</td>
+          <td class=" "><span [title]="wf.action.timeStr">{{keyCase.convertDate(wf.action.timeStr)}}</span></td>
           <td> <span class="excerpt" *ngIf="wf.asyncMsgValue$ | async">
             {{wf.asyncMsgValue$ | async}}
           </span></td>

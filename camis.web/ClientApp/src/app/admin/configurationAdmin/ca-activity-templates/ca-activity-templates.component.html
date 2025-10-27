@@ -4,7 +4,7 @@
       <div class="card-header">
         <div class="row">
           <div class="col-md-4">
-            <h5><i class="ti ti-file-diff"></i> Activity Template</h5>
+            <h5><i class="ti ti-file-diff"></i> &nbsp;&nbsp; Project Activity Template</h5>
           </div>
         </div>
       </div>
@@ -46,11 +46,11 @@
                 ></app-activities>
 
                 <div style="text-align: right; padding-top: 10px">
-                  <button (click)="updateTemplate(template)" class="btn btn-sm btn-primary">
-                    <i class="fa fa-save"></i>&nbsp; Save Changes
+                  <button (click)="updateTemplate(template)" class="btn btn-sm btn-custom me-2">
+                    Save Changes
                   </button>
-                  <button (click)="deleteTemplate(template)" class="btn btn-sm btn-danger">
-                    <i class="fa fa-trash"></i>&nbsp; Delete
+                  <button (click)="deleteTemplate(template)" class="btn btn-sm btn-custom-light">
+                   Delete
                   </button>
                 </div>
               </div>
@@ -69,9 +69,9 @@
               style="flex: auto"
               class="form-control"/>
 
-            <button (click)="createTemplate()" type="button" class="btn btn-primary" title="Add a New Template"
+            <button (click)="createTemplate()" type="button" class="btn btn-custom" title="Add a New Template"
                     [disabled]="!create_name">
-              <i class="fa fa-plus"></i>&nbsp; Create Template
+               Create Template
             </button>
         </div>
       </div>

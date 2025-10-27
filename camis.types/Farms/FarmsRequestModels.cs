@@ -71,6 +71,8 @@ namespace intapscamis.camis.domain.Farms.Models
 
         
         public ICollection<FarmOperatorRegistrationRequest> Registrations { get; set; }
+        public string PhotoId { get; set; }
+        public DocumentRequest Photo { get; set; }
     }
 
     public class FarmOperatorRegistrationRequest

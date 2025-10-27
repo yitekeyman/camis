@@ -19,20 +19,20 @@
 <div>
 
 
-        <table class="table table-striped jambo_table bulk_action" id="tclick">
+        <table class="table" id="tclick">
             <thead>
 
                 <tr class="headings">
-                    <th class="column-title">No</th>
+                    <th class="column-title">#</th>
                     <th class="column-title">@Model.AddressType</th>
-                    <th class="column-title text-center numberValue" colspan="2">Land Area (ha)</th>
-                    <th class="column-title numberValue">Total Area (ha)</th>
+                    <th class="column-title text-center " colspan="2">Land Area (ha)</th>
+                    <th class="column-title ">Total Area (ha)</th>
                 </tr>
                 <tr class="headings">
                     <th class="column-title"></th>
                     <th class="column-title"></th>
-                    <th class="column-title numberValue">In Land Bank</th>
-                    <th class="column-title numberValue">Transferred</th>
+                    <th class="column-title ">In Land Bank</th>
+                    <th class="column-title ">Transferred</th>
                     <th class="column-title"></th>
                 </tr>
             </thead>
@@ -42,14 +42,14 @@
                     <tr>
                         <td class="column-title">@(i + 1)</td>
                         <td class="column-title">
-                        @if(lookup.ContainsKey(regions[i]))
-                        {
-                            <p> @lookup[regions[i]] (@regions[i])  </p>
-                        }
-                        else
-                        {
-                            <p> @regions[i] </p>
-                        }
+                            @if(lookup.ContainsKey(regions[i]))
+                            {
+                                <p> @lookup[regions[i]] (@regions[i])  </p>
+                            }
+                            else
+                            {
+                                <p> @regions[i] </p>
+                            }
                         </td>
                         <td class="column-title numberValue">
                             @Model.LandArea.Where(m => m.location == regions[i] && m.type == 2).Sum(m => m.area)
@@ -58,10 +58,12 @@
                         <td class="column-title numberValue">@Model.LandArea.Where(m => m.location == regions[i]).Sum(m => m.area)</td>
 
                     </tr>
+                   
                 }
+                </tbody>
                 @if(Model.LandArea.Count() > 0)
                 {
-
+                    <tfoot>
                 <tr>
                     <td class="column-title">Total</td>
                     <td class="column-title"></td>
@@ -72,9 +74,9 @@
                     <td class="column-title numberValue">@Model.LandArea.Sum(m => m.area)</td>
 
                 </tr>
-
+                    </tfoot>
                 }
-            </tbody>
+            
         </table>
     
     

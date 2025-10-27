@@ -117,6 +117,22 @@ namespace intapscamis.camis.domain.Documents
                     OverrideFilePath = doc.OverrideFilePath
                 };
         }
+        public static DocumentResponse ParseOperatorPhotoResponse(Document doc)
+        {
+            return doc == null
+                ? null
+                : new DocumentResponse
+                {
+                    Id = doc.Id,
+                    Date = doc.Date,
+                    Filename = doc.Filename,
+                    Mimetype = doc.Mimetype,
+                    Note = doc.Note,
+                    Ref = doc.Ref,
+                    Type = doc.Type,
+                    File = doc.File
+                };
+        }
         
         public static Document ParseDocument(DocumentRequest data)
         {

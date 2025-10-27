@@ -3,13 +3,13 @@
   <div class="col-md-7 p-2">
     <div class="card-header p-2">
       <div class="row">
-        <div class="col-md-3">
-          <h5><i class="ti ti-map-search"></i> Search Land Bank</h5>
+        <div class="col-sm-4">
+          <h5><i class="ti ti-map-search"></i>&nbsp;Search Parcel</h5>
         </div>
-        <div class="col-md-9 pb-0">
+        <div class="col-sm-8 pb-0">
           <form class="from" [formGroup]="searchForm" (ngSubmit)="searchResult()">
             <div class="row">
-              <div class="col-md-8">
+              <div class="col-sm-8">
                 <div class="input-group mb-0">
                   <input class="form-control" type="text" formControlName="keyword" placeholder="Search Parcel Using UPIN"
                          aria-label="Search">
@@ -20,7 +20,7 @@
                   </button>
                 </div>
               </div>
-              <div class="col-md-4">
+              <div class="col-sm-4">
                 <select formControlName="selectedLandType" [(ngModel)]="selectedLandId" class="form-select" (change)="selectChangeHandler()">
                   <option value="0">Land Status</option>
                   <option *ngFor="let type of landType" [value]="type.id">{{type.name}}</option>

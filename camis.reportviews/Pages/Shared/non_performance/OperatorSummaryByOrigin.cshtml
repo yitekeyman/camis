@@ -7,38 +7,38 @@
 @{
     var i = 1;
     var type = (int)Model.Request.SelectedReportType;
-
 }
 
-<table class="table table-striped jambo_table bulk_action" id="tclick">
+<table class="table" id="tclick">
     <thead>
 
-        <tr class="headings">
+    <tr class="headings">
 
-            <th class="column-title">Origin</th>
+        <th class="column-title">Origin</th>
 
-            <th class="column-title numberValue">Count</th>
+        <th class="column-title numberValue">Count</th>
 
 
-        </tr>
+    </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.OperatorSummaryByOrigins)
-        {
-            <tr>
-                <td class="column-title">@item.Origin   </td>
-                <td class="column-title numberValue">@item.Count</td>
+    @foreach (var item in Model.OperatorSummaryByOrigins)
+    {
+        <tr>
+            <td class="column-title">@item.Origin   </td>
+            <td class="column-title numberValue">@item.Count</td>
 
-            </tr>
-        }
-        @if (Model.OperatorSummaryByOrigins.Count() > 0)
-        {
-
-            <tr>
-                <td class="column-title"></td>
-                <td class="column-title numberValue">@Model.OperatorSummaryByOrigins.Sum(m => m.Count)</td>
-            </tr>
-
-        }
+        </tr>
+    }
     </tbody>
+    @if (Model.OperatorSummaryByOrigins.Count() > 0)
+    {
+        <tfoot>
+        <tr>
+            <td class="column-title"></td>
+            <td class="column-title numberValue">@Model.OperatorSummaryByOrigins.Sum(m => m.Count)</td>
+        </tr>
+        </tfoot>
+    }
+
 </table>

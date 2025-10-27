@@ -1,25 +1,25 @@
 <div *ngIf="document">
-  <table class="table mb-0">
-    <tbody>
-    <tr>
-      <td id="doc-icon">
-        <a (click)="openDoc($event, document)" [href]="getLink(document)" target="_blank">
-          <i class="ti ti-file-type-{{getFileExtension(document.filename)}}"></i>
-        </a>
+  <div class="card total-income-card warning overflow-hidden mt-1 mb-0">
+    <div class="card-body">
+      <div class="d-flex align-items-center">
+        <div class="avatar avatar-lg icon-warning m-r-5">
+          <a (click)="openDoc($event, document)" [href]="getLink(document)" target="_blank">
+            <i class="text-warning f-24 ti ti-file{{'-type-'+getFileExtension(document.filename)}}"></i>
+          </a>
 
-      </td>
-      <td id="doc-ref">
-        <a (click)="openDoc($event, document)" [href]="getLink(document)" target="_blank">
-          {{document.filename || 'Open Document'}}
-        </a>
-        <ul class="mb-0 ps-1">
-          <li> <i class="ti ti-checkbox"></i> &nbsp; <span><b>Ref.: </b>&nbsp; {{document.ref}}</span></li>
-          <li><i class="ti ti-checkbox"></i> &nbsp; <span><b>Date: </b>&nbsp; {{document.date | date}}</span></li>
-          <li><i class="ti ti-checkbox"></i> &nbsp; <span><b>Note: </b>&nbsp; {{document.note || '[n/a]'}}</span></li>
-        </ul>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+        </div>
+        <div class="ms-2">
+          <h4 class="f-w-400 mb-1"><a (click)="openDoc($event, document)" [href]="getLink(document)" target="_blank">
+            {{document.filename || 'Open Document'}}
+          </a></h4>
+          <ul class="mb-0 ps-1 opacity-50 text-sm">
+            <li> <i class="ti ti-checkbox"></i> &nbsp; <span><b>Ref.: </b>&nbsp; {{document.ref}}</span></li>
+            <li><i class="ti ti-checkbox"></i> &nbsp; <span><b>Date: </b>&nbsp; {{document.date | date}}</span></li>
+            <li><i class="ti ti-checkbox"></i> &nbsp; <span><b>Note: </b>&nbsp; {{document.note || '[n/a]'}}</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 

@@ -4,7 +4,7 @@
   <!-- Overlay controls -->
   <div class="map-controls-overlay">
     <div class="control-group">
-      <select [(ngModel)]="mapType" class="form-control form-control-sm" (change)="googleMapSetting()">
+      <select [(ngModel)]="mapType" class="form-select form-control-sm" (change)="googleMapSetting()">
         <option value="satellite">Satellite</option>
         <option value="roadmap">Roadmap</option>
         <option value="hybrid">Hybrid</option>
@@ -13,7 +13,7 @@
     </div>
 
     <div class="control-group">
-      <select [(ngModel)]="backTo" class="form-control form-control-sm" (change)="googleMapSetting()">
+      <select [(ngModel)]="backTo" class="form-select form-control-sm" (change)="googleMapSetting()">
         <option value="Land">Land</option>
         <option value="Kebele">Kebele</option>
         <option value="Woreda">Woreda</option>

@@ -22,6 +22,10 @@ const routes: Routes = [
       {
         path: 'pending-task',
         loadComponent: () => import('./pendingTask/pendingTask.component').then((c) => c.PendingTaskComponent)
+      },
+      {
+        path:'reports',
+        loadComponent:()=>import('./../_shared/report/generate-report/generate-report.component').then((c) => c.GenerateReportComponent)
       }
     ]
   }

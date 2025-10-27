@@ -4,7 +4,7 @@
       <div class="card-header">
         <div class="row">
           <div class="col-md-4">
-            <h5><i class="ti ti-device-desktop-analytics"></i> User Activity Log</h5>
+            <h5><i class="ti ti-device-desktop-analytics"></i>&nbsp;&nbsp;User Activity Log</h5>
           </div>
         </div>
       </div>
@@ -18,7 +18,7 @@
               </th>
               <th class="column-title">Full Name</th>
               <th class="column-title">Username</th>
-              <th class="column-title">Action</th>
+              <th class="column-title">Action Type</th>
               <th class="column-title">Time Stamp</th>
               <th class="align-center"><span class="nobr">Action</span>
               </th>
@@ -35,7 +35,8 @@
               <td class=" ">{{audit.action}}</td>
               <td class=" ">{{audit.actionTime}}</td>
 
-              <td class=" last align-center">
+              <td class=" last align-right">
+                <button type="button" class="btn btn-sm btn-custom-light" (click)="showAuditLog(audit)"><i class="ti ti-eye"></i></button>
               </td>
             </tr>
             </tbody>
@@ -78,5 +79,24 @@
     </div>
   </div>
 </div>
+<div class="modal fade" [class.show]="showAuditLogModal" [style.display]="showAuditLogModal ? 'block' : 'none'"
+     id="resetPassModal" tabindex="-1" aria-labelledby="resetPassModalLabel" aria-hidden="true">
+  <div class="modal-dialog "  style="max-width: 65%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="resetPassModalLabel">
+          Audit Log Detail
+        </h5>
+        <button type="button" class="btn-close" (click)="closeAuditLog()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0" style="max-height: calc(80vh);">
+        <app-auditLog-detail *ngIf="showAuditLogModal" [auditLogItem]="auditDetails" (closeAuditLogDetails)="closeAuditLog()" [headerButton]="false"></app-auditLog-detail>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
 
+<!-- Backdrop -->
+<div class="modal-backdrop fade show" *ngIf="showAuditLogModal" (click)="closeAuditLog()"></div>
 

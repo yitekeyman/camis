@@ -1,5 +1,9 @@
 
         <ul style="list-style: none; border-radius: 10px;background: rgba(226.8, 239.8, 211.4, 0.5);" class="mb-2 ps-1">
-          <li class="p-2" style="border-bottom: 1px dashed rgba(0,255,0,0.5)" *ngFor="let pair of pairs"> <span><i class="ti ti-list-details" style="color:#37882c"></i>&nbsp;<b>{{pair.unit}}:</b>&nbsp;{{pair.value}}</span></li>
+          <li class="p-2" style="border-bottom: 2px solid rgba(0,255,0,0.5)" > <h5 class="mb-1"><i class="ti ti-home-check" style="color:#37882c"></i>&nbsp;<b>Address</b></h5></li>
+          <li class="p-1" style="border-bottom: 1px dashed rgba(0,255,0,0.5)" *ngFor="let pair of pairs"> <span><i class="ti ti-list-details" style="color:#37882c"></i>&nbsp;<b>{{pair.unit}}:</b>&nbsp;{{pair.value}}</span></li>
+          <li class="p-1" style="border-bottom: 1px dashed rgba(0,255,0,0.5)" *ngIf="isDisplay"> <span><i class="ti ti-list-details" style="color:#37882c"></i>&nbsp;<b>Phone: </b>&nbsp;{{phone || '[n/a]'}}</span></li>
+          <li class="p-1"  *ngIf="isDisplay"> <span><i class="ti ti-list-details" style="color:#37882c"></i>&nbsp;<b>Email: </b>&nbsp;{{email || '[n/a]'}}</span></li>
+
         </ul>
 

@@ -10,52 +10,47 @@
     var i = 1;
     var type = (int)Model.Request.SelectedReportType;
     var lookup = Model.LocationLookup;
-
 }
 
 <table class="table table-striped jambo_table bulk_action" id="tclick">
     <thead>
 
-        <tr class="headings">
-            <th class="column-title">No</th>
-            <th class="column-title">@Model.AddressType</th>
-            <th class="column-title numberValue">Number Of Projects</th>
-            <th class="column-title numberValue">Number of Total Project Area (ha) </th>
-            <th class="column-title numberValue">Total Area Of Subleased Land</th>
+    <tr class="headings">
+        <th class="column-title">#</th>
+        <th class="column-title">@Model.AddressType</th>
+        <th class="column-title ">Number Of Projects</th>
+        <th class="column-title ">Number of Total Project Area (ha)</th>
+        <th class="column-title ">Total Area Of Subleased Land</th>
 
-        </tr>
+    </tr>
 
     </thead>
     <tbody>
-        @foreach (var item in Model.FarmLandSummary)
-        {
+    @foreach (var item in Model.FarmLandSummary)
+    {
+        <tr>
 
-            <tr>
+            <td class="column-title">@(i++)</td>
+            <td class="column-title">
+                @if (lookup.ContainsKey(item.Location))
+                {
+                    <p>@lookup[item.Location]</p>
+                }
+                else
+                {
+                    <p>@item.Location</p>
+                }
+            </td>
+            <td class="column-title numberValue">@item.Count</td>
+            <td class="column-title numberValue">@Math.Round(item.Area, 2)</td>
+            <td class="column-title numberValue">@Math.Round(item.SubleasedArea, 2)</td>
 
-                <td class="column-title">@(i++)</td>
-                <td class="column-title">
-                    @if (lookup.ContainsKey(item.Location))
-                    {
-                        <p>@lookup[item.Location]</p>
-                    }
-                    else
-                    {
-                        <p>@item.Location</p>
-                    }
-                </td>
-                <td class="column-title numberValue">@item.Count</td>
-                <td class="column-title numberValue">@Math.Round(item.Area, 2)</td>
-                <td class="column-title numberValue">@Math.Round(item.SubleasedArea, 2)</td>
-
-            </tr>
-
-
-
-
-        }
-        @if(Model.FarmLandSummary.Count() > 0)
-        {
-
+        </tr>
+    }
+    </tbody>
+    @if (Model.FarmLandSummary.Count() > 0)
+    {
+        <tfoot>
         <tr>
 
             <td class="column-title">Total</td>
@@ -65,6 +60,6 @@
             <td class="column-title numberValue">@Math.Round(Model.FarmLandSummary.Sum(m => m.SubleasedArea), 2)</td>
 
         </tr>
-        }
-    </tbody>
+        </tfoot>
+    }
 </table>

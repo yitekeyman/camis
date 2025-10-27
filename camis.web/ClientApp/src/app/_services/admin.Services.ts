@@ -62,4 +62,10 @@ export class AdminServices {
   public resetPass(user: ResetPassword) {
     return this.apiService.post('admin/resetpassword', user);
   }
+  public getSingleUserResult(username: string) {
+    return this.apiService.get(`admin/GetSingleUserResult?username=${username}`);
+  }
+  public GetDashboard() {
+    return this.apiService.get(`admin/GetDashboard`);
+  }
 }

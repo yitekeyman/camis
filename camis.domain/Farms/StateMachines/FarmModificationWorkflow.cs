@@ -167,6 +167,24 @@ namespace intapscamis.camis.domain.Farms.StateMachines
             var workItemId = Guid.NewGuid();
             
             // tag each (FarmRequest data).Registrations[i].Document 
+            if (data?.Operator?.Photo != null)
+            {
+                const string pathPrefix = "/api/Farms/InWorkItemOperatorPhoto/";
+                if (data.Operator.Photo.OverrideFilePath != null &&
+                    data.Operator.Photo.OverrideFilePath.Substring(0, pathPrefix.Length) == pathPrefix)
+                {
+                    var lastWorkItem = _workflowService.GetLastWorkItem(Workflow.Id);
+                    if (lastWorkItem != null)
+                    {
+                        var file = _service.InWorkItemOperatorPhoto(lastWorkItem.Id, data.Operator.Photo.Id??Guid.Empty).File;
+                        if (file != null) data.Operator.Photo.File = Convert.ToBase64String(file);
+                    }
+                }
+                    
+                data.Operator.Photo.Id = data.Operator.Photo.Id ?? Guid.NewGuid();
+                data.Operator.Photo.OverrideFilePath = $"{pathPrefix}{workItemId}?photoId={data.Operator.Photo.Id}";
+                
+            }
             if (data?.Registrations != null)
             {
                 var i = -1;

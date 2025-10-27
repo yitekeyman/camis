@@ -24,14 +24,14 @@ namespace intapscamis.camis.data
         public List<PropertyEntry> TemporaryProperties { get; } = new List<PropertyEntry>();
 
         public bool HasTemporaryProperties => TemporaryProperties.Any();
-        public long UserAction { get; set; }
+        public UserAction UserAction { get; set; }
 
         public AuditLog ToAudit()
         {
             var audit = new AuditLog();
             audit.TableName = TableName;
             audit.UserName = UserName;
-            audit.UserAction = UserAction;
+            audit.UserActionNavigation = UserAction;
             audit.TimeStamp = DateTime.UtcNow.Ticks;
             audit.KeyValues = JsonConvert.SerializeObject(KeyValues);
             audit.OldValues = OldValues.Count == 0 ? null : JsonConvert.SerializeObject(OldValues);

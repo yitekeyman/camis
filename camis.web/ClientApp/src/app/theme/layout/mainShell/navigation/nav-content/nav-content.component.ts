@@ -39,32 +39,43 @@ export class NavContentComponent implements OnInit {
   // Constructor
   constructor() {
     this.role = localStorage.getItem('role');
+    const defaultChildren:NavigationItem[]=[
+      {
+        id: 'default',
+        title: 'Dashboard',
+        type: 'item',
+        classes: 'nav-item',
+        url: '/default/dashboard',
+        icon: 'ti ti-dashboard',
+        breadcrumbs: false
+      },
+      {
+        id: 'pending-task',
+        title: 'Pending Task',
+        type: 'item',
+        classes: 'nav-item',
+        url: '/default/pending-task',
+        icon: 'ti ti-list-details',
+        breadcrumbs: false
+      }
+    ];
+    if (['1','3', '5', '6', '7','8','9'].includes(this.role || '')) {
+      defaultChildren.push( {
+        id: 'land-report',
+        title: 'Reports',
+        type: 'item',
+        classes: 'nav-item',
+        url: '/default/reports',
+        icon: 'ti ti-report'
+      })
+    }
     const NavigationItems: NavigationItem[] = [
       {
         id: 'dashboard',
-        title: 'Dashboard',
+        title: 'CAMIS Home',
         type: 'group',
         icon: 'icon-navigation',
-        children: [
-          {
-            id: 'default',
-            title: 'Dashboard',
-            type: 'item',
-            classes: 'nav-item',
-            url: '/default/dashboard',
-            icon: 'ti ti-dashboard',
-            breadcrumbs: false
-          },
-          {
-            id: 'pending-task',
-            title: 'Pending Task',
-            type: 'item',
-            classes: 'nav-item',
-            url: '/default/pending-task',
-            icon: 'ti ti-list-details',
-            breadcrumbs: true
-          }
-        ]
+        children: defaultChildren
       }
     ];
 
@@ -72,7 +83,7 @@ export class NavContentComponent implements OnInit {
     if (this.role === '1') {
       NavigationItems.push({
         id: 'admin',
-        title: 'Admin',
+        title: 'System Administration',
         type: 'group',
         icon: 'icon-navigation',
         children: [
@@ -138,16 +149,6 @@ export class NavContentComponent implements OnInit {
           icon: 'ti ti-map-plus'
         });
       }
-      if(['5', '6', '7'].includes(this.role || '')){
-        landBankChildren.push({
-          id: 'land-report',
-          title: 'Reports',
-          type: 'item',
-          classes: 'nav-item',
-          url: '/land-bank/reports',
-          icon: 'ti ti-report'
-        });
-      }
       NavigationItems.push({
         id: 'land-bank',
         title: 'Land Bank',
@@ -190,7 +191,25 @@ export class NavContentComponent implements OnInit {
         children: farmManagementChildren
       });
     }
-
+    if (['8', '9','10'].includes(this.role || '')) {
+      const mneChildren: NavigationItem[] = [
+        {
+          id: 'search-farm',
+          title: 'Search Farm & Owners',
+          type: 'item',
+          url: '/mne/search-farm',
+          classes: 'nav-item',
+          icon: 'ti ti-building-cottage'
+        }
+      ];
+      NavigationItems.push({
+        id: 'mne-management',
+        title: 'M&E Management',
+        type: 'group',
+        icon: 'icon-navigation',
+        children: mneChildren
+      });
+    }
 
     this.navigations = NavigationItems;
     this.windowWidth = window.innerWidth;

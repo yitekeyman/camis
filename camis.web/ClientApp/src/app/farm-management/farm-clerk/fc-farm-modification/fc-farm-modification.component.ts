@@ -11,6 +11,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {DocumentModule} from "../../../_shared/document/document.module";
 import {AddressModule} from "../../../_shared/address/address.module";
 import {AuthorityRegistrarComponent} from "../../../_shared/farm/authority-registrar/authority-registrar.component";
+import {IDocument} from "../../../_shared/document/interfaces";
 
 @Component({
   selector: 'app-fc-farm-modification',
@@ -43,7 +44,17 @@ export class FcFarmModificationComponent implements OnInit {
   opGender: 'M' | 'F' = 'F';
   opMartialStatus: 1 | 2 | 3 | 4 = 1;
   opBirthdate = new Date(Date.now() - 1000 * 60 * 60 * 24 * 365.25 * 18).toISOString().slice(0, 10);
-
+  opPhotoId: string = null;
+  opPhoto: IDocument = {
+    file: undefined,
+    filename: '',
+    mimetype: '',
+    date: null,
+    note: '',
+    ref: '',
+    id: ''
+  };
+  opPhotoFile = "";
   opVentures: string[] = [];
   opVentureResults: any[] = []; // only in UI
   opVentureResultSelections: string[] = []; // only in UI
@@ -227,5 +238,91 @@ export class FcFarmModificationComponent implements OnInit {
       return dialog.error(err);
     });
   }
+  validEmail=true;
+  validateEmail() {
+    const value = this.opEmail
+    if (!value) {
+      this.validEmail= true;
+      return;
+    }
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const valid = regex.test(value);
 
+    if (!valid) {
+      this.validEmail= false;
+    }else{
+      this.validEmail=true;
+    }
+  }
+  getPhotoSource(): string {
+    if (this.opPhoto.file) {
+      // Convert base64 string to data URL for display
+      return `data:${this.opPhoto.mimetype};base64,${this.opPhoto.file}`;
+    }
+    return 'assets/images/user/avatar.jpg';
+  }
+
+  readPhotoFile(e: any): void {
+    const file = e.target.files[0] as File;
+
+    if (!file) {
+      this.opPhoto.file = undefined;
+      return;
+    }
+
+    // Check if the file is an image
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file (JPEG, PNG, GIF, etc.)');
+      this.resetPhoto();
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = (ev) => {
+      const result = (ev.target as any).result;
+      // Convert to base64 and remove data URL prefix if present
+      const base64String = result.includes('base64,')
+        ? result.split('base64,')[1]
+        : btoa(result);
+
+      this.opPhoto.file = base64String;
+    };
+
+    reader.onerror = (error) => {
+      console.error('Error reading file:', error);
+      this.resetPhoto();
+    };
+
+    // Use readAsDataURL for better image handling
+    reader.readAsDataURL(file);
+
+    this.opPhoto.filename = file.name;
+    this.opPhoto.mimetype = file.type;
+    this.opPhoto.date = new Date().getTime();
+    this.opPhoto.note = "Profile Photo";
+    this.opPhoto.ref = "Photo";
+    this.opPhoto.id = '';
+  }
+
+  changePhoto(): void {
+    // Trigger the file input click
+    const fileInput = document.getElementById('opPhoto') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  }
+
+  resetPhoto(): void {
+    this.opPhoto.file = undefined;
+    this.opPhoto.filename = '';
+    this.opPhoto.mimetype = '';
+    this.opPhoto.date = null;
+
+    // Reset the file input
+    const fileInput = document.getElementById('opPhoto') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  }
 }

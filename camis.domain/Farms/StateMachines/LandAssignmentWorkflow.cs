@@ -147,7 +147,7 @@ namespace intapscamis.camis.domain.Farms.StateMachines
                 new FarmLandRequest {FarmId = data.Id.ToGuid(), LandId = data.LandTransferRequest.landID}
             };
 
-            ConfigureAndAddWorkItem(UserRoles.LandCertificateIssuer, data, description, assignedUser, transition);
+            ConfigureAndAddWorkItem(UserRoles.LandAdmin, data, description, assignedUser, transition);
         }
 
         public int GetTransferStatus()

@@ -13,69 +13,71 @@
     var lookup = Model.LocationLookup;
 }
 
-<table class="table table-striped jambo_table bulk_action" id="tclick">
+<table class="table" id="tclick">
     <thead>
 
-        <tr class="headings">
-            <th class="column-title">@Model.AddressType</th>
-            @foreach (var k in uniqueOrigins)
-            {
-                <th class="column-title numberValue" colspan="3">@origins.Where(m => m.Id == k).First().Name</th>
-            }
+    <tr class="headings">
+        <th class="column-title">@Model.AddressType</th>
+        @foreach (var k in uniqueOrigins)
+        {
+            <th class="column-title " colspan="3">@origins.Where(m => m.Id == k).First().Name</th>
+        }
 
-            <th class="column-title numberValue">Total Count</th>
-            <th class="column-title numberValue">Total Area</th>
+        <th class="column-title ">Total Count</th>
+        <th class="column-title ">Total Area</th>
 
-        </tr>
+    </tr>
 
-        <tr class="headings">
-            <th class="column-title"></th>
-            @foreach (var k in uniqueOrigins)
-            {
-                <th class="column-title numberValue">Count</th>
-                <th class="column-title numberValue">Area (ha)</th>
-                <th class="column-title numberValue">% Area</th>
-            }
-            <th class="column-title"></th>
-            <th class="column-title"></th>
+    <tr class="headings">
+        <th class="column-title"></th>
+        @foreach (var k in uniqueOrigins)
+        {
+            <th class="column-title ">Count</th>
+            <th class="column-title ">Area (ha)</th>
+            <th class="column-title ">% Area</th>
+        }
+        <th class="column-title"></th>
+        <th class="column-title"></th>
 
 
-        </tr>
+    </tr>
     </thead>
     <tbody>
-        @foreach (var l in locations)
-        {
-            <tr>
-                @{
-                    var totalarea = Math.Round(Model.OperatorSummary.Where(m => m.Location == l).Sum(m => m.Area) / 10000, 2);
-                }
-                <td class="column-title">
-                    @if (lookup.ContainsKey(l))
-                    {
-                        <p>@lookup[l]</p>
-                    }
-                    else
-                    {
-                        <p>@l</p>
-                    }
-                </td>
-                @foreach (var k in uniqueOrigins)
+    @foreach (var l in locations)
+    {
+        <tr>
+            @{
+                var totalarea = Math.Round(Model.OperatorSummary.Where(m => m.Location == l).Sum(m => m.Area) / 10000, 2);
+            }
+            <td class="column-title">
+                @if (lookup.ContainsKey(l))
                 {
-                    {
-                        var area = Math.Round(Model.OperatorSummary.Where(m => m.Location == l && m.OriginId == k).Sum(m => m.Area) / 10000, 2);
-
-
-                        <th class="column-title numberValue">@Model.OperatorSummary.Where(m => m.Location == l && m.OriginId == k).Count()</th>
-                        <th class="column-title numberValue">@area</th>
-                        <th class="column-title numberValue">@(Math.Round(area / totalarea * 100, 2))</th>}
+                    <p>@lookup[l]</p>
                 }
-                <td class="column-title numberValue">@Model.OperatorSummary.Where(m => m.Location == l).Count()</td>
-                <td class="column-title numberValue">@totalarea</td>
-            </tr>
-        }
-        @if(Model.OperatorSummary.Count() > 0)
-        {
+                else
+                {
+                    <p>@l</p>
+                }
+            </td>
+            @foreach (var k in uniqueOrigins)
+            {
+                {
+                    var area = Math.Round(Model.OperatorSummary.Where(m => m.Location == l && m.OriginId == k).Sum(m => m.Area) / 10000, 2);
 
+
+                    <th class="column-title numberValue">@Model.OperatorSummary.Where(m => m.Location == l && m.OriginId == k).Count()</th>
+                    <th class="column-title numberValue">@area</th>
+                    <th class="column-title numberValue">@(Math.Round(area / totalarea * 100, 2))</th>
+                }
+            }
+            <td class="column-title numberValue">@Model.OperatorSummary.Where(m => m.Location == l).Count()</td>
+            <td class="column-title numberValue">@totalarea</td>
+        </tr>
+    }
+    </tbody>
+    @if (Model.OperatorSummary.Count() > 0)
+    {
+        <tfoot>
         <tr>
             @{
                 var totalarea2 = Math.Round(Model.OperatorSummary.Sum(m => m.Area) / 10000, 2);
@@ -84,17 +86,17 @@
             @foreach (var k in uniqueOrigins)
             {
                 {
-                    var area = Math.Round(Model.OperatorSummary.Where(m =>  m.OriginId == k).Sum(m => m.Area) / 10000, 2);
+                    var area = Math.Round(Model.OperatorSummary.Where(m => m.OriginId == k).Sum(m => m.Area) / 10000, 2);
 
 
-                    <th class="column-title numberValue">@Model.OperatorSummary.Where(m =>  m.OriginId == k).Count()</th>
+                    <th class="column-title numberValue">@Model.OperatorSummary.Where(m => m.OriginId == k).Count()</th>
                     <th class="column-title numberValue">@area</th>
-                    <th class="column-title numberValue">@(Math.Round(area / totalarea2 * 100, 2))</th>}
+                    <th class="column-title numberValue">@(Math.Round(area / totalarea2 * 100, 2))</th>
+                }
             }
             <td class="column-title numberValue">@Model.OperatorSummary.Count()</td>
             <td class="column-title numberValue">@totalarea2</td>
         </tr>
-
-                }
-    </tbody>
+        </tfoot>
+    }
 </table>

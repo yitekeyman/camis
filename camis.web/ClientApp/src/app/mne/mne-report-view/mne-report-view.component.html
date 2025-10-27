@@ -1,0 +1,23 @@
+
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-header">
+        <div class="row">
+          <div class="col-md-4">
+            <h5><i class="ti ti-device-desktop-analytics"></i> &nbsp;&nbsp;Report Detail</h5>
+          </div>
+          <div class="col-md-8">
+          </div>
+        </div>
+      </div>
+      <div class="card-body" style="min-height: calc(65vh)">
+        <div *ngIf="!loading && report">
+          <app-report-detail [report]="report"></app-report-detail>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+

@@ -109,8 +109,9 @@ namespace intapscamis.camis.data.Entities
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseNpgsql(@"Host=localhost;Database=camis;Username=postgres;Password=admin",o => o.UseNetTopologySuite());
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http: //go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseNpgsql(@"Host=localhost;Database=camis;Username=postgres;Password=admin",
+                    o => o.UseNetTopologySuite());
             }
         }
 
@@ -722,7 +723,8 @@ namespace intapscamis.camis.data.Entities
             {
                 entity.ToTable("t_regions", "sys");
 
-                entity.HasComment("The table t_regions stores all regions to ensure an stable identification of object in the system");
+                entity.HasComment(
+                    "The table t_regions stores all regions to ensure an stable identification of object in the system");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
@@ -747,7 +749,8 @@ namespace intapscamis.camis.data.Entities
             {
                 entity.ToTable("t_woredas", "sys");
 
-                entity.HasComment("The table t_woredas stores all woredas to ensure an stable identification of object in the system");
+                entity.HasComment(
+                    "The table t_woredas stores all woredas to ensure an stable identification of object in the system");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
@@ -774,7 +777,8 @@ namespace intapscamis.camis.data.Entities
             {
                 entity.ToTable("t_zones", "sys");
 
-                entity.HasComment("The table t_zones stores all zones to ensure an stable identification of object in the system");
+                entity.HasComment(
+                    "The table t_zones stores all zones to ensure an stable identification of object in the system");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
@@ -893,6 +897,10 @@ namespace intapscamis.camis.data.Entities
                 entity.Property(e => e.UserName)
                     .IsRequired()
                     .HasColumnName("user_name");
+                entity.HasOne(d => d.UserActionNavigation)
+                    .WithMany(p => p.AuditLog)
+                    .HasForeignKey(d => d.UserAction)
+                    .HasConstraintName("audit_log_action_fk");
             });
 
             modelBuilder.Entity<Certificate>(entity =>
@@ -1340,7 +1348,7 @@ namespace intapscamis.camis.data.Entities
                 entity.Property(e => e.Ventures)
                     .HasColumnName("ventures")
                     .HasDefaultValueSql("ARRAY[]::uuid[]");
-
+                entity.Property(e => e.PhotoId).HasColumnName("photo_id");
                 entity.HasOne(d => d.Address)
                     .WithMany(p => p.FarmOperator)
                     .HasForeignKey(d => d.AddressId)
@@ -2159,7 +2167,7 @@ namespace intapscamis.camis.data.Entities
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasDefaultValueSql("nextval(('sys.\"user_id_seq\"'::text)::regclass)");
-                entity.Property(e=>e.Email).HasColumnName("email");
+                entity.Property(e => e.Email).HasColumnName("email");
 
                 entity.Property(e => e.FullName).HasColumnName("full_name");
 
@@ -2202,6 +2210,11 @@ namespace intapscamis.camis.data.Entities
                     .HasPrincipalKey(p => p.Username)
                     .HasForeignKey(d => d.Username)
                     .HasConstraintName("user_action_user_username_fk");
+                entity.HasOne(d => d.ActionTypeNavigation)
+                    .WithMany(p => p.UserAction)
+                    .HasForeignKey(d => d.ActionTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_action_type");
             });
 
             modelBuilder.Entity<UserRole>(entity =>

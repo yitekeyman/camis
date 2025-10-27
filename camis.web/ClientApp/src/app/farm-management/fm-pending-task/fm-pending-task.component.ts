@@ -5,7 +5,7 @@ import {WorkflowApiService} from "../../_services/workflow-api.service";
 import {ObjectKeyCasingService} from "../../_services/object-key-casing.service";
 import dialog from "../../_shared/dialog";
 import {Observable} from "rxjs";
-import {IDashboardStates, IWorkflowOpenEvent} from "../../_shared/dashboard/dashboard/interfaces";
+import {IDashboardStates, IWorkflowOpenEvent} from "../../default/pendingTask/interfaces";
 import {PagerService} from "../../_services/pager.service";
 import {Router} from "@angular/router";
 import {FarmApiService} from "../../_services/farm-api.service";
@@ -33,7 +33,7 @@ export class FmPendingTaskComponent implements OnInit {
   public activeWorkflows: any = [] = [];
   customApi: Observable<any>;
 
-  constructor(private workflowApi: WorkflowApiService, private keyCase: ObjectKeyCasingService, private pagerService: PagerService, private router: Router, private api: FarmApiService) {
+  constructor(private workflowApi: WorkflowApiService, public keyCase: ObjectKeyCasingService, private pagerService: PagerService, private router: Router, private api: FarmApiService) {
     this.loginRole = localStorage.getItem("role");
     if (this.loginRole === '2') {
       this.user = 'Commercial Farm Registrar';
@@ -46,7 +46,7 @@ export class FmPendingTaskComponent implements OnInit {
       this.filters = [
         {
           type: 10,
-          states: [2],
+          states: [2, 4],
           asyncMsg$: (e: IWorkflowOpenEvent): Observable<any> => {
             return Observable.create(observer => {
               observer.next('Loading...');
@@ -58,17 +58,26 @@ export class FmPendingTaskComponent implements OnInit {
                 } else {
                   let status = 'Unknown';
                   switch (res.status) {
-                    case 0: status = 'Initial'; break;
-                    case 1: status = 'Waiting For NRLAIS'; break;
-                    case -2: status = 'Executed'; break;
-                    case -3: status = 'Cancelled'; break;
+                    case 0:
+                      status = 'Initial';
+                      break;
+                    case 1:
+                      status = 'Waiting For NRLAIS';
+                      break;
+                    case -2:
+                      status = 'Executed';
+                      break;
+                    case -3:
+                      status = 'Cancelled';
+                      break;
                   }
 
                   observer.next('Status: ' + status);
                 }
               }, dialog.error);
 
-              return () => {};
+              return () => {
+              };
             });
           }
         },
@@ -76,7 +85,7 @@ export class FmPendingTaskComponent implements OnInit {
     }
     if (this.loginRole === '7') {
       this.user = 'Land Bank Certificate Issuer';
-      filters: IDashboardStates[] = [
+      this.filters = [
         {
           type: 10,
           states: [4],
@@ -87,21 +96,30 @@ export class FmPendingTaskComponent implements OnInit {
               this.api.getTransferStatus(e.workflowId).subscribe(res => {
                 if (res && res.status == -99) {
                   observer.next('Refreshing...');
-                  window.location.reload(true);
+                  window.location.reload();
                 } else {
                   let status = 'Unknown';
                   switch (res.status) {
-                    case 0: status = 'Initial'; break;
-                    case 1: status = 'Waiting For NRLAIS'; break;
-                    case -2: status = 'Executed'; break;
-                    case -3: status = 'Cancelled'; break;
+                    case 0:
+                      status = 'Initial';
+                      break;
+                    case 1:
+                      status = 'Waiting For NRLAIS';
+                      break;
+                    case -2:
+                      status = 'Executed';
+                      break;
+                    case -3:
+                      status = 'Cancelled';
+                      break;
                   }
 
                   observer.next('Status: ' + status);
                 }
               }, dialog.error);
 
-              return () => {};
+              return () => {
+              };
             });
           }
         },
@@ -185,17 +203,22 @@ export class FmPendingTaskComponent implements OnInit {
         default:
           url = `default/pending-task`;
       }
-    }
-    else if(this.loginRole === '6') {
+    } else if (this.loginRole === '6') {
       switch (e.workflowTypeId) {
         case 10:
-          url = `land-bank/task/land-selection/${e.workflowId}`;
+          switch (e.currentState) {
+            case 2:
+              url = `land-bank/task/land-selection/${e.workflowId}`;
+              break;
+            case 4:
+              url = `land-bank/task/certification/${e.workflowId}`;
+              break;
+          }
           break;
         default:
           url = `default/pending-task`;
       }
-    }
-    else if(this.loginRole === '7') {
+    } else if (this.loginRole === '7') {
       switch (e.workflowTypeId) {
         case 10:
           url = `land-bank/task/certification/${e.workflowId}`;

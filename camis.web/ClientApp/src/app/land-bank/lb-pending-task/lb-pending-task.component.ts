@@ -22,7 +22,7 @@ export class LbPendingTaskComponent implements OnInit{
   pagedItems: any[];
   public userWorkItems: any= [];
 
-  constructor(private landService: LandDataService, private router: Router, private keyCase: ObjectKeyCasingService, private pagerService: PagerService) {
+  constructor(private landService: LandDataService, private router: Router, public keyCase: ObjectKeyCasingService, private pagerService: PagerService) {
     this.loginRole = localStorage.getItem("role");
     if (this.loginRole === '4') {
       this.user = 'Land Bank Registrar';
@@ -35,6 +35,9 @@ export class LbPendingTaskComponent implements OnInit{
     }
     if (this.loginRole === '7') {
       this.user = 'Land Bank Certificate Issuer';
+    }
+    if(this.loginRole==='1'){
+      this.user = 'System Administrator';
     }
   }
 

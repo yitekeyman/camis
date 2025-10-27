@@ -5,7 +5,7 @@ namespace intapscamis.camis.domain.Admin
 {
     public interface IUserFacade
     {
-        void LoginUser(UserSession session, LoginViewModel loginView);
+        LoginReturnViewModel LoginUser(UserSession session, LoginViewModel loginView);
         void RegisterUser(UserSession session, RegisterViewModel registerViewModel);
         void ChangePassword(UserSession session, string username, string oldPassword, string newPassword);
         IList<UserDetialViewModel> GetAllUsers(UserSession session, int status);
@@ -19,6 +19,8 @@ namespace intapscamis.camis.domain.Admin
         void AddUserRole(UserSession userSession, string username, int[] roles);
 
         object GetRoles(UserSession session);
+        SingleUserDetailsViewModel GetSingleUserDetails(UserSession userSession, string username);
+        DashboardViewModel GetDashboard(UserSession userSession);
     }
 
     public class UserFacade : IUserFacade
@@ -30,10 +32,10 @@ namespace intapscamis.camis.domain.Admin
             _userService = service;
         }
 
-        public void LoginUser(UserSession userSession, LoginViewModel loginView)
+        public LoginReturnViewModel LoginUser(UserSession userSession, LoginViewModel loginView)
         {
             _userService.SetSession(userSession);
-            _userService.LoginUser(loginView);
+            return _userService.LoginUser(loginView);
         }
 
         public void RegisterUser(UserSession userSession, RegisterViewModel registerViewModel)
@@ -45,7 +47,7 @@ namespace intapscamis.camis.domain.Admin
         public void ChangePassword(UserSession userSession, string username, string oldPassword, string newPassword)
         {
             _userService.SetSession(userSession);
-            _userService.ChangePassword(username, newPassword, oldPassword);
+            _userService.ChangePassword(username, oldPassword, newPassword);
         }
 
         public void ResetPassword(UserSession userSession, string username, string newPassword)
@@ -110,6 +112,18 @@ namespace intapscamis.camis.domain.Admin
             _userService.SetSession(userSession);
 
             return _userService.CheckUser(username);
+        }
+
+        public SingleUserDetailsViewModel GetSingleUserDetails(UserSession userSession, string username)
+        {
+            _userService.SetSession(userSession);
+            return _userService.GetSingleUserDetails(username);
+        }
+
+        public DashboardViewModel GetDashboard(UserSession userSession)
+        {
+            _userService.SetSession(userSession);
+            return _userService.GetDashboard();
         }
     }
 }

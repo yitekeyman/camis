@@ -32,7 +32,7 @@ namespace intapscamis.camis.Controllers
 
             try
             {
-                _userFacade.LoginUser(null, loginViewModel);
+                var ret=_userFacade.LoginUser(null, loginViewModel);
                 var us = new UserSession
                 {
                     Username = loginViewModel.UserName,
@@ -52,7 +52,7 @@ namespace intapscamis.camis.Controllers
                         sessions.Add(sid, us);
                     }
                 }
-                return Json(new {sid=sid,message = "success"});
+                return Json(ret);
             }
 
             catch (Exception e)
@@ -260,6 +260,35 @@ namespace intapscamis.camis.Controllers
                 if (string.IsNullOrEmpty(query)) return Json(_userFacade.GetAllUsers(GetSession(), status));
 
                 return Json(_userFacade.GetUsers(GetSession(), query,status));
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new {message = "Internal server error occurred"});
+            }
+        }
+        [Roles]
+        [HttpGet]
+        public IActionResult GetSingleUserResult([FromQuery]string username)
+        {
+            try
+            {
+                
+                return Json(_userFacade.GetSingleUserDetails(GetSession(), username));
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new {message = "Internal server error occurred"});
+            }
+        }
+        [HttpGet]
+        public IActionResult GetDashboard()
+        {
+            try
+            {
+                
+                return Json(_userFacade.GetDashboard(GetSession()));
             }
             catch (Exception e)
             {

@@ -5,6 +5,7 @@ import {AdminRoutingModule} from './admin-routing.module';
 
 import {AdminComponent} from './admin.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {JsonFormatPipe} from "../_services/json-format.pipe";
 
 @NgModule({
   imports: [
@@ -13,10 +14,10 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
     ReactiveFormsModule,
     AdminRoutingModule,
     AdminComponent,
-
+    JsonFormatPipe
   ],
   declarations: [],
-  providers:[],
+  providers: [],
   exports: [AdminComponent]
 })
 export class AdminModule {

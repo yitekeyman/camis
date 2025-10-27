@@ -1,0 +1,56 @@
+﻿<form [formGroup]="updatePassForm" id="updatePassForm" (submit)="updatePass()">
+  <div class="modal-body">
+    <div class="row">
+      <div class="input-form col-md-12">
+        <label>Old Password <span class="text-danger">*  </span> <span
+          *ngIf="updatePassForm.get('oldPassword')?.invalid && updatePassForm.get('oldPassword')?.touched"
+          class="error-message">
+            <i class="ti ti-exclamation-circle me-1"></i>Old-Password is required
+          </span></label>
+        <div class="input-group">
+          <input [type]="showOldPassword ? 'text' : 'password'" class="form-control" formControlName="oldPassword"
+                 placeholder="Enter Old Password">
+          <span class="input-group-text btn-default" (click)="toggleOldPasswordVisibility()">
+                  <i [class]="showOldPassword ? 'ti ti-eye-x' : 'ti ti-eye'"></i>
+                </span>
+        </div>
+      </div>
+      <div class="input-form col-md-12">
+        <label>New Password <span class="text-danger">*  </span> <span
+          *ngIf="updatePassForm.get('password')?.invalid && updatePassForm.get('password')?.touched"
+          class="error-message">
+            <span *ngIf="updatePassForm.get('password').value===''"> <i class="ti ti-exclamation-circle me-1"></i>New Password is required</span>
+            <span *ngIf="updatePassForm.get('password').value!=='' && updatePassForm.get('oldPassword').value!=='' && updatePassForm.get('password').value===updatePassForm.get('oldPassword').value"> <i class="ti ti-exclamation-circle me-1"></i>New Pass must be differ from Old Pass</span>
+          </span></label>
+        <div class="input-group">
+          <input [type]="showPassword ? 'text' : 'password'" class="form-control" formControlName="password"
+                 placeholder="Create a password">
+          <span class="input-group-text btn-default" (click)="togglePasswordVisibility()">
+                  <i [class]="showPassword ? 'ti ti-eye-x' : 'ti ti-eye'"></i>
+                </span>
+        </div>
+      </div>
+      <div class="input-form col-md-12">
+        <label>Confirm Password <span class="text-danger">*  </span> <span
+          *ngIf="updatePassForm.get('confirmPassword')?.invalid && updatePassForm.get('confirmPassword')?.touched"
+          class="error-message">
+            <i class="ti ti-exclamation-circle me-1"></i> Passwords must match
+          </span></label>
+        <div class="input-group">
+          <input [type]="showConfirmPassword ? 'text' : 'password'" class="form-control"
+                 formControlName="confirmPassword" placeholder="Confirm your password">
+          <span class="input-group-text" id="repass" (click)="toggleConfirmPasswordVisibility()">
+                  <i [class]="showConfirmPassword ? 'ti ti-eye-x' : 'ti ti-eye'"></i>
+                </span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer ">
+    <div class="btn-group align-right">
+      <button class="btn btn-warning btn-sm" type="reset">Reset</button>
+      <button class="btn btn-success btn-sm " type="submit" [disabled]="!updatePassForm.valid">Save Change</button>
+    </div>
+  </div>
+</form>

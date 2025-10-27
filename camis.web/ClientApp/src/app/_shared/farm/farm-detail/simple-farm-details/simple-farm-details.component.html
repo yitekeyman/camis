@@ -1,0 +1,100 @@
+﻿<div class="row">
+  <div class="col-md-3">
+    <div class="card p-2">
+      <div class="card-body p-0">
+        <img [src]="getPhotoSource()"/>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-5">
+    <table class="table mb-0">
+      <tbody>
+      <tr>
+        <td><label>Name:</label>&nbsp; {{ farm.operator.name }}</td>
+      </tr>
+      <tr>
+        <td><label>Investment
+          Origin:</label>&nbsp;{{ farm.operator.originId && opOrigin(farm.operator.originId) != null ? opOrigin(farm.operator.originId).name : null }}
+        </td>
+      </tr>
+      <tr>
+        <td><label>Owners {{ farm.operator.typeId == 1 ? 'Nationality' : 'Country of Origin' }}:</label>&nbsp;{{ farm.operator.nationality }}
+        </td>
+      </tr>
+      <tr>
+        <td><label>Ownership
+          Type:</label>&nbsp;{{ farm.operator.typeId && opType(farm.operator.typeId) != null ? opType(farm.operator.typeId).name : null }}
+        </td>
+      </tr>
+      <tr *ngIf="farm.operator.typeId == 1">
+        <td><label>Gender:</label>&nbsp; {{ parseGender(farm.operator.gender) }}</td>
+      </tr>
+      <tr *ngIf="farm.operator.typeId == 1">
+        <td><label>Martial Status:</label>&nbsp; {{ parseMartialStatus(farm.operator.martialStatus) }}
+        </td>
+      </tr>
+      <tr *ngIf="farm.operator.typeId == 1">
+        <td><label>Date of Birth:</label>&nbsp; {{ farm.operator.birthdate | date }}</td>
+      </tr>
+
+      <tr *ngIf="farm.operator.typeId == 6">
+        <td><label>Venture Owners:</label>&nbsp; <a
+          *ngFor="let farmOperatorId of farm.operator.ventures; index as i"
+          [href]="'/farm-management/fc/farm-operator/'+farmOperatorId" target="_blank"
+          rel="noopener"> <span
+          class="badge text-bg-info">Owners #{{ i + 1 }}</span></a></td>
+
+      </tr>
+      <tr>
+        <td><label>Owner's Capital:</label>&nbsp; {{ farm.operator.capital | currency:'Br ' }}</td>
+      </tr>
+
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-4">
+    <app-address-output [leafId]="farm.operator.addressId" [email]="farm.operator.email"
+                        [phone]="farm.operator.phone" [isDisplay]="true"></app-address-output>
+  </div>
+  <div class="col-md-12">
+    <table class="table mb-0">
+      <thead>
+      <tr>
+        <th><h5>Farm Information</h5></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>
+          <table class="table mb-0">
+            <tbody>
+            <tr>
+              <td style="text-wrap: nowrap"><label>Primary Farm Type:</label></td>
+              <td>
+                {{ farm.typeId && frType(farm.typeId) != null ? frType(farm.typeId).name : null }}
+              </td>
+              <td><label>Invested Capital: </label> {{ farm.investedCapital |currency:'Br ' }}</td>
+            </tr>
+            <tr>
+              <td style="text-wrap: nowrap"><label>Other Farm Types:</label></td>
+              <td >
+                <ul *ngIf="farm.otherTypeIds && farm.otherTypeIds.length">
+                  <li
+                    *ngFor="let typeId of farm.otherTypeIds"><i
+                    class="ti ti-square-rounded-check"></i> {{ frType(typeId) != null ? frType(typeId).name : null }}
+                  </li>
+                </ul>
+              </td>
+              <td><label>Description:</label>
+                <p>{{ farm.description }}</p>
+              </td>
+            </tr>
+            </tbody>
+
+          </table>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -11,46 +11,46 @@
 }
 
 
-<table class="table table-striped jambo_table bulk_action" id="tclick">
+<table class="table" id="tclick">
     <thead>
 
-        <tr class="headings">
-            <th class="column-title">No</th>
-            <th class="column-title">@Model.AddressType</th>
-               @foreach (var item in t)
-               {
-                   <th class="column-title numberValue">@invTypes.Where(m => m.Id == item).First().Name</th>
-               }
-            <th class="column-title numberValue">Total</th>
+    <tr class="headings">
+        <th class="column-title">#</th>
+        <th class="column-title">@Model.AddressType</th>
+        @foreach (var item in t)
+        {
+            <th class="column-title numberValue">@invTypes.Where(m => m.Id == item).First().Name</th>
+        }
+        <th class="column-title ">Total</th>
 
-        </tr>
+    </tr>
     </thead>
     <tbody>
-        @foreach (var item in location)
-        {
-            <tr>
-                <td class="column-title">@(i++)</td>
-                <td class="column-title">
-                    @if (lookup.ContainsKey(item))
-                    {
-                        <p>@lookup[item]</p>
-                    }
-                    else
-                    {
-                        <p>@item</p>
-                    }
-                    </td>
-                @foreach (var k in t)
+    @foreach (var item in location)
+    {
+        <tr>
+            <td class="column-title">@(i++)</td>
+            <td class="column-title">
+                @if (lookup.ContainsKey(item))
                 {
-                    <td class="column-title numberValue">@Model.LeaseSummary.Where(m => m.location == item && m.land_type == k).Sum(m => m.lease) Br. </td>
+                    <p>@lookup[item]</p>
                 }
-                <td class="column-title  numberValue">@Model.LeaseSummary.Where(m => m.location == item).Sum(m => m.lease) Br. </td>
-            </tr>
-        }
-        @if(Model.LeaseSummary.Count() > 0)
-        {
-
-        
+                else
+                {
+                    <p>@item</p>
+                }
+            </td>
+            @foreach (var k in t)
+            {
+                <td class="column-title numberValue">@Model.LeaseSummary.Where(m => m.location == item && m.land_type == k).Sum(m => m.lease) Br.</td>
+            }
+            <td class="column-title  numberValue">@Model.LeaseSummary.Where(m => m.location == item).Sum(m => m.lease) Br.</td>
+        </tr>
+    }
+    </tbody>
+    @if (Model.LeaseSummary.Count() > 0)
+    {
+        <tfoot>
         <tr>
             <td class="column-title"></td>
             <td class="column-title">Total</td>
@@ -60,7 +60,8 @@
             }
             <td class="column-title  numberValue">@Model.LeaseSummary.Sum(m => m.lease) Br.</td>
         </tr>
-        }
+        </tfoot>
+    }
 
-    </tbody>
+
 </table>

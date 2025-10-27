@@ -222,4 +222,7 @@ export class FarmApiService {
     }
     return this.api.post(`Farms/CertifyLandAssignment/${workflowId}`, body,{params});
   }
+  getFarmByLandId(id: string): Observable<any> {
+    return this.api.get(`Farms/FarmByLandId/${id}`);
+  }
 }

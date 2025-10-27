@@ -12,56 +12,47 @@
     var lookup = Model.LocationLookup;
 }
 
-<table class="table table-striped jambo_table bulk_action" id="tclick">
+<table class="table" id="tclick">
     <thead>
 
-        <tr class="headings">
-            <th class="column-title">No</th>
-            <th class="column-title">@Model.AddressType</th>
-           <th class="column-title numberValue">Farms With Camps</th>
-            <th class="column-title numberValue">Farms Without Camps</th>
+    <tr class="headings">
+        <th class="column-title">#</th>
+        <th class="column-title">@Model.AddressType</th>
+        <th class="column-title">Farms With Camps</th>
+        <th class="column-title">Farms Without Camps</th>
 
 
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.CampSummary)
+    {
+        <tr>
+
+            <td class="column-title">@(i++)</td>
+            <td class="column-title">
+                @if (lookup.ContainsKey(item.Location))
+                {
+                    <p>@lookup[item.Location]</p>
+                }
+                else
+                {
+                    <p>@item.Location</p>
+                }
+            </td>
+            <td class="column-title numberValue">@item.farmsWithCamps</td>
+
+
+            <td class="column-title numberValue">@item.farmsWithoutCamps</td>
 
 
         </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.CampSummary)
-        {
+    }
+    </tbody>
+    @if (Model.CampSummary.Count() > 0)
+    {
+        <tfoot>
 
-
-            <tr>
-
-                <td class="column-title">@(i++)</td>
-                <td class="column-title">
-                    @if (lookup.ContainsKey(item.Location))
-                    {
-                        <p>@lookup[item.Location]</p>
-                    }
-                    else
-                    {
-                        <p>@item.Location</p>
-                    }
-                </td>
-                <td class="column-title numberValue">@item.farmsWithCamps</td>
-
-
-
-                <td class="column-title numberValue">@item.farmsWithoutCamps</td>
-
-
-            </tr>
-
-
-
-
-        }
-
-        @if(Model.CampSummary.Count() > 0)
-        {
-
-      
         <tr>
 
             <td class="column-title"></td>
@@ -69,12 +60,11 @@
             <td class="column-title numberValue">@Model.CampSummary.Sum(m => m.farmsWithCamps)</td>
 
 
-
             <td class="column-title numberValue">@Model.CampSummary.Sum(m => m.farmsWithoutCamps)</td>
 
 
         </tr>
-        }
-
-    </tbody>
+        </tfoot>
+    }
+    
 </table>

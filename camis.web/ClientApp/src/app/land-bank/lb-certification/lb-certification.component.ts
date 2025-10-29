@@ -11,6 +11,7 @@ import {FarmDetailComponent} from "../../_shared/farm/farm-detail/farm-detail.co
 import {
   SingleDocumentSelectorComponent
 } from "../../_shared/document/single-document-selector/single-document-selector.component";
+import {LandDataService} from "../../_services/land-data.service";
 
 @Component({
   selector: 'app-lb-certification',
@@ -23,30 +24,46 @@ export class LbCertificationComponent implements OnInit {
 
   workflowId: string;
   data: any;
+  userWorkItems: any = null;
+  workItem: any = null;
+  certification: { doc: IDocument | null } = {doc: null};
+  leaseContract: { doc: IDocument | null } = {doc: null};
 
-  certification: { doc: IDocument | null } = { doc: null };
-  leaseContract: { doc: IDocument | null } = { doc: null };
-
-  constructor (
+  constructor(
     private api: FarmApiService,
     private router: Router,
     private ar: ActivatedRoute,
     private keyCase: ObjectKeyCasingService,
+    private landService:LandDataService
   ) {
   }
 
   ngOnInit(): void {
+    dialog.loading();
     this.ar.params.subscribe(params => this.workflowId = params['workflowId'], dialog.error)
       .add(this.api.getLastWorkItem(this.workflowId).subscribe(workItem => {
         if (workItem) {
-          this.keyCase.camelCase(workItem.data);
+          this.keyCase.camelCase(workItem);
+          this.getWorkflow(workItem.workflowId);
           this.data = workItem.data;
         }
+
         this.loading = false;
+        dialog.close();
       }, dialog.error));
   }
 
+getWorkflow(workflowId: string) {
+  this.landService.GetUserWorkItems().subscribe(data => {
+    this.keyCase.camelCase(data);
+    for (const workItem of data) {
+      if (workItem.wfid === workflowId) {
+        this.userWorkItems = workItem;
 
+      }
+    }
+  });
+}
   chooseCertificationDocument(event: any): void {
     const document = event.document || (event as ISingleDocumentSelectorChangeEvent)?.document;
     if (document) {
@@ -63,8 +80,8 @@ export class LbCertificationComponent implements OnInit {
 
 
   clear() {
-    this.certification = { doc: null };
-    this.leaseContract = { doc: null };
+    this.certification = {doc: null};
+    this.leaseContract = {doc: null};
   }
 
 

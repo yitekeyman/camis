@@ -46,7 +46,7 @@ export class FmPendingTaskComponent implements OnInit {
       this.filters = [
         {
           type: 10,
-          states: [2, 4],
+          states: [2,3,4],
           asyncMsg$: (e: IWorkflowOpenEvent): Observable<any> => {
             return Observable.create(observer => {
               observer.next('Loading...');

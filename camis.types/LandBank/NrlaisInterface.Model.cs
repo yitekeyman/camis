@@ -85,28 +85,28 @@ namespace intapscamis.camis.domain.LandBank
         }
         public class NrlaisParcelTransfer
         {
-            public String parcelUID;
-            public double area = 0;
-            public NrlaisRationalNum share = null;
-            public bool splitParcel = false;
-            public String rightUID = null;
+            public String parcelUID { get; set; }
+            public double area { get; set; }= 0;
+            public NrlaisRationalNum share { get; set; }= new NrlaisRationalNum();
+            public bool splitParcel { get; set; } = false;
+            public String rightUID { get; set; } = null;
 
         }
         public class NrlaisPartyItem
         {
             public String existingPartyUID { get; set; } = null;
-            public Party party { get; set; } = null;
-            public NrlaisRationalNum share { get; set; } = null;
-            public NrlaisSourceDocument idDoc { get; set; } = null;
+            public Party party { get; set; } = new Party();
+            public NrlaisRationalNum share { get; set; } = new NrlaisRationalNum();
+            public NrlaisSourceDocument idDoc { get; set; } = new NrlaisSourceDocument();
         }
         public class NrlaisRentTransaction
         {
             public String holdingUID { get; set; } = null;
             public List<NrlaisApplicant> applicants { get; set; } = new List<NrlaisApplicant>();
             public List<NrlaisParcelTransfer> transfers { get; set; } = new List<NrlaisParcelTransfer>();
-            public List<NrlaisPartyItem> tenants = new List<NrlaisPartyItem>();
-            public NrlaisSourceDocument rentContractDoc = null;
-            public NrlaisSourceDocument landHoldingCertificateDoc = null;
+            public List<NrlaisPartyItem> tenants { get; set; } = new List<NrlaisPartyItem>();
+            public NrlaisSourceDocument rentContractDoc { get; set; } = new NrlaisSourceDocument();
+            public NrlaisSourceDocument landHoldingCertificateDoc { get; set; } = new NrlaisSourceDocument();
             public long contractTime { get; set; }
             public long leaseFrom { get; set; }
             public long leaseTo { get; set; }
@@ -162,7 +162,7 @@ namespace intapscamis.camis.domain.LandBank
             public string holdingUID { get; set; }
             public string partyUID { get; set; }
             public string parcelUID { get; set; }
-            public Party party { get; set; }
+            public Party party { get; set; } = new Party();
             public string editStatus { get; set; }
             public string csaregionid { get; set; }
             public string nrlais_zoneid { get; set; }
@@ -219,7 +219,7 @@ namespace intapscamis.camis.domain.LandBank
             public int mreg_acyear { get; set; }
             public int soilfertilityType { get; set; }
             public long mreg_surveyDate { get; set; }
-            public List<Right> rights { get; set; }
+            public List<Right> rights { get; set; }=new List<Right>();
             public string csaregionid { get; set; }
             public string nrlais_zoneid { get; set; }
             public string nrlais_woredaid { get; set; }
@@ -245,7 +245,7 @@ namespace intapscamis.camis.domain.LandBank
             public int holdingSeqNo { get; set; }
             public int holdingType { get; set; }
             public string notes { get; set; }
-            public List<Parcel> parcels { get; set; }
+            public List<Parcel> parcels { get; set; }=new List<Parcel>();
             public string csaregionid { get; set; }
             public string nrlais_zoneid { get; set; }
             public string nrlais_woredaid { get; set; }
@@ -255,12 +255,12 @@ namespace intapscamis.camis.domain.LandBank
         public class NrlaisLandResult
         {
             public String error { get; set; }
-            public Holding res { get; set; }
+            public Holding res { get; set; }=new Holding();
         }
         public class NrlaisParcelResult
         {
             public String error { get; set; }
-            public Parcel res { get; set; }
+            public Parcel res { get; set; } = new Parcel();
         }
         public class NrlaisRestRes<T>
         {

@@ -16,16 +16,16 @@ namespace intapscamis.camis.domain.Farms.Models
         public string Description { get; set; }
         public int[] OtherTypeIds { get; set; } = { };
 
-        public ICollection<FarmRegistrationRequest> Registrations { get; set; }
+        public ICollection<FarmRegistrationRequest> Registrations { get; set; }=new List<FarmRegistrationRequest>();
 
         public FarmOperatorRequest Operator { get; set; } // if no OperatorId
         public ActivityPlanRequest ActivityPlan { get; set; } // only for registration
 
         // only for land transfer
-        public LandBankFacadeModel.TransferRequest LandTransferRequest { get; set; }
+        public LandBankFacadeModel.TransferRequest LandTransferRequest { get; set; }=new LandBankFacadeModel.TransferRequest();
         public Guid LandTransferWorkflowId { get; set; }
 
-        public ICollection<FarmLandRequest> FarmLands { get; set; }
+        public ICollection<FarmLandRequest> FarmLands { get; set; }=new List<FarmLandRequest>();
     }
 
     public class FarmLandRequest
@@ -33,8 +33,8 @@ namespace intapscamis.camis.domain.Farms.Models
         public Guid LandId { get; set; }
         public Guid FarmId { get; set; }
 
-        public DocumentRequest CertificateDoc { get; set; }
-        public DocumentRequest LeaseContractDoc { get; set; }
+        public DocumentRequest CertificateDoc { get; set; }=new DocumentRequest();
+        public DocumentRequest LeaseContractDoc { get; set; }=new DocumentRequest();
     }
 
     public class FarmRegistrationRequest
@@ -45,7 +45,7 @@ namespace intapscamis.camis.domain.Farms.Models
         public int TypeId { get; set; }
         public string DocumentId { get; set; } // only for modification and deletion
 
-        public DocumentRequest Document { get; set; }
+        public DocumentRequest Document { get; set; }=new DocumentRequest();
     }
 
     public class FarmOperatorRequest

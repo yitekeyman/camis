@@ -963,3 +963,6 @@ table tbody .with-data{
   cursor:not-allowed;
   pointer-events: auto;
 }
+.table .td:last-child, .table{
+  border-bottom-width: 0;
+}

@@ -1,19 +1,19 @@
 
 <div class="row">
   <div class="col-sm-12">
-    <div class="card p-0">
-      <div class="card-header p-2">
+    <div class="card p-0 mb-2">
+      <div class="card-header p-2 mb-0">
         <div class="row">
           <div class="col-md-6">
             <h4><i class="ti ti-map-plus"></i> &nbsp;&nbsp;Commercial Farm & Investment Details</h4>
           </div>
           <div class="col-md-6 " style="text-align: right">
-            <div class="btn-group" *ngIf="!loading && data">
-              <button type="button" class="btn btn-custom"  data-bs-toggle="modal" data-bs-target="#add-certification-document-dialog">
-                {{certification.doc ? 'Change Certification Document *' : 'Select Certification Document *'}}
+            <div  *ngIf="!loading && data">
+              <button type="button" class="btn btn-custom-light me-1"  data-bs-toggle="modal" data-bs-target="#add-certification-document-dialog">
+                {{certification.doc ? 'Change Certification Document' : 'Select Certification Document *'}}
               </button>
-              <button  type="button" class="btn btn-custom-light" data-bs-toggle="modal" data-bs-target="#add-lease-document-dialog">
-                {{leaseContract.doc ? 'Change Lease Document *' : 'Select Lease Document *'}}
+              <button  type="button" class="btn btn-custom-light me-1" data-bs-toggle="modal" data-bs-target="#add-lease-document-dialog">
+                {{leaseContract.doc ? 'Change Lease Document' : 'Select Lease Document *'}}
               </button>
               <button class="btn btn-custom" type="button" (click)="onCertify()" [disabled]="!certification.doc || !leaseContract.doc">
                 Certify Location
@@ -24,8 +24,30 @@
       </div>
     </div>
   </div>
+  <div class="col-md-12" *ngIf="!loading && data">
+    <div class="alert alert-primary d-flex align-items-center p-1 mb-2">
+      <table class="table p-0 m-0">
+        <tbody>
+        <tr>
+          <td class="m-0 p-1"
+              style="vertical-align: middle; font-size: 2rem; border-right: 2px solid rgba(0,0,0,0.25); text-align: center;color:#72b325">
+            <i class="ti ti-bell-ringing-filled"></i>
+          </td>
+          <td class="m-0" style="font-size: 0.75rem; vertical-align: middle">
+            <b>Sent by: </b> <span *ngIf="userWorkItems">{{ userWorkItems.sentUserName }}</span><br/>
+            <b>On: </b> <span *ngIf="userWorkItems">{{ userWorkItems.workItemDate | date }}</span><br/>
+            <b>Note: </b> <span *ngIf="userWorkItems">{{ userWorkItems.description }}</span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
   <div *ngIf="!loading && data">
     <app-farm-detail *ngIf="data" [farm]="data"></app-farm-detail>
+  </div>
+  <div class="col-md-12" *ngIf="loading">
+
   </div>
 </div>
 

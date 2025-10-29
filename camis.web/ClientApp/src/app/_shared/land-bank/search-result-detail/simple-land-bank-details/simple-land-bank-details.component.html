@@ -1,60 +1,60 @@
 ﻿<table class="table mb-0">
   <tbody *ngIf="!loading && searchedLandDetail">
   <tr>
-    <td><label>UPINs:</label></td>
+    <td style="text-wrap: nowrap; text-align: right"><label>UPINs:</label></td>
     <td>
       <span *ngFor="let upin of searchedLandDetail.upins; index as i" class="m-1 badge text-bg-{{i+1}}">{{ upin }}</span>
     </td>
   </tr>
   <tr>
-    <td><label>Area:</label></td>
+    <td style="text-wrap: nowrap; text-align: right"><label>Area:</label></td>
     <td>{{ getArea() }}</td>
   </tr>
   <tr>
-    <td><label>Location:</label></td>
+    <td style="text-wrap: nowrap; text-align: right"><label>Location:</label></td>
     <td>{{ searchedLandDetail.centroidX }}° E<br/> {{ searchedLandDetail.centroidY }}° N</td>
   </tr>
   <tr>
-    <td><label>Accessible By:</label></td>
+    <td style="text-wrap: nowrap; text-align: right"><label>Accessible By:</label></td>
     <td>
       <span *ngFor="let access of accessiblities; index as i" class="m-1 badge text-bg-{{i+1}}">{{access}}</span>
     </td>
   </tr>
   <tr>
-    <td><label>Land Suitable For:</label></td>
+    <td style="text-wrap: nowrap; text-align: right"><label>Land Suitable For:</label></td>
     <td>
       <span *ngFor="let investment of investmentTypes; index as i" class="m-1 badge text-bg-{{i+1}}">{{investment}}</span>
 
     </td>
   </tr>
   <tr>
-    <td><label>Moisture Source:</label></td>
+    <td style="text-wrap: nowrap; text-align: right"><label>Moisture Source:</label></td>
     <td>{{ moistureSources }}
     </td>
   </tr>
   <tr>
-    <td><label>Topography:</label></td>
+    <td style="text-wrap: nowrap; text-align: right"><label>Topography:</label></td>
     <td>
       <span *ngFor="let topo of topography; index as i" class="m-1 badge text-bg-{{i+1}}">{{ topo.name }} :  {{ topo.result }}</span>
     </td>
   </tr>
   <tr>
-    <td><label>Agro-Echology Zone:</label></td>
+    <td style="text-wrap: nowrap; text-align: right"><label>Agro-Echology Zone:</label></td>
     <td>
       <span *ngFor="let agro of agroEchologyZones; index as i" class="m-1 badge text-bg-{{i+1}}">{{ agro.name }} : {{ agro.result }}</span>
     </td>
   </tr>
   <tr>
-    <td><label>Existing Land Use:</label></td>
+    <td style="text-wrap: nowrap; text-align: right"><label>Existing Land Use:</label></td>
     <td>
       <span *ngFor="let eLand of existingLandes; index as i" class="m-1 badge text-bg-{{i+1}}">{{ eLand }}</span>
     </td>
   </tr>
   <tr>
     <td colspan="2" class="align-center">
-      <a target="_blank" class="btn btn-outline-info btn-sm"
+      <a target="_blank" class="btn btn-custom-light btn-sm"
          [href]="'/land-bank/parcel-details/' + landID">
-        See Details
+        See Parcel Details
       </a>
     </td>
   </tr>

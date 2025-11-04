@@ -7,7 +7,8 @@ import {
   FormArray,
   FormControl,
   FormsModule,
-  ReactiveFormsModule
+  ReactiveFormsModule,
+  ValidatorFn
 } from '@angular/forms';
 import { map } from 'rxjs';
 
@@ -178,30 +179,30 @@ export class NewLandFormComponent implements OnInit {
     });
 
     this.newLandFGroup = this.formBuilder.group({
-      uPINs: this.formBuilder.array([]),
-      accessablity: this.formBuilder.array([]),
+      uPINs: this.formBuilder.array([],[Validators.required, this.atLeastOneRequired()]),
+      accessablity: this.formBuilder.array([], [this.atLeastOneCheckboxSelected()]),
       agroEchologyZone: this.formBuilder.array([]),
 
-      topography: this.formBuilder.array([]),
-      investmentType: this.formBuilder.array([]),
-      moistureSource: this.formBuilder.control(null),
+      topography: this.formBuilder.array([],[this.atLeastOneRequired()]),
+      investmentType: this.formBuilder.array([], [this.atLeastOneCheckboxSelected()]),
+      moistureSource: this.formBuilder.control(null, [Validators.required]),
 
       irrigationValues: this.formBuilder.group({
-        waterSourceParameter: this.formBuilder.array([]),
-        groundWater: this.formBuilder.array([]),
+        waterSourceParameter: this.formBuilder.array([],[Validators.required,this.atLeastOneRequired()]),
+        groundWater: this.formBuilder.array([], [this.atLeastOneCheckboxSelected()]),
         surfaceWater: this.formBuilder.array([])
       }),
 
-      soilTests: this.formBuilder.array([]),
+      soilTests: this.formBuilder.array([], [this.atLeastOneRequired()]),
       // soilType: this.formBuilder.control(''),
       // textureClass: this.formBuilder.control(''),
-      precipitation: this.formBuilder.array([]),
+      precipitation: this.formBuilder.array([], [this.validateClimateData()]),
       temp_low: this.formBuilder.array([]),
       temp_high: this.formBuilder.array([]),
       temp_avg: this.formBuilder.array([]),
-      isAgriculturalZone: this.formBuilder.control(null),
-      existLandUse: this.formBuilder.array([]),
-      'description' : [''],
+      isAgriculturalZone: this.formBuilder.control(null,[Validators.required]),
+      existLandUse: this.formBuilder.array([], [this.atLeastOneCheckboxSelected()]),
+      'description' : ['',[Validators.required]],
 
     });
     this.irrigationValues = this.newLandFGroup.get('irrigationValues');
@@ -237,14 +238,14 @@ export class NewLandFormComponent implements OnInit {
     return this.newLandFGroup.get('topography') as FormArray;
   }
   addTopography() {
-    this.topography.push(this.formBuilder.control(''));
+    this.topography.push(this.formBuilder.control('', [Validators.required]));
   }
 
   get waterSourceParams() {
     return this.irrigationValues.get('waterSourceParameter') as FormArray;
   }
   addWaterParams() {
-    this.waterSourceParams.push(this.formBuilder.control(''));
+    this.waterSourceParams.push(this.formBuilder.control('', Validators.required));
   }
 
   get surfaceWaterParams() {
@@ -272,7 +273,7 @@ export class NewLandFormComponent implements OnInit {
     return this.newLandFGroup.get('soilTests') as FormArray;
   }
   addSoilTest() {
-    this.SoilTests.push(this.formBuilder.control(''));
+    this.SoilTests.push(this.formBuilder.control('', Validators.required));
   }
 
   get existLand() {
@@ -330,17 +331,24 @@ export class NewLandFormComponent implements OnInit {
     this.formWizardStep -= 1;
     const scrollElement = document.getElementById('panel-content');
     scrollElement.scrollIntoView();
-    // window.location.hash = `step-${this.formWizardStep}`;
+
   }
-  nextStep() {
-    this.formWizardStep += 1;
-    const scrollElement = document.getElementById('panel-content');
-    scrollElement.scrollIntoView();
-    // window.location.hash = `step-${this.formWizardStep}`;
+  async nextStep() : Promise<void> {
+    if (this.validateCurrentStep()) {
+      this.formWizardStep += 1;
+      const scrollElement = document.getElementById('panel-content');
+      scrollElement.scrollIntoView();
+    } else {
+      // Show error message or handle validation failure
+      await dialog.error('Please fill all required fields correctly before proceeding.');
+    }
   }
 
-  saveNewLand() {
+  async saveNewLand() : Promise<void>{
+    if (!this.validateCurrentStep() || !this.newLandFGroup.valid) {
+     await dialog.error('Please fill all required fields correctly before submitting.');
 
+    }
    dialog.loading();
 
 // getting what the form group return values from allthe fields into one array
@@ -432,6 +440,287 @@ export class NewLandFormComponent implements OnInit {
   refreshButton() {
     this.ngOnInit();
   }
+  atLeastOneCheckboxSelected(): ValidatorFn {
+    return (formArray: FormArray): { [key: string]: boolean } | null => {
+      const atLeastOneSelected = formArray.controls.some(control => control.value === true);
+      return atLeastOneSelected ? null : { 'atLeastOneRequired': true };
+    };
+  }
+  atLeastOneRequired(): ValidatorFn {
+    return (formArray: FormArray): { [key: string]: boolean } | null => {
+      const hasValue = formArray.controls.some(control => control.value && control.value.toString().trim() !== '');
+      return hasValue ? null : { 'atLeastOneRequired': true };
+    };
+  }
+  requiredTextValidator(): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: boolean } | null => {
+      return control.value && control.value.toString().trim() !== '' ? null : { 'required': true };
+    };
+  }
+  hasFormArrayError(formArrayName: string, errorType: string): boolean {
+    const formArray = this.newLandFGroup.get(formArrayName) as FormArray;
+    return formArray.errors && formArray.errors[errorType] && formArray.touched;
+  }
 
+  // Helper method to check if control has error
+  hasControlError(controlName: string, errorType: string): boolean {
+    const control = this.newLandFGroup.get(controlName);
+    return control.errors && control.errors[errorType] && control.touched;
+  }
+  validateCurrentStep(): boolean {
+    // Mark all controls as touched to trigger validation display
+    this.markFormGroupTouched(this.newLandFGroup);
 
+    switch (this.formWizardStep) {
+      case 1:
+        return this.validateStep1();
+      case 2:
+        return this.validateStep2();
+      case 3:
+        return this.validateStep3();
+      case 4:
+        return this.validateStep4();
+      default:
+        return false;
+    }
+  }
+
+  // Step-specific validation methods
+  private validateStep1(): boolean {
+    const upinsValid = this.newLandFGroup.get('uPINs').valid;
+    const investmentValid = this.newLandFGroup.get('investmentType').valid;
+    const accessValid = this.newLandFGroup.get('accessablity').valid;
+
+    return upinsValid && investmentValid && accessValid;
+  }
+
+  private validateStep2(): boolean {
+    const moistureValid = this.newLandFGroup.get('moistureSource').valid;
+    const topographyValid = this.newLandFGroup.get('topography').valid;
+    const soilTestsValid = this.newLandFGroup.get('soilTests').valid;
+
+    // Only validate irrigation if moisture source is irrigation
+    if (this.selectedMoisture?.value === 'on' && this.selectedMoisture?.index === 1) {
+      const groundWaterValid = this.irrigationValues.get('groundWater').valid;
+      const waterSourceParameterValid = this.irrigationValues.get('waterSourceParameter').valid;
+      return moistureValid && groundWaterValid && topographyValid && soilTestsValid && waterSourceParameterValid;
+    }
+
+    return moistureValid && topographyValid && soilTestsValid;
+  }
+
+  private validateStep3(): boolean {
+    const precipitationValid = this.newLandFGroup.get('precipitation').valid;
+    return precipitationValid;
+  }
+
+  private validateStep4(): boolean {
+    const existLandValid = this.newLandFGroup.get('existLandUse').valid;
+    const agriculturalZoneValid = this.newLandFGroup.get('isAgriculturalZone').valid;
+    const descriptionValid = this.newLandFGroup.get('description').valid;
+
+    return existLandValid && agriculturalZoneValid && descriptionValid;
+  }
+
+  // Helper to mark all controls as touched
+  private markFormGroupTouched(formGroup: FormGroup | FormArray) {
+    Object.keys(formGroup.controls).forEach(key => {
+      const control = formGroup.get(key);
+
+      if (control instanceof FormGroup || control instanceof FormArray) {
+        this.markFormGroupTouched(control);
+      } else {
+        control.markAsTouched();
+      }
+    });
+  }
+  validateClimateData(): ValidatorFn {
+    return (formArray: FormArray): { [key: string]: boolean } | null => {
+      // Use a safer approach - get the parent form group
+      const formGroup = formArray.parent;
+      if (!formGroup) {
+        return null;
+      }
+
+      const precipitationArray = formArray;
+      const tempLowArray = formGroup.get('temp_low') as FormArray;
+      const tempHighArray = formGroup.get('temp_high') as FormArray;
+      const tempAvgArray = formGroup.get('temp_avg') as FormArray;
+
+      // Check if all arrays exist
+      if (!tempLowArray || !tempHighArray || !tempAvgArray) {
+        return null;
+      }
+
+      let hasAnyData = false;
+      let hasIncompleteMonth = false;
+
+      // Check each month
+      for (let i = 0; i < precipitationArray.length; i++) {
+        const precip = precipitationArray.at(i).value;
+        const tempLow = tempLowArray.at(i)?.value;
+        const tempHigh = tempHighArray.at(i)?.value;
+        const tempAvg = tempAvgArray.at(i)?.value;
+
+        // Check if this month has any data
+        const monthHasData =
+          (precip !== null && precip !== undefined && precip !== '') ||
+          (tempLow !== null && tempLow !== undefined && tempLow !== '') ||
+          (tempHigh !== null && tempHigh !== undefined && tempHigh !== '') ||
+          (tempAvg !== null && tempAvg !== undefined && tempAvg !== '');
+
+        if (monthHasData) {
+          hasAnyData = true;
+
+          // Check if all fields for this month are filled
+          const allFieldsFilled =
+            precip !== null && precip !== undefined && precip !== '' &&
+            tempLow !== null && tempLow !== undefined && tempLow !== '' &&
+            tempHigh !== null && tempHigh !== undefined && tempHigh !== '' &&
+            tempAvg !== null && tempAvg !== undefined && tempAvg !== '';
+
+          if (!allFieldsFilled) {
+            hasIncompleteMonth = true;
+            break; // No need to check further
+          }
+        }
+      }
+
+      // If any data is entered but some months are incomplete, return error
+      if (hasAnyData && hasIncompleteMonth) {
+        return { 'incompleteClimateData': true };
+      }
+
+      return null;
+    };
+  }
+
+  // Validator for numeric fields with range validation
+  numberRangeValidator(min: number, max: number): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      if (!control.value && control.value !== 0) {
+        return null; // Allow empty fields (use required validator separately)
+      }
+
+      const value = parseFloat(control.value);
+      if (isNaN(value)) {
+        return { 'notANumber': true };
+      }
+
+      if (value < min || value > max) {
+        return { 'outOfRange': { min, max, actual: value } };
+      }
+
+      return null;
+    };
+  }
+  getFormArrayErrorMessage(formArrayName: string): string {
+    const formArray = this.newLandFGroup.get(formArrayName) as FormArray;
+
+    if (!formArray.errors) return '';
+
+    if (formArray.errors['atLeastOneRequired']) {
+      return `At least one ${this.getFieldDisplayName(formArrayName)} is required`;
+    }
+
+    if (formArray.errors['incompleteClimateData']) {
+      return 'If you enter climate data for any month, you must fill all fields for that month';
+    }
+
+    if (formArray.errors['outOfRange']) {
+      const error = formArray.errors['outOfRange'];
+      return `Value must be between ${error.min} and ${error.max}`;
+    }
+
+    return 'This field is required';
+  }
+
+  // Helper to get display names for error messages
+  private getFieldDisplayName(fieldName: string): string {
+    const displayNames: { [key: string]: string } = {
+      'topography': 'topography field',
+      'soilTests': 'soil test',
+      'precipitation': 'precipitation field'
+    };
+
+    return displayNames[fieldName] || fieldName;
+  }
+
+  // Method to validate individual numeric inputs
+  validateNumberInput(control: AbstractControl, min: number, max: number): boolean {
+    if (!control.value && control.value !== 0) return true; // Allow empty
+
+    const value = parseFloat(control.value);
+    if (isNaN(value)) return false;
+
+    return value >= min && value <= max;
+  }
+  checkMonthHasError(monthIndex: number): boolean {
+    const precipControl = this.precipitations.at(monthIndex);
+    const tempLowControl = this.tempLow.at(monthIndex);
+    const tempHighControl = this.tempHigh.at(monthIndex);
+    const tempAvgControl = this.tempAvg.at(monthIndex);
+
+    // Check if any field has data but not all are filled
+    const hasPartialData =
+      (precipControl.value || tempLowControl.value || tempHighControl.value || tempAvgControl.value) &&
+      (!precipControl.value || !tempLowControl.value || !tempHighControl.value || !tempAvgControl.value);
+
+    return hasPartialData;
+  }
+  getFormArray(formArrayName: string): FormArray {
+    return this.newLandFGroup.get(formArrayName) as FormArray;
+  }
+
+// Helper to check if form array control is invalid
+  isFormControlInvalid(formArrayName: string, index: number): boolean {
+    const formArray = this.getFormArray(formArrayName);
+    if (!formArray || !formArray.controls[index]) {
+      return false;
+    }
+    return formArray.controls[index].invalid && formArray.controls[index].touched;
+  }
+
+// Helper to check if a specific form array control has specific error
+  hasFormControlError(formArrayName: string, index: number, errorType: string): boolean {
+    const formArray = this.getFormArray(formArrayName);
+    if (!formArray || !formArray.controls[index]) {
+      return false;
+    }
+    const control = formArray.controls[index];
+    return control.errors && control.errors[errorType] && control.touched;
+  }
+  // Method to validate a specific month's climate data
+  validateClimateMonth(monthIndex: number) {
+    // Trigger validation for the precipitation array (which has the climate validator)
+    this.precipitations.updateValueAndValidity();
+
+    // Mark all controls as touched to show errors
+    this.precipitations.controls[monthIndex].markAsTouched();
+    this.tempLow.controls[monthIndex].markAsTouched();
+    this.tempHigh.controls[monthIndex].markAsTouched();
+    this.tempAvg.controls[monthIndex].markAsTouched();
+  }
+  // Method to check if a specific month has incomplete climate data
+  hasIncompleteClimateData(monthIndex: number): boolean {
+    const precip = this.precipitations.at(monthIndex).value;
+    const tempLow = this.tempLow.at(monthIndex).value;
+    const tempHigh = this.tempHigh.at(monthIndex).value;
+    const tempAvg = this.tempAvg.at(monthIndex).value;
+
+    // Check if any field has data but not all are filled
+    const hasPartialData =
+      (precip !== null && precip !== undefined && precip !== '') ||
+      (tempLow !== null && tempLow !== undefined && tempLow !== '') ||
+      (tempHigh !== null && tempHigh !== undefined && tempHigh !== '') ||
+      (tempAvg !== null && tempAvg !== undefined && tempAvg !== '');
+
+    const allFilled =
+      precip !== null && precip !== undefined && precip !== '' &&
+      tempLow !== null && tempLow !== undefined && tempLow !== '' &&
+      tempHigh !== null && tempHigh !== undefined && tempHigh !== '' &&
+      tempAvg !== null && tempAvg !== undefined && tempAvg !== '';
+
+    return hasPartialData && !allFilled;
+  }
 }

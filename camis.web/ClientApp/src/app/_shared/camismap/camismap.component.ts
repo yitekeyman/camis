@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ElementRef, OnDestroy } from '@angular/core';
+import {Component, Input, OnInit, ElementRef, OnDestroy, AfterViewInit} from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -43,7 +43,7 @@ interface BoundingBox {
   templateUrl: './camismap.component.html',
   styleUrls: ['./camismap.component.css']
 })
-export class CamisMapComponent implements OnInit, OnDestroy {
+export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() id = 1;
 
   private view!: OlView;
@@ -70,6 +70,10 @@ export class CamisMapComponent implements OnInit, OnDestroy {
   private offlineListener!: () => void;
   private isUsingOfflineLayer = false;
   isFullScreen = false;
+
+  // Cache busting for WMS layers
+  private cacheBuster = Date.now();
+
   constructor(
     private http: HttpClient,
     private land: LandDataService,
@@ -79,7 +83,12 @@ export class CamisMapComponent implements OnInit, OnDestroy {
   ) {
     this.loadSettings();
   }
-
+  ngAfterViewInit(): void {
+    // Refresh map after a short delay to ensure everything is loaded
+    setTimeout(() => {
+      this.forceMapRefresh();
+    }, 1000);
+  }
   ngOnInit(): void {
     console.log('Initializing map component, online status:', navigator.onLine);
     this.initializeVectorSources();
@@ -139,14 +148,12 @@ export class CamisMapComponent implements OnInit, OnDestroy {
 
   private rebuildLayers(): void {
     console.log('Rebuilding layers, online:', navigator.onLine);
+    // Update cache buster when rebuilding layers
+    this.cacheBuster = Date.now();
     this.buildLayers();
     if (this.map) {
       this.map.setLayers(this.layers);
       this.map.updateSize();
-      // Re-zoom to extent after rebuilding layers
-      // setTimeout(() => {
-      //   this.zoomToExtent();
-      // }, 500);
     }
   }
 
@@ -372,12 +379,12 @@ export class CamisMapComponent implements OnInit, OnDestroy {
     const visibleConfigs = wmsConfigs.filter(config => config.visible);
     console.log('Adding WMS layers:', visibleConfigs.map(c => c.name));
 
-    visibleConfigs.forEach(config => this.createWmsLayer(config));
+    visibleConfigs.forEach(config => this.createCacheFreeWmsLayer(config));
   }
 
-  private createWmsLayer(config: WmsLayerConfig): void {
+  private createCacheFreeWmsLayer(config: WmsLayerConfig): void {
     try {
-      console.log('Creating WMS layer:', config.layerName);
+      console.log('Creating cache-free WMS layer:', config.layerName);
 
       const wmsSource = new OLTileWMS({
         url: '/geoserver/wms',
@@ -386,10 +393,12 @@ export class CamisMapComponent implements OnInit, OnDestroy {
           'TILED': true,
           'VERSION': '1.1.1',
           'FORMAT': 'image/png',
-          'TRANSPARENT': true
+          'TRANSPARENT': true,
+          '_t': this.cacheBuster // Add cache busting parameter
         },
         serverType: 'geoserver',
-        crossOrigin: 'anonymous'
+        crossOrigin: 'anonymous',
+        cacheSize: 0 // Disable tile caching
       });
 
       const wmsLayer = new TileLayer({
@@ -662,6 +671,7 @@ export class CamisMapComponent implements OnInit, OnDestroy {
       this.zoomToSetExtent(extent);
     }
   }
+
   public toggleFullScreen(): void {
     this.isFullScreen = !this.isFullScreen;
 
@@ -699,8 +709,38 @@ export class CamisMapComponent implements OnInit, OnDestroy {
       }
     }, 300);
   }
+
+  // NEW METHOD: Refresh WMS layers with cache busting
+  public refreshWmsLayers(): void {
+    console.log('Refreshing WMS layers with cache busting');
+
+    // Update cache buster
+    this.cacheBuster = Date.now();
+
+    this.layers.forEach(layer => {
+      const layerName = layer.get('name');
+      if (layerName && layerName.startsWith('wms-')) {
+        const source = layer.getSource() as OLTileWMS;
+        if (source) {
+          // Update params to force refresh with new cache buster
+          source.updateParams({
+            '_t': this.cacheBuster
+          });
+          source.refresh(); // Force source refresh
+          console.log(`Refreshed layer: ${layerName} with cache buster: ${this.cacheBuster}`);
+        }
+      }
+    });
+  }
+
+  // NEW METHOD: Force complete map refresh
+  public forceMapRefresh(): void {
+    console.log('Forcing complete map refresh');
+    this.rebuildLayers();
+  }
+
   public testGeoServerConnection(): void {
-    const testUrl = '/geoserver/wms?service=WMS&version=1.1.1&request=GetCapabilities';
+    const testUrl = '/geoserver/wms?service=WMS&version=1.1.1&request=GetCapabilities&_t=' + Date.now();
 
     this.http.get(testUrl, { responseType: 'text' }).subscribe({
       next: () => console.log('GeoServer connection successful'),
@@ -713,6 +753,7 @@ export class CamisMapComponent implements OnInit, OnDestroy {
     console.log('=== MAP DEBUG INFO ===');
     console.log('Online status:', navigator.onLine);
     console.log('Using offline layer:', this.isUsingOfflineLayer);
+    console.log('Cache buster value:', this.cacheBuster);
     console.log('Total layers:', this.layers.length);
 
     this.layers.forEach((layer, index) => {
@@ -720,6 +761,14 @@ export class CamisMapComponent implements OnInit, OnDestroy {
       const visible = layer.getVisible();
       const opacity = layer.getOpacity();
       console.log(`Layer ${index}: ${name}, visible: ${visible}, opacity: ${opacity}`);
+
+      // Show WMS layer parameters
+      if (name.startsWith('wms-')) {
+        const source = layer.getSource() as OLTileWMS;
+        if (source) {
+          console.log(`  - Params:`, source.getParams());
+        }
+      }
     });
 
     console.log('Map target:', this.map?.getTarget());

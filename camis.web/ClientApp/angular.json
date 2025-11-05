@@ -19,7 +19,16 @@
               "sweetalert2",
               "jspdf",
               "html2canvas",
-              "xlsx"
+              "xlsx",
+              "file-saver",
+              "core-js",
+              "raf",
+              "rgbcolor",
+              "xml-utils",
+              "earcut",
+              "rbush",
+              "canvg",
+              "geotiff"
             ],
             "outputPath": "dist",
             "index": "src/index.html",
@@ -44,8 +53,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1.5mb",
-                  "maximumError": "1.5mb"
+                  "maximumWarning": "5mb",
+                  "maximumError": "5mb"
                 },
                 {
                   "type": "anyComponentStyle",

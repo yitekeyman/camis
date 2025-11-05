@@ -2,7 +2,7 @@
   color: #fff;
   background: #37882c;
   border-color: #37882c;
-  &hover{
+  :is(hover){
     background: #37882c;
   }
 }

@@ -1,0 +1,19 @@
+[
+  {
+    "landid": "fweoifwef-ewrwet-nfwofwe-fwneorwier",
+    "UPIN": [ "2939-1929393043", "2233230-1123334" ],
+    "land_type": 3,
+    "area": 22344.222,
+    "farm": {
+      "owner": "zekele kebede",
+      "investment_license": "223333"
+    }
+  },
+  {
+    "landid": "fweoifwef-ewrwet-nfwofwe-fwneorwier",
+    "UPIN": [ "44533-2233", "3348339-2233" ],
+    "land_type": 2,
+    "area": 22344.222 
+  }
+
+]

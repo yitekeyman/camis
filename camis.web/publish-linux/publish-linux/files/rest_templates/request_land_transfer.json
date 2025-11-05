@@ -1,0 +1,27 @@
+﻿{
+  "landID": "506275b3-ff03-49be-98dd-38a523ca90c3",
+  "leaseFrom": "2018-10-30",
+  "leaseTo": "2019-12-01",
+  "yearlyLease": 50000,
+  "right": "RentFromPrivate",
+  "farmer": {
+    "id": "bdc2ad8c-8d3e-4e22-9074-22cf4e701148",
+    "name": "Kaleab S. Melkie",
+    "nationality": "Ethiopian",
+    "typeId": 2,
+    "addressId": "c2d29867-3d0b-d497-9191-18a9d8ee7850",
+    "phone": "+251923772839",
+    "email": "kaleabmelkie@gmail.com",
+    "originId": 3,
+    "capital": 14000000000,
+    "registrations": [],
+    "type": {
+      "id": 2,
+      "name": "General Partnership"
+    },
+    "origin": {
+      "id": 3,
+      "name": "Ethiopian Origin"
+    }
+  }
+}

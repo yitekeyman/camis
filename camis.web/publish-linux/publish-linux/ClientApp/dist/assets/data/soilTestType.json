@@ -1,0 +1,15 @@
+[
+    {"id":1, "name":"Organic matter content, %"},
+    {"id":2, "name":"Phosphorous P, ppm"},
+    {"id":3, "name":"Magnesium Mg, ppm"},
+    {"id":4, "name":"Calcium Ca, ppm"},
+    {"id":5, "name":"Sodium Na, ppm"},
+    {"id":6, "name":"PH"},
+    {"id":7, "name":"Cation Exchange Capacity CEC, meq/100g"},
+    {"id":8, "name":"Electrical conductivity EC, mmhos/cm"},
+    {"id":9, "name":"Bulk density, gm/cm3"},
+    {"id":10, "name":"Soil depth, cm"},
+    {"id":11, "name":"Soil type"},
+    {"id":12, "name":"Texture class"}
+
+]

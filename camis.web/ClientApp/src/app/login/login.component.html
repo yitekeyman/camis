@@ -10,7 +10,7 @@
             <div class="d-flex justify-content-center">
               <div class="auth-header">
                 <h3 class="text-secondary mt-2"><b>Hi, Welcome Back</b></h3>
-                <p class="fs-4 mt-2">Enter your credentials to continue</p>
+                <p class="fs-5 mt-2">Enter your credentials to continue</p>
               </div>
             </div>
           </div>
@@ -34,7 +34,7 @@
               <div class="input-form mb-3  col-md-12" *ngIf="isLoggedIn && ROLES?.length>1">
                 <label for="role">User Role <span class="text-danger">* </span></label>
                 <select class="form-select" id="role" [(ngModel)]="selectedRole" formControlName="role">
-                  <option value="">Select Role</option>
+                  <option value="0">Select Role</option>
                   <option *ngFor="let role of ROLES" [value]="role.id">{{ role.name }}</option>
                 </select>
 

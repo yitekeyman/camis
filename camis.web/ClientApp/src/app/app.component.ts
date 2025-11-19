@@ -4,7 +4,7 @@ import {RouterOutlet} from '@angular/router';
 
 // project import
 import {SpinnerComponent} from './theme/shared/components/spinner/spinner.component';
-import {HttpClientModule} from "@angular/common/http";
+import {HttpClientModule,HTTP_INTERCEPTORS } from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ApiService} from "./_services/api.service";
 import {CommonModule} from "@angular/common";
@@ -29,6 +29,7 @@ import {AdminDashboardService} from "./_services/adminDashboard.service";
 import {FullScreenService} from "./_services/full-screen.service";
 import {JsonFormatPipe} from "./_services/json-format.pipe";
 import {ExportService} from "./_services/export.service";
+import {SessionInterceptor} from "./login/simpleLogin/session.interceptor";
 
 @Component({
   selector: 'app-root',
@@ -42,6 +43,11 @@ import {ExportService} from "./_services/export.service";
     ReactiveFormsModule,
   ],
   providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: SessionInterceptor,
+      multi: true
+    },
     AddressApiService,
     AdminServices,
     ApiService,

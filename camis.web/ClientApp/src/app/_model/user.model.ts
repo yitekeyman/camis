@@ -44,3 +44,8 @@ export interface UserDetailViewModal {
     email:string;
 
 }
+export interface SysConfigModel{
+  id:number;
+  name: string;
+  value:string;
+}

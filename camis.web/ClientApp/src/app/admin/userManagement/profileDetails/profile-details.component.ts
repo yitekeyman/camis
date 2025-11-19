@@ -18,7 +18,7 @@ export class ProfileDetailsComponent implements OnInit{
   profileDetails:any;
   showAuditLogModal=false;
   auditDetails:any=null;
-  constructor(private adminService:AdminServices, private keyCase:ObjectKeyCasingService) {
+  constructor(private adminService:AdminServices, public keyCase:ObjectKeyCasingService) {
     this.username = localStorage.getItem("username");
   }
   ngOnInit() {

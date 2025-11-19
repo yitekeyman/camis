@@ -2,6 +2,7 @@
 import {CommonModule} from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {InteractiveJsonViewerComponent} from "../../interactive-json-viewer.component";
+import {ObjectKeyCasingService} from "../../../_services/object-key-casing.service";
 
 @Component({
   selector: "app-auditLog-detail",
@@ -16,7 +17,7 @@ export class DetailAuditLogComponent implements OnInit{
   @Output() closeAuditLogDetails = new EventEmitter();
   processedOldValues: any;
   processedNewValues: any;
-  constructor() {
+  constructor(public keyCase:ObjectKeyCasingService) {
   }
   ngOnInit() {
     if (this.auditLogItem?.auditLog) {

@@ -125,7 +125,7 @@
         >
           <img src="assets/images/user/avator-4.png" alt="user-image" class="user-avtar"/>
           <span>
-            <i class="ti ti-settings"></i>
+           <i class="ti ti-settings"></i>
           </span>
         </a>
         <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown" ngbDropdownMenu>
@@ -190,6 +190,17 @@
     </div>
   </div>
 </div>
+<div class="modal fade" [class.show]="showLogin" [style.display]="showLogin ? 'block' : 'none'"
+     id="loginModalModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal-dialog" style="max-width: 400px; margin-top: 75px;">
 
+    <div class="modal-content">
+
+      <app-simple-login *ngIf="showLogin" (closeLoginForm)="closeLoginModal()"></app-simple-login>
+    </div>
+  </div>
+</div>
 <!-- Backdrop -->
-<div class="modal-backdrop fade show" *ngIf="isChangePassword || isProfileShow" (click)="closeForm(true)"></div>
+<div class="modal-backdrop fade show" *ngIf="isChangePassword || isProfileShow|| showLogin" (click)="closeForm(true)"></div>
+
+

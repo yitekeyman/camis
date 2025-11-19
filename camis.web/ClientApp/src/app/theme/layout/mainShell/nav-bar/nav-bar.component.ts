@@ -7,6 +7,9 @@ import { BerryConfig } from 'src/app/app-config';
 import { NavLeftComponent } from './nav-left/nav-left.component';
 import { NavLogoComponent } from './nav-logo/nav-logo.component';
 import { NavRightComponent } from './nav-right/nav-right.component';
+import {NgIf} from "@angular/common";
+import {ResetPassComponent} from "../../../../admin/userManagement/resetPassword/reset-pass.component";
+import {SimpleLoginComponent} from "../../../../login/simpleLogin/simple-login.component";
 
 @Component({
   selector: 'app-nav-bar',

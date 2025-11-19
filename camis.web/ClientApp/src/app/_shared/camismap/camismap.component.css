@@ -4,10 +4,10 @@
   height: 100%;
   min-height: 200px;
   transition: all 0.3s ease;
-  border-right: 8px;
+  border-radius: 8px;
 }
 .ol-viewport, .ol-layers, .ol-layer{
-  border-right: 8px;
+  border-radius: 8px;
 }
 .map-container.full-screen {
   position: fixed;
@@ -22,14 +22,10 @@
   width: 100%;
   height: 100%;
   background: #f9f8f8;
+  border-radius: 8px;
 }
-.ol-layer{
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
-}
-.ol-layer canvas{
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
+.ol-layer>canvas, .ol-viewport, .ol-layer, .ol-overlaycontainer{
+  border-radius: 8px;
 }
 .map-controls-overlay {
   position: absolute;

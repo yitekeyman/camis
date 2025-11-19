@@ -1,7 +1,7 @@
 <div class="row">
   <div class="col-md-12">
     <div class="card p-1">
-      <div class="row ">
+      <div class="row me-0">
         <div class="col-sm-8 p-2">
           <div class="card-header p-2">
             <h5><i class="ti ti-map-cog"></i> Edit Registered Parcel</h5>
@@ -11,16 +11,16 @@
             <div class="card-body p-0 m-0" style="height: calc(65vh)">
               <div class="card m-0" style="height: calc(65Vh)" *ngIf="formWizardStep === 1">
                 <div class="card-header p-3">
-                  <h5>Step 1 of 4: General</h5>
+                  <h5>Step 1 of 4: General Parcel Info</h5>
                 </div>
-                <div class="card-body" style="height: calc(65Vh); overflow-y: auto">
+                <div class="card-body" id="panel-content" style="height: calc(65Vh); overflow-y: auto">
                   <div class="row">
                     <div class="input-form col-md-4">
                       <div formArrayName="uPINs">
                         <div class="form-titles">
                           <label>
-                            UPINs * <span class="error-message"
-                                          *ngIf="!editLandFGroup.controls['uPINs'].valid && editLandFGroup.controls['uPINs'].touched"><i
+                            UPINs: <span class="text-danger">(*)&nbsp;</span><span class="error-message"
+                                                                                 *ngIf="hasFormArrayError('uPINs', 'atLeastOneRequired')"><i
                             class="ti ti-exclamation-circle"></i> UPIN is required</span>
                           </label>
 
@@ -30,7 +30,7 @@
                         <div *ngFor="let itemrow of editLandFGroup.controls['uPINs']['controls']; let i=index">
                           <div class="form-group">
                             <input type="text" [formControlName]="i" class="form-control"
-                                   placeholder="enter upin #{{ i + 1 }}"
+                                   placeholder="Enter UPIN #{{ i + 1 }}"
                                    (change)="onUpinChanged($event)" required>
 
                           </div>
@@ -51,7 +51,11 @@
                     <div class="col-md-5">
                       <div class="form-group" formArrayName="investmentType">
                         <div class="form-titles">
-                          <label>Land suitable for: </label>
+                          <label>Land suitable for:<span class="text-danger">(*)&nbsp;</span>
+                            <span class="error-message" *ngIf="hasFormArrayError('investmentType', 'atLeastOneRequired')">
+                              <i class="ti ti-exclamation-circle"></i> Investment Type is Required
+                            </span>
+                          </label>
                         </div>
 
                         <div class="form-check newland_checkbox" *ngFor="let invest of investment; let i=index">
@@ -66,7 +70,11 @@
                     <div class="col-md-3">
                       <div class="form-group" formArrayName="accessablity">
                         <div class="form-titles">
-                          <label>Accessible by: </label>
+                          <label>Accessible by:<span class="text-danger">(*)&nbsp;</span>
+                            <span class="error-message" *ngIf="hasFormArrayError('accessablity', 'atLeastOneRequired')">
+                              <i class="ti ti-exclamation-circle"></i> Accessability is Required
+                            </span>
+                          </label>
                         </div>
 
                         <div class="row form-check newland_checkbox">
@@ -88,12 +96,16 @@
                 <div class="card-header p-3">
                   <h5>Step 2 of 4: Environmental Info</h5>
                 </div>
-                <div class="card-body" style="height: calc(65Vh); overflow-y: auto">
+                <div class="card-body" id="panel-content" style="height: calc(65Vh); overflow-y: auto">
                   <div class="row">
                     <div class="col-md-12 mt-0">
                       <div class="card p-0">
                         <div class="card-header p-3">
-                          <h5>Moisture Source</h5>
+                          <h5>Moisture Source:
+                            <span class="text-danger">(*)&nbsp;</span>  <span class="error-message" *ngIf="hasControlError('moistureSource', 'required')">
+                             <i class="ti ti-exclamation-circle"></i> Moisture source is required
+                            </span>
+                          </h5>
                         </div>
                         <div class="card-body m-0 p-2">
                           <div class="row">
@@ -125,7 +137,10 @@
                               <div class="row">
                                 <div class="col-sm-6" *ngFor="let water of waterTestPrams; let i=index">
                                   <div class="form-group">
-                                    <label>{{ water.name }}: </label>
+                                    <label>{{ water.name }}:<span class="text-danger">(*)&nbsp;</span>  <span class="error-message" *ngIf="isFormControlInvalid('irrigationValues.waterSourceParameter', i)">
+                                          <i class="ti ti-exclamation-circle"></i> This Field Required
+                                        </span>
+                                    </label>
                                     <input type="number" class="form-control" placeholder="{{water.name}} value"
                                            [formControlName]="i">
                                   </div>
@@ -143,7 +158,10 @@
                               <div class="row">
                                 <div class="col-sm-6" formArrayName="groundWater">
                                   <div class="card-header p-1">
-                                    <h6>Ground Water</h6>
+                                    <h6>Ground Water:<span class="text-danger">(*)&nbsp;</span>  <span class="error-message" *ngIf="hasFormArrayError('irrigationValues.groundWater', 'atLeastOneRequired')">
+                                        <i class="ti ti-exclamation-circle"></i>Ground Water Source Required
+                                      </span>
+                                    </h6>
                                   </div>
                                   <div class="form-check newland_checkbox"
                                        *ngFor="let gWater of groundWater; let i=index">
@@ -184,7 +202,10 @@
                           <div class="row" formArrayName="topography">
                             <div class="col-sm-6" *ngFor="let topography of topographies; let i=index">
                               <div class="form-group">
-                                <label>{{ topography.name }}: </label>
+                                <label>{{ topography.name }}:<span class="text-danger">(*)&nbsp;</span>  <span class="error-message" *ngIf="isFormControlInvalid('topography', i)">
+                                    <i class="ti ti-exclamation-circle"></i> This Field Required
+                                  </span>
+                                </label>
                                 <input type="number" class="form-control" id="topography"
                                        placeholder="{{topography.name}} value"
                                        [formControlName]="i">
@@ -204,15 +225,18 @@
                           <div class="row" formArrayName="soilTests">
                             <div class="col-sm-6" *ngFor="let soilType of soilTests; let i=index">
                               <div class="form-group">
-                                <label>{{ soilType.name }}: </label>
+                                <label>{{ soilType.name }}:<span class="text-danger">(*)&nbsp;</span>
+                                  <span class="error-message" *ngIf="isFormControlInvalid('soilTests', i)">
+                                <i class="ti ti-exclamation-circle"></i> This field is required
+                              </span></label>
                                 <input *ngIf="soilType.id !== 11 && soilType.id !== 12" type="number"
                                        class="form-control"
                                        id="soilTest" placeholder="{{soilType.name}} value"
-                                       [formControlName]="i">
+                                       [formControlName]="i" (blur)="editLandFGroup.get('soilTests').updateValueAndValidity()">
                                 <input *ngIf="soilType.id === 11 || soilType.id === 12" type="text" class="form-control"
                                        id="soilTest"
                                        placeholder="{{soilType.name}} value"
-                                       [formControlName]="i">
+                                       [formControlName]="i" (blur)="editLandFGroup.get('soilTests').updateValueAndValidity()">
                               </div>
                             </div>
 
@@ -227,7 +251,7 @@
                 <div class="card-header p-3">
                   <h5>Step 3 of 4: Climatology: </h5>
                 </div>
-                <div class="card-body" style="height: calc(65Vh); overflow-y: auto">
+                <div class="card-body" id="panel-content" style="height: calc(65Vh); overflow-y: auto">
                   <table class="table">
                     <thead>
                     <tr class="headings">
@@ -241,31 +265,45 @@
                     <tbody>
                     <tr *ngFor="let months of json;let i=index">
                       <td>
-                        {{ months.name }}
+                        {{ months.name }}<span class="text-danger">(*)&nbsp;</span><span *ngIf="hasIncompleteClimateData(i)" class="error-message">
+                          <i class="ti ti-exclamation-circle"></i> Incomplete
+                        </span>
                       </td>
 
                       <td>
                         <div class="form-group" formArrayName="precipitation">
+                          <span class="error-message" *ngIf="isFormControlInvalid('precipitation', i)">
+                          <i class="ti ti-exclamation-circle"></i> Invalid value
+                        </span>
                           <input type="number" class="form-control" id="precipitation" [formControlName]="i"
-                                 placeholder="in mm">
+                                 placeholder="in mm"  (blur)="validateClimateMonth(i)">
                         </div>
                       </td>
                       <td>
                         <div class="form-group" formArrayName="temp_low">
+                           <span class="error-message" *ngIf="isFormControlInvalid('temp_low', i)">
+                              <i class="ti ti-exclamation-circle"></i> Invalid value
+                            </span>
                           <input type="number" class="form-control" id="temp_low" [formControlName]="i"
-                                 placeholder="in °C">
+                                 placeholder="in °C"  (blur)="validateClimateMonth(i)">
                         </div>
                       </td>
                       <td>
                         <div class="form-group" formArrayName="temp_high">
+                           <span class="error-message" *ngIf="isFormControlInvalid('temp_high', i)">
+                              <i class="ti ti-exclamation-circle"></i> Invalid value
+                            </span>
                           <input type="number" class="form-control" id="temp_high" [formControlName]="i"
-                                 placeholder="in °C">
+                                 placeholder="in °C"  (blur)="validateClimateMonth(i)">
                         </div>
                       </td>
                       <td>
                         <div class="form-group" formArrayName="temp_avg">
+                          <span class="error-message" *ngIf="isFormControlInvalid('temp_avg', i)">
+                          <i class="ti ti-exclamation-circle"></i> Invalid value
+                        </span>
                           <input type="number" class="form-control" id="temp_avg" [formControlName]="i"
-                                 placeholder="in °C">
+                                 placeholder="in °C" (blur)="validateClimateMonth(i)">
                         </div>
                       </td>
 
@@ -279,15 +317,20 @@
                 <div class="card-header p-3">
                   <h5>Step 4 of 4: Final</h5>
                 </div>
-                <div class="card-body" style="height: calc(65Vh); overflow-y: auto">
+                <div class="card-body" id="panel-content" style="height: calc(65Vh); overflow-y: auto">
                   <div class="row m-0 p-0">
                     <div class="col-md-12 mt-0" formArrayName="existLandUse">
 
                       <div class="card-header p-3">
-                        <h5>Existing Land Use </h5>
+                        <h5>Existing Land Use: <span class="text-danger">(*)&nbsp;</span> </h5>
                       </div>
                       <div class="card-body m-0 p-2">
                         <div class="row">
+                          <div class="col-sm-12" *ngIf="hasFormArrayError('existLandUse', 'atLeastOneRequired')">
+                             <span class="error-message" >
+                              <i class="ti ti-exclamation-circle"></i> Existing land use required
+                            </span>
+                          </div>
                           <div class="col-sm-4" *ngFor="let land of existLands; let i=index">
                             <div class="form-check newland_checkbox">
                               <label class="form-check-label checkbox-container">
@@ -307,7 +350,9 @@
                              style="border-right: 10px; background: #f9f8f8; border: 1px solid lightgray;">
                           <div class="row">
                             <div class="col-sm-8">
-                              <label>Is the land part of Agricultural Economy zone? </label>
+                              <label>Is the land part of Agricultural Economy zone? <span class="text-danger">(*)&nbsp;</span> <br> <span class="error-message" *ngIf="hasControlError('isAgriculturalZone', 'required')">
+                            <i class="ti ti-exclamation-circle"></i> This field is required
+                          </span></label>
                             </div>
                             <div class="col-sm-4">
                               <label class="form-check-label checkbox-container"
@@ -338,7 +383,9 @@
                     </div>
                     <div class="col-md-12">
                       <div class="form-group">
-                        <label for="description">Description: </label>
+                        <label for="description">Description:<span class="text-danger">(*)&nbsp;</span> <span class="error-message" *ngIf="hasControlError('description', 'required')">
+                      <i class="ti ti-exclamation-circle"></i> Description is required
+                    </span></label>
                         <textarea class="form-control" id="description" rows="3" formControlName="description"
                                   required></textarea>
                       </div>
@@ -350,15 +397,15 @@
             <div class="card-footer p-2">
               <div class="row m-0">
                 <div class="col-md-6 justify-content-start">
-                  <button type="button" class="btn btn-secondary" *ngIf="formWizardStep !== 1" (click)="previousStep()">
+                  <button type="button" class="btn btn-custom-light" *ngIf="formWizardStep !== 1" (click)="previousStep()">
                     Back
                   </button>
                 </div>
                 <div class="col-md-6 align-right">
-                  <button type="button" class="btn btn-primary" (click)="nextStep()" *ngIf="formWizardStep !== 4">
+                  <button type="button" class="btn btn-custom" (click)="nextStep()"  [disabled]="!validateCurrentStep()" *ngIf="formWizardStep !== 4">
                     Next
                   </button>
-                  <button type="submit" class="btn btn-success newandButton" [disabled]="!editLandFGroup.valid"
+                  <button type="submit" class="btn btn-custom" [disabled]="!validateCurrentStep()"
                           *ngIf="formWizardStep === 4">Request
                     Approval
                   </button>

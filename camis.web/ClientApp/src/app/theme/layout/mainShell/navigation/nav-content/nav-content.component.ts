@@ -118,6 +118,14 @@ export class NavContentComponent implements OnInit {
                 url: '/admin/activity-template',
                 icon: 'ti ti-file-diff',
                 classes: 'nav-item'
+              },
+              {
+                id: 'sys-config',
+                title: 'System Config',
+                type: 'item',
+                url: '/admin/sys-config',
+                icon: 'ti ti-database-cog',
+                classes: 'nav-item'
               }
             ]
           }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using intapscamis.camis.data.Entities;
 using intapscamis.camis.domain.Admin;
 using intapscamis.camis.domain.Infrastructure;
 using intapscamis.camis.Extensions;
@@ -190,7 +191,7 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {message = "Internal server error occurred"});
+                return StatusCode(500, new {message = e.Message});
             }
         }
 
@@ -208,7 +209,7 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {message = "Internal server error occurred"});
+                return StatusCode(500, new {message = e.Message});
             }
         }
 
@@ -227,7 +228,7 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {message = "Internal server error occurred"});
+                return StatusCode(500, new {message = e.Message});
             }
         }
 
@@ -246,7 +247,7 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {message = "Internal server error occurred"});
+                return StatusCode(500, new {message = e.Message});
             }
         }
 
@@ -264,7 +265,7 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {message = "Internal server error occurred"});
+                return StatusCode(500, new {message = e.Message});
             }
         }
         [Roles]
@@ -279,7 +280,7 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {message = "Internal server error occurred"});
+                return StatusCode(500, new {message = e.Message});
             }
         }
         [HttpGet]
@@ -293,7 +294,64 @@ namespace intapscamis.camis.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine(e);
-                return StatusCode(500, new {message = "Internal server error occurred"});
+                return StatusCode(500, new {message = e.Message});
+            }
+        }
+        
+        [HttpGet]
+        public IActionResult GetAllSysConfig()
+        {
+            try
+            {
+                
+                return Json(_userFacade.GetAllSysConfig(GetSession()));
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new {message = e.Message});
+            }
+        }
+        [HttpGet]
+        public IActionResult GetSysConfig([FromQuery] int id)
+        {
+            try
+            {
+                
+                return Json(_userFacade.GetSysConfig(GetSession(), id));
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new {message = e.Message});
+            }
+        }
+        [HttpGet]
+        public IActionResult GetSysConfigByName([FromQuery] string name)
+        {
+            try
+            {
+                
+                return Json(_userFacade.GetSysConfigByName(GetSession(), name));
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new {message = e.Message});
+            }
+        }
+        [HttpPost]
+        public IActionResult EditSysConfig([FromBody] SysConfig config)
+        {
+            try
+            {
+                _userFacade.EditSysConfig(GetSession(), config);
+                return Json(new {message = "success"});
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new {message = e.Message});
             }
         }
 
@@ -312,6 +370,51 @@ namespace intapscamis.camis.Controllers
             }
             base.HttpContext.Session.Clear();
             return Json(true);
+        }
+        [HttpGet]
+        public IActionResult CheckSession()
+        {
+            try
+            {
+                var session = GetSession();
+                if (session == null)
+                {
+                    return Json(new { isValid = false, message = "Session expired" });
+                }
+
+                // Check if session is expired (180 minutes from creation)
+                var sessionAge = DateTime.Now - session.CreatedTime;
+                var sessionTimeout = TimeSpan.FromMinutes(60); // Match your session timeout
+        
+                if (sessionAge > sessionTimeout)
+                {
+                    // Remove expired session
+                    var sid = HttpContext.Session.Id;
+                    lock (sessions)
+                    {
+                        if (sid != null && sessions.ContainsKey(sid))
+                            sessions.Remove(sid);
+                    }
+                    HttpContext.Session.Clear();
+            
+                    return Json(new { isValid = false, message = "Session expired" });
+                }
+
+                // Update last seen
+                session.LastSeen = DateTime.Now;
+        
+                return Json(new { 
+                    isValid = true, 
+                    username = session.Username,
+                    role = session.Role,
+                    createdTime = session.CreatedTime,
+                    lastSeen = session.LastSeen
+                });
+            }
+            catch (Exception e)
+            {
+                return Json(new { isValid = false, message = e.Message });
+            }
         }
     }
 }

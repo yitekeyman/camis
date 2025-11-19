@@ -35,6 +35,11 @@ namespace intapscamis.camis.domain.Admin
         object GetRoles();
         SingleUserDetailsViewModel GetSingleUserDetails(string username);
         DashboardViewModel GetDashboard();
+        IList<SysConfig> GetAllSysConfig();
+        void EditSysConfig(SysConfig sysConfig);
+        SysConfig GetSysConfig(int id);
+        SysConfig GetSysConfigByName(string name);
+        Task<string> GetConfigValueAsync(string key);
     }
 
     public class UserService : IUserService
@@ -422,6 +427,39 @@ namespace intapscamis.camis.domain.Admin
             };
         }
 
+        public IList<SysConfig> GetAllSysConfig()
+        {
+            return _context.SysConfigs.OrderBy(e=>e.Id).ToList();
+        }
+
+        public void EditSysConfig(SysConfig sysConfig)
+        {
+            var oldConfig=_context.SysConfigs.First(s=>s.Id==sysConfig.Id);
+            if (oldConfig != null)
+            {
+                oldConfig.Value = sysConfig.Value;
+                _context.SysConfigs.Update(oldConfig);
+
+                _context.SaveChanges(_userSession.Username, (int)UserActionType.UpdateSystemConfigurationValue);
+            }
+        }
+
+        public SysConfig GetSysConfig(int id)
+        {
+            return _context.SysConfigs.First(s => s.Id == id);
+        }
+        public SysConfig GetSysConfigByName(string name)
+        {
+            return _context.SysConfigs.First(s => s.Name.Equals(name));
+        }
+        public async Task<string> GetConfigValueAsync(string key)
+        {
+           
+            return await _context.SysConfigs
+                .Where(x => x.Name == key)
+                .Select(x => x.Value)
+                .FirstOrDefaultAsync();
+        }
         private InvestmentStat GetInvestmentDataStat()
         {
             return new InvestmentStat()

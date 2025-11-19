@@ -12,7 +12,9 @@
   background: #71b220;
   border-color: #71b220;
 }
-
+.table td{
+  font-size: 0.755rem;
+}
 .page-link {
   color: #37882c;
   font-weight: 500;

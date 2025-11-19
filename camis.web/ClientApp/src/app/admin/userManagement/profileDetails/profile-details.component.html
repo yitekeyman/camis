@@ -5,7 +5,7 @@
         <h5>Profile Deatils</h5>
       </div>
       <div class="card-body p-1">
-        <table class="table mb-0">
+        <table class="table mb-0" style="font-size: 0.855rem">
           <tbody>
           <tr>
             <td><b>Full-Name:</b></td>
@@ -52,7 +52,7 @@
         <h5>Activity Log</h5>
       </div>
       <div class="card-body p-0" style="max-height: calc(72vh); overflow-y: auto">
-        <table class="table mb-0">
+        <table class="table mb-0"  style="font-size: 0.855rem">
           <thead>
           <tr>
             <th>#</th>
@@ -65,7 +65,7 @@
           <tr *ngFor="let ac of profileDetails.actions; index as i">
             <td>{{i+1}}</td>
             <td>{{ac.action}}</td>
-            <td>{{ac.actionTime}}</td>
+            <td>{{keyCase.convertDate(ac.actionTime)}}</td>
             <td class="align-right"><button type="button" class="btn btn-sm btn-custom-light" *ngIf="ac.auditLog" (click)="showAuditLog(ac)"><i class="ti ti-eye"></i></button></td>
           </tr>
           </tbody>

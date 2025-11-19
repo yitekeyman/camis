@@ -46,6 +46,7 @@
         CreateLand = 1001,
         UpdateLand = 1002,
         DeleteLand = 1003,
+        UpdateSystemConfigurationValue = 1004,
         
     }
 
@@ -197,4 +198,6 @@
         public double InvestorCapital { get; set; }
         public double InvestmentCapital { get; set; }
     }
+
+   
 }

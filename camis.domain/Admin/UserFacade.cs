@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using intapscamis.camis.data.Entities;
 using intapscamis.camis.domain.Infrastructure;
 
 namespace intapscamis.camis.domain.Admin
@@ -21,6 +22,10 @@ namespace intapscamis.camis.domain.Admin
         object GetRoles(UserSession session);
         SingleUserDetailsViewModel GetSingleUserDetails(UserSession userSession, string username);
         DashboardViewModel GetDashboard(UserSession userSession);
+        IList<SysConfig> GetAllSysConfig(UserSession userSession);
+        void EditSysConfig(UserSession userSession,SysConfig sysConfig);
+        SysConfig GetSysConfig(UserSession userSession,int id);
+        SysConfig GetSysConfigByName(UserSession userSession,string name);
     }
 
     public class UserFacade : IUserFacade
@@ -124,6 +129,30 @@ namespace intapscamis.camis.domain.Admin
         {
             _userService.SetSession(userSession);
             return _userService.GetDashboard();
+        }
+
+        public IList<SysConfig> GetAllSysConfig(UserSession userSession)
+        {
+            _userService.SetSession(userSession);
+            return _userService.GetAllSysConfig();
+        }
+
+        public void EditSysConfig(UserSession userSession, SysConfig sysConfig)
+        {
+            _userService.SetSession(userSession);
+            _userService.EditSysConfig(sysConfig);
+        }
+
+        public SysConfig GetSysConfig(UserSession userSession, int id)
+        {
+            _userService.SetSession(userSession);
+            return _userService.GetSysConfig(id);
+        }
+
+        public SysConfig GetSysConfigByName(UserSession userSession, string name)
+        {
+            _userService.SetSession(userSession);
+            return _userService.GetSysConfigByName(name);
         }
     }
 }

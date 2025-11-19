@@ -1,5 +1,5 @@
 <div class="card p-1">
-  <div class="row ">
+  <div class="row me-0">
     <div class="col-sm-8 p-2">
       <div class="card-header p-2">
         <h5><i class="ti ti-map-plus"></i> Register New Parcel</h5>
@@ -26,7 +26,7 @@
                     <div *ngFor="let itemrow of newLandFGroup.controls.uPINs.controls; let i=index">
                       <div class="form-group">
                         <input type="text" [formControlName]="i" class="form-control"
-                               placeholder="enter upin #{{ i + 1 }}"
+                               placeholder="Enter UPIN #{{ i + 1 }}"
                                (change)="onUpinChanged($event)" required>
 
                       </div>
@@ -132,7 +132,7 @@
                             <div class="col-sm-6" *ngFor="let water of waterParams; let i=index">
                               <div class="form-group">
                                 <label>{{ water.name }}: <span class="text-danger">(*)&nbsp;</span>  <span class="error-message" *ngIf="isFormControlInvalid('irrigationValues.waterSourceParameter', i)">
-              <i class="ti ti-exclamation-circle"></i> Required
+              <i class="ti ti-exclamation-circle"></i> This Field Required
             </span></label>
                                 <input type="number" class="form-control" placeholder="{{water.name}} value"
                                        [formControlName]="i">
@@ -194,7 +194,7 @@
                         <div class="col-sm-6" *ngFor="let topography of topographies; let i=index">
                           <div class="form-group">
                             <label>{{ topography.name }}:<span class="text-danger">(*)&nbsp;</span>  <span class="error-message" *ngIf="isFormControlInvalid('topography', i)">
-              <i class="ti ti-exclamation-circle"></i> Required
+              <i class="ti ti-exclamation-circle"></i> This Field Required
             </span></label>
                             <input type="number" class="form-control" id="topography"
                                    placeholder="{{topography.name}} value"
@@ -345,7 +345,7 @@
                          style="border-right: 10px; background: #f9f8f8; border: 1px solid lightgray;">
                       <div class="row">
                         <div class="col-sm-8">
-                          <label>Is the land part of Agricultural Economy zone?<span class="text-danger">(*)&nbsp;</span>  <span class="error-message" *ngIf="hasControlError('isAgriculturalZone', 'required')">
+                          <label>Is the land part of Agricultural Economy zone?<span class="text-danger">(*)&nbsp;</span><br><span class="error-message" *ngIf="hasControlError('isAgriculturalZone', 'required')">
                             <i class="ti ti-exclamation-circle"></i> This field is required
                           </span></label>
                         </div>
@@ -392,15 +392,15 @@
         <div class="card-footer p-2">
           <div class="row m-0">
             <div class="col-md-6 justify-content-start">
-              <button type="button" class="btn btn-secondary" *ngIf="formWizardStep !== 1" (click)="previousStep()">
+              <button type="button" class="btn btn-custom-light" *ngIf="formWizardStep !== 1" (click)="previousStep()">
                 Back
               </button>
             </div>
             <div class="col-md-6 align-right">
-              <button type="button" class="btn btn-primary" (click)="nextStep()" [disabled]="!validateCurrentStep()" *ngIf="formWizardStep !== 4">
+              <button type="button" class="btn btn-custom" (click)="nextStep()" [disabled]="!validateCurrentStep()" *ngIf="formWizardStep !== 4">
                 Next
               </button>
-              <button type="submit" class="btn btn-success newandButton" [disabled]="!validateCurrentStep()"
+              <button type="submit" class="btn btn-custom" [disabled]="!validateCurrentStep()"
                       *ngIf="formWizardStep === 4">Request
                 Approval
               </button>

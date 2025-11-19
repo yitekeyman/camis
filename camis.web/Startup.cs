@@ -57,7 +57,7 @@ namespace intapscamis.camis
 
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(180);
+                options.IdleTimeout = TimeSpan.FromMinutes(60);
                 options.Cookie.Name = ".ASPNetCoreSession";
                 options.Cookie.Path = "/";
             });

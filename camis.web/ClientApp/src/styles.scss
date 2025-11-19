@@ -708,7 +708,7 @@
   background: transparent;
 }
 
-.error-message {
+.error-message, .error-message i {
   color: red;
   font-size: 0.65rem;
   margin-top: 5px;
@@ -992,10 +992,15 @@ table tbody .with-data{
   font-weight: 500;
   font-size: 1.5rem;
 }
-.btn:disabled{
+.btn:disabled, li:disabled>a{
   cursor:not-allowed;
   pointer-events: auto;
 }
 .table .td:last-child, .table{
   border-bottom-width: 0;
 }
+
+.accordion-button{
+  background-color: #fff;
+}
+

@@ -1,0 +1,56 @@
+﻿<div class="modal-header " style="text-align: center; display: block">
+  <h5 >Your Session has expired!</h5>
+</div>
+<div class="modal-body">
+    <a href="#" class="d-flex justify-content-center">
+      <img src="assets/images/camis_logo_2_3.png" alt="logo" style="height: 125px;"/>
+    </a>
+    <div class="row">
+      <div class="d-flex justify-content-center">
+        <div class="auth-header">
+          <h3 class="text-secondary mt-2"><b>Hi, Welcome Back</b></h3>
+          <hr>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <form [formGroup]="loginForm" (submit)="login()">
+        <div class="input-form mb-3 col-md-12">
+          <label for="username">Username <span class="text-danger">*  </span> </label>
+          <input type="text" class="form-control" id="username" placeholder="Username" formControlName="username"
+                 [(ngModel)]="user.username"/>
+        </div>
+        <div class="input-form mb-3 col-md-12">
+          <label for="password">Password <span class="text-danger">* </span></label>
+          <input [type]="showPassword ? 'text' : 'password'" class="form-control" id="password"
+                 placeholder="Password" formControlName="password" [(ngModel)]="user.password"/>
+          <span class="password-toggle" id="button-addon" (click)="togglePasswordVisibility()">
+                  <i [class]="showPassword ? 'ti ti-eye-x' : 'ti ti-eye'"></i>
+                </span>
+
+
+        </div>
+        <div class="input-form mb-3  col-md-12" *ngIf="isLoggedIn && ROLES?.length>1">
+          <label for="role">User Role <span class="text-danger">* </span></label>
+          <select class="form-select" id="role" [(ngModel)]="selectedRole" formControlName="role">
+            <option value="0">Select Role</option>
+            <option *ngFor="let role of ROLES" [value]="role.id">{{ role.name }}</option>
+          </select>
+
+        </div>
+        <div class="d-grid mt-3" *ngIf="isLoggedIn && ROLES?.length>1">
+          <button type="button" (click)="closeForm()" [disabled]="!loginForm.valid"
+                  class="btn btn-secondary w-100">Confirm
+          </button>
+        </div>
+        <div class="d-grid mt-3" *ngIf="!isLoggedIn">
+          <button type="submit" (click)="login()" class="btn btn-secondary w-100"
+                  [disabled]="!(loginForm.valid && ROLES?.length<=0)">Sign In
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="modal-footer align-center" style="display: block">
+    <p>Commercial Agriculture Management Information System</p>
+  </div>

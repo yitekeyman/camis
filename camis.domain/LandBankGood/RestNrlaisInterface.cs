@@ -5,6 +5,8 @@ using System.Text;
 using System.Linq;
 using System.Net;
 using camis.types.Utils;
+using intapscamis.camis.data.Entities;
+using Microsoft.EntityFrameworkCore;
 using RestSharp;
 using RestSharp.Authenticators;
 
@@ -12,9 +14,19 @@ namespace intapscamis.camis.domain.LandBank
 {
     public class RestNrlaisInterface : NrlaisInterface
     {
-        String sessionID = null;
-        String urlBase = "http://localhost:8540/";
-
+        private readonly string urlBase;
+        private string sessionID = null;
+        public RestNrlaisInterface()
+        {
+           CamisContext context=new CamisContext();
+            urlBase =  context.SysConfigs
+                .Where(x => x.Name == "NRLAIS_url")
+                .Select(x => x.Value)
+                .FirstOrDefault()??"http://localhost:8540";
+        
+            if (!urlBase.EndsWith("/"))
+                urlBase += "/";
+        }
         class VoidType
         {
         }

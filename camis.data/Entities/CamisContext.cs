@@ -87,6 +87,7 @@ namespace intapscamis.camis.data.Entities
         public virtual DbSet<Stream> Stream { get; set; }
         public virtual DbSet<SurfaceWater> SurfaceWater { get; set; }
         public virtual DbSet<SurfaceWaterType> SurfaceWaterType { get; set; }
+        public virtual DbSet<SysConfig> SysConfigs { get; set; }
         public virtual DbSet<Topography> Topography { get; set; }
         public virtual DbSet<TopographyType> TopographyType { get; set; }
         public virtual DbSet<UsageType> UsageType { get; set; }
@@ -2094,7 +2095,26 @@ namespace intapscamis.camis.data.Entities
                     .IsRequired()
                     .HasColumnName("name");
             });
+            modelBuilder.Entity<SysConfig>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("sys_config_pkey");
 
+                entity.ToTable("sys_config", "sys");
+
+                entity.HasIndex(e => e.Name, "sys_config_name_unique").IsUnique();
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnName("name");
+                entity.Property(e => e.Value)
+                    .IsRequired()
+                    .HasMaxLength(250)
+                    .HasColumnName("value");
+            });
             modelBuilder.Entity<Topography>(entity =>
             {
                 entity.ToTable("topography", "lb");

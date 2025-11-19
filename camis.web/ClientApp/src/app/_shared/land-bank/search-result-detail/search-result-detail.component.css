@@ -1,13 +1,9 @@
-#accordionPanelsStayOpenExample{
-
-}
-.accordion-item{
-  background-color: #fff;
-}
 .accordion-body{
   padding: 0;
   font-size: 0.775rem;
+  background: #fff;
 }
+
 .accordion-body label{
   font-size: 0.800rem;
   font-weight: 600;
@@ -17,10 +13,32 @@
   list-style: none;
   padding-left: 0;
 }
-.accordion-body ul li{
-  padding:3px 0 3px;
+.accordion-body .card-body ul li{
+  padding:3px 5px 3px;
+  border-bottom: 1px dashed #37882c;
 }
 .accordion-body ul li i{
-  color: rgba(135,135,11,0.25);
+  color: #37882c;
+  font-size: 1rem;
+}
+.fit-content {
+  width: max-content;
+  white-space: nowrap;
+}
+.accordion-button{
+  background-color: #fff;
+}
+.accordion-button{
+  font-size: 1.055rem;
+  font-weight: 500;
+}
+img{
+  max-width: 100%;
+}
+.table th{
+  color: #37882c;
+}
+.accordion-body ul li i{
+  color: rgba(135,135,11,0.35);
   font-size: 1rem;
 }

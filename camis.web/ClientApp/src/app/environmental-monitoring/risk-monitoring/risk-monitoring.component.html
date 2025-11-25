@@ -1,0 +1,121 @@
+﻿<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-header">
+        <div class="row">
+          <div class="col-md-4">
+            <h5><i class="ti ti-file-alert"></i>&nbsp;&nbsp;Environmental Risk Monitoring</h5>
+          </div>
+          <div class="col-md-8 pb-0">
+
+          </div>
+
+        </div>
+      </div>
+      <div class="card-block p-0" style="min-height: calc(65vh)">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Flood Risk Assessment</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">Drought Condition Assessment</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">Recent Significant Changes</button>
+          </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="card p-0">
+                  <div class="card-body p-2">
+                     <textarea
+                       [(ngModel)]="floodGeometryWkt"
+                       placeholder="Enter geometry in WKT format (e.g., POLYGON((...)))"
+                       rows="14"
+                       class="form-control"
+                     ></textarea>
+                  </div>
+                  <div class="card-footer p-1">
+                    <button (click)="checkFloodRisk()" [disabled]="!floodGeometryWkt || isLoadingFlood" class="btn btn-custom">
+                      {{ isLoadingFlood ? 'Assessing...' : 'Assess Flood Risk' }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-8">
+                <div *ngIf="floodRiskResult !== null" class="risk-result">
+                  <div class="risk-indicator" [class.high-risk]="floodRiskResult" [class.low-risk]="!floodRiskResult">
+                    <span class="risk-label">Flood Risk:</span>
+                    <span class="risk-value">{{ floodRiskResult ? 'HIGH RISK' : 'LOW RISK' }}</span>
+                  </div>
+                  <p *ngIf="floodRiskResult" class="risk-description">
+                    ⚠️ High probability of flooding detected in the specified area. Monitor water indices closely.
+                  </p>
+                  <p *ngIf="!floodRiskResult" class="risk-description">
+                    ✅ No significant flood risk detected in the current assessment.
+                  </p>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+            <div class="assessment-form">
+              <input
+                type="text"
+                [(ngModel)]="droughtRegion"
+                placeholder="Enter region name"
+                class="region-input"
+              >
+              <button (click)="checkDroughtCondition()" [disabled]="!droughtRegion || isLoadingDrought" class="btn btn-custom-light">
+                {{ isLoadingDrought ? 'Assessing...' : 'Assess Drought Condition' }}
+              </button>
+            </div>
+
+            <div *ngIf="droughtResult !== null" class="risk-result">
+              <div class="risk-indicator" [class.high-risk]="droughtResult" [class.low-risk]="!droughtResult">
+                <span class="risk-label">Drought Condition:</span>
+                <span class="risk-value">{{ droughtResult ? 'DROUGHT DETECTED' : 'NORMAL CONDITIONS' }}</span>
+              </div>
+              <p *ngIf="droughtResult" class="risk-description">
+                ⚠️ Drought conditions detected in the region. Low vegetation health and soil moisture levels observed.
+              </p>
+              <p *ngIf="!droughtResult" class="risk-description">
+                ✅ Normal environmental conditions detected in the region.
+              </p>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">
+            <div class="recent-changes-section">
+              <div class="date-filters">
+                <input type="date" [(ngModel)]="changesStartDate" (change)="loadSignificantChanges()">
+                <span>to</span>
+                <input type="date" [(ngModel)]="changesEndDate" (change)="loadSignificantChanges()">
+                <input type="text" [(ngModel)]="changesRegion" placeholder="Region filter (optional)" (input)="loadSignificantChanges()">
+              </div>
+
+              <div *ngIf="significantChanges.length > 0" class="changes-list">
+                <div *ngFor="let change of significantChanges" class="change-item" [class]="change.severity.toLowerCase()">
+                  <div class="change-info">
+                    <span class="parcel">{{ change.parcelUpid }}</span>
+                    <span class="type">{{ change.eventType }}</span>
+                    <span class="date">{{ change.eventDate | date:'short' }}</span>
+                  </div>
+                  <p class="description">{{ change.description }}</p>
+                </div>
+              </div>
+
+              <div *ngIf="significantChanges.length === 0 && changesLoaded" class="no-changes">
+                No significant changes detected in the selected period.
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -3,6 +3,9 @@ using System.IO;
 using intapscamis.camis.data.Entities;
 using intapscamis.camis.domain.Admin;
 using intapscamis.camis.domain.Documents;
+using intapscamis.camis.domain.EnvironmentalMonitoring;
+using intapscamis.camis.domain.EnvironmentalMonitoring.Interface;
+using intapscamis.camis.domain.EnvironmentalMonitoring.Repository;
 using intapscamis.camis.domain.Farms;
 using intapscamis.camis.domain.Infrastructure;
 using intapscamis.camis.domain.LandBank;
@@ -11,13 +14,9 @@ using intapscamis.camis.domain.Projects.Workflows;
 using intapscamis.camis.domain.Report;
 using intapscamis.camis.domain.System.Addresses;
 using intapscamis.camis.domain.Workflows;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Microsoft.Extensions.Hosting; 
-using Microsoft.ApplicationInsights.AspNetCore;
 
 namespace intapscamis.camis
 {
@@ -177,6 +176,11 @@ namespace intapscamis.camis
 
             services.AddTransient<IReportService, ReportService>();
             services.AddTransient<IReportFacade, ReportFacade>();
+            services.AddTransient<IEnvironmentalMonitoringRepository, EnvironmentalMonitoringRepository>();
+            services.AddTransient<IEnvironmentalChangeEventRepository, EnvironmentalChangeEventRepository>();
+            services.AddTransient<IParcelViewRepository, ParcelViewRepository>();
+            services.AddTransient<IEnvironmentalMonitoringService, EnvironmentalMonitoringService>();
+            services.AddTransient<IGeoServerService, GeoServerService>();
         }
     }
 }

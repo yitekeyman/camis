@@ -1,0 +1,121 @@
+﻿<div class="row">
+  <div class="col-sm-12">
+    <div class="card p-1">
+      <div class="card-header p-2">
+        <div class="row">
+          <div class="col-md-4">
+            <h5><i class="ti ti-map-bolt"></i>&nbsp;&nbsp;Parcel Environmental History</h5>
+          </div>
+          <div class="col-md-8 pb-0">
+           <div class="row">
+             <div class="col-sm-4">
+               <input type="text" class="form-control"  [(ngModel)]="parcelUpid" placeholder="Enter Parcel UPID"/>
+             </div>
+             <div class="col-sm-4">
+               <select [(ngModel)]="monthsBack" class="form-select">
+                 <option value="3">Last 3 months</option>
+                 <option value="6">Last 6 months</option>
+                 <option value="12" selected>Last 12 months</option>
+                 <option value="24">Last 24 months</option>
+               </select>
+             </div>
+             <div class="col-sm-4">
+               <button (click)="loadParcelHistory()" [disabled]="!parcelUpid || isLoading" class="btn btn-custom">
+                 {{ isLoading ? 'Loading...' : 'Load History' }}
+               </button>
+             </div>
+           </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="card-block p-0" style="min-height: calc(65vh)">
+
+        <div *ngIf="error" class="error-message">
+          {{ error }}
+        </div>
+
+        <div *ngIf="historyData.length > 0" class="history-content">
+          <div class="charts-section">
+            <div class="chart-container">
+              <h4>Vegetation Index (NDVI) Trend</h4>
+              <canvas baseChart
+                      [data]="ndviChartData"
+                      [options]="chartOptions"
+                      [type]="chartType">
+              </canvas>
+            </div>
+
+            <div class="chart-container">
+              <h4>Water Index (NDWI) Trend</h4>
+              <canvas baseChart
+                      [data]="ndwiChartData"
+                      [options]="chartOptions"
+                      [type]="chartType">
+              </canvas>
+            </div>
+          </div>
+
+          <div class="additional-charts">
+            <div class="chart-container">
+              <h4>Built-up Index (NDBI) Trend</h4>
+              <canvas baseChart
+                      [data]="ndbiChartData"
+                      [options]="chartOptions"
+                      [type]="chartType">
+              </canvas>
+            </div>
+
+            <div class="chart-container">
+              <h4>Soil Moisture Trend</h4>
+              <canvas baseChart
+                      [data]="moistureChartData"
+                      [options]="moistureChartOptions"
+                      [type]="chartType">
+              </canvas>
+            </div>
+          </div>
+
+          <div class="data-table">
+            <h4>Monitoring Data</h4>
+            <div class="table-container">
+              <table>
+                <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>NDVI</th>
+                  <th>NDWI</th>
+                  <th>NDBI</th>
+                  <th>EVI</th>
+                  <th>MNDWI</th>
+                  <th>Soil Moisture</th>
+                  <th>Area (km²)</th>
+                  <th>Cloud Cover</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let data of historyData">
+                  <td>{{ data.monitoringDate | date:'shortDate' }}</td>
+                  <td [class]="getIndexClass(data.ndvi)">{{ data.ndvi | number:'1.4-4' }}</td>
+                  <td [class]="getIndexClass(data.ndwi)">{{ data.ndwi | number:'1.4-4' }}</td>
+                  <td [class]="getIndexClass(data.ndbi)">{{ data.ndbi | number:'1.4-4' }}</td>
+                  <td [class]="getIndexClass(data.evi)">{{ data.evi | number:'1.4-4' }}</td>
+                  <td [class]="getIndexClass(data.mndwi)">{{ data.mndwi | number:'1.4-4' }}</td>
+                  <td [class]="getMoistureClass(data.soilMoisture)">{{ data.soilMoisture | number:'1.4-4' }}</td>
+                  <td>{{ data.areaSqkm | number:'1.2-2' }}</td>
+                  <td>{{ data.cloudCover | percent:'1.2-2' }}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="historyData.length === 0 && parcelUpid && !isLoading" class="no-data">
+          <p>No environmental monitoring data found for this parcel.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

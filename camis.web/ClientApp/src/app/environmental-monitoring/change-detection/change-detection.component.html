@@ -1,0 +1,159 @@
+﻿<div class="row">
+  <div class="col-sm-12">
+    <div class="card p-0">
+      <div class="row me-0">
+        <div class="col-md-8">
+          <div class="card p-0">
+            <div class="card-header p-3">
+              <h5><i class="ti ti-replace"></i>&nbsp;&nbsp;Environmental Change Detection</h5>
+            </div>
+            <div class="card-body p-0">
+              <div class="row">
+                <div class="col-sm-4">
+                  <div class="card p-0">
+                    <form [formGroup]="changeDetectionForm" (ngSubmit)="onDetectChanges()" class="detection-form">
+                      <div class="card-body p-2">
+                        <div class="form-group">
+                          <label for="parcelUpid">Parcel UPID (Optional)</label>
+                          <input id="parcelUpid" formControlName="parcelUpid" type="text"
+                                 placeholder="Enter parcel UPID" class="form-control">
+                        </div>
+                        <div class="form-group">
+                          <label for="region">Region (Optional)</label>
+                          <input id="region" formControlName="region" type="text" placeholder="Enter region" class="form-control">
+                        </div>
+                        <div class="form-group">
+                          <label for="startDate">Start Date *</label>
+                          <input id="startDate" formControlName="startDate" type="date" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                          <label for="endDate">End Date *</label>
+                          <input id="endDate" formControlName="endDate" type="date" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                          <label for="threshold">Change Threshold</label>
+                          <input id="threshold" formControlName="threshold" type="number" step="0.01" min="0" max="1"
+                                 value="0.15" class="form-control">
+                          <small>Minimum change amount to consider significant (default: 0.15)</small>
+                        </div>
+                      </div>
+                      <div class="card-footer p-1">
+                        <button type="submit" [disabled]="!changeDetectionForm.valid || isLoading"
+                                class="btn btn-custom w-100">
+                          {{ isLoading ? 'Detecting Changes...' : 'Detect Changes' }}
+                        </button>
+                        <div class="d-flex gap-1 mt-1">
+                          <button type="button" (click)="clearChanges()" class="btn btn-warning btn-sm flex-fill">
+                            Clear
+                          </button>
+                          <button type="button" (click)="toggleChangeLayer()" class="btn btn-secondary btn-sm flex-fill">
+                            Toggle Layer
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+
+                    <!-- Selected Change Details -->
+                    <div *ngIf="selectedChange" class="card m-2 p-2 selected-change-details">
+                      <h6>Selected Change Details</h6>
+                      <div class="change-info">
+                        <div class="d-flex align-items-center mb-2">
+                          <div class="color-indicator"
+                               [style.background-color]="getChangeTypeColor(selectedChange.eventType)"></div>
+                          <strong>{{ selectedChange.eventType }}</strong>
+                        </div>
+                        <p><small>Parcel: {{ selectedChange.parcelUpid }}</small></p>
+                        <p><small>Severity:
+                          <span [class]="getSeverityClass(selectedChange.severity)">{{ selectedChange.severity }}</span>
+                        </small></p>
+                        <p><small>Change: {{ selectedChange.changeAmount | number:'1.4-4' }}</small></p>
+                        <p><small>Confidence: {{ selectedChange.confidence | percent:'1.1-1' }}</small></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-8">
+                  <div class="card-body p-1">
+                    <!-- Loading Indicator -->
+                    <div *ngIf="isLoading" class="loading-overlay">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Detecting changes...</span>
+                      </div>
+                      <p>Analyzing environmental changes...</p>
+                    </div>
+
+                    <div *ngIf="result" class="results-section">
+                      <h3>Detection Results</h3>
+
+                      <div class="summary-cards">
+                        <div class="summary-card">
+                          <h4>Total Changes</h4>
+                          <span class="count">{{ result.changes.length }}</span>
+                        </div>
+                        <div class="summary-card">
+                          <h4>Affected Area</h4>
+                          <span class="area">{{ result.totalAffectedArea | number:'1.2-2' }} km²</span>
+                        </div>
+                        <div class="summary-card" *ngIf="result.changeSummary">
+                          <h4>Change Types</h4>
+                          <div class="change-types">
+                            <span *ngFor="let type of objectKeys(result.changeSummary)"
+                                  class="change-type-badge"
+                                  [style.background-color]="getChangeTypeColor(type)">
+                              {{ type }}: {{ result.changeSummary[type] }}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="changes-list" *ngIf="result.changes.length > 0">
+                        <h4>Detected Changes</h4>
+                        <div *ngFor="let change of result.changes" class="change-item"
+                             [class]="change.severity.toLowerCase()"
+                             (click)="selectedChange = change">
+                          <div class="change-header">
+                            <span class="parcel-id">{{ change.parcelUpid }}</span>
+                            <span class="event-type">{{ change.eventType }}</span>
+                            <span class="severity-badge"
+                                  [class]="change.severity.toLowerCase()">{{ change.severity }}</span>
+                          </div>
+                          <div class="change-details">
+                            <p>{{ change.description }}</p>
+                            <div class="change-metrics">
+                              <span>Change: {{ change.changeAmount | number:'1.4-4' }}
+                                ({{ change.changePercentage | number:'1.2-2' }}%)</span>
+                              <span>Area: {{ change.affectedArea | number:'1.2-2' }} km²</span>
+                              <span>Confidence: {{ change.confidence | percent:'1.2-2' }}</span>
+                            </div>
+                            <small>Date: {{ change.eventDate | date:'medium' }}</small>
+                          </div>
+                        </div>
+                      </div>
+                      <div *ngIf="result.changes.length === 0" class="no-changes">
+                        <p>No significant changes detected in the specified period.</p>
+                      </div>
+                    </div>
+                    <div *ngIf="error" class="error-message">
+                      {{ error }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card p-0">
+            <div class="card-body p-1">
+              <app-camis-map
+                #camis_map
+                [environmentalChanges]="result?.changes || []"
+                (changeFeatureClick)="onMapChangeClick($event)">
+              </app-camis-map>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

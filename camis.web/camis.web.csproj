@@ -16,18 +16,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Framework references for .NET 8 -->
-    <!--<FrameworkReference Include="Microsoft.AspNetCore.App" />-->
-    
-    <!-- Updated package references for .NET 8 -->
-	<!--<PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />-->
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.4" />
+   
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="8.0.4" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.4" />
-	<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="8.0.4" />
-	<PackageReference Include="RestSharp" Version="111.0.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
 	<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
+	<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.4" />
   </ItemGroup>
 
   <!-- Removed old Microsoft.AspNetCore.App package reference -->
@@ -134,10 +127,6 @@
     <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\Topography.json" />
     <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\WaterSourceType.json" />
     <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\WaterTestParameters.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ClientApp\.angular\" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

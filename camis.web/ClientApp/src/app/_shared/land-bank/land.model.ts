@@ -54,6 +54,10 @@ export class MoistureSource {
     id: number;
     name: string;
 }
+export class Lookup {
+  id: number;
+  name: string;
+}
 
 export class WaterTestParameters {
     id: number;

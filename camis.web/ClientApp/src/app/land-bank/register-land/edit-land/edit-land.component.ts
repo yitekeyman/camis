@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {
   Validators,
   FormBuilder,
@@ -8,12 +8,12 @@ import {
   FormControl,
   ReactiveFormsModule, FormsModule, ValidatorFn
 } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
-import { CamisMapComponent } from '../../../_shared/camismap/camismap.component';
+import {Router, ActivatedRoute} from '@angular/router';
+import {CamisMapComponent} from '../../../_shared/camismap/camismap.component';
 
-import { LandDataService } from '../../../_services/land-data.service';
-import { DialogService } from '../../../_shared/dialog/dialog.service';
-import { LandModel, Accessablity } from '../../../_shared/land-bank/land.model';
+import {LandDataService} from '../../../_services/land-data.service';
+import {DialogService} from '../../../_shared/dialog/dialog.service';
+import {LandModel, Accessablity} from '../../../_shared/land-bank/land.model';
 import {CommonModule} from "@angular/common";
 import {ObjectKeyCasingService} from "../../../_services/object-key-casing.service";
 import dialog from "../../../_shared/dialog";
@@ -56,11 +56,13 @@ export class EditLandComponent implements OnInit {
   existLands = [];
   landData_existLands = [];
   editedLand = {
-    uploadDocument:[]
+    uploadDocument: []
   };
+  soilTypes = [];
+  soilTextureClass=[];
 
   selectedMoisture = {
-    'value': 'off',
+    'value': false,
     index: null
   };
   isAgriculture: string;
@@ -72,8 +74,10 @@ export class EditLandComponent implements OnInit {
   description: AbstractControl;
 
   @ViewChild('camis_map') map: CamisMapComponent;
+
   constructor(public router: Router, private activeRoute: ActivatedRoute, private dialog: DialogService,
-    public landDataService: LandDataService, public formBuilder: FormBuilder, private keyCase:ObjectKeyCasingService) { }
+              public landDataService: LandDataService, public formBuilder: FormBuilder, private keyCase: ObjectKeyCasingService) {
+  }
 
   ngOnInit() {
     this.activeRoute.params.subscribe(params => {
@@ -91,10 +95,10 @@ export class EditLandComponent implements OnInit {
       }
 
       this.landDataService.getAccessiblity().subscribe(res => {
-         this.accessablity = res;
+        this.accessablity = res;
 
-         const selectedCheckbox = [];
-         for (const x of this.accessablity) {
+        const selectedCheckbox = [];
+        for (const x of this.accessablity) {
           for (const acc of this.landData.accessablity) {
             if (x.id === acc) {
               x.checked = true;
@@ -104,34 +108,43 @@ export class EditLandComponent implements OnInit {
               x.checked = false;
             }
           }
-            this.addAccess();
-            if (x.checked !== undefined) {
-              selectedCheckbox.push(x.checked);
-
-            }
-          }
-
-          if (selectedCheckbox.length !== 0) {
-            this.editLandFGroup.controls['accessablity'].setValue(selectedCheckbox);
+          this.addAccess();
+          if (x.checked !== undefined) {
+            selectedCheckbox.push(x.checked);
 
           }
+        }
+
+        if (selectedCheckbox.length !== 0) {
+          this.editLandFGroup.controls['accessablity'].setValue(selectedCheckbox);
+
+        }
 
       });
       this.landDataService.getMoistureSource().subscribe(res => {
         this.moistureSrc = res;
 
-        let temp = null;
+        const selectedCheckbox = [];
         for (const x of this.moistureSrc) {
-
-          if (x.id === this.landData['moistureSource']) {
-              temp = x['id'];
+          for (const acc of this.landData['moistureSource']) {
+            if (x.id === acc) {
+              x.checked = true;
+              if (x.id === 2) {
+                this.selectedMoisture = {value: true, index: 1};
+              }
+              break;
+            } else {
+              x.checked = false;
+            }
           }
-
+          this.addMoistureSource();
+          if (x.checked !== undefined) {
+            selectedCheckbox.push(x.checked);
+          }
         }
-        this.editLandFGroup.controls['moistureSource'].setValue(temp);
 
-        if (temp === 2) {
-          this.selectedMoisture = { value: 'on', index: 1};
+        if (selectedCheckbox.length !== 0) {
+          this.editLandFGroup.controls['moistureSource'].setValue(selectedCheckbox);
 
         }
 
@@ -283,9 +296,9 @@ export class EditLandComponent implements OnInit {
       });
 
       this.landDataService.getsoilTestTypeUrl().subscribe(res => {
-         this.soilTests = res;
+        this.soilTests = res;
 
-         for (const s of this.soilTests) {
+        for (const s of this.soilTests) {
           let temp = '';
           for (const st of this.landData['soilTests']) {
             if (s['id'] === st['testType']) {
@@ -293,11 +306,11 @@ export class EditLandComponent implements OnInit {
             }
           }
 
-            this.landData_soilTests.push(temp);
-            this.addSoilTest();
-          }
+          this.landData_soilTests.push(temp);
+          this.addSoilTest();
+        }
 
-          this.editLandFGroup.controls['soilTests'].setValue(this.landData_soilTests);
+        this.editLandFGroup.controls['soilTests'].setValue(this.landData_soilTests);
 
       });
       this.landDataService.getExistingLandUse().subscribe(res => {
@@ -325,7 +338,7 @@ export class EditLandComponent implements OnInit {
       });
 
       this.landDataService.getjsonUrl().subscribe(res => {
-         this.json = res;
+        this.json = res;
 
         for (const j of this.json) {
           let temp = {};
@@ -346,7 +359,7 @@ export class EditLandComponent implements OnInit {
           this.addTempAvg();
 
         }
-        for (let c = 0; c < this.json.length; c++ ) {
+        for (let c = 0; c < this.json.length; c++) {
 
           if (this.climate[c] !== undefined) {
             this.editLandFGroup.controls['precipitation']['controls'][c].setValue(this.climate[c]['precipitation']);
@@ -366,7 +379,12 @@ export class EditLandComponent implements OnInit {
 
       this.description.setValue(this.landData.description);
     });
-
+    this.landDataService.getSoilType().subscribe(data => {
+      this.soilTypes = data;
+    });
+    this.landDataService.getSoilTextureClass().subscribe(data => {
+      this.soilTextureClass = data;
+    });
     this.editLandFGroup = this.formBuilder.group({
       uPINs: this.formBuilder.array([], [Validators.required, this.atLeastOneRequired()]),
       accessablity: this.formBuilder.array([], [this.atLeastOneCheckboxSelected()]),
@@ -375,20 +393,20 @@ export class EditLandComponent implements OnInit {
 
       soilTests: this.formBuilder.array([], [this.atLeastOneRequired()]),
 
-      precipitation: this.formBuilder.array([], [this.validateClimateData()]),
+      precipitation: this.formBuilder.array([]),
       temp_low: this.formBuilder.array([]),
       temp_high: this.formBuilder.array([]),
       temp_avg: this.formBuilder.array([]),
-      isAgriculturalZone: this.formBuilder.control([],[Validators.required]),
-      topography: this.formBuilder.array([],[this.atLeastOneRequired()]),
+      isAgriculturalZone: this.formBuilder.control([], [Validators.required]),
+      topography: this.formBuilder.array([], [this.atLeastOneRequired()]),
       existLandUse: this.formBuilder.array([], [this.atLeastOneCheckboxSelected()]),
-      moistureSource: this.formBuilder.control([], [Validators.required]),
+      moistureSource: this.formBuilder.array([], [this.atLeastOneCheckboxSelected()]),
       irrigationValues: this.formBuilder.group({
-        waterSourceParameter: this.formBuilder.array([],[Validators.required,this.atLeastOneRequired()]),
-        groundWater: this.formBuilder.array([],[this.atLeastOneCheckboxSelected()]),
+        waterSourceParameter: this.formBuilder.array([], [Validators.required, this.atLeastOneRequired()]),
+        groundWater: this.formBuilder.array([], [this.atLeastOneCheckboxSelected()]),
         surfaceWater: this.formBuilder.array([])
       }),
-      'description' : ['', Validators.compose([Validators.required])],
+      'description': ['', Validators.compose([Validators.required])],
 
     });
     this.irrigationValues = this.editLandFGroup.get('irrigationValues');
@@ -401,9 +419,8 @@ export class EditLandComponent implements OnInit {
   }
 
   selectedMoistureSource(event, i) {
-
-    this.selectedMoisture = { value: event.target.value, index: i };
-
+    if (i === 1)
+      this.selectedMoisture = {value: event.target.checked, index: i};
   }
 
 // to get the map from nrlais
@@ -418,16 +435,25 @@ export class EditLandComponent implements OnInit {
   addNewRow() {
     this.initItemRows.push(this.formBuilder.control('', Validators.required));
   }
+
   // deleteRow(index: number) {
   //   // control refers to the formarray
   //   const control = <FormArray>this.editLandFGroup.controls['uPINs'];
   //   // remove the chosen row
   //   this.initItemRows.removeAt(index);
   // }
+  get moistureSource() {
+    return this.editLandFGroup.get('moistureSource') as FormArray;
+  }
+
+  addMoistureSource() {
+    this.moistureSource.push(this.formBuilder.control(''));
+  }
 
   get accessablities() {
     return this.editLandFGroup.get('accessablity') as FormArray;
   }
+
   addAccess() {
     this.accessablities.push(this.formBuilder.control(''));
   }
@@ -435,6 +461,7 @@ export class EditLandComponent implements OnInit {
   get topo() {
     return this.editLandFGroup.get('topography') as FormArray;
   }
+
   addTopographies() {
     this.topo.push(this.formBuilder.control(''));
   }
@@ -447,16 +474,18 @@ export class EditLandComponent implements OnInit {
     this.SoilTests.push(this.formBuilder.control(''));
   }
 
-  get agroEchology () {
+  get agroEchology() {
     return this.editLandFGroup.get('agroEchologyZone') as FormArray;
   }
+
   addAgroEchologies() {
     this.agroEchology.push(this.formBuilder.control(''));
   }
 
-  get waterTests () {
+  get waterTests() {
     return this.irrigationValues.get('waterSourceParameter') as FormArray;
   }
+
   addWaterTests() {
     this.waterTests.push(this.formBuilder.control(''));
   }
@@ -464,6 +493,7 @@ export class EditLandComponent implements OnInit {
   get surfWater() {
     return this.irrigationValues.get('surfaceWater') as FormArray;
   }
+
   addSurfaceWater() {
     this.surfWater.push(this.formBuilder.control(''));
   }
@@ -471,6 +501,7 @@ export class EditLandComponent implements OnInit {
   get investmentT() {
     return this.editLandFGroup.get('investmentType') as FormArray;
   }
+
   addInvestmentType() {
     this.investmentT.push(this.formBuilder.control(''));
   }
@@ -478,6 +509,7 @@ export class EditLandComponent implements OnInit {
   get existLand() {
     return this.editLandFGroup.get('existLandUse') as FormArray;
   }
+
   addExistingLand() {
     this.existLand.push(this.formBuilder.control(null));
   }
@@ -493,6 +525,7 @@ export class EditLandComponent implements OnInit {
   get groundWaters() {
     return this.irrigationValues.get('groundWater') as FormArray;
   }
+
   addGroundWater() {
     this.groundWaters.push(this.formBuilder.control(''));
   }
@@ -531,7 +564,8 @@ export class EditLandComponent implements OnInit {
     scrollElement.scrollIntoView();
 
   }
-  async nextStep() : Promise<void> {
+
+  async nextStep(): Promise<void> {
     if (this.validateCurrentStep()) {
       this.formWizardStep += 1;
       const scrollElement = document.getElementById('panel-content');
@@ -542,11 +576,11 @@ export class EditLandComponent implements OnInit {
     }
   }
 
- async editLand(): Promise<void> {
-   if (!this.validateCurrentStep() || !this.editLandFGroup.valid) {
-     await dialog.error('Please fill all required fields correctly before submitting.');
-   }
-   dialog.loading();
+  async editLand(): Promise<void> {
+    if (!this.validateCurrentStep() || !this.editLandFGroup.valid) {
+      await dialog.error('Please fill all required fields correctly before submitting.');
+    }
+    dialog.loading();
 
     let editedLand;
     editedLand = this.editLandFGroup.value;
@@ -555,16 +589,29 @@ export class EditLandComponent implements OnInit {
     editedLand.uPINs = editedLand.uPINs.map((upins) => upins + '');
     editedLand.accessablity = editedLand.accessablity.map((access, i) => access === true ? i + 1 : null).filter(a => a !== null);
     // tslint:disable-next-line:max-line-length
-    editedLand.agroEchologyZone = editedLand.agroEchologyZone.map((agro, i) => ({ agroType: i + 1, result: agro })).filter(res => res.result != '').filter(res => res.result != null);
+    editedLand.agroEchologyZone = editedLand.agroEchologyZone.map((agro, i) => ({
+      agroType: i + 1,
+      result: agro
+    })).filter(res => res.result != '').filter(res => res.result != null);
 
     // tslint:disable-next-line:max-line-length
     editedLand.investmentType = editedLand.investmentType.map((investType, i) => investType === true ? i + 1 : null).filter(a => a !== null);
+    editedLand.moistureSource = editedLand.moistureSource.map((moi, i) => moi === true ? i + 1 : null).filter(a => a !== null);
     // tslint:disable-next-line:max-line-length
-    editedLand.topography = editedLand.topography.map((topographyValue, i) => ({ topographyType: i + 1, result: topographyValue })).filter(res => res.result !== '').filter(res => res.result !== null);
+    editedLand.topography = editedLand.topography.map((topographyValue, i) => ({
+      topographyType: i + 1,
+      result: topographyValue
+    })).filter(res => res.result !== '').filter(res => res.result !== null);
     // tslint:disable-next-line:max-line-length
-    editedLand.irrigationValues.waterSourceParameter = editedLand.irrigationValues.waterSourceParameter.map((waterSource, i) => ({ waterSourceType: i + 1, result: waterSource })).filter(res => res.result != null).filter(res => res.result != '');
+    editedLand.irrigationValues.waterSourceParameter = editedLand.irrigationValues.waterSourceParameter.map((waterSource, i) => ({
+      waterSourceType: i + 1,
+      result: waterSource
+    })).filter(res => res.result != null).filter(res => res.result != '');
     // tslint:disable-next-line:max-line-length
-    editedLand.irrigationValues.surfaceWater = editedLand.irrigationValues.surfaceWater.map((surfaceWater, i) => ({ surfaceWaterType: i + 1, result: surfaceWater })).filter(res => res.result != '');
+    editedLand.irrigationValues.surfaceWater = editedLand.irrigationValues.surfaceWater.map((surfaceWater, i) => ({
+      surfaceWaterType: i + 1,
+      result: surfaceWater
+    })).filter(res => res.result != '');
     // tslint:disable-next-line:max-line-length
     editedLand.irrigationValues.groundWater = editedLand.irrigationValues.groundWater.map((gWater, i) => gWater === true ? i + 1 : null).filter(a => a !== null);
 
@@ -572,7 +619,10 @@ export class EditLandComponent implements OnInit {
     // tslint:disable-next-line:max-line-length
 
     // tslint:disable-next-line:max-line-length
-    editedLand.soilTests = editedLand.soilTests.map((soilValue, i) => ({testType : i + 1, result : '' + soilValue})).filter(res => res.result != '').filter(res => res.result != 'null' );
+    editedLand.soilTests = editedLand.soilTests.map((soilValue, i) => ({
+      testType: i + 1,
+      result: '' + soilValue
+    })).filter(res => res.result != '').filter(res => res.result != 'null');
 
     editedLand.existLandUse = editedLand.existLandUse.map((existLand, i) => existLand === true ? i + 1 : null).filter(a => a !== null);
 
@@ -591,13 +641,13 @@ export class EditLandComponent implements OnInit {
       if (editedLand.precipitation[i] !== undefined || editedLand.temp_low[i] !== undefined || editedLand.temp_high[i] !== undefined ||
         editedLand.temp_avg[i] !== undefined) {
 
-          editedLand.climate.push({
+        editedLand.climate.push({
           month: i + 1,
           precipitation: editedLand.precipitation[i],
           temp_low: editedLand.temp_low[i],
           temp_high: editedLand.temp_high[i],
           temp_avg: editedLand.temp_avg[i]
-         });
+        });
       }
     }
 
@@ -627,10 +677,10 @@ export class EditLandComponent implements OnInit {
     this.landDataService.RequestLandEdit(editedLand, this.wfid).subscribe
     (() => {
         dialog.success('Your work has been edited successfully!').then(
-        () => {
-          this.router.navigate(['/default/pending-task']);
-        });
-    },
+          () => {
+            this.router.navigate(['/default/pending-task']);
+          });
+      },
       (err) => {
         return dialog.error(err);
       }
@@ -640,23 +690,27 @@ export class EditLandComponent implements OnInit {
   refreshButton() {
     this.ngOnInit();
   }
+
   atLeastOneCheckboxSelected(): ValidatorFn {
     return (formArray: FormArray): { [key: string]: boolean } | null => {
       const atLeastOneSelected = formArray.controls.some(control => control.value === true);
-      return atLeastOneSelected ? null : { 'atLeastOneRequired': true };
+      return atLeastOneSelected ? null : {'atLeastOneRequired': true};
     };
   }
+
   atLeastOneRequired(): ValidatorFn {
     return (formArray: FormArray): { [key: string]: boolean } | null => {
       const hasValue = formArray.controls.some(control => control.value && control.value.toString().trim() !== '');
-      return hasValue ? null : { 'atLeastOneRequired': true };
+      return hasValue ? null : {'atLeastOneRequired': true};
     };
   }
+
   requiredTextValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: boolean } | null => {
-      return control.value && control.value.toString().trim() !== '' ? null : { 'required': true };
+      return control.value && control.value.toString().trim() !== '' ? null : {'required': true};
     };
   }
+
   hasFormArrayError(formArrayName: string, errorType: string): boolean {
     const formArray = this.editLandFGroup.get(formArrayName) as FormArray;
     return formArray.errors && formArray.errors[errorType] && formArray.touched;
@@ -667,6 +721,7 @@ export class EditLandComponent implements OnInit {
     const control = this.editLandFGroup.get(controlName);
     return control.errors && control.errors[errorType] && control.touched;
   }
+
   validateCurrentStep(): boolean {
     // Mark all controls as touched to trigger validation display
     this.markFormGroupTouched(this.editLandFGroup);
@@ -700,7 +755,7 @@ export class EditLandComponent implements OnInit {
     const soilTestsValid = this.editLandFGroup.get('soilTests').valid;
 
     // Only validate irrigation if moisture source is irrigation
-    if (this.selectedMoisture?.value === 'on' && this.selectedMoisture?.index === 1) {
+    if (this.selectedMoisture?.value  && this.selectedMoisture?.index === 1) {
       const groundWaterValid = this.irrigationValues.get('groundWater').valid;
       const waterSourceParameterValid = this.irrigationValues.get('waterSourceParameter').valid;
       return moistureValid && groundWaterValid && topographyValid && soilTestsValid && waterSourceParameterValid;
@@ -710,8 +765,8 @@ export class EditLandComponent implements OnInit {
   }
 
   private validateStep3(): boolean {
-    const precipitationValid = this.editLandFGroup.get('precipitation').valid;
-    return precipitationValid;
+    //const precipitationValid = this.editLandFGroup.get('precipitation').valid;
+    return true;// precipitationValid;
   }
 
   private validateStep4(): boolean {
@@ -734,6 +789,7 @@ export class EditLandComponent implements OnInit {
       }
     });
   }
+
   validateClimateData(): ValidatorFn {
     return (formArray: FormArray): { [key: string]: boolean } | null => {
       // Use a safer approach - get the parent form group
@@ -788,7 +844,7 @@ export class EditLandComponent implements OnInit {
 
       // If any data is entered but some months are incomplete, return error
       if (hasAnyData && hasIncompleteMonth) {
-        return { 'incompleteClimateData': true };
+        return {'incompleteClimateData': true};
       }
 
       return null;
@@ -804,16 +860,17 @@ export class EditLandComponent implements OnInit {
 
       const value = parseFloat(control.value);
       if (isNaN(value)) {
-        return { 'notANumber': true };
+        return {'notANumber': true};
       }
 
       if (value < min || value > max) {
-        return { 'outOfRange': { min, max, actual: value } };
+        return {'outOfRange': {min, max, actual: value}};
       }
 
       return null;
     };
   }
+
   getFormArrayErrorMessage(formArrayName: string): string {
     const formArray = this.editLandFGroup.get(formArrayName) as FormArray;
 
@@ -855,6 +912,7 @@ export class EditLandComponent implements OnInit {
 
     return value >= min && value <= max;
   }
+
   checkMonthHasError(monthIndex: number): boolean {
     const precipControl = this.precipitations.at(monthIndex);
     const tempLowControl = this.tempLow.at(monthIndex);
@@ -868,6 +926,7 @@ export class EditLandComponent implements OnInit {
 
     return hasPartialData;
   }
+
   getFormArray(formArrayName: string): FormArray {
     return this.editLandFGroup.get(formArrayName) as FormArray;
   }
@@ -890,6 +949,7 @@ export class EditLandComponent implements OnInit {
     const control = formArray.controls[index];
     return control.errors && control.errors[errorType] && control.touched;
   }
+
   // Method to validate a specific month's climate data
   validateClimateMonth(monthIndex: number) {
     // Trigger validation for the precipitation array (which has the climate validator)
@@ -901,6 +961,7 @@ export class EditLandComponent implements OnInit {
     this.tempHigh.controls[monthIndex].markAsTouched();
     this.tempAvg.controls[monthIndex].markAsTouched();
   }
+
   // Method to check if a specific month has incomplete climate data
   hasIncompleteClimateData(monthIndex: number): boolean {
     const precip = this.precipitations.at(monthIndex).value;

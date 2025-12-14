@@ -1,26 +1,26 @@
 import {Component, Input, OnInit, ElementRef, OnDestroy, AfterViewInit, Output, EventEmitter} from '@angular/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {CommonModule} from '@angular/common';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 // OpenLayers imports
 import OlMap from 'ol/Map';
 import OlView from 'ol/View';
 import OLTileWMS from 'ol/source/TileWMS';
-import { register } from 'ol/proj/proj4';
+import {register} from 'ol/proj/proj4';
 import GeoJSON from 'ol/format/GeoJSON';
 import WKT from 'ol/format/WKT';
-import { Vector as VectorSource } from 'ol/source';
-import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
-import { Fill, Stroke, Style, Circle as CircleStyle } from 'ol/style';
+import {Vector as VectorSource} from 'ol/source';
+import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
+import {Fill, Stroke, Style} from 'ol/style';
 import XYZ from 'ol/source/XYZ';
 import Feature from 'ol/Feature';
 import Geometry from 'ol/geom/Geometry';
-import { EnvironmentalChangeEventDto } from '../../_model/environmental-monitoring.model';
+import {EnvironmentalChangeEventDto} from '../../_model/environmental-monitoring.model';
 
 // Services
-import { ApiService } from '../../_services/api.service';
-import { LandDataService } from '../../_services/land-data.service';
+import {ApiService} from '../../_services/api.service';
+import {LandDataService} from '../../_services/land-data.service';
 import {FullScreenService} from "../../_services/full-screen.service";
 
 declare var proj4: any;
@@ -52,11 +52,14 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   private view!: OlView;
   private map!: OlMap;
 
-  // Vector layers
-  private nrlaisSource!: VectorSource;
-  private workflowSource!: VectorSource;
-  private splitSource!: VectorSource;
-  private environmentalChangeSource!: VectorSource;
+  // Vector sources
+  private nrlaisSource!: any;
+  private workflowSource!: any;
+  private splitSource!: any;
+  private environmentalChangeSource!: any;
+
+  // Vector layers - use any to avoid complex generic issues
+  private environmentalChangeLayer!: any;
 
   // Styles
   private nrlaisStyle!: Style;
@@ -79,7 +82,6 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   private cacheBuster = Date.now();
 
   // Environmental change detection
-  private environmentalChangeLayer!: VectorLayer;
   public changeDetectionActive = false;
 
   constructor(
@@ -93,7 +95,6 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Refresh map after a short delay to ensure everything is loaded
     setTimeout(() => {
       this.forceMapRefresh();
     }, 1000);
@@ -106,6 +107,9 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     this.initMap();
     this.setupResizeHandler();
     this.setupConnectivityMonitoring();
+    setTimeout(() => {
+      console.log('Map component fully initialized and ready');
+    }, 500);
   }
 
   ngOnDestroy(): void {
@@ -113,7 +117,6 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
       this.map.setTarget(null);
     }
     window.removeEventListener('resize', this.onWindowResize.bind(this));
-    // Remove connectivity listeners
     if (this.onlineListener) {
       window.removeEventListener('online', this.onlineListener);
     }
@@ -127,26 +130,26 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
       features: []
     });
 
-    // Style function for different change types
-    const styleFunction = (feature: Feature<Geometry>) => {
+    // Style function with any type to avoid complex type issues
+    const styleFunction = (feature: any) => {
       const eventType = feature.get('eventType');
-      let color = '#FF0000'; // Default red
+      let color = '#FF0000';
 
       switch (eventType) {
         case 'VEGETATION_LOSS':
-          color = '#FF0000'; // Red
+          color = '#FF0000';
           break;
         case 'VEGETATION_GROWTH':
-          color = '#00FF00'; // Green
+          color = '#00FF00';
           break;
         case 'WATER_INCREASE':
-          color = '#0000FF'; // Blue
+          color = '#0000FF';
           break;
         case 'WATER_DECREASE':
-          color = '#FFA500'; // Orange
+          color = '#FFA500';
           break;
         case 'URBANIZATION':
-          color = '#808080'; // Gray
+          color = '#808080';
           break;
       }
 
@@ -247,25 +250,22 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private initializeVectorSources(): void {
-    // NRLais layer
-    this.nrlaisSource = new VectorSource({ features: [] });
+    this.nrlaisSource = new VectorSource({features: []});
     this.nrlaisStyle = new Style({
-      stroke: new Stroke({ color: 'blue', lineDash: [4], width: 3 }),
-      fill: new Fill({ color: 'rgba(0, 0, 255, 0.1)' })
+      stroke: new Stroke({color: 'blue', lineDash: [4], width: 3}),
+      fill: new Fill({color: 'rgba(0, 0, 255, 0.1)'})
     });
 
-    // Workflow layer
-    this.workflowSource = new VectorSource({ features: [] });
+    this.workflowSource = new VectorSource({features: []});
     this.workflowStyle = new Style({
-      stroke: new Stroke({ color: 'green', lineDash: [4], width: 3 }),
-      fill: new Fill({ color: 'rgba(0, 255, 0, 0.1)' })
+      stroke: new Stroke({color: 'green', lineDash: [4], width: 3}),
+      fill: new Fill({color: 'rgba(0, 255, 0, 0.1)'})
     });
 
-    // Split layer
-    this.splitSource = new VectorSource({ features: [] });
+    this.splitSource = new VectorSource({features: []});
     this.splitStyle = new Style({
-      stroke: new Stroke({ color: 'red', width: 3 }),
-      fill: new Fill({ color: 'rgba(255, 0, 0, 0.1)' })
+      stroke: new Stroke({color: 'red', width: 3}),
+      fill: new Fill({color: 'rgba(255, 0, 0, 0.1)'})
     });
   }
 
@@ -362,8 +362,8 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
       source: new XYZ({
         url,
         attributions: 'Google Maps',
-        tileLoadFunction: (tile, src) => {
-          const imageTile = tile as any;
+        tileLoadFunction: (tile: any, src: string) => {
+          const imageTile = tile;
           const img = imageTile.getImage();
           img.src = src;
           img.onerror = () => {
@@ -386,8 +386,8 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     const offlineLayer = new TileLayer({
       source: new XYZ({
         attributions: 'Offline Base Map',
-        tileLoadFunction: (tile, src) => {
-          const imageTile = tile as any;
+        tileLoadFunction: (tile: any, src: string) => {
+          const imageTile = tile;
           const canvas = document.createElement('canvas');
           canvas.width = 256;
           canvas.height = 256;
@@ -449,11 +449,19 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private addWmsLayers(): void {
     const wmsConfigs: WmsLayerConfig[] = [
-      {name:'Counter', layerName:'nrlais:ne_10m_admin_0_countries', visible:true},
-      { name: 'Region', layerName: 'nrlais:t_regions', visible: this.backTo === 'Region'|| this.backTo ==='Woreda'||this.backTo ==='Kebele'||this.backTo ==='Land'},
-      { name: 'Woreda', layerName: 'nrlais:t_woredas', visible: this.backTo === 'Woreda' || this.backTo ==='Kebele'||this.backTo ==='Land'},
-      { name: 'Kebele', layerName: 'nrlais:t_kebeles', visible: this.backTo === 'Kebele'||this.backTo ==='Land' },
-      { name: 'Land', layerName: 'camis:v_gs_land', visible: this.backTo === 'Land' }
+      {name: 'Counter', layerName: 'nrlais:ne_10m_admin_0_countries', visible: true},
+      {
+        name: 'Region',
+        layerName: 'nrlais:t_regions',
+        visible: this.backTo === 'Region' || this.backTo === 'Woreda' || this.backTo === 'Kebele' || this.backTo === 'Land'
+      },
+      {
+        name: 'Woreda',
+        layerName: 'nrlais:t_woredas',
+        visible: this.backTo === 'Woreda' || this.backTo === 'Kebele' || this.backTo === 'Land'
+      },
+      {name: 'Kebele', layerName: 'nrlais:t_kebeles', visible: this.backTo === 'Kebele' || this.backTo === 'Land'},
+      {name: 'Land', layerName: 'camis:v_gs_land', visible: this.backTo === 'Land'}
     ];
 
     const visibleConfigs = wmsConfigs.filter(config => config.visible);
@@ -489,7 +497,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
       wmsLayer.set('name', `wms-${config.name.toLowerCase()}`);
 
-      wmsSource.on('tileloaderror', (error) => {
+      wmsSource.on('tileloaderror', (error: any) => {
         console.error(`Failed to load WMS layer: ${config.layerName}`, error);
       });
 
@@ -512,7 +520,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log('Vector layers added');
   }
 
-  private createVectorLayer(source: VectorSource, style: Style, name: string) {
+  private createVectorLayer(source: any, style: Style, name: string) {
     const layer = new VectorLayer({
       source,
       style: () => style
@@ -619,7 +627,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     const width = mapElement.clientWidth || 800;
     const height = mapElement.clientHeight || 600;
 
-    console.log('Map dimensions:', { width, height });
+    console.log('Map dimensions:', {width, height});
     console.log('Bounding box dimensions:', {
       width: bbox.x2 - bbox.x1,
       height: bbox.y2 - bbox.y1
@@ -629,7 +637,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     const bboxHeight = bbox.y2 - bbox.y1;
 
     if (bboxWidth <= 0 || bboxHeight <= 0 || !isFinite(bboxWidth) || !isFinite(bboxHeight)) {
-      console.warn('Invalid bounding box dimensions:', { bboxWidth, bboxHeight });
+      console.warn('Invalid bounding box dimensions:', {bboxWidth, bboxHeight});
       return 300;
     }
 
@@ -670,6 +678,11 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // Environmental Change Detection Methods
   public displayEnvironmentalChanges(changes: EnvironmentalChangeEventDto[]): void {
+    if (!this.environmentalChangeSource) {
+      console.error('Environmental change source not initialized');
+      return;
+    }
+
     this.environmentalChangeSource.clear();
 
     if (!changes || changes.length === 0) {
@@ -677,84 +690,101 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    const features: Feature<Geometry>[] = [];
+    console.log(`Displaying ${changes.length} environmental changes on map`);
 
     changes.forEach((change, index) => {
       try {
         if (change.geometry) {
           const format = new WKT();
-          const feature = format.readFeature(change.geometry, {
+          const geometry = format.readGeometry(change.geometry, {
             dataProjection: 'EPSG:4326',
             featureProjection: 'EPSG:20137'
           });
 
-          feature.setProperties({
-            id: `change-${index}`,
-            eventType: change.eventType,
-            eventSubtype: change.eventSubtype,
-            severity: change.severity,
-            confidence: change.confidence,
-            changeAmount: change.changeAmount,
-            changePercentage: change.changePercentage,
-            affectedArea: change.affectedArea,
-            description: change.description,
-            parcelUpid: change.parcelUpid,
-            eventDate: change.eventDate,
-            beforeValue: change.beforeValue,
-            afterValue: change.afterValue,
-            changeData: change // Store the complete change object
+          const feature = new Feature({
+            geometry: geometry
           });
 
-          features.push(feature);
+          // Set properties
+          feature.set('id', `change-${index}`);
+          feature.set('eventType', change.eventType);
+          feature.set('eventSubtype', change.eventSubtype);
+          feature.set('severity', change.severity);
+          feature.set('confidence', change.confidence);
+          feature.set('changeAmount', change.changeAmount);
+          feature.set('changePercentage', change.changePercentage);
+          feature.set('affectedArea', change.affectedArea);
+          feature.set('description', change.description);
+          feature.set('parcelUpid', change.parcelUpid);
+          feature.set('eventDate', change.eventDate);
+          feature.set('beforeValue', change.beforeValue);
+          feature.set('afterValue', change.afterValue);
+          feature.set('changeData', change);
+
+          this.environmentalChangeSource.addFeature(feature);
         }
       } catch (error) {
         console.error('Error parsing geometry for change:', change, error);
       }
     });
 
-    this.environmentalChangeSource.addFeatures(features);
-
+    const features = this.environmentalChangeSource.getFeatures();
     if (features.length > 0) {
+      // Optionally zoom to show all changes
       const extent = this.environmentalChangeSource.getExtent();
-      this.zoomToSetExtent(extent);
+      if (extent && extent[0] !== Infinity && extent[1] !== Infinity) {
+        console.log('Zooming to show changes');
+        this.zoomToSetExtent(extent);
+      }
     }
 
-    console.log(`Displayed ${features.length} environmental changes on map`);
+    console.log(`Successfully displayed ${features.length} environmental changes on map`);
   }
 
   private setupChangeInteraction(): void {
-    this.map.on('click', (event) => {
+    this.map.on('click', (event: any) => {
       const features = this.map.getFeaturesAtPixel(event.pixel);
 
       if (features && features.length > 0) {
-        const changeFeature = features.find((f: Feature<Geometry>) =>
-          f.get('eventType') && f.getProperties().eventType
-        );
+        // Find the first environmental change feature
+        const changeFeature = features.find((f: any) => {
+          const eventType = f.get('eventType');
+          return eventType && typeof eventType === 'string';
+        });
 
         if (changeFeature) {
           const changeData = changeFeature.get('changeData') as EnvironmentalChangeEventDto;
-          this.changeFeatureClick.emit(changeData);
-          this.showChangePopup(changeFeature);
+          if (changeData) {
+            this.changeFeatureClick.emit(changeData);
+            this.showChangePopup(changeFeature);
+          }
         }
       }
     });
   }
 
-  private showChangePopup(feature: Feature<Geometry>): void {
-    const props = feature.getProperties();
-    const changeData = props.changeData as EnvironmentalChangeEventDto;
+  private showChangePopup(feature: any): void {
+    const eventType = feature.get('eventType');
+    const severity = feature.get('severity');
+    const parcelUpid = feature.get('parcelUpid');
+    const changeAmount = feature.get('changeAmount');
+    const confidence = feature.get('confidence');
 
-    // You can implement a proper popup here
-    console.log('Change Feature Clicked:', changeData);
+    console.log('Change Feature Clicked:', {
+      eventType,
+      severity,
+      parcelUpid,
+      changeAmount,
+      confidence
+    });
 
-    // For now, let's show an alert with basic info
     const message = `
       Environmental Change Detected:
-      Type: ${changeData.eventType}
-      Severity: ${changeData.severity}
-      Parcel: ${changeData.parcelUpid}
-      Change: ${changeData.changeAmount.toFixed(4)}
-      Confidence: ${(changeData.confidence * 100).toFixed(1)}%
+      Type: ${eventType}
+      Severity: ${severity}
+      Parcel: ${parcelUpid}
+      Change: ${changeAmount?.toFixed(4)}
+      Confidence: ${((confidence || 0) * 100).toFixed(1)}%
     `;
 
     alert(message);
@@ -775,7 +805,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // Public methods
   public googleMapSetting(): void {
-    console.log('Updating map settings:', { mapType: this.mapType, backTo: this.backTo });
+    console.log('Updating map settings:', {mapType: this.mapType, backTo: this.backTo});
 
     localStorage.setItem('mapType', this.mapType);
     localStorage.setItem('backTo', this.backTo);
@@ -888,7 +918,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     this.layers.forEach(layer => {
       const layerName = layer.get('name');
       if (layerName && layerName.startsWith('wms-')) {
-        const source = layer.getSource() as OLTileWMS;
+        const source = layer.getSource() as any;
         if (source) {
           source.updateParams({
             '_t': this.cacheBuster
@@ -908,7 +938,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   public testGeoServerConnection(): void {
     const testUrl = '/geoserver/wms?service=WMS&version=1.1.1&request=GetCapabilities&_t=' + Date.now();
 
-    this.http.get(testUrl, { responseType: 'text' }).subscribe({
+    this.http.get(testUrl, {responseType: 'text'}).subscribe({
       next: () => console.log('GeoServer connection successful'),
       error: (error) => console.error('GeoServer connection failed:', error)
     });

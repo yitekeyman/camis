@@ -37,9 +37,21 @@ export class FmPendingTaskComponent implements OnInit {
     this.loginRole = localStorage.getItem("role");
     if (this.loginRole === '2') {
       this.user = 'Commercial Farm Registrar';
+      this.filters = [
+        { type: 1, states: [0] },
+        { type: 2, states: [0] },
+        { type: 3, states: [0] },
+        { type: 11, states: [0] },
+      ];
     }
     if (this.loginRole === '3') {
       this.user = 'Commercial Farm Supervisor';
+      this.filters = [
+        { type: 1, states: [1] },
+        { type: 2, states: [1] },
+        { type: 3, states: [1] },
+        { type: 11, states: [1] },
+      ];
     }
     if (this.loginRole === '6') {
       this.user = 'Land Bank Administrator';
@@ -151,9 +163,10 @@ export class FmPendingTaskComponent implements OnInit {
               this.activeWorkflows.push(workflow);
             }
           }
-          this.setPage(1);
+
         }
       }
+      this.setPage(1);
       dialog.close();
     }, dialog.error);
   }

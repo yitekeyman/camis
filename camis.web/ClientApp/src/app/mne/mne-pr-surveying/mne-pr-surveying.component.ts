@@ -63,7 +63,7 @@ export class MnePrSurveyingComponent implements OnInit {
 
 
   goToReports(planId: string): Promise<boolean> {
-    return this.router.navigateByUrl(`/mne/task/plan/${planId}/reports`);
+    return this.router.navigateByUrl(`/mne/plan/${planId}/reports`);
   }
 
   async cancelProgressReport(): Promise<void> {

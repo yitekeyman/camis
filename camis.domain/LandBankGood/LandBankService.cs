@@ -180,13 +180,18 @@ namespace intapscamis.camis.domain.LandBank
             #endregion
 
             #region Land Moisture
-            var moisture = new LandMoisture
+
+            data.MoistureSource?.ForEach(moi =>
             {
-                LandId = l.Id,
-                Moisture = data.MoistureSource
-            };
-            Context.LandMoisture.Add(moisture);
-            Context.SaveChanges();
+                var moisture = new LandMoisture
+                {
+                    LandId = l.Id,
+                    Moisture =moi
+                };
+                Context.LandMoisture.Add(moisture);
+                Context.SaveChanges();
+            });
+           
             #endregion
             
             #region Topography
@@ -536,7 +541,12 @@ namespace intapscamis.camis.domain.LandBank
                 ret.InvestmentType.Add(inv.Investment);
             }
 
-            ret.MoistureSource = l.LandMoisture.FirstOrDefault(m => m.LandId == l.Id).Moisture;
+            ret.MoistureSource = new List<int>();
+            foreach (var moi in l.LandMoisture)
+            {
+                ret.MoistureSource.Add(moi.Moisture);
+            }
+            //ret.MoistureSource = l.LandMoisture.FirstOrDefault(m => m.LandId == l.Id).Moisture;
 
             var irrigation = l.Irrigation.ToList().FirstOrDefault();
             ret.IrrigationValues = new LandBankFacadeModel.IrrigationValues

@@ -10,7 +10,7 @@
             <div class="card-header p-3">
               <h5>Step 1 of 4: General Parcel Info</h5>
             </div>
-            <div class="card-body" style="height: calc(65Vh); overflow-y: auto">
+            <div class="card-body" style="height: calc(65Vh); overflow-y: auto" id="panel-content">
               <div class="row">
                 <div class="input-form col-md-4">
                   <div formArrayName="uPINs">
@@ -86,29 +86,29 @@
 
               </div>
             </div>
-          </div>
+          </div >
           <div class="card m-0" style="height: calc(65Vh)" *ngIf="formWizardStep === 2">
             <div class="card-header p-3">
               <h5>Step 2 of 4: Environmental Info</h5>
             </div>
-            <div class="card-body" style="height: calc(65Vh); overflow-y: auto">
+            <div class="card-body" style="height: calc(65Vh); overflow-y: auto" id="panel-content">
               <div class="row">
                 <div class="col-md-12 mt-0">
                   <div class="card p-0">
                     <div class="card-header p-3">
-                      <h5>Moisture Source:<span class="text-danger">(*)&nbsp;</span>  <span class="error-message" *ngIf="hasControlError('moistureSource', 'required')">
+                      <h5>Moisture Source:<span class="text-danger">(*)&nbsp;</span>  <span class="error-message" *ngIf="hasFormArrayError('moistureSource', 'atLeastOneRequired')">
                            <i class="ti ti-exclamation-circle"></i> Moisture source is required
                            </span></h5>
                     </div>
                     <div class="card-body m-0 p-2">
 
-                      <div class="row">
+                      <div class="row" formArrayName="moistureSource">
 
                         <div class="col-sm-6" *ngFor="let moisture of moistureSrc; let i=index">
                           <div class="form-check newland_checkbox">
                             <label class="form-check-label checkbox-container">
-                              <input type="radio" class="form-check-input" [value]="moisture.id"
-                                     formControlName="moistureSource"
+                              <input type="checkbox" class="form-check-input"
+                                     [formControlName]="i"
                                      (change)="selectedMoistureSource($event, i)">
                               {{ moisture.name }}
                               <span class="radiobutton"></span>
@@ -120,7 +120,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-md-12 mt-0" *ngIf="selectedMoisture?.value === 'on' && selectedMoisture?.index === 1 ">
+                <div class="col-md-12 mt-0" *ngIf="selectedMoisture?.value && selectedMoisture?.index === 1 ">
                   <div class="row" [formGroup]="irrigationValues">
                     <div class="col-sm-12 mt-0" formArrayName="waterSourceParameter">
                       <div class="card p-0">
@@ -223,10 +223,16 @@
                             <input *ngIf="soilType.id !== 11 && soilType.id !== 12" type="number" class="form-control"
                                    id="soilTest" placeholder="{{soilType.name}} value"
                                    [formControlName]="i"  (blur)="newLandFGroup.get('soilTests').updateValueAndValidity()">
-                            <input *ngIf="soilType.id === 11 || soilType.id === 12" type="text" class="form-control"
-                                   id="soilTest"
-                                   placeholder="{{soilType.name}} value"
-                                   [formControlName]="i" (blur)="newLandFGroup.get('soilTests').updateValueAndValidity()">
+                            <select  *ngIf="soilType.id === 11" type="text" class="form-select"
+                                   id="soilTest"  [formControlName]="i" (change)="newLandFGroup.get('soilTests').updateValueAndValidity()">
+                              <option value="">Select {{ soilType.name }}</option>
+                              <option  *ngFor="let type of soilTypes" [value]="type.name">{{ type.name }}</option>
+                            </select>
+                            <select  *ngIf="soilType.id === 12" type="text" class="form-select"
+                                     id="soilTest"  [formControlName]="i" (change)="newLandFGroup.get('soilTests').updateValueAndValidity()">
+                              <option value="">Select {{ soilType.name }}</option>
+                              <option *ngFor="let type of soilTextureClass" [value]="type.name">{{ type.name }}</option>
+                            </select>
                           </div>
                         </div>
 
@@ -241,10 +247,8 @@
             <div class="card-header p-3">
               <h5>Step 3 of 4: Climatology: </h5>
             </div>
-            <div class="card-body" style="height: calc(65Vh); overflow-y: auto">
-              <span class="error-message" *ngIf="hasFormArrayError('precipitation', 'incompleteClimateData')">
-                <i class="ti ti-exclamation-circle"></i> If you enter climate data for any month, you must fill all temperature fields for that month
-              </span>
+            <div class="card-body" style="height: calc(65Vh); overflow-y: auto" id="panel-content">
+
               <table class="table">
                 <thead>
                 <tr class="headings">
@@ -258,47 +262,30 @@
                 <tbody>
                 <tr *ngFor="let months of json;let i=index">
                   <td>
-                    {{ months.name }} <span class="text-danger">(*)&nbsp;</span><span *ngIf="hasIncompleteClimateData(i)" class="error-message">
-              <i class="ti ti-exclamation-circle"></i> Incomplete
-            </span>
+                    {{ months.name }}
                   </td>
 
                   <td>
                     <div class="form-group" formArrayName="precipitation">
-                       <span class="error-message" *ngIf="isFormControlInvalid('precipitation', i)">
-                          <i class="ti ti-exclamation-circle"></i> Invalid value
-                        </span>
+
                       <input type="number" class="form-control" id="precipitation" [formControlName]="i"
-                             placeholder="in mm"  min="0" max="1000" step="0.1"
-                             (blur)="validateClimateMonth(i)">
+                             placeholder="in mm"  min="0" max="1000" step="0.1">
                     </div>
                   </td>
                   <td>
                     <div class="form-group" formArrayName="temp_low">
-                       <span class="error-message" *ngIf="isFormControlInvalid('temp_low', i)">
-                        <i class="ti ti-exclamation-circle"></i> Invalid value
-                      </span>
-                      <input type="number" class="form-control" id="temp_low" [formControlName]="i" placeholder="in °C"  min="-50" max="60" step="0.1"
-                             (blur)="validateClimateMonth(i)">
+                      <input type="number" class="form-control" id="temp_low" [formControlName]="i" placeholder="in °C"  min="-50" max="60" step="0.1">
                     </div>
                   </td>
                   <td>
                     <div class="form-group" formArrayName="temp_high">
-                       <span class="error-message" *ngIf="isFormControlInvalid('temp_high', i)">
-                        <i class="ti ti-exclamation-circle"></i> Invalid value
-                      </span>
                       <input type="number" class="form-control" id="temp_high" [formControlName]="i"
-                             placeholder="in °C" min="-50" max="60" step="0.1"
-                             (blur)="validateClimateMonth(i)">
+                             placeholder="in °C" min="-50" max="60" step="0.1">
                     </div>
                   </td>
                   <td>
                     <div class="form-group" formArrayName="temp_avg">
-                       <span class="error-message" *ngIf="isFormControlInvalid('temp_avg', i)">
-                          <i class="ti ti-exclamation-circle"></i> Invalid value
-                        </span>
-                      <input type="number" class="form-control" id="temp_avg" [formControlName]="i" placeholder="in °C" min="-50" max="60" step="0.1"
-                             (blur)="validateClimateMonth(i)">
+                      <input type="number" class="form-control" id="temp_avg" [formControlName]="i" placeholder="in °C" min="-50" max="60" step="0.1">
                     </div>
                   </td>
 
@@ -312,7 +299,7 @@
             <div class="card-header p-3">
               <h5>Step 4 of 4: Final</h5>
             </div>
-            <div class="card-body" style="height: calc(65Vh); overflow-y: auto">
+            <div class="card-body" style="height: calc(65Vh); overflow-y: auto" id="panel-content">
               <div class="row m-0 p-0">
                 <div class="col-md-12 mt-0" formArrayName="existLandUse">
 
@@ -326,7 +313,7 @@
                           <i class="ti ti-exclamation-circle"></i> Existing land use required
                         </span>
                       </div>
-                      <div class="col-sm-4" *ngFor="let land of existingLand; let i=index">
+                      <div class="col-sm-3" *ngFor="let land of existingLand; let i=index">
                         <div class="form-check newland_checkbox">
                           <label class="form-check-label checkbox-container">
                             <input type="checkbox" class="form-check-input" [formControlName]="i"> {{ land.name }}

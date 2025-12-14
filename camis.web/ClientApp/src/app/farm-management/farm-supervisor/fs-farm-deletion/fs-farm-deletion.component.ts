@@ -42,22 +42,19 @@ export class FsFarmDeletionComponent implements OnInit {
     if (!await dialog.confirm('Are you sure you want to reject this deletion request?')) {
       return;
     }
-
+    const message = await dialog.prompt('Enter a message for the farm data registrar:');
+    if (message === "") {
+      await dialog.error('Please enter a message for the farm data registrar');
+    }
     this.loading = true;
     dialog.loading();
-
-    this.api.rejectFarmDeletion(this.workflowId, null).subscribe(res => {
-      if (res.success) {
-        this.router.navigate(['default/pending-task']).catch(dialog.error);
-        return dialog.success('The deletion request has been rejected successfully.');
-      } else {
+    this.api.rejectFarmDeletion(this.workflowId, message).toPromise()
+      .then(() => dialog.success('The deletion request has been rejected successfully.'))
+      .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+      .catch(err => {
         this.loading = false;
-        return dialog.error(res);
-      }
-    }, err => {
-      this.loading = false;
-      return dialog.error(err);
-    });
+        return dialog.error(err)
+      });
   }
 
   async onApprove(): Promise<void> {
@@ -67,19 +64,14 @@ export class FsFarmDeletionComponent implements OnInit {
 
     this.loading = true;
     dialog.loading();
-
-    this.api.approveFarmDeletion(this.workflowId, null).subscribe(res => {
-      if (res.success) {
-        this.router.navigate(['default/pending-task']).catch(dialog.error);
-        return dialog.success('The deletion request has been approved successfully.');
-      } else {
+    this.api.approveFarmDeletion(this.workflowId, null).toPromise()
+      .then(() => dialog.success('The deletion request has been approved successfully.'))
+      .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+      .catch(err => {
         this.loading = false;
-        return dialog.error(res);
-      }
-    }, err => {
-      this.loading = false;
-      return dialog.error(err);
-    });
+        return dialog.error(err)
+      });
+
   }
 
 }

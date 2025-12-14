@@ -83,18 +83,13 @@ export class FcUpdatePlanComponent implements OnInit {
 
       this.loading = true;
       dialog.loading();
-      this.api.cancelUpdatePlan(this.workflowId, null).subscribe(res => {
-        if (res.success) {
-          this.router.navigateByUrl(`default/pending-task`).catch(dialog.error);
-          return dialog.success('The workflow has been cancelled successfully.');
-        } else {
+      this.api.cancelUpdatePlan(this.workflowId, null).toPromise()
+        .then(() => dialog.success('The workflow has been cancelled successfully.'))
+        .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+        .catch(err => {
           this.loading = false;
-          return dialog.error(res);
-        }
-      }, err => {
-        this.loading = false;
-        return dialog.error(err)
-      });
+          return dialog.error(err)
+        });
     } else {
       this.router.navigateByUrl(`default/pending-task`).catch(dialog.error);
     }
@@ -106,12 +101,15 @@ export class FcUpdatePlanComponent implements OnInit {
   }
 
   async onSubmit(e: any): Promise<void> {
+    if (!await dialog.confirm('Are you sure you want to submit this?')) {
+      return;
+    }
     this.loading = true;
 
     this.dumpSubmit(e);
 
-    const message = await dialog.prompt('Enter a message for the supervisor (optional):');
-    if (message === null) {
+    const message = await dialog.prompt('Enter a message for the supervisor');
+    if (message === "") {
       this.loading = false;
       return
     }
@@ -126,20 +124,14 @@ export class FcUpdatePlanComponent implements OnInit {
       this.api.requestUpdatePlan(this.workflowId, body, message) :
       this.api.requestNewUpdatePlan(body, message);
 
-    req.subscribe(res => {
-      if (res.success) {
-        this.router.navigateByUrl('default/pending-task').catch(dialog.error);
-        return dialog.success('Your plan update request has been sent to the supervisor successfully.');
-      } else {
-        this.keyCase.camelCase(this.plan);
+    req.toPromise()
+      .then(()=>dialog.success('Your plan update request has been sent to the supervisor successfully.'))
+      .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+      .catch(err => {
         this.loading = false;
-        return dialog.error(res.message);
-      }
-    }, err => {
-      this.keyCase.camelCase(this.plan);
-      this.loading = false;
-      return dialog.error(err);
-    });
+        return dialog.error(err)
+      });
+
   }
 
 }

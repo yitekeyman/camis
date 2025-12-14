@@ -1,0 +1,34 @@
+﻿[
+  {
+    "id": 1,
+    "name": "Loam"
+  },
+  {
+    "id": 2,
+    "name": "Silt Loam"
+  },
+  {
+    "id": 3,
+    "name": "Clay Loam"
+  },
+  {
+    "id": 4,
+    "name": "Sandy Loam"
+  },
+  {
+    "id": 5,
+    "name": "Silty Clay Loam"
+  },
+  {
+    "id": 6,
+    "name": "Sand / Loamy Sand"
+  },
+  {
+    "id": 7,
+    "name": "Heavy soils (Clay, Silty Clay, Sandy Clay)"
+  },
+  {
+    "id": 8,
+    "name": "Silt"
+  }
+]

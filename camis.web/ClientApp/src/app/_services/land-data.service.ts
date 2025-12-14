@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { LandModel, Accessablity, SoilTestType, LandBankWorkItem,
+import {
+  LandModel, Accessablity, SoilTestType, LandBankWorkItem,
   LandType, SearchResult, Month, AgroEchologicalZone,
   Topography, InvestmentType, MoistureSource, WaterTestParameters, ExistingLandUse,
-  GroundWater, SurfaceWater} from '../_shared/land-bank/land.model';
+  GroundWater, SurfaceWater, Lookup
+} from '../_shared/land-bank/land.model';
 
 import {ApiService} from './api.service';
 
@@ -22,9 +24,12 @@ export class LandDataService {
   moistureSourceUrl = '../assets/data/MoistureSource.json';
   waterTestParametersUrl = '../assets/data/WaterTestParameters.json';
   WaterSourceTypeUrl = '../assets/data/WaterSourceType.json';
-  existingLandUseUrl = '../assets/data/ExistingLandUse.json';
+
   groundWaterUrl = '../assets/data/GroundWater.json';
   surfaceWaterUrl = '../assets/data/SurfaceWater.json';
+  ExistingLandUseUrl = '../assets/data/ExistingLandUse2.json';
+  SoilTypeUrl = '../assets/data/SoilTypes.json';
+  SoilTextureUrl = '../assets/data/SoilTextureClass.json';
 
 
 
@@ -75,7 +80,7 @@ export class LandDataService {
   }
 
   getExistingLandUse(): Observable<ExistingLandUse[]> {
-    return this.http.get<ExistingLandUse[]>(this.existingLandUseUrl);
+    return this.http.get<ExistingLandUse[]>(this.ExistingLandUseUrl);
   }
 
   getInvestmentType(): Observable<InvestmentType[]> {
@@ -88,6 +93,12 @@ export class LandDataService {
 
   getLandType(): Observable<LandType[]> {
     return this.http.get<LandType[]>(this.landTypeUrl);
+  }
+  getSoilType(): Observable<Lookup[]> {
+    return this.http.get<Lookup[]>(this.SoilTypeUrl);
+  }
+  getSoilTextureClass(): Observable<Lookup[]> {
+    return this.http.get<Lookup[]>(this.SoilTextureUrl);
   }
   RequestLandEdit(body: LandModel, wfid: string): Observable<string> {
     return this.api.post(`LandBank/RequestLandRegistration?wfid=${wfid}`, body);

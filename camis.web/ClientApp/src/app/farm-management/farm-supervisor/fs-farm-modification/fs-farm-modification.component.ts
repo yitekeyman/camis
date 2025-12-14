@@ -39,26 +39,23 @@ export class FsFarmModificationComponent implements OnInit {
 
 
   async onReject(): Promise<void> {
+    if (!await dialog.confirm('Are you sure you want to approve this modification request?')) {
+      return;
+    }
     const message = await dialog.prompt('Enter a message for the clerk (optional):');
-    if (message === null) {
-      return
+    if (message === "") {
+      await dialog.error('Please enter a message for the farm data registrar');
     }
 
     this.loading = true;
     dialog.loading();
-
-    this.api.rejectFarmModification(this.workflowId, message).subscribe(res => {
-      if (res.success) {
-        this.router.navigate(['default/pending-task']).catch(dialog.error);
-        return dialog.success('The modification request has been rejected successfully.');
-      } else {
+    this.api.rejectFarmModification(this.workflowId, message).toPromise()
+      .then(() => dialog.success('The modification request has been rejected successfully.'))
+      .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+      .catch(err => {
         this.loading = false;
-        return dialog.error(res);
-      }
-    }, err => {
-      this.loading = false;
-      return dialog.error(err);
-    });
+        return dialog.error(err)
+      });
   }
 
   async onApprove(): Promise<void> {
@@ -68,19 +65,13 @@ export class FsFarmModificationComponent implements OnInit {
 
     this.loading = true;
     dialog.loading();
-
-    this.api.approveFarmModification(this.workflowId, null).subscribe(res => {
-      if (res.success) {
-        this.router.navigate(['default/pending-task']).catch(dialog.error);
-        return dialog.success('The modification request has been approved successfully.');
-      } else {
+    this.api.approveFarmModification(this.workflowId, null).toPromise()
+      .then(() => dialog.success('The modification request has been approved successfully.'))
+      .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+      .catch(err => {
         this.loading = false;
-        return dialog.error(res);
-      }
-    }, err => {
-      this.loading = false;
-      return dialog.error(err);
-    });
+        return dialog.error(err)
+      });
   }
 
 }

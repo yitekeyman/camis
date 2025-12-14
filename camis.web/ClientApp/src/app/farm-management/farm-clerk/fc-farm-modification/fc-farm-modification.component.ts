@@ -15,7 +15,7 @@ import {IDocument} from "../../../_shared/document/interfaces";
 
 @Component({
   selector: 'app-fc-farm-modification',
-  imports:[CommonModule, ReactiveFormsModule, FormsModule, DocumentModule, AddressModule, AuthorityRegistrarComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, DocumentModule, AddressModule, AuthorityRegistrarComponent],
   templateUrl: 'fc-farm-modification.component.html'
 })
 export class FcFarmModificationComponent implements OnInit {
@@ -66,7 +66,7 @@ export class FcFarmModificationComponent implements OnInit {
   frDescription = '';
   frRegistrations: IAuthorityRegistration[] = [];
 
-  constructor (
+  constructor(
     private api: FarmApiService,
     private projectApi: ProjectApiService,
     private router: Router,
@@ -77,11 +77,26 @@ export class FcFarmModificationComponent implements OnInit {
 
   ngOnInit(): void {
     dialog.loading();
-    this.api.getAllFarmOperatorTypes().subscribe(farmOperatorTypes =>{this.keyCase.camelCase(farmOperatorTypes); this.farmOperatorTypes = farmOperatorTypes}, dialog.error);
-    this.api.getAllFarmOperatorOrigins().subscribe(farmOperatorOrigins =>{this.keyCase.camelCase(farmOperatorOrigins); this.farmOperatorOrigins = farmOperatorOrigins}, dialog.error);
-    this.api.getAllFarmTypes().subscribe(farmTypes =>{this.keyCase.camelCase(farmTypes); this.farmTypes = farmTypes}, dialog.error);
-    this.api.getAllRegistrationAuthorities().subscribe(registrationAuthorities =>{this.keyCase.camelCase(registrationAuthorities); this.registrationAuthorities = registrationAuthorities}, dialog.error);
-    this.api.getAllRegistrationTypes().subscribe(registrationTypes =>{this.keyCase.camelCase(registrationTypes); this.registrationTypes = registrationTypes}, dialog.error);
+    this.api.getAllFarmOperatorTypes().subscribe(farmOperatorTypes => {
+      this.keyCase.camelCase(farmOperatorTypes);
+      this.farmOperatorTypes = farmOperatorTypes
+    }, dialog.error);
+    this.api.getAllFarmOperatorOrigins().subscribe(farmOperatorOrigins => {
+      this.keyCase.camelCase(farmOperatorOrigins);
+      this.farmOperatorOrigins = farmOperatorOrigins
+    }, dialog.error);
+    this.api.getAllFarmTypes().subscribe(farmTypes => {
+      this.keyCase.camelCase(farmTypes);
+      this.farmTypes = farmTypes
+    }, dialog.error);
+    this.api.getAllRegistrationAuthorities().subscribe(registrationAuthorities => {
+      this.keyCase.camelCase(registrationAuthorities);
+      this.registrationAuthorities = registrationAuthorities
+    }, dialog.error);
+    this.api.getAllRegistrationTypes().subscribe(registrationTypes => {
+      this.keyCase.camelCase(registrationTypes);
+      this.registrationTypes = registrationTypes
+    }, dialog.error);
 
     this.ar.params.subscribe(params => {
       this.workflowId = params['workflowId'] ? params['workflowId'] : null;
@@ -106,7 +121,9 @@ export class FcFarmModificationComponent implements OnInit {
   }
 
   private setFields(f: any): void {
-    if (!f) { return; }
+    if (!f) {
+      return;
+    }
     this.keyCase.camelCase(f);
 
     const o = f.operator;
@@ -186,7 +203,7 @@ export class FcFarmModificationComponent implements OnInit {
     this.dumpSubmit(e);
 
     const message = await dialog.prompt('Enter a message for the supervisor (optional):');
-    if (message === null) {
+    if (message === "null") {
       return
     }
 
@@ -225,35 +242,32 @@ export class FcFarmModificationComponent implements OnInit {
       this.api.requestFarmModification(this.workflowId, body, message) :
       this.api.requestNewFarmModification(body, message);
 
-    req.subscribe(res => {
-      if (res.success) {
-        this.router.navigateByUrl('default/pending-task').catch(dialog.error);
-        return dialog.success('Your modification request has been sent to the supervisor successfully.');
-      } else {
-        this.keyCase.camelCase(body);
-        return dialog.error(res);
-      }
-    }, err => {
-      this.keyCase.camelCase(body);
-      return dialog.error(err);
-    });
+    req.toPromise()
+      .then(() => dialog.success('Your modification request has been sent to the supervisor successfully.'))
+      .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+      .catch(err => {
+        return dialog.error(err)
+      });
   }
-  validEmail=true;
+
+  validEmail = true;
+
   validateEmail() {
     const value = this.opEmail
     if (!value) {
-      this.validEmail= true;
+      this.validEmail = true;
       return;
     }
     const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const valid = regex.test(value);
 
     if (!valid) {
-      this.validEmail= false;
-    }else{
-      this.validEmail=true;
+      this.validEmail = false;
+    } else {
+      this.validEmail = true;
     }
   }
+
   getPhotoSource(): string {
     if (this.opPhoto.file) {
       // Convert base64 string to data URL for display

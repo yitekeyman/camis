@@ -48,6 +48,20 @@ namespace intapscamis.camis.Controllers
                 return StatusCode(500, new { success = false, message = e.Message });
             }
         }
+        public IActionResult GetDocumentById(string id)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                var doc = _facade.GetDocument(id.ToGuid());
+                return File(doc.File, doc.Mimetype, null); // the filename is null to support in-browser view
+            }
+            catch (Exception e)
+            { 
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
         
         public IActionResult GetDocument(Guid id)
         {

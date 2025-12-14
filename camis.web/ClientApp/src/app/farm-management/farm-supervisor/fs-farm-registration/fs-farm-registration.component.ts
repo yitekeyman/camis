@@ -10,7 +10,7 @@ import {FarmDetailComponent} from "../../../_shared/farm/farm-detail/farm-detail
 
 @Component({
   selector: 'app-fs-farm-registration',
-  imports:[CommonModule, ReactiveFormsModule, FormsModule, FarmDetailComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, FarmDetailComponent],
   templateUrl: 'fs-farm-registration.component.html'
 })
 export class FsFarmRegistrationComponent implements OnInit {
@@ -20,7 +20,7 @@ export class FsFarmRegistrationComponent implements OnInit {
   workflowId: string;
   data: any;
 
-  constructor (
+  constructor(
     private api: FarmApiService,
     private router: Router,
     private ar: ActivatedRoute,
@@ -34,33 +34,33 @@ export class FsFarmRegistrationComponent implements OnInit {
     this.ar.params.subscribe(params => this.workflowId = params['workflowId'], dialog.error)
       .add(this.api.getLastWorkItem(this.workflowId).subscribe(workItem => {
         this.keyCase.camelCase(workItem);
-        if (workItem) { this.data = workItem.data; }
+        if (workItem) {
+          this.data = workItem.data;
+        }
         dialog.close();
       }, dialog.error));
   }
 
 
   async onReject(): Promise<void> {
-    const message = await dialog.prompt('Enter a message for the clerk (optional):');
-    if (message === null) {
+    if (!await dialog.confirm('Are you sure you want to reject this registration request?')) {
+      return;
+    }
+    const message = await dialog.prompt('Enter a message for the clerk:');
+    if (message === "") {
       return
     }
 
     this.loading = true;
     dialog.loading();
 
-    this.api.rejectFarmRegistration(this.workflowId, null).subscribe(res => {
-      if (res.success) {
-        this.router.navigate(['default/pending-task']).catch(dialog.error);
-        return dialog.success('The registration request has been rejected successfully.');
-      } else {
+    this.api.rejectFarmRegistration(this.workflowId, message).toPromise()
+      .then(() => dialog.success('The registration request has been rejected successfully.'))
+      .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+      .catch(err => {
         this.loading = false;
-        return dialog.error(res);
-      }
-    }, err => {
-      this.loading = false;
-      return dialog.error(err);
-    });
+        return dialog.error(err)
+      });
   }
 
   async onApprove(): Promise<void> {
@@ -72,19 +72,33 @@ export class FsFarmRegistrationComponent implements OnInit {
 
     this.loading = true;
     dialog.loading();
-
-    this.api.approveFarmRegistration(this.workflowId, message).subscribe(res => {
-      if (res.success) {
-        this.router.navigate(['default/pending-task']).catch(dialog.error);
-        return dialog.success('The registration request has been approved successfully.');
-      } else {
+    this.api.approveFarmRegistration(this.workflowId, message).toPromise()
+      .then(() => dialog.success('The registration request has been approved successfully.'))
+      .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+      .catch(err => {
         this.loading = false;
-        return dialog.error(res);
-      }
-    }, err => {
-      this.loading = false;
-      return dialog.error(err);
-    });
+        return dialog.error(err)
+      });
+  }
+
+  async onCancellation(): Promise<void> {
+    if (!await dialog.confirm('Are you sure you want to cancel this registration request?')) {
+      return;
+    }
+
+    const message = await dialog.prompt('Enter a message for the land admin ');
+    if (message === "") {
+      await dialog.error('Please enter a message for the farm data registrar');
+    }
+    this.loading = true;
+    dialog.loading();
+    this.api.cancelFarmRegistration(this.workflowId, message).toPromise()
+      .then(() => dialog.success('The registration cancellation has been approved successfully.'))
+      .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+      .catch(err => {
+        this.loading = false;
+        return dialog.error(err)
+      });
   }
 
 }

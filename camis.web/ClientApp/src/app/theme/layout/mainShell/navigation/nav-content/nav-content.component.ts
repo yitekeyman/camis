@@ -218,41 +218,41 @@ export class NavContentComponent implements OnInit {
         children: mneChildren
       });
     }
-    if(['1','3','5','6','8','9'].includes(this.role||'')) {
-      const envChildren: NavigationItem[] = [
-        {
-          id: 'change-detection',
-          title: 'Change detection',
-          type: 'item',
-          url: '/environmental-monitoring/change-detection',
-          classes: 'nav-item',
-          icon: 'ti ti-replace'
-        },
-        {
-          id: 'parcel-history',
-          title: 'Parcel History',
-          type: 'item',
-          url: '/environmental-monitoring/parcel-history',
-          classes: 'nav-item',
-          icon: 'ti ti-map-bolt'
-        },
-        {
-          id: 'risk-monitoring',
-          title: 'Risk Monitoring',
-          type: 'item',
-          url: '/environmental-monitoring/risk-monitoring',
-          classes: 'nav-item',
-          icon: 'ti ti-file-alert'
-        }
-      ];
-      NavigationItems.push({
-        id: 'env-monitoring',
-        title: 'Environment Monitoring',
-        type: 'group',
-        icon: 'icon-navigation',
-        children: envChildren
-      });
-    }
+    // if(['1','3','5','6','8','9'].includes(this.role||'')) {
+    //   const envChildren: NavigationItem[] = [
+    //     {
+    //       id: 'change-detection',
+    //       title: 'Change detection',
+    //       type: 'item',
+    //       url: '/environmental-monitoring/change-detection',
+    //       classes: 'nav-item',
+    //       icon: 'ti ti-replace'
+    //     },
+    //     {
+    //       id: 'parcel-history',
+    //       title: 'Parcel History',
+    //       type: 'item',
+    //       url: '/environmental-monitoring/parcel-history',
+    //       classes: 'nav-item',
+    //       icon: 'ti ti-map-bolt'
+    //     },
+    //     {
+    //       id: 'risk-monitoring',
+    //       title: 'Risk Monitoring',
+    //       type: 'item',
+    //       url: '/environmental-monitoring/risk-monitoring',
+    //       classes: 'nav-item',
+    //       icon: 'ti ti-file-alert'
+    //     }
+    //   ];
+    //   NavigationItems.push({
+    //     id: 'env-monitoring',
+    //     title: 'Environment Monitoring',
+    //     type: 'group',
+    //     icon: 'icon-navigation',
+    //     children: envChildren
+    //   });
+    // }
     this.navigations = NavigationItems;
     this.windowWidth = window.innerWidth;
   }

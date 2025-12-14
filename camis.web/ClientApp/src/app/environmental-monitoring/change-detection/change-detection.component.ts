@@ -18,6 +18,7 @@ export class ChangeDetectionComponent implements OnInit{
   public isLoading = false;
   public error = '';
   public selectedChange?: EnvironmentalChangeEventDto;
+  public mapInitialized = false;
 
   @ViewChild('camis_map', { static: false }) mapComponent!: CamisMapComponent;
 
@@ -45,6 +46,12 @@ export class ChangeDetectionComponent implements OnInit{
       startDate: startDate.toISOString().split('T')[0],
       endDate: endDate.toISOString().split('T')[0]
     });
+
+    // Mark map as initialized after a short delay to ensure it's rendered
+    setTimeout(() => {
+      this.mapInitialized = true;
+      console.log('Map component should be initialized now');
+    }, 1000);
   }
 
   onDetectChanges(): void {
@@ -54,14 +61,23 @@ export class ChangeDetectionComponent implements OnInit{
       this.result = undefined;
       this.selectedChange = undefined;
 
+      // Clear any previous changes from the map
+      if (this.mapComponent) {
+        this.mapComponent.clearEnvironmentalChanges();
+      }
+
       const formValue = this.changeDetectionForm.value;
       const request: ChangeDetectionRequest = {
         parcelUpid: formValue.parcelUpid || undefined,
         region: formValue.region || undefined,
         startDate: new Date(formValue.startDate),
         endDate: new Date(formValue.endDate),
-        changeThreshold: formValue.threshold
+        changeThreshold: formValue.threshold,
+        changeTypes:[]
       };
+
+      //console.log('Starting change detection with request:', request);
+      this.keyCase.PascalCase(request);
 
       this.monitoringService.DetectChanges(request).subscribe({
         next: (result) => {
@@ -69,9 +85,12 @@ export class ChangeDetectionComponent implements OnInit{
           this.result = result;
           this.isLoading = false;
 
-          // Display changes on the map
+          // Display changes on the map if any were found
           if (this.mapComponent && result.changes && result.changes.length > 0) {
+            console.log(`Displaying ${result.changes.length} changes on map`);
             this.mapComponent.displayEnvironmentalChanges(result.changes);
+          } else {
+            console.log('No changes found to display on map');
           }
         },
         error: (err) => {
@@ -95,6 +114,7 @@ export class ChangeDetectionComponent implements OnInit{
     }
     this.result = undefined;
     this.selectedChange = undefined;
+    this.error = '';
   }
 
   toggleChangeLayer(): void {
@@ -117,6 +137,8 @@ export class ChangeDetectionComponent implements OnInit{
   getSeverityClass(severity: string): string {
     return severity.toLowerCase();
   }
+
+  // Helper method for template
   objectKeys(obj: any): string[] {
     return Object.keys(obj || {});
   }

@@ -21,8 +21,8 @@ export class MnePrRequestedComponent implements OnInit {
   workflowId: string;
 
   farmId: string;
-  farm: any;
-  plan: any;
+  farm: any=null;
+  plan: any=null;
   loginRole = '0';
 
   constructor(
@@ -40,13 +40,15 @@ export class MnePrRequestedComponent implements OnInit {
       this.workflowId = params['workflowId'];
       dialog.loading();
       this.api.getLastWorkItem(this.workflowId).subscribe(workItem => {
+        this.keyCase.camelCase(workItem);
         this.plan = workItem.data;
-        this.keyCase.camelCase(this.plan);
+
 
         this.farmApi.getFarmByActivity(this.plan.rootActivityId).subscribe(farm => {
+          this.keyCase.camelCase(farm);
           this.farmId = farm.id;
           this.farm = farm;
-          this.keyCase.camelCase(this.farm);
+
 
           this.loading = false;
           dialog.close();
@@ -57,7 +59,7 @@ export class MnePrRequestedComponent implements OnInit {
 
 
   goToReports(planId: string): Promise<boolean> {
-    return this.router.navigateByUrl(`/mne/task/plan/${planId}/reports`);
+    return this.router.navigateByUrl(`/mne/plan/${planId}/reports`);
   }
 
   async cancelProgressReport(): Promise<void> {

@@ -52,7 +52,8 @@ export class SimpleLandBankDetails implements OnInit{
   surfaceWater: any[] = [];
   waterSourceParamList: WaterTestParameters[] = [];
   waterSourceParams: any[] = [];
-  moistureSources: any;
+  moistureSources: any[]=[];
+  isIrrigated = false;
   constructor(private router: Router, public landService: LandDataService, private activeRoute: ActivatedRoute,
               private formBuilder: FormBuilder, private dialog: DialogService, private keyCase: ObjectKeyCasingService) {}
 
@@ -116,6 +117,11 @@ export class SimpleLandBankDetails implements OnInit{
     this.landService.getMoistureSource().subscribe(data => {
       this.moistureSourceList = data;
       this.prepareMoistureSource();
+      for (const moi of this.moistureSources) {
+        if (moi === 'Irrigated') {
+          this.isIrrigated = true;
+        }
+      }
     });
     this.landService.getGroundWater().subscribe(data => {
       this.grounWaterList = data;
@@ -222,8 +228,10 @@ export class SimpleLandBankDetails implements OnInit{
 
   prepareMoistureSource() {
     for (const moistureSourceList of this.moistureSourceList) {
-      if (moistureSourceList.id === this.searchedLandDetail['moistureSource']) {
-        this.moistureSources = moistureSourceList.name;
+      for (const moi of this.searchedLandDetail['moistureSource']) {
+        if (moistureSourceList.id === moi) {
+          this.moistureSources.push(moistureSourceList.name);
+        }
       }
     }
   }

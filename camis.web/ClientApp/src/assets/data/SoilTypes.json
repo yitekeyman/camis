@@ -1,0 +1,35 @@
+﻿[
+  {
+    "id": 1,
+    "name": "Mollisols (The Breadbasket Soils)"
+  },
+  {
+    "id": 2,
+    "name": "Alfisols"
+  },
+  {
+    "id": 3,
+    "name": "Inceptisols (Young Soils)"
+  },
+  {
+    "id": 4,
+    "name": "Andisols (Volcanic Soils)"
+  },
+  {
+    "id": 5,
+    "name": "Vertisols (Cracking Clays)"
+  },
+  {
+    "id": 6,
+    "name": "Ultisols & Oxisols (Weathered Tropical Soils)"
+  },
+  {
+    "id": 7,
+    "name": "Aridisols (Desert Soils)"
+  },
+  {
+    "id": 8,
+    "name": "Histosols (Organic Peat/Muck)"
+  }
+
+]

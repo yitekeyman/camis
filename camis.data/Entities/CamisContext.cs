@@ -942,9 +942,7 @@ namespace intapscamis.camis.data.Entities
 
                 entity.Property(e => e.Date).HasColumnName("date");
 
-                entity.Property(e => e.File)
-                    .IsRequired()
-                    .HasColumnName("file");
+                entity.Property(e => e.File).HasColumnName("file");
 
                 entity.Property(e => e.Filename).HasColumnName("filename");
 
@@ -2076,7 +2074,7 @@ namespace intapscamis.camis.data.Entities
             modelBuilder.Entity<ParcelView>(entity =>
             {
                 entity.HasNoKey();
-                entity.ToView("lb.v_gs_land", "lb");
+                entity.ToView("v_gs_land", "lb");
             
                 entity.Property(e => e.Upid).HasColumnName("upid"); // Adjust column names as needed
                 entity.Property(e => e.Region).HasColumnName("region");

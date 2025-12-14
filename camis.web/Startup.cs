@@ -149,6 +149,10 @@ namespace intapscamis.camis
 
         private void InjectDependencies(IServiceCollection services)
         {
+            // services.AddHttpClient("SentinelHub", client =>
+            // {
+            //     client.Timeout = TimeSpan.FromSeconds(60);
+            // });
             services.AddTransient<ILookupService, LookupService>();
 
             services.AddTransient<IUserActionService, UserActionService>();
@@ -176,11 +180,14 @@ namespace intapscamis.camis
 
             services.AddTransient<IReportService, ReportService>();
             services.AddTransient<IReportFacade, ReportFacade>();
-            services.AddTransient<IEnvironmentalMonitoringRepository, EnvironmentalMonitoringRepository>();
-            services.AddTransient<IEnvironmentalChangeEventRepository, EnvironmentalChangeEventRepository>();
-            services.AddTransient<IParcelViewRepository, ParcelViewRepository>();
-            services.AddTransient<IEnvironmentalMonitoringService, EnvironmentalMonitoringService>();
-            services.AddTransient<IGeoServerService, GeoServerService>();
+            // services.AddTransient<IEnvironmentalMonitoringRepository, EnvironmentalMonitoringRepository>();
+            // services.AddTransient<IEnvironmentalChangeEventRepository, EnvironmentalChangeEventRepository>();
+            // services.AddTransient<IParcelViewRepository, ParcelViewRepository>();
+            // services.AddTransient<IEnvironmentalMonitoringService, EnvironmentalMonitoringService>();
+            // services.AddTransient<IGeoServerService, GeoServerService>();
+            // services.AddTransient<ISatelliteImageryService, SatelliteImageryService>();
+            // services.AddTransient<ISatelliteServiceFactory, SatelliteServiceFactory>();
+            // services.AddTransient<SentinelHubService>();
         }
     }
 }

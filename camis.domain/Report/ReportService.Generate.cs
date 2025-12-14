@@ -178,8 +178,12 @@ namespace intapscamis.camis.domain.Report
             {
                 ret.InvestmentType.Add(inv.Investment);
             }
-
-            ret.MoistureSource = l.LandMoisture.FirstOrDefault(m => m.LandId == l.Id).Moisture;
+            ret.MoistureSource = new List<int>();
+            foreach (var moi in l.LandMoisture)
+            {
+                ret.MoistureSource.Add(moi.Moisture);
+            }
+            //ret.MoistureSource = l.LandMoisture.FirstOrDefault(m => m.LandId == l.Id).Moisture;
 
 
             ret.ExistLandUse = new List<int>();

@@ -84,7 +84,9 @@ export class SimpleLoginComponent implements OnInit {
       }
       let path = 'default/dashboard';
       if (this.user.username == this.oldUsername && this.selectedRole.toString() === this.oldRole) {
-        window.location.reload();
+       // window.location.reload();
+        this.closeLoginForm.emit(true);
+        dialog.close();
       } else {
         this.router.navigateByUrl(path)
           .then(() => {

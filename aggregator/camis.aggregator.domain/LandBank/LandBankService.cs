@@ -15,10 +15,8 @@ using NetTopologySuite.Geometries;
 
 namespace camis.aggregator.domain.LandBank
 {
-
     public interface ILandBankService : ICamisService
     {
-
         void SetSession(UserSession session);
         Guid RegisterLand(LandBankFacadeModel.LandData data);
         void Updateland(LandBankFacadeModel.LandData data);
@@ -33,14 +31,13 @@ namespace camis.aggregator.domain.LandBank
 
         string SynchronizeLand(string[] regions);
         LandBankFacadeModel.Bound GetLandMapBound();
-
-
     }
 
 
     public class LandBankService : CamisService, ILandBankService
     {
         UserSession _session;
+
         public LandBankService(aggregatorContext Context)
         {
             base.SetContext(Context);
@@ -59,16 +56,15 @@ namespace camis.aggregator.domain.LandBank
             foreach (var item in r)
             {
                 CamisInterface itf = new CamisInterface(item);
-                var lands = Context.LandUpin.Where(m => m.Upin.Substring(0, 2) == item.Csaregionid || m.Upin.Substring(0,2) == item.Regioncodeam);
+                var lands = Context.LandUpin.Where(m =>
+                    m.Upin.Substring(0, 2) == item.Csaregionid || m.Upin.Substring(0, 2) == item.Regioncodeam);
                 var x = lands.Count() > 0 ? lands.Select(m => (Guid)m.LandId).ToArray() : new Guid[] { };
                 var resp = itf.GetLandData(x);
-               // var resp = itf.GetLandData(new Guid[] { });
-                resp.ForEach(m =>
-                {
-                    RegisterLand(m);
-                });
+                // var resp = itf.GetLandData(new Guid[] { });
+                resp.ForEach(m => { RegisterLand(m); });
                 length = length + resp.Count();
             }
+
             return length > 0 ? $"A total of {length} lands has been registered" : "No new land found";
         }
 
@@ -120,7 +116,6 @@ namespace camis.aggregator.domain.LandBank
 
         private void SaveAdditionalData(LandBankFacadeModel.LandData data, Land l) //Reverted Push
         {
-
             #region Uploading Files
 
             //Documents.DocumentService documentService = new Documents.DocumentService();
@@ -231,6 +226,7 @@ namespace camis.aggregator.domain.LandBank
             #endregion
 
             #region AgriculturalZone
+
             var n = new[] { "" };
 
             var agriculturalZone = new AgriculturalZone
@@ -244,16 +240,22 @@ namespace camis.aggregator.domain.LandBank
             #endregion
 
             #region Land Moisture
-            var moisture = new LandMoisture
+
+            data.MoistureSource.ForEach(moi =>
             {
-                LandId = l.Id,
-                Moisture = data.MoistureSource
-            };
-            Context.LandMoisture.Add(moisture);
-            Context.SaveChanges();
+                var moisture = new LandMoisture
+                {
+                    LandId = l.Id,
+                    Moisture = moi
+                };
+                Context.LandMoisture.Add(moisture);
+                Context.SaveChanges();
+            });
+
             #endregion
 
             #region Topography
+
             var topographyList = data.Topography;
 
             topographyList?.ForEach(i =>
@@ -268,9 +270,11 @@ namespace camis.aggregator.domain.LandBank
                 Context.Topography.Add(topography);
                 Context.SaveChanges();
             });
+
             #endregion
 
             #region Land Investment
+
             var investment = data.InvestmentType;
             investment?.ForEach(i =>
             {
@@ -281,9 +285,11 @@ namespace camis.aggregator.domain.LandBank
                 });
                 Context.SaveChanges();
             });
+
             #endregion
 
             #region AgroEchology
+
             var agroEchology = new AgroEchology();
 
             foreach (var i in data.AgroEchologyZone)
@@ -297,6 +303,7 @@ namespace camis.aggregator.domain.LandBank
                 Context.AgroEchology.Add(agroEchology);
                 Context.SaveChanges();
             }
+
             #endregion
 
             Context.SaveChanges(_session.Username, (int)Admin.UserActionType.CreateLand);
@@ -338,6 +345,7 @@ namespace camis.aggregator.domain.LandBank
                 };
                 Context.SoilTest.Add(test);
             }
+
             var geoms = new Dictionary<String, String>();
             foreach (var u in data.Upins)
             {
@@ -352,6 +360,7 @@ namespace camis.aggregator.domain.LandBank
                         prof = Newtonsoft.Json.JsonConvert.SerializeObject(p);
                     }
                 }
+
                 intapscamis.camis.data.Entities.LandUpin upin = new LandUpin
                 {
                     LandId = l.Id,
@@ -360,6 +369,7 @@ namespace camis.aggregator.domain.LandBank
                 };
                 Context.LandUpin.Add(upin);
             }
+
             Context.SaveChanges(_session.Username, (int)Admin.UserActionType.CreateLand);
             foreach (var g in geoms)
             {
@@ -377,18 +387,19 @@ namespace camis.aggregator.domain.LandBank
         public LandBankFacadeModel.Bound GetLandMapBound()
         {
             Context.Database.OpenConnection();
-            var obj = new Npgsql.NpgsqlCommand("Select st_geometryfromtext(ST_AsText(ST_Extent(geometry))) from lb.land_upin", (Npgsql.NpgsqlConnection)Context.Database.GetDbConnection()).ExecuteScalar();
+            var obj = new Npgsql.NpgsqlCommand(
+                "Select st_geometryfromtext(ST_AsText(ST_Extent(geometry))) from lb.land_upin",
+                (Npgsql.NpgsqlConnection)Context.Database.GetDbConnection()).ExecuteScalar();
             if (obj is Polygon poly && poly.Coordinates.Length > 0)
             {
                 var p = poly.Coordinates;
                 return new LandBankFacadeModel.Bound()
                 {
-                    X1=p.Min(c => c.X),
-                    Y1=p.Min(c => c.Y),
-                    X2= p.Max(c => c.X),
-                    Y2= p.Max(c => c.Y)
+                    X1 = p.Min(c => c.X),
+                    Y1 = p.Min(c => c.Y),
+                    X2 = p.Max(c => c.X),
+                    Y2 = p.Max(c => c.Y)
                 };
-
             }
 
             return null;
@@ -403,6 +414,7 @@ namespace camis.aggregator.domain.LandBank
                 pupulateChildList(l);
                 return buildLandData(l, geom, dd);
             }
+
             return null;
         }
 
@@ -444,8 +456,10 @@ namespace camis.aggregator.domain.LandBank
         {
             Context.Database.OpenConnection();
             var l = GetLand(landId, false, false);
-            var sql = $"select ST_AsText(ST_Transform(ST_GeometryFromText('SRID=20137;Point({l.CentroidX} {l.CentroidY})'),4326));";
-            var point = new Npgsql.NpgsqlCommand(sql, (Npgsql.NpgsqlConnection)Context.Database.GetDbConnection()).ExecuteScalar().ToString();
+            var sql =
+                $"select ST_AsText(ST_Transform(ST_GeometryFromText('SRID=20137;Point({l.CentroidX} {l.CentroidY})'),4326));";
+            var point = new Npgsql.NpgsqlCommand(sql, (Npgsql.NpgsqlConnection)Context.Database.GetDbConnection())
+                .ExecuteScalar().ToString();
 
             return LandBankFacadeModel.LatLng.FromWkt(point);
         }
@@ -460,6 +474,7 @@ namespace camis.aggregator.domain.LandBank
 
 
             #region removing additional data
+
             Context.AgroEchology.RemoveRange(l.AgroEchology);
             Context.LandInvestment.RemoveRange(l.LandInvestment);
             Context.LandMoisture.RemoveRange(l.LandMoisture);
@@ -481,6 +496,7 @@ namespace camis.aggregator.domain.LandBank
             Context.Land.Remove(l);
             Context.SaveChanges(_session.Username, (int)Admin.UserActionType.UpdateLand);
         }
+
         LandBankFacadeModel.LandData buildLandData(Land l, bool geom, bool dd)
         {
             var ret = new LandBankFacadeModel.LandData();
@@ -497,16 +513,17 @@ namespace camis.aggregator.domain.LandBank
             ret.SoilTests = new List<LandBankFacadeModel.SoilTest>();
 
 
-
             foreach (var s in l.SoilTest)
-                ret.SoilTests.Add(new LandBankFacadeModel.SoilTest() { Result = s.Result, TestType = s.TestType.Value });
+                ret.SoilTests.Add(new LandBankFacadeModel.SoilTest()
+                    { Result = s.Result, TestType = s.TestType.Value });
             ret.Upins = new List<string>();
             ret.parcels = new Dictionary<string, NrlaisInterfaceModel.Parcel>();
             ret.Area = 0;
             ret.CentroidX = 0;
             ret.CentroidY = 0;
             Context.Database.OpenConnection();
-            var sql = $"Select {(dd ? "ST_AsText(ST_Transform(geometry,4326))" : "ST_AsText(geometry)")} from lb.land_upin where land_id=@lid and upin=@upin";
+            var sql =
+                $"Select {(dd ? "ST_AsText(ST_Transform(geometry,4326))" : "ST_AsText(geometry)")} from lb.land_upin where land_id=@lid and upin=@upin";
             var cmd = new Npgsql.NpgsqlCommand(sql, (Npgsql.NpgsqlConnection)Context.Database.GetDbConnection());
             var plid = cmd.Parameters.Add("@lid", NpgsqlTypes.NpgsqlDbType.Uuid);
             var pupin = cmd.Parameters.Add("@upin", NpgsqlTypes.NpgsqlDbType.Varchar);
@@ -524,6 +541,7 @@ namespace camis.aggregator.domain.LandBank
                     ret.parcels.Add(u.Upin, p);
                     ret.landHolderType = p.GetHolder().partyType;
                 }
+
                 ret.Area += u.Area.Value;
                 ret.CentroidX += u.CentroidX.Value;
                 ret.CentroidY += u.CentroidY.Value;
@@ -541,6 +559,7 @@ namespace camis.aggregator.domain.LandBank
                     ret.Holdership = "Private Land";
                 }
             }
+
             if (l.LandUpin.Count > 0)
             {
                 ret.CentroidX /= l.LandUpin.Count;
@@ -558,10 +577,13 @@ namespace camis.aggregator.domain.LandBank
                     temp_low = c.TempLow == null ? -1 : c.TempLow.Value,
                     temp_high = c.TempHigh == null ? -1 : c.TempHigh.Value,
                 });
-            };
+            }
+
+            ;
 
 
             #region Adding Additional data
+
             ret.AgroEchologyZone = new List<LandBankFacadeModel.AgroEchologyZone>();
             foreach (var agro in l.AgroEchology)
             {
@@ -578,7 +600,12 @@ namespace camis.aggregator.domain.LandBank
                 ret.InvestmentType.Add(inv.Investment);
             }
 
-            ret.MoistureSource = l.LandMoisture.FirstOrDefault(m => m.LandId == l.Id).Moisture;
+            ret.MoistureSource = new List<int>();
+            foreach (var moi in l.LandMoisture)
+            {
+                ret.MoistureSource.Add(moi.Moisture);
+            }
+            //  ret.MoistureSource = l.LandMoisture.FirstOrDefault(m => m.LandId == l.Id).Moisture;
 
             var irrigation = l.Irrigation.ToList().FirstOrDefault();
             ret.IrrigationValues = new LandBankFacadeModel.IrrigationValues
@@ -590,7 +617,8 @@ namespace camis.aggregator.domain.LandBank
             if (irrigation != null)
             {
                 var srcParam = Context.WaterSrcParam.Where(wsp => wsp.Irrigation == irrigation.Id).ToList();
-                List<LandBankFacadeModel.WaterSourceParameter> wtrSrcParam = new List<LandBankFacadeModel.WaterSourceParameter>();
+                List<LandBankFacadeModel.WaterSourceParameter> wtrSrcParam =
+                    new List<LandBankFacadeModel.WaterSourceParameter>();
                 foreach (var item in srcParam)
                 {
                     wtrSrcParam.Add(new LandBankFacadeModel.WaterSourceParameter
@@ -599,6 +627,7 @@ namespace camis.aggregator.domain.LandBank
                         Result = item.Result
                     });
                 }
+
                 List<LandBankFacadeModel.SurfaceWater> srfWtr = new List<LandBankFacadeModel.SurfaceWater>();
                 var srfCol = Context.SurfaceWater.Where(s => s.Irrigation == irrigation.Id).ToList();
                 foreach (var item in srfCol)
@@ -609,12 +638,14 @@ namespace camis.aggregator.domain.LandBank
                         Result = item.Result
                     });
                 }
+
                 List<int> grndWtr = new List<int>();
                 var grndCol = Context.GroundData.Where(s => s.Irrigation == irrigation.Id).ToList();
                 foreach (var item in grndCol)
                 {
                     grndWtr.Add(item.GrndType);
                 }
+
                 ret.IrrigationValues = new LandBankFacadeModel.IrrigationValues
                 {
                     WaterSourceParameter = wtrSrcParam,
@@ -665,17 +696,17 @@ namespace camis.aggregator.domain.LandBank
             //    });
             //}
 
-
             #endregion
 
             return ret;
         }
+
         public LandBankFacadeModel.LandSearchResult SearchLand(LandBankFacadeModel.LandSearchPar par)
         {
-
             String cr = null;
             if (!String.IsNullOrEmpty(par.Upin))
-                cr = StringExtensions.addDelimitedListItem(cr, " and ", $"l.id in (Select land_id from lb.land_upin where upin='{par.Upin}')");
+                cr = StringExtensions.addDelimitedListItem(cr, " and ",
+                    $"l.id in (Select land_id from lb.land_upin where upin='{par.Upin}')");
             if (par.AreaMin != -1)
                 cr = StringExtensions.addDelimitedListItem(cr, " and ", $"l.area>={par.AreaMin}");
             if (par.AreaMax != -1)
@@ -690,6 +721,7 @@ namespace camis.aggregator.domain.LandBank
                 pupulateChildList(l);
                 ret.Result.Add(buildLandData(l, false, false));
             }
+
             return ret;
         }
 
@@ -720,6 +752,7 @@ namespace camis.aggregator.domain.LandBank
             {
                 return GetLand(r.First().LandId.Value, false, false);
             }
+
             return null;
         }
 
@@ -728,15 +761,16 @@ namespace camis.aggregator.domain.LandBank
         {
             Context.Database.OpenConnection();
             var sql = $"select ST_AsText(ST_Centroid(ST_GeometryFromText('{land.parcels[land.Upins[0]].geometry}')));";
-            var point = new Npgsql.NpgsqlCommand(sql, (Npgsql.NpgsqlConnection)Context.Database.GetDbConnection()).ExecuteScalar().ToString();
+            var point = new Npgsql.NpgsqlCommand(sql, (Npgsql.NpgsqlConnection)Context.Database.GetDbConnection())
+                .ExecuteScalar().ToString();
 
             sql = $"select ST_AsText(ST_Transform(ST_GeometryFromText('SRID=20137;{point}'),4326));";
-            point = new Npgsql.NpgsqlCommand(sql, (Npgsql.NpgsqlConnection)Context.Database.GetDbConnection()).ExecuteScalar().ToString();
+            point = new Npgsql.NpgsqlCommand(sql, (Npgsql.NpgsqlConnection)Context.Database.GetDbConnection())
+                .ExecuteScalar().ToString();
 
             var latlng = LandBankFacadeModel.LatLng.FromWkt(point);
             land.CentroidX = latlng.lng;
             land.CentroidY = latlng.lat;
-
         }
 
 
@@ -751,24 +785,25 @@ namespace camis.aggregator.domain.LandBank
                     Id = at.Id,
                     Name = at.Name
                 }
-                ));
+            ));
 
 
             var invType = Context.InverstmentType.ToList();
             invType.ForEach(it => attribName.InvestmentType.Add(new intapscamis.camis.domain.LandBankGood.ViewModel.Type
-            {
-                Id = it.Id,
-                Name = it.Name
-            }
+                {
+                    Id = it.Id,
+                    Name = it.Name
+                }
             ));
 
 
             var wtrSrcType = Context.WaterSourceType.ToList();
-            wtrSrcType.ForEach(wst => attribName.WaterSourceType.Add(new intapscamis.camis.domain.LandBankGood.ViewModel.Type
-            {
-                Id = wst.Id,
-                Name = wst.Name
-            }
+            wtrSrcType.ForEach(wst => attribName.WaterSourceType.Add(
+                new intapscamis.camis.domain.LandBankGood.ViewModel.Type
+                {
+                    Id = wst.Id,
+                    Name = wst.Name
+                }
             ));
 
             var srfWtrType = Context.SurfaceWaterType.ToList();
@@ -778,15 +813,16 @@ namespace camis.aggregator.domain.LandBank
                     Id = swt.Id,
                     Name = swt.Name
                 }
-                ));
+            ));
 
 
             var topoType = Context.TopographyType.ToList();
-            topoType.ForEach(tt => attribName.TopographyType.Add(new intapscamis.camis.domain.LandBankGood.ViewModel.Type
-            {
-                Id = tt.Id,
-                Name = tt.Name
-            }));
+            topoType.ForEach(tt => attribName.TopographyType.Add(
+                new intapscamis.camis.domain.LandBankGood.ViewModel.Type
+                {
+                    Id = tt.Id,
+                    Name = tt.Name
+                }));
 
             var lndUsageType = Context.UsageType.ToList();
             lndUsageType.ForEach(lut => attribName.LandUsageType.Add(
@@ -795,7 +831,7 @@ namespace camis.aggregator.domain.LandBank
                     Id = lut.Id,
                     Name = lut.Name
                 }
-                ));
+            ));
             return attribName;
         }
     }

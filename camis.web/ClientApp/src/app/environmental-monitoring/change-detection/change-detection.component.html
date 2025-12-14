@@ -3,16 +3,20 @@
     <div class="card p-0">
       <div class="row me-0">
         <div class="col-md-8">
-          <div class="card p-0">
+          <div class="card p-0 mb-0">
             <div class="card-header p-3">
               <h5><i class="ti ti-replace"></i>&nbsp;&nbsp;Environmental Change Detection</h5>
             </div>
-            <div class="card-body p-0">
-              <div class="row">
-                <div class="col-sm-4">
-                  <div class="card p-0">
+            <div class="card-body p-0 mb-0">
+              <div class="row mb-0">
+                <div class="col-sm-4 mb-0">
+                  <div class="card p-0 mb-0">
                     <form [formGroup]="changeDetectionForm" (ngSubmit)="onDetectChanges()" class="detection-form">
                       <div class="card-body p-2">
+                        <div class="alert alert-info" *ngIf="!mapInitialized">
+                          <small class="text-muted"><i class="ti ti-info-circle"></i> Map is initializing...</small>
+                        </div>
+
                         <div class="form-group">
                           <label for="parcelUpid">Parcel UPID (Optional)</label>
                           <input id="parcelUpid" formControlName="parcelUpid" type="text"
@@ -20,7 +24,8 @@
                         </div>
                         <div class="form-group">
                           <label for="region">Region (Optional)</label>
-                          <input id="region" formControlName="region" type="text" placeholder="Enter region" class="form-control">
+                          <input id="region" formControlName="region" type="text" placeholder="Enter region"
+                                 class="form-control">
                         </div>
                         <div class="form-group">
                           <label for="startDate">Start Date *</label>
@@ -34,19 +39,20 @@
                           <label for="threshold">Change Threshold</label>
                           <input id="threshold" formControlName="threshold" type="number" step="0.01" min="0" max="1"
                                  value="0.15" class="form-control">
-                          <small>Minimum change amount to consider significant (default: 0.15)</small>
+                          <small class="text-muted">Minimum change amount to consider significant (default: 0.15)</small>
                         </div>
                       </div>
-                      <div class="card-footer p-1">
-                        <button type="submit" [disabled]="!changeDetectionForm.valid || isLoading"
+                      <div class="card-footer p-1 mb-0">
+                        <button type="submit" [disabled]="!changeDetectionForm.valid || isLoading || !mapInitialized"
                                 class="btn btn-custom w-100">
                           {{ isLoading ? 'Detecting Changes...' : 'Detect Changes' }}
                         </button>
                         <div class="d-flex gap-1 mt-1">
                           <button type="button" (click)="clearChanges()" class="btn btn-warning btn-sm flex-fill">
-                            Clear
+                            Clear Changes
                           </button>
-                          <button type="button" (click)="toggleChangeLayer()" class="btn btn-secondary btn-sm flex-fill">
+                          <button type="button" (click)="toggleChangeLayer()"
+                                  class="btn btn-secondary btn-sm flex-fill">
                             Toggle Layer
                           </button>
                         </div>
@@ -108,6 +114,9 @@
 
                       <div class="changes-list" *ngIf="result.changes.length > 0">
                         <h4>Detected Changes</h4>
+                        <div class="change-count-info">
+                          <small class="text-muted">{{ result.changes.length }} changes displayed on map</small>
+                        </div>
                         <div *ngFor="let change of result.changes" class="change-item"
                              [class]="change.severity.toLowerCase()"
                              (click)="selectedChange = change">
@@ -142,16 +151,12 @@
             </div>
           </div>
         </div>
-        <div class="col-md-4">
-          <div class="card p-0">
-            <div class="card-body p-1">
-              <app-camis-map
-                #camis_map
-                [environmentalChanges]="result?.changes || []"
-                (changeFeatureClick)="onMapChangeClick($event)">
-              </app-camis-map>
-            </div>
-          </div>
+        <div class="col-md-4 p-0">
+          <app-camis-map
+            #camis_map
+            [environmentalChanges]="[]"
+            (changeFeatureClick)="onMapChangeClick($event)">
+          </app-camis-map>
         </div>
       </div>
     </div>

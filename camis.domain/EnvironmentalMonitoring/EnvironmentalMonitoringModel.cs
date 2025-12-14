@@ -42,6 +42,7 @@ namespace intapscamis.camis.domain.EnvironmentalMonitoring
         public string Description { get; set; } = string.Empty;
     }
 
+
     public class SpectralIndicesRequest
     {
         public DateTime Date { get; set; }
@@ -160,5 +161,29 @@ namespace intapscamis.camis.domain.EnvironmentalMonitoring
         public string LayerName { get; set; } = string.Empty;
         public decimal ChangeThreshold { get; set; } = 0.15m;
         public string OutputFormat { get; set; } = "image/png";
+    }
+    public class SatelliteImage
+    {
+        public byte[] Data { get; set; } = Array.Empty<byte>();
+        public DateTime Date { get; set; }
+        public string Bounds { get; set; } = string.Empty;
+        public string[] Bands { get; set; } = Array.Empty<string>();
+        public Dictionary<string, decimal> ReflectanceValues { get; set; } = new();
+        public int Width { get; set; }
+        public int Height { get; set; }
+    }
+    public class TimeSeriesPoint
+    {
+        public DateTime Date { get; set; }
+        public decimal Value { get; set; }
+    }
+    public class SpectralIndexResult
+    {
+        public decimal NDVI { get; set; }
+        public decimal NDWI { get; set; }
+        public decimal MNDWI { get; set; }
+        public decimal NDBI { get; set; }
+        public decimal EVI { get; set; }
+        public decimal SAVI { get; set; }
     }
 }

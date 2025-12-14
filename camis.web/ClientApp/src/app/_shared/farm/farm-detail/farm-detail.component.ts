@@ -26,7 +26,7 @@ import {LandDataService} from "../../../_services/land-data.service";
 export class FarmDetailComponent implements OnInit {
 
   @Input('farm')
-  farm: any = {};
+  farm: any = null;
 
   @Input('isOperatorOptional')
   isOperatorOptional = false;

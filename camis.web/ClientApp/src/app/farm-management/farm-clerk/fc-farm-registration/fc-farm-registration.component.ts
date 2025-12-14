@@ -62,7 +62,7 @@ export class FcFarmRegistrationComponent implements OnInit {
   opVentureResultSelections: string[] = []; // only in UI
   opPhotoId: string = null;
   opPhoto: IDocument = {
-    file: undefined,
+    file: null,
     filename: '',
     mimetype: '',
     date: null,
@@ -326,20 +326,12 @@ export class FcFarmRegistrationComponent implements OnInit {
     const req = this.workflowId ?
       this.api.requestFarmRegistration(this.workflowId, body, message) :
       this.api.requestNewFarmRegistration(body, message);
-
-    req.subscribe(res => {
-      this.keyCase.camelCase(res);
-      if (res.success) {
-        this.router.navigateByUrl('default/pending-task').catch(dialog.error);
-        return dialog.success('Your registration request has been sent to the supervisor successfully.');
-      } else {
-        this.keyCase.camelCase(body);
-        return dialog.error(res.message);
-      }
-    }, err => {
-      this.keyCase.camelCase(body);
-      return dialog.error(err);
-    });
+    req.toPromise()
+      .then(() => dialog.success('Your registration request has been sent to the supervisor successfully.'))
+      .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+      .catch(err => {
+        return dialog.error(err)
+      });
   }
 
   private _parseRequestBody(): any {
@@ -372,7 +364,7 @@ export class FcFarmRegistrationComponent implements OnInit {
           birthdate: new Date(this.opBirthdate).getTime(),
 
           ventures: this.opType == '6' ? this.opVentures : [],
-          photo:this.opPhoto,
+          photo:this.opPhoto.file!=null?this.opPhoto:null,
           photoId:this.opPhotoId,
         };
         break;

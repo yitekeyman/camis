@@ -115,7 +115,7 @@ namespace intapscamis.camis.domain.LandBank
             #region New Data
             public List<AgroEchologyZone> AgroEchologyZone { get; set; }
             public List<int> InvestmentType { get; set; }
-            public int MoistureSource { get; set; }
+            public List<int> MoistureSource { get; set; }
             public IrrigationValues IrrigationValues { get; set; }
             public List<Topography> Topography { get; set; }
             public List<int> ExistLandUse { get; set; }

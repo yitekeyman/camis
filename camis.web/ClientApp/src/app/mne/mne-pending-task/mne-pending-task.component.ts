@@ -78,9 +78,10 @@ export class MnePendingTaskComponent implements OnInit {
               this.activeWorkflows.push(workflow);
             }
           }
-          this.setPage(1);
+
         }
       }
+      this.setPage(1);
       dialog.close();
     }, dialog.error);
   }

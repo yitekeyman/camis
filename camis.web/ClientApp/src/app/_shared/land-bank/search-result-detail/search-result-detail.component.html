@@ -68,11 +68,15 @@
                 <tr>
                   <td><label>Moisture Source:</label></td>
                   <td>
+                    <ul *ngFor="let moi of moistureSources">
+                      <li class="detail-value"><i
+                        class="ti ti-square-rounded-check-filled"></i>&nbsp;{{ moi }}
+                      </li>
+                    </ul>
 
-                    <p class="detail-value">{{ moistureSources }}</p>
 
 
-                    <div class="nested-content" *ngIf="moistureSources === 'Irrigated'">
+                    <div class="nested-content" *ngIf="isIrrigated">
                       <div class="nested-detail-infos">
                         <table class="table mb-1 p-0">
                           <thead>

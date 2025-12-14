@@ -23,6 +23,7 @@ import {CommonModule} from "@angular/common";
 import {DocumentListComponent} from "../../document/document-list/document-list.component";
 import {SimpleFarmDetailsComponent} from "../../farm/farm-detail/simple-farm-details/simple-farm-details.component";
 import {FarmApiService} from "../../../_services/farm-api.service";
+import {forEach} from "ol/geom/flat/segments";
 
 @Component({
   selector: 'app-search-result-detail',
@@ -59,22 +60,23 @@ export class SearchResultDetailComponent implements OnInit {
   moistureSourceList: MoistureSource[] = [];
   grounWaterList: GroundWater[] = [];
   surfaceWaterList: SurfaceWater[] = [];
-  groundWater: any[]=[];
+  groundWater: any[] = [];
   surfaceWater: any[] = [];
   waterSourceParamList: WaterTestParameters[] = [];
   waterSourceParams: any[] = [];
-  moistureSources: any;
+  moistureSources: any[] = [];
 
   prepareForm: FormGroup;
   splitNumberControl: AbstractControl;
 
   prepareModel: LandPreparationModel;
-  farm:any=null;
+  isIrrigated: boolean = false;
+  farm: any = null;
   @ViewChild('camis_map') map: CamisMapComponent;
   @ViewChild('prepareBtnClose') prepareBtnClose: ElementRef;
 
   constructor(private router: Router, public landService: LandDataService, private activeRoute: ActivatedRoute,
-              private formBuilder: FormBuilder, private dialog: DialogService, private keyCase: ObjectKeyCasingService, private farmService:FarmApiService) {
+              private formBuilder: FormBuilder, private dialog: DialogService, private keyCase: ObjectKeyCasingService, private farmService: FarmApiService) {
 
     if (localStorage.getItem('role') === '4') {
       this.clerkRole = true;
@@ -109,8 +111,8 @@ export class SearchResultDetailComponent implements OnInit {
     this.landService.GetLand(this.landID).subscribe(data => {
       this.keyCase.camelCase(data);
       this.searchedLandDetail = data;
-      if(this.searchedLandDetail['landType']===3){
-        this.farmService.getFarmByLandId(this.landID).subscribe(res=>{
+      if (this.searchedLandDetail['landType'] === 3) {
+        this.farmService.getFarmByLandId(this.landID).subscribe(res => {
           this.keyCase.camelCase(res);
           this.farm = res;
         })
@@ -174,6 +176,12 @@ export class SearchResultDetailComponent implements OnInit {
     this.landService.getMoistureSource().subscribe(data => {
       this.moistureSourceList = data;
       this.prepareMoistureSource();
+      for (const moi of this.moistureSources) {
+        if (moi === 'Irrigated') {
+          this.isIrrigated = true;
+        }
+      }
+
     });
     this.landService.getGroundWater().subscribe(data => {
       this.grounWaterList = data;
@@ -279,8 +287,10 @@ export class SearchResultDetailComponent implements OnInit {
 
   prepareMoistureSource() {
     for (const moistureSourceList of this.moistureSourceList) {
-      if (moistureSourceList.id === this.searchedLandDetail['moistureSource']) {
-        this.moistureSources = moistureSourceList.name;
+      for (const moi of this.searchedLandDetail['moistureSource']) {
+        if (moistureSourceList.id === moi) {
+          this.moistureSources.push(moistureSourceList.name);
+        }
       }
     }
   }
@@ -289,7 +299,7 @@ export class SearchResultDetailComponent implements OnInit {
     for (const gw of this.searchedLandDetail.irrigationValues['groundWater']) {
       for (const groundWaterList of this.grounWaterList) {
         if (groundWaterList.id === gw) {
-          this.groundWater.push(groundWaterList.name) ;
+          this.groundWater.push(groundWaterList.name);
         }
       }
     }

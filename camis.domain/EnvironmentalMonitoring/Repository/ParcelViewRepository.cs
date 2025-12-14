@@ -16,42 +16,42 @@ public class ParcelViewRepository : IParcelViewRepository
         _context = context;
     }
 
-    public async Task<ParcelView?> GetByUpidAsync(string upid)
+    public async Task<LandUpin?> GetByUpidAsync(string upid)
     {
-        return await _context.ParcelViews
-            .FirstOrDefaultAsync(p => p.Upid == upid);
+        return await _context.LandUpin
+            .FirstOrDefaultAsync(p => p.Upin == upid);
     }
 
-    public async Task<IEnumerable<ParcelView>> GetByRegionAsync(string region)
+    public async Task<IEnumerable<LandUpin>> GetByRegionAsync(string region)
     {
-        return await _context.ParcelViews
-            .Where(p => p.Region == region)
+        return await _context.LandUpin
+            .FromSqlRaw(@"SELECT * FROM lb.land_upin WHERE profile->>'csaregionid' = '"+region+"'")
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<ParcelView>> GetWithinGeometryAsync(Geometry geometry)
+    public async Task<IEnumerable<LandUpin>> GetWithinGeometryAsync(Geometry geometry)
     {
-        return await _context.ParcelViews
+        return await _context.LandUpin
             .Where(p => p.Geometry != null && p.Geometry.Within(geometry))
             .ToListAsync();
     }
 
     public async Task<Geometry?> GetParcelGeometryAsync(string upid)
     {
-        var parcel = await _context.ParcelViews
-            .Where(p => p.Upid == upid)
-            .Select(p => p.Geometry)
+        var parcel = await _context.LandUpin
+            .Where(p => p.Upin == upid).Select(p=>p.Geometry)
             .FirstOrDefaultAsync();
+       
         return parcel;
     }
 
     public async Task<string> GetRegionBoundingBoxAsync(string? region = null)
     {
-        var query = _context.ParcelViews.AsQueryable();
+        var query = _context.LandUpin.AsQueryable();
 
         if (!string.IsNullOrEmpty(region))
         {
-            query = query.Where(p => p.Region == region);
+            query = query.Where(p => p.Profile.Contains($"\"csaregionid\":\"{region}\""));
         }
 
         var extent = await query

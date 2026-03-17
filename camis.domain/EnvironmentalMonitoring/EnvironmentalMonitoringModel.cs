@@ -9,10 +9,10 @@ namespace intapscamis.camis.domain.EnvironmentalMonitoring
     {
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public string? ParcelUpid { get; set; }
-        public string? Region { get; set; }
+        public string ParcelUpid { get; set; }
+        public string Region { get; set; }
         public decimal ChangeThreshold { get; set; } = 0.15m;
-        public List<string>? ChangeTypes { get; set; }
+        public List<string> ChangeTypes { get; set; }
     }
 
     public class EnvironmentalAnalysisResult
@@ -64,8 +64,8 @@ namespace intapscamis.camis.domain.EnvironmentalMonitoring
         public int Height { get; set; } = 600;
         public string SRS { get; set; } = "EPSG:20137";
         public string BBOX { get; set; } = string.Empty;
-        public string? Time { get; set; }
-        public string? CQL_Filter { get; set; }
+        public string Time { get; set; }
+        public string CQL_Filter { get; set; }
         public Dictionary<string, string> CustomParameters { get; set; } = new();
     }
 
@@ -125,17 +125,17 @@ namespace intapscamis.camis.domain.EnvironmentalMonitoring
         public string TypeName { get; set; } = string.Empty;
         public string OutputFormat { get; set; } = "application/json";
         public string SrsName { get; set; } = "EPSG:20137";
-        public string? Bbox { get; set; }
-        public string? CqlFilter { get; set; }
+        public string Bbox { get; set; }
+        public string CqlFilter { get; set; }
         public int MaxFeatures { get; set; } = 1000;
-        public string? PropertyName { get; set; }
+        public string PropertyName { get; set; }
     }
 
 // Models/GeoServer/GeoServerResponse.cs
     public class GeoServerResponse<T>
     {
         public bool Success { get; set; }
-        public T? Data { get; set; }
+        public T Data { get; set; }
         public string Error { get; set; } = string.Empty;
         public int StatusCode { get; set; }
     }

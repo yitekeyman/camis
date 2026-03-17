@@ -23,11 +23,11 @@
 
             <hr>
             <div style="text-align: right">
-              <button type="button" class="btn btn-default" (click)="cancel()">
-                <i class="fa fa-warning"></i>&nbsp; Cancel
+              <button type="button" class="btn btn-secondary" (click)="cancel()">
+                Cancel
               </button>
-              <button (click)="onSubmit($event)" type="button" class="btn btn-success" [disabled]="!plan.statusId || !plan.note || !plan.rootActivity">
-                Submit for Approval <i class="fa fa-send"></i>
+              <button (click)="onSubmit($event)" type="button" class="btn btn-primary" [disabled]="!plan.statusId || !plan.note || !plan.rootActivity">
+                Submit for Approval
               </button>
             </div>
           </div>

@@ -211,7 +211,7 @@ namespace intapscamis.camis.domain.Projects
                     r.Status.Name
                 ).ToLower().Contains(term.ToLower())
             ).OrderByDescending(r => r.ReportTime);
-            var farms = searchQuery.Skip(skip).Take(take).AsEnumerable();
+            var farms = searchQuery.Skip(skip).Take(take).ToList();
             return new PaginatorResponse<ActivityProgressReportResponse>
             {
                 TotalSize = searchQuery.Count(),
@@ -301,7 +301,7 @@ namespace intapscamis.camis.domain.Projects
         {
             var activity = GetActivity(activityId);
             var resourceVariables = Context.ActivityProgressVariable
-                .Where(v => v.TypeId == (int) ActivityProgressVariableTypes.Resource).AsEnumerable();
+                .Where(v => v.TypeId == (int) ActivityProgressVariableTypes.Resource).ToList();
 
             var reports = Context.ActivityProgressReport.Where(r => r.RootActivityId == activity.Id);
             if (!reports.Any()) return new List<CalculatedVariableProgressResponse>();
@@ -360,7 +360,7 @@ namespace intapscamis.camis.domain.Projects
         {
             var activity = GetActivity(activityId);
             var outcomeVariables = Context.ActivityProgressVariable
-                .Where(v => v.TypeId == (int) ActivityProgressVariableTypes.Outcome).AsEnumerable();
+                .Where(v => v.TypeId == (int) ActivityProgressVariableTypes.Outcome).ToList();
 
             var reports = Context.ActivityProgressReport.Where(r => r.RootActivityId == activity.Id);
             if (!reports.Any()) return new List<CalculatedVariableProgressResponse>();
@@ -629,7 +629,7 @@ namespace intapscamis.camis.domain.Projects
         private void PerformActivityTreeGenocideOn(Activity activity, Guid planId)
         {
             var children = Context.Activity.Where(childActivity => childActivity.ParentActivityId == activity.Id)
-                .AsEnumerable();
+                .ToList();
             foreach (var child in children) PerformActivityTreeGenocideOn(child, planId);
             
             var progresses = Context.ActivityProgress.Where(progress => progress.ActivityId == activity.Id);
@@ -849,7 +849,7 @@ namespace intapscamis.camis.domain.Projects
             var rootActivity = Context.Activity.First(a => a.Id == plan.RootActivityId);
             var status = Context.ActivityStatusType.First(s => s.Id == plan.StatusId);
             var documents = Context.ActivityPlanDocument.Where(pd => pd.PlanId == plan.Id).Select(p => p.Document)
-                .AsEnumerable();
+                .ToList();
             var calculatedProgress = CalculateProgress(rootActivity.Id, null);
 
             return new ActivityPlanResponse
@@ -869,9 +869,9 @@ namespace intapscamis.camis.domain.Projects
 
         private ActivityResponse ParseActivityResponse(Activity activity)
         {
-            var schedules = Context.ActivitySchedule.Where(s => s.ActivityId == activity.Id).AsEnumerable();
-            var planDetails = Context.ActivityPlanDetail.Where(d => d.ActivityId == activity.Id).AsEnumerable();
-            var children = Context.Activity.Where(c => c.ParentActivityId == activity.Id).AsEnumerable();
+            var schedules = Context.ActivitySchedule.Where(s => s.ActivityId == activity.Id).ToList();
+            var planDetails = Context.ActivityPlanDetail.Where(d => d.ActivityId == activity.Id).ToList();
+            var children = Context.Activity.Where(c => c.ParentActivityId == activity.Id).ToList();
 
             return new ActivityResponse
             {
@@ -972,9 +972,9 @@ namespace intapscamis.camis.domain.Projects
             var reportStatus = Context.ActivityStatusType.Find(report.StatusId);
             var rootActivity = Context.Activity.Find(report.RootActivityId);
             var documents = Context.ActivityProgressReportDocument.Where(d => d.ReportId == report.Id)
-                .Select(d => d.Document).AsEnumerable();
-            var progresses = Context.ActivityProgress.Where(p => p.ReportId == report.Id).AsEnumerable();
-            var statuses = Context.ActivityProgressStatus.Where(s => s.ReportId == report.Id).AsEnumerable();
+                .Select(d => d.Document).ToList();
+            var progresses = Context.ActivityProgress.Where(p => p.ReportId == report.Id).ToList();
+            var statuses = Context.ActivityProgressStatus.Where(s => s.ReportId == report.Id).ToList();
             var calculatedProgress = CalculateProgress(rootActivity.Id, report.ReportTime);
 
             return new ActivityProgressReportResponse

@@ -8,9 +8,9 @@
           </div>
           <div class="col-md-8 pb-0 align-right">
             <div  *ngIf="activityPlan && activityPlan.id">
-              <a class="btn btn-custom-light" [href]="urlPrefix + 'Report/PlanForm/'+ activityPlan.id" target="_blank">Paper
+              <a class="btn btn-custom-light me-2" [href]="urlPrefix + 'Report/PlanForm/'+ activityPlan.id" target="_blank">Paper
                 Form</a>
-              <button *ngIf="loginRole==='10'" type="button" class="btn btn-custom" (click)="cancelProgressReport()">
+              <button *ngIf="loginRole==='10'" type="button" class="btn btn-custom me-2" (click)="cancelProgressReport()">
                 Cancel Report
               </button>
               <button *ngIf="loginRole==='10'" type="button" class="btn btn-custom" (click)="encodeProgressReport()"

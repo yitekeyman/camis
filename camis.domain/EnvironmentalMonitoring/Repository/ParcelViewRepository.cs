@@ -1,7 +1,5 @@
 ﻿using intapscamis.camis.data.Entities;
-using intapscamis.camis.domain.EnvironmentalMonitoring;
 using intapscamis.camis.domain.EnvironmentalMonitoring.Interface;
-using intapscamis.camis.domain.EnvironmentalMonitoring.Repository;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 
@@ -16,7 +14,7 @@ public class ParcelViewRepository : IParcelViewRepository
         _context = context;
     }
 
-    public async Task<LandUpin?> GetByUpidAsync(string upid)
+    public async Task<LandUpin> GetByUpidAsync(string upid)
     {
         return await _context.LandUpin
             .FirstOrDefaultAsync(p => p.Upin == upid);
@@ -36,7 +34,7 @@ public class ParcelViewRepository : IParcelViewRepository
             .ToListAsync();
     }
 
-    public async Task<Geometry?> GetParcelGeometryAsync(string upid)
+    public async Task<Geometry> GetParcelGeometryAsync(string upid)
     {
         var parcel = await _context.LandUpin
             .Where(p => p.Upin == upid).Select(p=>p.Geometry)
@@ -45,7 +43,7 @@ public class ParcelViewRepository : IParcelViewRepository
         return parcel;
     }
 
-    public async Task<string> GetRegionBoundingBoxAsync(string? region = null)
+    public async Task<string> GetRegionBoundingBoxAsync(string region = null)
     {
         var query = _context.LandUpin.AsQueryable();
 

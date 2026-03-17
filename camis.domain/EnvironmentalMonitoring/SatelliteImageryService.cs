@@ -17,7 +17,7 @@ public class SatelliteImageryService: ISatelliteImageryService
        // _configuration = configuration;
     }
     
-    public async Task<SatelliteImage> GetImageryAsync(Geometry geometry, DateTime date)
+    public Task<SatelliteImage> GetImageryAsync(Geometry geometry, DateTime date)
     {
         try
         {
@@ -56,21 +56,21 @@ public class SatelliteImageryService: ISatelliteImageryService
             image.ReflectanceValues["B08"] = nir;    // NIR band
             image.ReflectanceValues["B11"] = swir;   // SWIR band
 
-            return image;
+            return Task.FromResult(image);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in SimpleSatelliteService.GetImageryAsync");
-            return null;
+            return Task.FromResult<SatelliteImage>(null);
         }
     }
 
-    public async Task<Dictionary<string, decimal>> CalculateSpectralIndicesAsync(SatelliteImage image)
+    public Task<Dictionary<string, decimal>> CalculateSpectralIndicesAsync(SatelliteImage image)
     {
         if (image?.ReflectanceValues == null || !image.ReflectanceValues.Any()) 
         {
             _logger.LogWarning("No reflectance values available for spectral index calculation");
-            return new Dictionary<string, decimal>();
+            return Task.FromResult(new Dictionary<string, decimal>());
         }
 
         try
@@ -91,12 +91,12 @@ public class SatelliteImageryService: ISatelliteImageryService
             };
 
             _logger.LogDebug("Calculated spectral indices: NDVI={NDVI}, NDWI={NDWI}", indices["NDVI"], indices["NDWI"]);
-            return indices;
+            return Task.FromResult(indices);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error calculating spectral indices");
-            return new Dictionary<string, decimal>();
+            return Task.FromResult(new Dictionary<string, decimal>());
         }
     }
 
@@ -130,7 +130,7 @@ public class SatelliteImageryService: ISatelliteImageryService
         return 2.5m * (nir - red) / (nir + 6m * red - 7.5m * blue + 1m);
     }
 
-    public async Task<List<DateTime>> GetAvailableDatesAsync(Geometry geometry, DateTime start, DateTime end)
+    public Task<List<DateTime>> GetAvailableDatesAsync(Geometry geometry, DateTime start, DateTime end)
     {
         var dates = new List<DateTime>();
         var current = start;
@@ -145,14 +145,14 @@ public class SatelliteImageryService: ISatelliteImageryService
             current = current.AddDays(1);
         }
         
-        return dates;
+        return Task.FromResult(dates);
     }
 
-    public async Task<bool> IsImageCloudFreeAsync(SatelliteImage image)
+    public Task<bool> IsImageCloudFreeAsync(SatelliteImage image)
     {
         // Simple cloud detection simulation
         // In reality, you'd analyze cloud probability
         var random = new Random(image.Date.GetHashCode());
-        return random.NextDouble() > 0.3; // 70% chance of cloud-free
+        return Task.FromResult(random.NextDouble() > 0.3); // 70% chance of cloud-free
     }
 }

@@ -383,10 +383,13 @@ namespace intapscamis.camis.domain.Farms
             var farmOperator = Context.FarmOperator.First(fo => fo.Id == data.Id.ToGuid());
 
 
-            var oldPhoto = Context.Document.Where(p => p.Id == farmOperator.PhotoId);
-            Context.Remove(oldPhoto);
-            Context.SaveChanges();
-
+            var oldPhoto = Context.Document.FirstOrDefault(p => p.Id == farmOperator.PhotoId);
+            if (oldPhoto != null)
+            {
+                Context.Remove(oldPhoto);
+                Context.SaveChanges();
+            }
+            
             Document photo = null;
             if (data.Photo != null)
                 photo = _documentService.CreateDocument(data.Photo);

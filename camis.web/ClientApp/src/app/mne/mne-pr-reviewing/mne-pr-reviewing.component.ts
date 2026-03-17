@@ -49,6 +49,7 @@ export class MnePrReviewingComponent implements OnInit {
       this.workflowId = params['workflowId'];
       dialog.loading();
       this.api.getLastWorkItem(this.workflowId).subscribe(workItem => {
+        this.keyCase.camelCase(workItem);
         this.activityPlan = workItem.data;
         this.keyCase.camelCase(this.activityPlan);
 
@@ -61,6 +62,7 @@ export class MnePrReviewingComponent implements OnInit {
         ).toISOString().slice(0, 10);
 
         this.api.getAllActivityStatusTypes().subscribe(types => {
+          this.keyCase.camelCase(types);
           this.statusTypes = types;
           if (this.statusTypes.length && !this.activityPlan.reportStatusId) {
             this.activityPlan.reportStatusId = this.statusTypes[0].id;
@@ -68,9 +70,10 @@ export class MnePrReviewingComponent implements OnInit {
         }, dialog.error);
 
         this.farmApi.getFarmByActivity(this.activityPlan.rootActivityId).subscribe(farm => {
+          this.keyCase.camelCase(farm);
           this.farmId = farm.id;
           this.farm = farm;
-          this.keyCase.camelCase(this.farm);
+
 
           this.loading = false;
           dialog.close();

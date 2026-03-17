@@ -78,7 +78,7 @@ public class EnvironmentalMonitoringController : BaseController
     }
 
     [HttpGet]
-    public async Task<ActionResult> GetSignificantChanges([FromQuery] DateTime startDate, DateTime endDate, string? region = null)
+    public async Task<ActionResult> GetSignificantChanges([FromQuery] DateTime startDate, DateTime endDate, string region = null)
     {
         try
         {

@@ -340,6 +340,20 @@ namespace intapscamis.camis.Controllers
                 return StatusCode(500, new {message = e.Message});
             }
         }
+        [HttpGet]
+        public IActionResult GetSystemParameter()
+        {
+            try
+            {
+                
+                return Json(_userFacade.GetSystemParameter(GetSession()));
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new {message = e.Message});
+            }
+        }
         [HttpPost]
         public IActionResult EditSysConfig([FromBody] SysConfig config)
         {

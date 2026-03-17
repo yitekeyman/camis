@@ -26,6 +26,7 @@ namespace intapscamis.camis.domain.Admin
         void EditSysConfig(UserSession userSession,SysConfig sysConfig);
         SysConfig GetSysConfig(UserSession userSession,int id);
         SysConfig GetSysConfigByName(UserSession userSession,string name);
+        SystemParameter GetSystemParameter(UserSession userSession);
     }
 
     public class UserFacade : IUserFacade
@@ -153,6 +154,12 @@ namespace intapscamis.camis.domain.Admin
         {
             _userService.SetSession(userSession);
             return _userService.GetSysConfigByName(name);
+        }
+
+        public SystemParameter GetSystemParameter(UserSession userSession)
+        {
+            _userService.SetSession(userSession);
+            return _userService.GetSystemParameter();
         }
     }
 }

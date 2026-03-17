@@ -140,4 +140,26 @@ export class AdminServices {
   public EditSysConfig(model: SysConfigModel) {
     return this.apiService.post(`admin/EditSysConfig`, model);
   }
+  public GetSystemParameter(){
+    return this.apiService.get(`admin/GetSystemParameter`);
+  }
+
+
+  private regionNameSubject = new BehaviorSubject<string>(localStorage.getItem('regionName') || 'Region');
+  private regionCodeSubject = new BehaviorSubject<string>(localStorage.getItem('regionCode') || 'Code');
+  private utmZoneSubject = new BehaviorSubject<string>(localStorage.getItem('UTM') || '37');
+
+  regionName$: Observable<string> = this.regionNameSubject.asObservable();
+  regionCode$: Observable<string> = this.regionCodeSubject.asObservable();
+  utmZone$: Observable<string> = this.utmZoneSubject.asObservable();
+
+  updateRegion(regionName: string, regionCode: string, utmZone: string) {
+    localStorage.setItem('regionName', regionName);
+    localStorage.setItem('regionCode', regionCode);
+    localStorage.setItem('UTM', utmZone);
+
+    this.regionNameSubject.next(regionName);
+    this.regionCodeSubject.next(regionCode);
+    this.utmZoneSubject.next(utmZone);
+  }
 }

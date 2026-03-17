@@ -205,6 +205,7 @@ export class FcFarmRegistrationComponent implements OnInit {
             this.ar.queryParams.subscribe(query => {
               if (query['step'] == '3' && query['operatorId']) {
                 this.api.getFarmOperator(query['operatorId']).subscribe(operator => {
+                  this.keyCase.camelCase(operator);
                   this.howOperator = 'EXISTING';
                   this.selectedOperatorId = operator.id;
                   this.step = 3;

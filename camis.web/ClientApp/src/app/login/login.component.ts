@@ -81,7 +81,11 @@ export class LoginComponent implements OnInit {
           localStorage.setItem('roleName', role.name);
         }
       }
+    this.adminService.GetSystemParameter().subscribe(res2 => {
+      this.keyCase.camelCase(res2);
+      this.adminService.updateRegion( res2.regionName,res2.regionCode, res2.utmZone);
 
+    });
 
       let path = 'default/dashboard';
 

@@ -70,6 +70,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   zoomMargin = 1.3;
   mapType = 'satellite';
   backTo = 'Kebele';
+  utmZone=localStorage.getItem("UTM");
   private layers: any[] = [];
 
   // Connectivity monitoring
@@ -103,7 +104,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit(): void {
     console.log('Initializing map component, online status:', navigator.onLine);
     this.initializeVectorSources();
-    this.initializeEnvironmentalChangeLayer();
+    //this.initializeEnvironmentalChangeLayer();
     this.initMap();
     this.setupResizeHandler();
     this.setupConnectivityMonitoring();
@@ -279,7 +280,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private setupProjection(): void {
-    proj4.defs('EPSG:20137', '+proj=utm +zone=37 +ellps=clrk80 +units=m +no_defs');
+    proj4.defs('EPSG:20137', '+proj=utm +zone='+this.utmZone+' +ellps=clrk80 +units=m +no_defs');
     register(proj4);
   }
 

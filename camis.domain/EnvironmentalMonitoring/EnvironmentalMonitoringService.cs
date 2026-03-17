@@ -85,7 +85,7 @@ public class EnvironmentalMonitoringService : IEnvironmentalMonitoringService
         return result;
     }
 
-    public async Task<bool> ProcessSatelliteImageryAsync(DateTime date, string? parcelUpid = null,
+    public async Task<bool> ProcessSatelliteImageryAsync(DateTime date, string parcelUpid = null,
         bool useRealService = false)
     {
         try
@@ -138,7 +138,7 @@ public class EnvironmentalMonitoringService : IEnvironmentalMonitoringService
     }
 
     public async Task<List<EnvironmentalChangeEventDto>> GetSignificantChangesAsync(DateTime startDate,
-        DateTime endDate, string? region = null)
+        DateTime endDate, string region = null)
     {
         var changeEvents = await _changeEventRepo.GetSignificantEventsAsync(startDate, endDate);
         return changeEvents.Select(MapToChangeEventDto).ToList();
@@ -244,7 +244,7 @@ public class EnvironmentalMonitoringService : IEnvironmentalMonitoringService
     }
 
     // Private helper methods
-    private async Task<Dictionary<string, decimal>?> CalculateSpectralIndicesForParcelAsync(
+    private async Task<Dictionary<string, decimal>> CalculateSpectralIndicesForParcelAsync(
         string parcelUpid, DateTime date, ISatelliteImageryService satelliteService)
     {
         try
@@ -556,7 +556,7 @@ public class EnvironmentalMonitoringService : IEnvironmentalMonitoringService
         return new List<EnvironmentalChangeEventDto>();
     }
 
-    private async Task<EnvironmentalChangeEventDto?> CreateChangeEventAsync(
+    private async Task<EnvironmentalChangeEventDto> CreateChangeEventAsync(
         string parcelUpid,
         ParcelEnvironmentalMonitoring startData,
         ParcelEnvironmentalMonitoring endData,
@@ -655,7 +655,7 @@ public class EnvironmentalMonitoringService : IEnvironmentalMonitoringService
     }
 
     // Data access helper methods
-    private async Task<List<string>> GetParcelsForAnalysisAsync(string? parcelUpid, string? region)
+    private async Task<List<string>> GetParcelsForAnalysisAsync(string parcelUpid, string region)
     {
         if (!string.IsNullOrEmpty(parcelUpid))
             return new List<string> { parcelUpid };
@@ -668,7 +668,7 @@ public class EnvironmentalMonitoringService : IEnvironmentalMonitoringService
     }
 
 
-    private async Task<List<string>> GetParcelsForProcessingAsync(string? parcelUpid)
+    private async Task<List<string>> GetParcelsForProcessingAsync(string parcelUpid)
     {
         return !string.IsNullOrEmpty(parcelUpid)
             ? new List<string> { parcelUpid }

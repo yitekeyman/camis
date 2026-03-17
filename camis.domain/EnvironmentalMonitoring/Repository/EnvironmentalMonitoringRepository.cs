@@ -14,7 +14,7 @@ public class EnvironmentalMonitoringRepository: IEnvironmentalMonitoringReposito
         _context = context;
         _dbSet = context.Set<ParcelEnvironmentalMonitoring>();
     }
-        public async Task<ParcelEnvironmentalMonitoring?> GetByIdAsync(int id)
+        public async Task<ParcelEnvironmentalMonitoring> GetByIdAsync(int id)
     {
         return await _dbSet.FindAsync(id);
     }
@@ -61,7 +61,7 @@ public class EnvironmentalMonitoringRepository: IEnvironmentalMonitoringReposito
             .ToListAsync();
     }
 
-    public async Task<ParcelEnvironmentalMonitoring?> GetLatestByParcelAsync(string parcelUpid)
+    public async Task<ParcelEnvironmentalMonitoring> GetLatestByParcelAsync(string parcelUpid)
     {
         return await _dbSet
             .Where(e => e.ParcelUpid == parcelUpid)

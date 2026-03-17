@@ -40,6 +40,7 @@ namespace intapscamis.camis.domain.Admin
         SysConfig GetSysConfig(int id);
         SysConfig GetSysConfigByName(string name);
         Task<string> GetConfigValueAsync(string key);
+        SystemParameter GetSystemParameter();
     }
 
     public class UserService : IUserService
@@ -473,6 +474,16 @@ namespace intapscamis.camis.domain.Admin
             };
         }
 
+        public SystemParameter GetSystemParameter()
+        {
+            SystemParameter ret = new SystemParameter()
+            {
+                RegionCode = _context.SysConfigs.First(e => e.Id == 5).Value,
+                RegionName = _context.SysConfigs.First(e => e.Id == 4).Value,
+                UtmZone = _context.SysConfigs.First(e => e.Id == 3).Value,
+            };
+            return ret;
+        }
         private InvestorStat GetInvestorStat(int originType)
         {
           

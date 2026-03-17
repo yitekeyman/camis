@@ -138,7 +138,7 @@ namespace intapscamis.camis.domain.EnvironmentalMonitoring
                     _logger.LogWarning("Sentinel Hub API error. Status: {StatusCode}, Error: {Error}",
                         response.StatusCode, errorContent);
                     return await GetImageryWithFallbackDimensions(geometry, date, token, instanceId);
-                    return null;
+                    //return null;
                 }
             }
             catch (Exception ex)
@@ -148,12 +148,12 @@ namespace intapscamis.camis.domain.EnvironmentalMonitoring
             }
         }
 
-        public async Task<Dictionary<string, decimal>> CalculateSpectralIndicesAsync(SatelliteImage image)
+        public Task<Dictionary<string, decimal>> CalculateSpectralIndicesAsync(SatelliteImage image)
         {
             if (image?.ReflectanceValues == null || !image.ReflectanceValues.Any())
             {
                 _logger.LogWarning("No reflectance values available for spectral index calculation");
-                return new Dictionary<string, decimal>();
+                return Task.FromResult(new Dictionary<string, decimal>());
             }
 
             try
@@ -177,12 +177,12 @@ namespace intapscamis.camis.domain.EnvironmentalMonitoring
                 _logger.LogDebug("Calculated spectral indices for {Date}: NDVI={NDVI}, NDWI={NDWI}",
                     image.Date.ToString("yyyy-MM-dd"), indices["NDVI"], indices["NDWI"]);
 
-                return indices;
+                return Task.FromResult(indices);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error calculating spectral indices");
-                return new Dictionary<string, decimal>();
+                return Task.FromResult(new Dictionary<string, decimal>());
             }
         }
 
@@ -254,11 +254,11 @@ namespace intapscamis.camis.domain.EnvironmentalMonitoring
             }
         }
 
-        public async Task<bool> IsImageCloudFreeAsync(SatelliteImage image)
+        public Task<bool> IsImageCloudFreeAsync(SatelliteImage image)
         {
             // For real implementation, you would analyze the scene classification band
             // For now, assume images from Sentinel Hub are pre-filtered by cloud coverage
-            return true;
+            return Task.FromResult(true);
         }
 
         private async Task<string> GetAccessTokenAsync()
@@ -381,7 +381,7 @@ namespace intapscamis.camis.domain.EnvironmentalMonitoring
             }
         }
 
-        private async Task CalculateReflectanceFromImageData(SatelliteImage image)
+        private Task CalculateReflectanceFromImageData(SatelliteImage image)
         {
             try
             {
@@ -424,6 +424,8 @@ namespace intapscamis.camis.domain.EnvironmentalMonitoring
             {
                 _logger.LogError(ex, "Error calculating reflectance from image data");
             }
+
+            return Task.CompletedTask;
         }
 
         // Spectral index calculations

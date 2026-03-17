@@ -6,13 +6,22 @@
           <div class="col-md-4">
             <h5><i class="ti ti-users"></i>&nbsp;&nbsp;User Management</h5>
           </div>
-          <div class="col-md-5 pb-0">
+          <div class="col-md-4 p-0">
             <div class="input-group mb-0">
                <span class="input-group-text" >
                   <i class="ti ti-user-search"></i>
                 </span>
-              <input #searchInput type="text" class="form-control" placeholder="Search user for..."
-                     (input)="filterUsers(searchInput.value)"/>
+              <input #searchInput name="searchInput" type="text" class="form-control" placeholder="Search user for..."
+                     (input)="filterUsers(searchInput.value, userStatus.value)"/>
+
+            </div>
+          </div>
+          <div class="col-md-1 p-0">
+            <div class="input-group mb-0 ms-1">
+              <select #userStatus name="userStatus" class="form-select w-75" (change)="filterUsers(searchInput.value, userStatus.value)">
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+              </select>
             </div>
           </div>
           <div class="col-md-3" style="text-align: right">

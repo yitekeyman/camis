@@ -72,7 +72,14 @@ export class SystemConfigComponent implements OnInit {
     this.adminService.EditSysConfig(this.selectedConfig).subscribe(res=>{
       dialog.success('You have successfully update configuration value').then(dialog.close);
       this.loadConfiguration();
+      this.updateChange();
     }, dialog.error)
+  }
+  updateChange(){
+    this.adminService.GetSystemParameter().subscribe(res2 => {
+      this.keyCase.camelCase(res2);
+      this.adminService.updateRegion( res2.regionName,res2.regionCode, res2.utmZone);
+    });
   }
   cancelEditing(){
     this.selectedConfig = null;

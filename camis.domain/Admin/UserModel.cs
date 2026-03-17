@@ -199,5 +199,10 @@
         public double InvestmentCapital { get; set; }
     }
 
-   
+    public class SystemParameter
+    {
+        public string RegionName { get; set; }
+        public string RegionCode { get; set; }
+        public string UtmZone { get; set; }
+    }
 }

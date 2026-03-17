@@ -32,7 +32,7 @@ export class MnePendingTaskComponent implements OnInit {
   public activeWorkflows: any = [] = [];
   customApi: Observable<any>;
 
-  constructor(private workflowApi: WorkflowApiService, private keyCase: ObjectKeyCasingService, private pagerService: PagerService, private router: Router, private api: FarmApiService) {
+  constructor(private workflowApi: WorkflowApiService, public keyCase: ObjectKeyCasingService, private pagerService: PagerService, private router: Router, private api: FarmApiService) {
     this.loginRole = localStorage.getItem("role");
     if (this.loginRole === '8') {
       this.user = 'M&E Expert';

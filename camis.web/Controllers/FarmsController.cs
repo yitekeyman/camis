@@ -349,7 +349,7 @@ namespace intapscamis.camis.Controllers
             }
         }
 
-        [Roles(UserRoles.FarmClerk)]
+       // [Roles(UserRoles.FarmClerk)]
         [HttpPost]
         public IActionResult CancelFarmRegistration(string id, string description)
         {

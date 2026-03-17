@@ -384,7 +384,7 @@ export class NewLandFormComponent implements OnInit {
   async saveNewLand(): Promise<void> {
     if (!this.validateCurrentStep() || !this.newLandFGroup.valid) {
       await dialog.error('Please fill all required fields correctly before submitting.');
-
+      return ;
     }
     dialog.loading();
 

@@ -15,7 +15,7 @@ public class EnvironmentalChangeEventRepository: IEnvironmentalChangeEventReposi
         _dbSet = context.Set<EnvironmentalChangeEvent>();
     }
 
-    public async Task<EnvironmentalChangeEvent?> GetByIdAsync(int id)
+    public async Task<EnvironmentalChangeEvent> GetByIdAsync(int id)
     {
         return await _dbSet.FindAsync(id);
     }

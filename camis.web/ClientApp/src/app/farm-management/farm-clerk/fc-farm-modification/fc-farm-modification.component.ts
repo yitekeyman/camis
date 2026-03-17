@@ -143,7 +143,9 @@ export class FcFarmModificationComponent implements OnInit {
       this.opMartialStatus = o.martialStatus || this.opMartialStatus;
       this.opBirthdate = o.birthdate && new Date(o.birthdate).toISOString().slice(0, 10) || this.opBirthdate;
 
-      this.opVentures = o.ventures || []
+      this.opVentures = o.ventures || [];
+      this.opPhoto=o.photo;
+      this.opPhotoId=o.photoId;
     }
 
     this.frId = f.id;
@@ -232,7 +234,9 @@ export class FcFarmModificationComponent implements OnInit {
         martialStatus: Number(this.opMartialStatus),
         birthdate: new Date(this.opBirthdate).getTime(),
 
-        ventures: this.opType == '6' ? this.opVentures : []
+        ventures: this.opType == '6' ? this.opVentures : [],
+        photo:this.opPhoto.file!=null?this.opPhoto:null,
+        photoId:this.opPhotoId,
       }
     };
 

@@ -41,7 +41,7 @@ public class GeoServerService : IGeoServerService, IDisposable
     }
 
     // Basic WMS Operations
-    public async Task<string> BuildWMSUrl(GeoServerRequest request)
+    public Task<string> BuildWMSUrl(GeoServerRequest request)
     {
         try
         {
@@ -77,16 +77,16 @@ public class GeoServerService : IGeoServerService, IDisposable
                 .Where(p => !string.IsNullOrEmpty(p.Value))
                 .Select(p => $"{p.Key}={Uri.EscapeDataString(p.Value)}"));
 
-            return $"{_baseUrl}/wms?{queryString}";
+            return Task.FromResult($"{_baseUrl}/wms?{queryString}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error building WMS URL");
-            return string.Empty;
+            return Task.FromResult(string.Empty);
         }
     }
 
-    public async Task<Stream?> GetWMSMapAsync(GeoServerRequest request)
+    public async Task<Stream> GetWMSMapAsync(GeoServerRequest request)
     {
         try
         {
@@ -112,7 +112,7 @@ public class GeoServerService : IGeoServerService, IDisposable
         }
     }
 
-    public async Task<byte[]?> GetWMSMapAsBytesAsync(GeoServerRequest request)
+    public async Task<byte[]> GetWMSMapAsBytesAsync(GeoServerRequest request)
     {
         try
         {
@@ -151,7 +151,7 @@ public class GeoServerService : IGeoServerService, IDisposable
         }
     }
 
-    public async Task<T?> GetWFSFeaturesAsync<T>(WfsRequest request) where T : class
+    public async Task<T> GetWFSFeaturesAsync<T>(WfsRequest request) where T : class
     {
         try
         {

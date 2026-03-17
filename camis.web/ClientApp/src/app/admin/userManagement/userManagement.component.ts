@@ -46,14 +46,14 @@ export class UserManagementComponent implements OnInit {
     });
   }
 
-  public filterUsers(search: string) {
+  public filterUsers(search: string, status:any) {
+    this.status = status;
     this.userService.searchUsers(search, this.status).subscribe(res => {
       this.keyCase.camelCase(res);
       this.users = res;
       this.setPage(1);
     });
   }
-
   async deactivateUser(usr: UserModel):Promise<void> {
     if (!await dialog.confirm('Are you sure you want to deactivate user account?')) {
       return;

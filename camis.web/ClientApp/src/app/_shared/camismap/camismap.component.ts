@@ -16,7 +16,6 @@ import {Fill, Stroke, Style} from 'ol/style';
 import XYZ from 'ol/source/XYZ';
 import Feature from 'ol/Feature';
 import Geometry from 'ol/geom/Geometry';
-import {EnvironmentalChangeEventDto} from '../../_model/environmental-monitoring.model';
 
 // Services
 import {ApiService} from '../../_services/api.service';
@@ -46,8 +45,6 @@ interface BoundingBox {
 })
 export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() id = 1;
-  @Input() environmentalChanges: EnvironmentalChangeEventDto[] = [];
-  @Output() changeFeatureClick = new EventEmitter<EnvironmentalChangeEventDto>();
 
   private view!: OlView;
   private map!: OlMap;
@@ -678,69 +675,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // Environmental Change Detection Methods
-  public displayEnvironmentalChanges(changes: EnvironmentalChangeEventDto[]): void {
-    if (!this.environmentalChangeSource) {
-      console.error('Environmental change source not initialized');
-      return;
-    }
 
-    this.environmentalChangeSource.clear();
-
-    if (!changes || changes.length === 0) {
-      console.log('No environmental changes to display');
-      return;
-    }
-
-    console.log(`Displaying ${changes.length} environmental changes on map`);
-
-    changes.forEach((change, index) => {
-      try {
-        if (change.geometry) {
-          const format = new WKT();
-          const geometry = format.readGeometry(change.geometry, {
-            dataProjection: 'EPSG:4326',
-            featureProjection: 'EPSG:20137'
-          });
-
-          const feature = new Feature({
-            geometry: geometry
-          });
-
-          // Set properties
-          feature.set('id', `change-${index}`);
-          feature.set('eventType', change.eventType);
-          feature.set('eventSubtype', change.eventSubtype);
-          feature.set('severity', change.severity);
-          feature.set('confidence', change.confidence);
-          feature.set('changeAmount', change.changeAmount);
-          feature.set('changePercentage', change.changePercentage);
-          feature.set('affectedArea', change.affectedArea);
-          feature.set('description', change.description);
-          feature.set('parcelUpid', change.parcelUpid);
-          feature.set('eventDate', change.eventDate);
-          feature.set('beforeValue', change.beforeValue);
-          feature.set('afterValue', change.afterValue);
-          feature.set('changeData', change);
-
-          this.environmentalChangeSource.addFeature(feature);
-        }
-      } catch (error) {
-        console.error('Error parsing geometry for change:', change, error);
-      }
-    });
-
-    const features = this.environmentalChangeSource.getFeatures();
-    if (features.length > 0) {
-      // Optionally zoom to show all changes
-      const extent = this.environmentalChangeSource.getExtent();
-      if (extent && extent[0] !== Infinity && extent[1] !== Infinity) {
-        console.log('Zooming to show changes');
-        this.zoomToSetExtent(extent);
-      }
-    }
-
-    console.log(`Successfully displayed ${features.length} environmental changes on map`);
-  }
 
   private setupChangeInteraction(): void {
     this.map.on('click', (event: any) => {
@@ -753,13 +688,6 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
           return eventType && typeof eventType === 'string';
         });
 
-        if (changeFeature) {
-          const changeData = changeFeature.get('changeData') as EnvironmentalChangeEventDto;
-          if (changeData) {
-            this.changeFeatureClick.emit(changeData);
-            this.showChangePopup(changeFeature);
-          }
-        }
       }
     });
   }
@@ -911,57 +839,9 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     }, 300);
   }
 
-  public refreshWmsLayers(): void {
-    console.log('Refreshing WMS layers with cache busting');
-
-    this.cacheBuster = Date.now();
-
-    this.layers.forEach(layer => {
-      const layerName = layer.get('name');
-      if (layerName && layerName.startsWith('wms-')) {
-        const source = layer.getSource() as any;
-        if (source) {
-          source.updateParams({
-            '_t': this.cacheBuster
-          });
-          source.refresh();
-          console.log(`Refreshed layer: ${layerName} with cache buster: ${this.cacheBuster}`);
-        }
-      }
-    });
-  }
 
   public forceMapRefresh(): void {
     console.log('Forcing complete map refresh');
     this.rebuildLayers();
-  }
-
-  public testGeoServerConnection(): void {
-    const testUrl = '/geoserver/wms?service=WMS&version=1.1.1&request=GetCapabilities&_t=' + Date.now();
-
-    this.http.get(testUrl, {responseType: 'text'}).subscribe({
-      next: () => console.log('GeoServer connection successful'),
-      error: (error) => console.error('GeoServer connection failed:', error)
-    });
-  }
-
-  public debugLayers(): void {
-    console.log('=== MAP DEBUG INFO ===');
-    console.log('Online status:', navigator.onLine);
-    console.log('Using offline layer:', this.isUsingOfflineLayer);
-    console.log('Cache buster value:', this.cacheBuster);
-    console.log('Total layers:', this.layers.length);
-
-    this.layers.forEach((layer, index) => {
-      const name = layer.get('name') || 'unnamed-layer';
-      const visible = layer.getVisible();
-      const opacity = layer.getOpacity();
-      console.log(`Layer ${index}: ${name}, visible: ${visible}, opacity: ${opacity}`);
-    });
-
-    console.log('Map target:', this.map?.getTarget());
-    console.log('View center:', this.view?.getCenter());
-    console.log('View resolution:', this.view?.getResolution());
-    console.log('=====================');
   }
 }

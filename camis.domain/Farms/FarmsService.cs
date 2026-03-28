@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Mail;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using intapscamis.camis.data.Entities;
@@ -602,7 +603,38 @@ namespace intapscamis.camis.domain.Farms
             var documentRequest = data?.Registrations?.First(d => d.Id == regId)?.Document;
             if (documentRequest?.Id != null && documentRequest.File == null)
             {
-                return _documentService.GetDocument(documentRequest.Id);
+                var doc = _documentService.GetDocument(documentRequest.Id);
+                if (doc != null && doc.File==null)
+                {
+                    
+                    var filePath = $"{doc.Id}";
+                    if (!Path.IsPathRooted(filePath))
+                    {
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), "C:\\usr\\bin\\CAMIS\\data\\docs\\WorkItemFiles", 
+                            workItemId.ToString(), Path.GetFileName(filePath));
+                    }
+    
+                    if (File.Exists(filePath))
+                    {
+                       doc.File =  File.ReadAllBytes(filePath);
+                    }
+                    return doc;
+                } else{
+                    var filePath = $"{documentRequest.Id}";
+                    if (!Path.IsPathRooted(filePath))
+                    {
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), "C:\\usr\\bin\\CAMIS\\data\\docs\\WorkItemFiles", 
+                            workItemId.ToString(), Path.GetFileName(filePath));
+                    }
+    
+                    if (File.Exists(filePath))
+                    {
+                        var fileBytes = File.ReadAllBytes(filePath);
+                        documentRequest.File =  Convert.ToBase64String(fileBytes);
+                    }
+                    return DocumentService.ParseDocument(documentRequest);
+                }
+                
             }
 
             return DocumentService.ParseDocument(data?.Registrations?.First(d => d.Id == regId)?.Document);

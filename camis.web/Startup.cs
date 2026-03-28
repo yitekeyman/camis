@@ -3,9 +3,6 @@ using System.IO;
 using intapscamis.camis.data.Entities;
 using intapscamis.camis.domain.Admin;
 using intapscamis.camis.domain.Documents;
-using intapscamis.camis.domain.EnvironmentalMonitoring;
-using intapscamis.camis.domain.EnvironmentalMonitoring.Interface;
-using intapscamis.camis.domain.EnvironmentalMonitoring.Repository;
 using intapscamis.camis.domain.Farms;
 using intapscamis.camis.domain.Infrastructure;
 using intapscamis.camis.domain.LandBank;
@@ -180,14 +177,7 @@ namespace intapscamis.camis
 
             services.AddTransient<IReportService, ReportService>();
             services.AddTransient<IReportFacade, ReportFacade>();
-            // services.AddTransient<IEnvironmentalMonitoringRepository, EnvironmentalMonitoringRepository>();
-            // services.AddTransient<IEnvironmentalChangeEventRepository, EnvironmentalChangeEventRepository>();
-            // services.AddTransient<IParcelViewRepository, ParcelViewRepository>();
-            // services.AddTransient<IEnvironmentalMonitoringService, EnvironmentalMonitoringService>();
-            // services.AddTransient<IGeoServerService, GeoServerService>();
-            // services.AddTransient<ISatelliteImageryService, SatelliteImageryService>();
-            // services.AddTransient<ISatelliteServiceFactory, SatelliteServiceFactory>();
-            // services.AddTransient<SentinelHubService>();
+            
         }
     }
 }

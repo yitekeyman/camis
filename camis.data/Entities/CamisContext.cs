@@ -45,7 +45,6 @@ namespace intapscamis.camis.data.Entities
         public virtual DbSet<Certificate> Certificate { get; set; }
         public virtual DbSet<Document> Document { get; set; }
         public virtual DbSet<DocumentType> DocumentType { get; set; }
-        public virtual DbSet<EnvironmentalChangeEvent> EnvironmentalChangeEvents { get; set; }
         public virtual DbSet<Ethiopia> Ethiopia { get; set; }
         public virtual DbSet<Ethiopiaboundary> Ethiopiaboundary { get; set; }
         public virtual DbSet<Ethiopiaregion> Ethiopiaregion { get; set; }
@@ -79,8 +78,6 @@ namespace intapscamis.camis.data.Entities
         public virtual DbSet<LandUsage> LandUsage { get; set; }
         public virtual DbSet<MoistureSource> MoistureSource { get; set; }
         public virtual DbSet<Months> Months { get; set; }
-        public virtual DbSet<ParcelEnvironmentalMonitoring> ParcelEnvironmentalMonitorings { get; set; }
-        public DbSet<ParcelView> ParcelViews { get; set; }
         public virtual DbSet<RegistrationAuthority> RegistrationAuthority { get; set; }
         public virtual DbSet<RegistrationType> RegistrationType { get; set; }
         public virtual DbSet<Role> Role { get; set; }
@@ -977,65 +974,6 @@ namespace intapscamis.camis.data.Entities
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasColumnName("name");
-            });
-            modelBuilder.Entity<EnvironmentalChangeEvent>(entity =>
-            {
-                entity.HasKey(e => e.Id).HasName("environmental_change_events_pkey");
-
-                entity.ToTable("environmental_change_events", "env_mon");
-
-                entity.HasIndex(e => new { e.EventType, e.EventDate }, "idx_change_events_type");
-
-                entity.HasIndex(e => new { e.ParcelUpid, e.EventDate }, "idx_change_events_upid_date");
-
-                entity.Property(e => e.Id).HasColumnName("id");
-                entity.Property(e => e.AffectedAreaSqkm)
-                    .HasPrecision(10, 4)
-                    .HasColumnName("affected_area_sqkm");
-                entity.Property(e => e.AfterValue)
-                    .HasPrecision(8, 4)
-                    .HasColumnName("after_value");
-                entity.Property(e => e.BeforeValue)
-                    .HasPrecision(8, 4)
-                    .HasColumnName("before_value");
-                entity.Property(e => e.Centroid).HasColumnName("centroid");
-                entity.Property(e => e.ChangeAmount)
-                    .HasPrecision(8, 4)
-                    .HasColumnName("change_amount");
-                entity.Property(e => e.ChangePercentage)
-                    .HasPrecision(6, 4)
-                    .HasColumnName("change_percentage");
-                entity.Property(e => e.Confidence)
-                    .HasPrecision(4, 3)
-                    .HasColumnName("confidence");
-                entity.Property(e => e.Description).HasColumnName("description");
-                entity.Property(e => e.DetectedAt)
-                    .HasDefaultValueSql("now()")
-                    .HasColumnType("timestamp without time zone")
-                    .HasColumnName("detected_at");
-                entity.Property(e => e.EventDate).HasColumnName("event_date");
-                entity.Property(e => e.EventSubtype)
-                    .HasMaxLength(50)
-                    .HasColumnName("event_subtype");
-                entity.Property(e => e.EventType)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnName("event_type");
-                entity.Property(e => e.Geometry).HasColumnName("geometry");
-                entity.Property(e => e.ParcelUpid)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnName("parcel_upid");
-                entity.Property(e => e.SatelliteEvidence)
-                    .HasDefaultValue(true)
-                    .HasColumnName("satellite_evidence");
-                entity.Property(e => e.Severity)
-                    .HasMaxLength(20)
-                    .IsFixedLength()
-                    .HasColumnName("severity");
-                entity.Property(e => e.Verified)
-                    .HasDefaultValue(false)
-                    .HasColumnName("verified");
             });
             modelBuilder.Entity<Ethiopia>(entity =>
             {
@@ -1992,96 +1930,7 @@ namespace intapscamis.camis.data.Entities
 
                 entity.Property(e => e.Name).HasColumnName("name");
             });
-            modelBuilder.Entity<ParcelEnvironmentalMonitoring>(entity =>
-            {
-                entity.HasKey(e => e.Id).HasName("parcel_environmental_monitoring_pkey");
-
-                entity.ToTable("parcel_environmental_monitoring", "env_mon");
-
-                entity.HasIndex(e => new { e.NDVI, e.MonitoringDate }, "idx_parcel_monitoring_ndvi");
-
-                entity.HasIndex(e => new { e.NDWI, e.MonitoringDate }, "idx_parcel_monitoring_ndwi");
-
-                entity.HasIndex(e => new { e.ChangeType, e.MonitoringDate }, "idx_parcel_monitoring_type");
-
-                entity.HasIndex(e => new { e.ParcelUpid, e.MonitoringDate }, "idx_parcel_monitoring_upid_date");
-
-                entity.Property(e => e.Id).HasColumnName("id");
-                entity.Property(e => e.AreaSqkm)
-                    .HasPrecision(10, 4)
-                    .HasColumnName("area_sqkm");
-                entity.Property(e => e.ChangeMagnitude)
-                    .HasPrecision(6, 4)
-                    .HasColumnName("change_magnitude");
-                entity.Property(e => e.ChangeType)
-                    .HasMaxLength(50)
-                    .HasComment("VEGETATION_LOSS, VEGETATION_GROWTH, WATER_CHANGE, URBANIZATION, FLOOD, DROUGHT")
-                    .HasColumnName("change_type");
-                entity.Property(e => e.CloudCover)
-                    .HasPrecision(4, 3)
-                    .HasColumnName("cloud_cover");
-                entity.Property(e => e.Confidence)
-                    .HasPrecision(4, 3)
-                    .HasDefaultValueSql("0.7")
-                    .HasColumnName("confidence");
-                entity.Property(e => e.CreatedAt)
-                    .HasDefaultValueSql("now()")
-                    .HasColumnType("timestamp without time zone")
-                    .HasColumnName("created_at");
-                entity.Property(e => e.EVI)
-                    .HasPrecision(5, 4)
-                    .HasComment("Enhanced vegetation index")
-                    .HasColumnName("evi");
-                entity.Property(e => e.Geometry).HasColumnName("geometry");
-                entity.Property(e => e.MNDWI)
-                    .HasPrecision(5, 4)
-                    .HasComment("Modified water index")
-                    .HasColumnName("mndwi");
-                entity.Property(e => e.MonitoringDate).HasColumnName("monitoring_date");
-                entity.Property(e => e.NDBI)
-                    .HasPrecision(5, 4)
-                    .HasComment("Built-up index")
-                    .HasColumnName("ndbi");
-                entity.Property(e => e.NDVI)
-                    .HasPrecision(5, 4)
-                    .HasComment("Vegetation index")
-                    .HasColumnName("ndvi");
-                entity.Property(e => e.NDWI)
-                    .HasPrecision(5, 4)
-                    .HasComment("Water index ")
-                    .HasColumnName("ndwi");
-                entity.Property(e => e.ParcelUpid)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnName("parcel_upid");
-                entity.Property(e => e.SatelliteSource)
-                    .HasMaxLength(50)
-                    .HasColumnName("satellite_source");
-                entity.Property(e => e.Severity)
-                    .HasMaxLength(50)
-                    .HasDefaultValueSql("'MODERATE'::character varying")
-                    .HasColumnName("severity");
-                entity.Property(e => e.SoilMoisture)
-                    .HasPrecision(5, 3)
-                    .HasColumnName("soil_moisture");
-                entity.Property(e => e.VegetationHealth)
-                    .HasPrecision(4, 3)
-                    .HasColumnName("vegetation_health");
-                entity.Property(e => e.WaterPresence)
-                    .HasPrecision(4, 3)
-                    .HasColumnName("water_presence");
-            });
-            modelBuilder.Entity<ParcelView>(entity =>
-            {
-                entity.HasNoKey();
-                entity.ToView("v_gs_land", "lb");
             
-                entity.Property(e => e.Upid).HasColumnName("upid"); // Adjust column names as needed
-                entity.Property(e => e.Region).HasColumnName("region");
-                entity.Property(e => e.Kebele).HasColumnName("kebele");
-                entity.Property(e => e.Woreda).HasColumnName("woreda");
-                entity.Property(e => e.Area).HasColumnName("area");
-            });
             modelBuilder.Entity<RegistrationAuthority>(entity =>
             {
                 entity.ToTable("registration_authority", "frm");

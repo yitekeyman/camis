@@ -30,7 +30,6 @@ import {FullScreenService} from "./_services/full-screen.service";
 import {JsonFormatPipe} from "./_services/json-format.pipe";
 import {ExportService} from "./_services/export.service";
 import {SessionInterceptor} from "./login/simpleLogin/session.interceptor";
-import {EnvironmentalMonitoringService} from "./_services/environmental-monitoring.service";
 
 @Component({
   selector: 'app-root',
@@ -63,7 +62,6 @@ import {EnvironmentalMonitoringService} from "./_services/environmental-monitori
     FullScreenService,
     JsonFormatPipe,
     ExportService,
-    EnvironmentalMonitoringService
   ]
 })
 export class AppComponent {

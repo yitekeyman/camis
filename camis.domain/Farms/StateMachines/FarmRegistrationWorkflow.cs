@@ -186,7 +186,9 @@ namespace intapscamis.camis.domain.Farms.StateMachines
             StateMachine<States, Triggers>.Transition transition)
         {
             var workItemId = Guid.NewGuid();
-            var fileSavePath = Path.Combine(Directory.GetCurrentDirectory(), "C:\\usr\\bin\\CAMIS\\data\\docs\\WorkItemFiles", workItemId.ToString());
+            var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
+                                 "C:\\usr\\bin\\CAMIS\\data\\docs";
+            var fileSavePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, workItemId.ToString());
             if (!Directory.Exists(fileSavePath))
             {
                 Directory.CreateDirectory(fileSavePath);

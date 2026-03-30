@@ -390,7 +390,7 @@ namespace intapscamis.camis.domain.Farms
                 Context.Remove(oldPhoto);
                 Context.SaveChanges();
             }
-            
+
             Document photo = null;
             if (data.Photo != null)
                 photo = _documentService.CreateDocument(data.Photo);
@@ -599,42 +599,46 @@ namespace intapscamis.camis.domain.Farms
             var dataStr = Context.WorkItem.Find(workItemId).Data;
             if (dataStr == null) return null;
             var data = JsonConvert.DeserializeObject<FarmRequest>(dataStr);
+            var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
+                                "C:\\usr\\bin\\CAMIS\\data\\docs";
 
             var documentRequest = data?.Registrations?.First(d => d.Id == regId)?.Document;
             if (documentRequest?.Id != null && documentRequest.File == null)
             {
                 var doc = _documentService.GetDocument(documentRequest.Id);
-                if (doc != null && doc.File==null)
+                if (doc != null && doc.File == null)
                 {
-                    
                     var filePath = $"{doc.Id}";
                     if (!Path.IsPathRooted(filePath))
                     {
-                        filePath = Path.Combine(Directory.GetCurrentDirectory(), "C:\\usr\\bin\\CAMIS\\data\\docs\\WorkItemFiles", 
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
                             workItemId.ToString(), Path.GetFileName(filePath));
                     }
-    
+
                     if (File.Exists(filePath))
                     {
-                       doc.File =  File.ReadAllBytes(filePath);
+                        doc.File = File.ReadAllBytes(filePath);
                     }
+
                     return doc;
-                } else{
+                }
+                else
+                {
                     var filePath = $"{documentRequest.Id}";
                     if (!Path.IsPathRooted(filePath))
                     {
-                        filePath = Path.Combine(Directory.GetCurrentDirectory(), "C:\\usr\\bin\\CAMIS\\data\\docs\\WorkItemFiles", 
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
                             workItemId.ToString(), Path.GetFileName(filePath));
                     }
-    
+
                     if (File.Exists(filePath))
                     {
                         var fileBytes = File.ReadAllBytes(filePath);
-                        documentRequest.File =  Convert.ToBase64String(fileBytes);
+                        documentRequest.File = Convert.ToBase64String(fileBytes);
                     }
+
                     return DocumentService.ParseDocument(documentRequest);
                 }
-                
             }
 
             return DocumentService.ParseDocument(data?.Registrations?.First(d => d.Id == regId)?.Document);
@@ -645,11 +649,45 @@ namespace intapscamis.camis.domain.Farms
             var dataStr = Context.WorkItem.Find(workItemId).Data;
             if (dataStr == null) return null;
             var data = JsonConvert.DeserializeObject<FarmRequest>(dataStr);
-
+            var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
+                                "C:\\usr\\bin\\CAMIS\\data\\docs";
             var documentRequest = data?.Operator?.Registrations?.First(d => d.Id == regId)?.Document;
             if (documentRequest?.Id != null && documentRequest.File == null)
             {
-                return _documentService.GetDocument(documentRequest.Id);
+                var doc = _documentService.GetDocument(documentRequest.Id);
+                if (doc != null && doc.File == null)
+                {
+                    var filePath = $"{doc.Id}";
+                    if (!Path.IsPathRooted(filePath))
+                    {
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                            workItemId.ToString(), Path.GetFileName(filePath));
+                    }
+
+                    if (File.Exists(filePath))
+                    {
+                        doc.File = File.ReadAllBytes(filePath);
+                    }
+
+                    return doc;
+                }
+                else
+                {
+                    var filePath = $"{documentRequest.Id}";
+                    if (!Path.IsPathRooted(filePath))
+                    {
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                            workItemId.ToString(), Path.GetFileName(filePath));
+                    }
+
+                    if (File.Exists(filePath))
+                    {
+                        var fileBytes = File.ReadAllBytes(filePath);
+                        documentRequest.File = Convert.ToBase64String(fileBytes);
+                    }
+
+                    return DocumentService.ParseDocument(documentRequest);
+                }
             }
 
             return DocumentService.ParseDocument(documentRequest);
@@ -660,11 +698,45 @@ namespace intapscamis.camis.domain.Farms
             var dataStr = Context.WorkItem.Find(workItemId).Data;
             if (dataStr == null) return null;
             var data = JsonConvert.DeserializeObject<FarmRequest>(dataStr);
-
+            var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
+                                "C:\\usr\\bin\\CAMIS\\data\\docs";
             var documentRequest = data?.ActivityPlan?.Documents?.First(d => d.Id == documentId);
             if (documentRequest?.Id != null && documentRequest.File == null)
             {
-                return _documentService.GetDocument(documentRequest.Id);
+                var doc = _documentService.GetDocument(documentRequest.Id);
+                if (doc != null && doc.File == null)
+                {
+                    var filePath = $"{doc.Id}";
+                    if (!Path.IsPathRooted(filePath))
+                    {
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                            workItemId.ToString(), Path.GetFileName(filePath));
+                    }
+
+                    if (File.Exists(filePath))
+                    {
+                        doc.File = File.ReadAllBytes(filePath);
+                    }
+
+                    return doc;
+                }
+                else
+                {
+                    var filePath = $"{documentRequest.Id}";
+                    if (!Path.IsPathRooted(filePath))
+                    {
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                            workItemId.ToString(), Path.GetFileName(filePath));
+                    }
+
+                    if (File.Exists(filePath))
+                    {
+                        var fileBytes = File.ReadAllBytes(filePath);
+                        documentRequest.File = Convert.ToBase64String(fileBytes);
+                    }
+
+                    return DocumentService.ParseDocument(documentRequest);
+                }
             }
 
             return DocumentService.ParseDocument(documentRequest);
@@ -675,11 +747,45 @@ namespace intapscamis.camis.domain.Farms
             var dataStr = Context.WorkItem.Find(workItemId).Data;
             if (dataStr == null) return null;
             var data = JsonConvert.DeserializeObject<FarmRequest>(dataStr);
-
+            var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
+                                "C:\\usr\\bin\\CAMIS\\data\\docs";
             var documentRequest = data?.Operator?.Photo;
             if (documentRequest?.Id != null && documentRequest.File == null)
             {
-                return _documentService.GetDocument(documentRequest.Id);
+                var doc = _documentService.GetDocument(documentRequest.Id);
+                if (doc != null && doc.File == null)
+                {
+                    var filePath = $"{doc.Id}";
+                    if (!Path.IsPathRooted(filePath))
+                    {
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                            workItemId.ToString(), Path.GetFileName(filePath));
+                    }
+
+                    if (File.Exists(filePath))
+                    {
+                        doc.File = File.ReadAllBytes(filePath);
+                    }
+
+                    return doc;
+                }
+                else
+                {
+                    var filePath = $"{documentRequest.Id}";
+                    if (!Path.IsPathRooted(filePath))
+                    {
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                            workItemId.ToString(), Path.GetFileName(filePath));
+                    }
+
+                    if (File.Exists(filePath))
+                    {
+                        var fileBytes = File.ReadAllBytes(filePath);
+                        documentRequest.File = Convert.ToBase64String(fileBytes);
+                    }
+
+                    return DocumentService.ParseDocument(documentRequest);
+                }
             }
 
             return DocumentService.ParseDocument(documentRequest);
@@ -690,25 +796,61 @@ namespace intapscamis.camis.domain.Farms
             var dataStr = Context.WorkItem.Find(workItemId).Data;
             if (dataStr == null) return null;
             var data = JsonConvert.DeserializeObject<ActivityPlanRequest>(dataStr);
-
+            var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
+                                "C:\\usr\\bin\\CAMIS\\data\\docs";
             var documentRequest = data?.Documents?.First(d => d.Id == documentId);
             if (documentRequest?.Id != null && documentRequest.File == null)
             {
-                return _documentService.GetDocument(documentRequest.Id);
+                var doc = _documentService.GetDocument(documentRequest.Id);
+                if (doc != null && doc.File == null)
+                {
+                    var filePath = $"{doc.Id}";
+                    if (!Path.IsPathRooted(filePath))
+                    {
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                            workItemId.ToString(), Path.GetFileName(filePath));
+                    }
+
+                    if (File.Exists(filePath))
+                    {
+                        doc.File = File.ReadAllBytes(filePath);
+                    }
+
+                    return doc;
+                }
+                else
+                {
+                    var filePath = $"{documentRequest.Id}";
+                    if (!Path.IsPathRooted(filePath))
+                    {
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                            workItemId.ToString(), Path.GetFileName(filePath));
+                    }
+
+                    if (File.Exists(filePath))
+                    {
+                        var fileBytes = File.ReadAllBytes(filePath);
+                        documentRequest.File = Convert.ToBase64String(fileBytes);
+                    }
+
+                    return DocumentService.ParseDocument(documentRequest);
+                }
             }
 
             return DocumentService.ParseDocument(documentRequest);
         }
 
-       public  FarmResponse GetFarmByLandId(Guid id)
-       {
-           var farmland=Context.FarmLand.FirstOrDefault(l=>l.LandId==id);
-           if (farmland != null)
-           {
-               return GetFarm(farmland.FarmId);
-           }
-           return null;
-       }
+        public FarmResponse GetFarmByLandId(Guid id)
+        {
+            var farmland = Context.FarmLand.FirstOrDefault(l => l.LandId == id);
+            if (farmland != null)
+            {
+                return GetFarm(farmland.FarmId);
+            }
+
+            return null;
+        }
+
         private FarmResponse ParseFarmResponse(Farm farm)
         {
             var res = new FarmResponse

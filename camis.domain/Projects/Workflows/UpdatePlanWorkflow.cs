@@ -169,7 +169,12 @@ namespace intapscamis.camis.domain.Projects.Workflows
             long? assignedUser, StateMachine<States, Triggers>.Transition transition)
         {
             var workItemId = Guid.NewGuid();
-
+            var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ?? "C:\\usr\\bin\\CAMIS\\data\\docs";
+            var fileSavePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, workItemId.ToString());
+            if (!Directory.Exists(fileSavePath))
+            {
+                Directory.CreateDirectory(fileSavePath);
+            }
             // tag each (FarmRequest data).ActivityPlan.Documents 
             if (data?.Documents != null)
                 foreach (var doc in data.Documents)
@@ -192,6 +197,20 @@ namespace intapscamis.camis.domain.Projects.Workflows
                     }
 
                     doc.Id = doc.Id ?? Guid.NewGuid();
+                    if (doc.File != null)
+                    {
+                        
+                        var fileName = $"{doc.Id}"; // Adjust extension as needed
+                        var filePath = Path.Combine(fileSavePath, fileName);
+
+                        if (File.Exists(filePath))
+                        {
+                            File.Delete(filePath);
+                        }
+                        var fileBytes = Convert.FromBase64String(doc.File);
+                        File.WriteAllBytes(filePath, fileBytes);
+                    }
+                    doc.File = null;
                     doc.OverrideFilePath = $"{pathPrefix}{workItemId}?documentId={doc.Id}";
                 }
 

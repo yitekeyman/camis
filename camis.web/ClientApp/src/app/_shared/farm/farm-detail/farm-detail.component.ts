@@ -78,8 +78,9 @@ export class FarmDetailComponent implements OnInit {
     this.keyCase.camelCase(this.farm);
     if (this.farm.farmLands?.length > 0) {
       this.landService.GetLand(this.farm.farmLands[0].landId).subscribe(data => {
-        this.keyCase.camelCase(data);
-        let g = data.parcels[data.upins[0]];
+
+        const g=data.parcels[data.Upins[0]];
+        //this.keyCase.camelCase(data);
         if (g) {
           let parts = g.geometry.split(";");
           this.map.setWorkFlowGeomByWKT(parts[parts.length - 1]);

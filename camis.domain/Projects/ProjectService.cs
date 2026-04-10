@@ -442,7 +442,8 @@ namespace intapscamis.camis.domain.Projects
             for (var i = 0; i < data.Documents.Count; i++)
             {
                 var docReq = data.Documents.ElementAt(i);
-                var doc = _documentService.CreateDocument(docReq);
+                var workItem=_documentService.ExtractWorkItemIdFromOverrideFilePath(docReq.OverrideFilePath);
+                var doc = _documentService.CreateDocumentInFolder(workItem,docReq);
                 Context.ActivityPlanDocument.Add(new ActivityPlanDocument
                 {
                     Id = Guid.NewGuid(),
@@ -530,6 +531,7 @@ namespace intapscamis.camis.domain.Projects
             // ...remove old documents
             IList<Guid> oldDocumentIds = oldPlanDocuments.Select(planDocument => planDocument.DocumentId).ToList();
             var oldDocuments = Context.Document.Where(document => oldDocumentIds.Contains(document.Id));
+            _documentService.DeleteFileFromFolder(oldDocuments.ToList());
             Context.Document.RemoveRange(oldDocuments);
             Context.SaveChanges();
 
@@ -544,9 +546,10 @@ namespace intapscamis.camis.domain.Projects
                 planDoc.DocumentId == documentData.Id);
             var isNew = oldPlanDocument == null;
 
+            var workItem=_documentService.ExtractWorkItemIdFromOverrideFilePath(documentData.OverrideFilePath);
             var document = isNew
-                ? _documentService.CreateDocument(documentData)
-                : _documentService.UpdateDocument(documentData.Id.Value, documentData);
+                ? _documentService.CreateDocumentInFolder(workItem,documentData)
+                : _documentService.UpdateDocumentFromFolder(documentData.Id.Value, documentData);
             Context.SaveChanges();
             var planDocument = isNew
                 ? new ActivityPlanDocument()
@@ -717,7 +720,8 @@ namespace intapscamis.camis.domain.Projects
             for (var i = 0; i < body.ReportDocuments.Count; i++)
             {
                 var docReq = body.ReportDocuments.ElementAt(i);
-                var doc = _documentService.CreateDocument(docReq);
+                var workItem=_documentService.ExtractWorkItemIdFromOverrideFilePath(docReq.OverrideFilePath);
+                var doc = _documentService.CreateDocumentInFolder(workItem,docReq);
                 Context.ActivityProgressReportDocument.Add(new ActivityProgressReportDocument
                 {
                     Id = Guid.NewGuid(),
@@ -798,8 +802,26 @@ namespace intapscamis.camis.domain.Projects
             var dataStr = Context.WorkItem.Find(workItemId).Data;
             if (dataStr == null) return null;
             var data = JsonConvert.DeserializeObject<ActivityPlanRequest>(dataStr);
+          
+            var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
+                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+            var doc = data?.ReportDocuments?.First(d => d.Id == documentId);
+            if (doc != null)
+            {
+                var filePath = $"{doc.Id}";
+                if (!Path.IsPathRooted(filePath))
+                {
+                    filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                        workItemId.ToString(), Path.GetFileName(filePath));
+                }
 
-            return DocumentService.ParseDocument(data?.ReportDocuments?.First(d => d.Id == documentId));
+                if (File.Exists(filePath))
+                {
+                    var bytes = File.ReadAllBytes(filePath);
+                    doc.File =Convert.ToBase64String(bytes);
+                }
+            }
+            return DocumentService.ParseDocument(doc);
         }
 
 

@@ -110,5 +110,50 @@ namespace intapscamis.camis.Controllers
         {
             return View();
         }
+
+        [HttpGet]
+        public IActionResult GetDocumentFileFromFolder([FromQuery] string docId)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                var doc = _facade.GetDocumentFileFromFolder(docId.ToGuid());
+                return File(doc.File, doc.Mimetype, null); 
+            }
+            catch (Exception e)
+            { 
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+        public IActionResult PatchSaveDocument()
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                 _facade.PatchSaveDocument();
+                return Ok(); 
+            }
+            catch (Exception e)
+            { 
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+
+        public IActionResult PatchMigratingWorkItemFile()
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                var ret = _facade.PatchMigratingWorkItemFile().ConfigureAwait(false);
+                return Json(ret);
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
     }
 }

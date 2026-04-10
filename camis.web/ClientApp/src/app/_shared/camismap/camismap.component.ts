@@ -1,26 +1,27 @@
-import {Component, Input, OnInit, ElementRef, OnDestroy, AfterViewInit, Output, EventEmitter} from '@angular/core';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
-import {CommonModule} from '@angular/common';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {Component, Input, OnInit, ElementRef, OnDestroy, AfterViewInit} from '@angular/core';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // OpenLayers imports
 import OlMap from 'ol/Map';
 import OlView from 'ol/View';
 import OLTileWMS from 'ol/source/TileWMS';
-import {register} from 'ol/proj/proj4';
+import { register } from 'ol/proj/proj4';
 import GeoJSON from 'ol/format/GeoJSON';
 import WKT from 'ol/format/WKT';
-import {Vector as VectorSource} from 'ol/source';
-import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
-import {Fill, Stroke, Style} from 'ol/style';
+import { Vector as VectorSource } from 'ol/source';
+import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
+import { Fill, Stroke, Style } from 'ol/style';
 import XYZ from 'ol/source/XYZ';
 import Feature from 'ol/Feature';
 import Geometry from 'ol/geom/Geometry';
 
 // Services
-import {ApiService} from '../../_services/api.service';
-import {LandDataService} from '../../_services/land-data.service';
+import { ApiService } from '../../_services/api.service';
+import { LandDataService } from '../../_services/land-data.service';
 import {FullScreenService} from "../../_services/full-screen.service";
+import {AdminServices} from "../../_services/admin.Services";
 
 declare var proj4: any;
 
@@ -49,14 +50,10 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   private view!: OlView;
   private map!: OlMap;
 
-  // Vector sources
-  private nrlaisSource!: any;
-  private workflowSource!: any;
-  private splitSource!: any;
-  private environmentalChangeSource!: any;
-
-  // Vector layers - use any to avoid complex generic issues
-  private environmentalChangeLayer!: any;
+  // Vector layers
+  private nrlaisSource!: VectorSource;
+  private workflowSource!: VectorSource;
+  private splitSource!: VectorSource;
 
   // Styles
   private nrlaisStyle!: Style;
@@ -67,7 +64,6 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   zoomMargin = 1.3;
   mapType = 'satellite';
   backTo = 'Kebele';
-  utmZone=localStorage.getItem("UTM");
   private layers: any[] = [];
 
   // Connectivity monitoring
@@ -79,35 +75,30 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   // Cache busting for WMS layers
   private cacheBuster = Date.now();
 
-  // Environmental change detection
-  public changeDetectionActive = false;
+  public regionModel:any=null;
 
   constructor(
     private http: HttpClient,
     private land: LandDataService,
     private api: ApiService,
     private elementRef: ElementRef,
-    private fullScreenService: FullScreenService
+    private fullScreenService: FullScreenService,
+    private adminService:AdminServices,
   ) {
     this.loadSettings();
   }
-
   ngAfterViewInit(): void {
+    // Refresh map after a short delay to ensure everything is loaded
     setTimeout(() => {
       this.forceMapRefresh();
     }, 1000);
   }
-
   ngOnInit(): void {
     console.log('Initializing map component, online status:', navigator.onLine);
     this.initializeVectorSources();
-    //this.initializeEnvironmentalChangeLayer();
     this.initMap();
     this.setupResizeHandler();
     this.setupConnectivityMonitoring();
-    setTimeout(() => {
-      console.log('Map component fully initialized and ready');
-    }, 500);
   }
 
   ngOnDestroy(): void {
@@ -115,6 +106,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
       this.map.setTarget(null);
     }
     window.removeEventListener('resize', this.onWindowResize.bind(this));
+    // Remove connectivity listeners
     if (this.onlineListener) {
       window.removeEventListener('online', this.onlineListener);
     }
@@ -123,87 +115,12 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  private initializeEnvironmentalChangeLayer(): void {
-    this.environmentalChangeSource = new VectorSource({
-      features: []
-    });
-
-    // Style function with any type to avoid complex type issues
-    const styleFunction = (feature: any) => {
-      const eventType = feature.get('eventType');
-      let color = '#FF0000';
-
-      switch (eventType) {
-        case 'VEGETATION_LOSS':
-          color = '#FF0000';
-          break;
-        case 'VEGETATION_GROWTH':
-          color = '#00FF00';
-          break;
-        case 'WATER_INCREASE':
-          color = '#0000FF';
-          break;
-        case 'WATER_DECREASE':
-          color = '#FFA500';
-          break;
-        case 'URBANIZATION':
-          color = '#808080';
-          break;
-      }
-
-      const severity = feature.get('severity');
-      let strokeWidth = 2;
-      let fillOpacity = 0.3;
-
-      switch (severity) {
-        case 'SEVERE':
-          strokeWidth = 4;
-          fillOpacity = 0.6;
-          break;
-        case 'HIGH':
-          strokeWidth = 3;
-          fillOpacity = 0.5;
-          break;
-        case 'MODERATE':
-          strokeWidth = 2;
-          fillOpacity = 0.4;
-          break;
-        default:
-          strokeWidth = 1;
-          fillOpacity = 0.3;
-      }
-
-      return new Style({
-        stroke: new Stroke({
-          color: color,
-          width: strokeWidth
-        }),
-        fill: new Fill({
-          color: this.hexToRgba(color, fillOpacity)
-        })
-      });
-    };
-
-    this.environmentalChangeLayer = new VectorLayer({
-      source: this.environmentalChangeSource,
-      style: styleFunction
-    });
-    this.environmentalChangeLayer.set('name', 'environmental-changes');
-  }
-
-  private hexToRgba(hex: string, opacity: number): string {
-    hex = hex.replace('#', '');
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-  }
-
   private setupResizeHandler(): void {
     window.addEventListener('resize', this.onWindowResize.bind(this));
   }
 
   private onWindowResize(): void {
+    // Debounce the resize event
     setTimeout(() => {
       if (this.map) {
         this.map.updateSize();
@@ -215,6 +132,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     this.onlineListener = () => {
       console.log('Internet connection restored');
       this.isUsingOfflineLayer = false;
+      // Reload the map layers when connection is restored
       setTimeout(() => {
         this.rebuildLayers();
       }, 1000);
@@ -234,6 +152,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private rebuildLayers(): void {
     console.log('Rebuilding layers, online:', navigator.onLine);
+    // Update cache buster when rebuilding layers
     this.cacheBuster = Date.now();
     this.buildLayers();
     if (this.map) {
@@ -248,22 +167,25 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private initializeVectorSources(): void {
-    this.nrlaisSource = new VectorSource({features: []});
+    // NRLais layer
+    this.nrlaisSource = new VectorSource({ features: [] });
     this.nrlaisStyle = new Style({
-      stroke: new Stroke({color: 'blue', lineDash: [4], width: 3}),
-      fill: new Fill({color: 'rgba(0, 0, 255, 0.1)'})
+      stroke: new Stroke({ color: 'blue', lineDash: [4], width: 3 }),
+      fill: new Fill({ color: 'rgba(0, 0, 255, 0.1)' })
     });
 
-    this.workflowSource = new VectorSource({features: []});
+    // Workflow layer
+    this.workflowSource = new VectorSource({ features: [] });
     this.workflowStyle = new Style({
-      stroke: new Stroke({color: 'green', lineDash: [4], width: 3}),
-      fill: new Fill({color: 'rgba(0, 255, 0, 0.1)'})
+      stroke: new Stroke({ color: 'green', lineDash: [4], width: 3 }),
+      fill: new Fill({ color: 'rgba(0, 255, 0, 0.1)' })
     });
 
-    this.splitSource = new VectorSource({features: []});
+    // Split layer
+    this.splitSource = new VectorSource({ features: [] });
     this.splitStyle = new Style({
-      stroke: new Stroke({color: 'red', width: 3}),
-      fill: new Fill({color: 'rgba(255, 0, 0, 0.1)'})
+      stroke: new Stroke({ color: 'red', width: 3 }),
+      fill: new Fill({ color: 'rgba(255, 0, 0, 0.1)' })
     });
   }
 
@@ -273,11 +195,10 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     this.buildLayers();
     this.createMap();
     this.zoomToExtent();
-    this.setupChangeInteraction();
   }
 
   private setupProjection(): void {
-    proj4.defs('EPSG:20137', '+proj=utm +zone='+this.utmZone+' +ellps=clrk80 +units=m +no_defs');
+    proj4.defs('EPSG:20137', '+proj=utm +zone=37 +ellps=clrk80 +units=m +no_defs');
     register(proj4);
   }
 
@@ -317,15 +238,8 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     this.addBaseLayer();
     this.addWmsLayers();
     this.addVectorLayers();
-    this.addEnvironmentalChangeLayer();
 
     console.log('Total layers built:', this.layers.length);
-  }
-
-  private addEnvironmentalChangeLayer(): void {
-    if (this.environmentalChangeLayer) {
-      this.layers.push(this.environmentalChangeLayer);
-    }
   }
 
   private addBaseLayer(): void {
@@ -334,6 +248,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
+    // Check internet connectivity
     if (!navigator.onLine) {
       console.log('Offline detected, using offline base layer');
       this.addOfflineBaseLayer();
@@ -342,6 +257,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     console.log('Online detected, using Google Maps base layer');
+    // If online, try to load Google Maps
     this.addOnlineBaseLayer();
     this.isUsingOfflineLayer = false;
   }
@@ -360,8 +276,9 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
       source: new XYZ({
         url,
         attributions: 'Google Maps',
-        tileLoadFunction: (tile: any, src: string) => {
-          const imageTile = tile;
+        // Add error handling for cases where Google is blocked but internet exists
+        tileLoadFunction: (tile, src) => {
+          const imageTile = tile as any;
           const img = imageTile.getImage();
           img.src = src;
           img.onerror = () => {
@@ -381,22 +298,27 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   private addOfflineBaseLayer(): void {
     console.log('Creating offline base layer');
 
+    // Create a simple blank layer as offline base
     const offlineLayer = new TileLayer({
       source: new XYZ({
         attributions: 'Offline Base Map',
-        tileLoadFunction: (tile: any, src: string) => {
-          const imageTile = tile;
+        tileLoadFunction: (tile, src) => {
+          // Create a blank tile
+          const imageTile = tile as any;
           const canvas = document.createElement('canvas');
           canvas.width = 256;
           canvas.height = 256;
           const context = canvas.getContext('2d');
           if (context) {
+            // Fill with light gray background
             context.fillStyle = '#f8f8f8';
             context.fillRect(0, 0, 256, 256);
 
+            // Add a grid pattern
             context.strokeStyle = '#e0e0e0';
             context.lineWidth = 1;
 
+            // Draw grid lines
             for (let i = 0; i < 256; i += 16) {
               context.beginPath();
               context.moveTo(i, 0);
@@ -409,6 +331,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
               context.stroke();
             }
 
+            // Add "Offline Map" text
             context.fillStyle = '#666666';
             context.font = 'bold 16px Arial';
             context.textAlign = 'center';
@@ -430,14 +353,17 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   private fallbackToOfflineBaseLayer(): void {
     console.log('Falling back to offline base layer');
 
+    // Remove any existing base layers
     this.layers = this.layers.filter(layer => {
       const layerName = layer.get('name');
       return !(layerName === 'google-base-layer' || layerName === 'offline-base-layer');
     });
 
+    // Add offline layer
     this.addOfflineBaseLayer();
     this.isUsingOfflineLayer = true;
 
+    // Update the map
     if (this.map) {
       this.map.setLayers(this.layers);
       this.map.updateSize();
@@ -447,19 +373,11 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private addWmsLayers(): void {
     const wmsConfigs: WmsLayerConfig[] = [
-      {name: 'Counter', layerName: 'nrlais:ne_10m_admin_0_countries', visible: true},
-      {
-        name: 'Region',
-        layerName: 'nrlais:t_regions',
-        visible: this.backTo === 'Region' || this.backTo === 'Woreda' || this.backTo === 'Kebele' || this.backTo === 'Land'
-      },
-      {
-        name: 'Woreda',
-        layerName: 'nrlais:t_woredas',
-        visible: this.backTo === 'Woreda' || this.backTo === 'Kebele' || this.backTo === 'Land'
-      },
-      {name: 'Kebele', layerName: 'nrlais:t_kebeles', visible: this.backTo === 'Kebele' || this.backTo === 'Land'},
-      {name: 'Land', layerName: 'camis:v_gs_land', visible: this.backTo === 'Land'}
+      {name:'Counter', layerName:'nrlais:ne_10m_admin_0_countries', visible:true},
+      { name: 'Region', layerName: 'nrlais:t_regions', visible: this.backTo === 'Region'|| this.backTo ==='Woreda'||this.backTo ==='Kebele'||this.backTo ==='Land'},
+      { name: 'Woreda', layerName: 'nrlais:t_woredas', visible: this.backTo === 'Woreda' || this.backTo ==='Kebele'||this.backTo ==='Land'},
+      { name: 'Kebele', layerName: 'nrlais:t_kebeles', visible: this.backTo === 'Kebele'||this.backTo ==='Land' },
+      { name: 'Land', layerName: 'camis:v_gs_land', visible: this.backTo === 'Land' }
     ];
 
     const visibleConfigs = wmsConfigs.filter(config => config.visible);
@@ -480,11 +398,11 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
           'VERSION': '1.1.1',
           'FORMAT': 'image/png',
           'TRANSPARENT': true,
-          '_t': this.cacheBuster
+          '_t': this.cacheBuster // Add cache busting parameter
         },
         serverType: 'geoserver',
         crossOrigin: 'anonymous',
-        cacheSize: 0
+        cacheSize: 0 // Disable tile caching
       });
 
       const wmsLayer = new TileLayer({
@@ -495,8 +413,12 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
       wmsLayer.set('name', `wms-${config.name.toLowerCase()}`);
 
-      wmsSource.on('tileloaderror', (error: any) => {
+      wmsSource.on('tileloaderror', (error) => {
         console.error(`Failed to load WMS layer: ${config.layerName}`, error);
+      });
+
+      wmsSource.on('tileloadstart', () => {
+        console.log(`Loading WMS tile: ${config.layerName}`);
       });
 
       this.layers.push(wmsLayer);
@@ -518,7 +440,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log('Vector layers added');
   }
 
-  private createVectorLayer(source: any, style: Style, name: string) {
+  private createVectorLayer(source: VectorSource, style: Style, name: string) {
     const layer = new VectorLayer({
       source,
       style: () => style
@@ -533,13 +455,18 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     this.api.get('map/GetLandMapBound').subscribe({
       next: (response: any) => {
         console.log('Raw API response:', response);
+
+        // Handle different response formats
         let bbox: BoundingBox;
 
         if (this.isBoundingBox(response)) {
+          // Direct bounding box object
           bbox = response;
         } else if (response.data && this.isBoundingBox(response.data)) {
+          // Wrapped in data property
           bbox = response.data;
         } else if (response.bbox || response.bounds) {
+          // Different property names
           const bboxData = response.bbox || response.bounds;
           bbox = {
             x1: bboxData.minX || bboxData.x1 || bboxData.left,
@@ -555,6 +482,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
         console.log('Processed bounding box:', bbox);
 
+        // Validate bounding box values
         if (!this.isValidBoundingBox(bbox)) {
           console.warn('Invalid bounding box received, using default view');
           this.useDefaultView();
@@ -563,6 +491,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
         const resolution = this.calculateResolution(bbox);
 
+        // Validate resolution
         if (isNaN(resolution) || !isFinite(resolution)) {
           console.warn('Invalid resolution calculated, using default view');
           this.useDefaultView();
@@ -619,24 +548,25 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (!mapElement) {
       console.warn('Map element not found for resolution calculation');
-      return 300;
+      return 300; // Default resolution
     }
 
     const width = mapElement.clientWidth || 800;
     const height = mapElement.clientHeight || 600;
 
-    console.log('Map dimensions:', {width, height});
+    console.log('Map dimensions:', { width, height });
     console.log('Bounding box dimensions:', {
       width: bbox.x2 - bbox.x1,
       height: bbox.y2 - bbox.y1
     });
 
+    // Validate bounding box dimensions
     const bboxWidth = bbox.x2 - bbox.x1;
     const bboxHeight = bbox.y2 - bbox.y1;
 
     if (bboxWidth <= 0 || bboxHeight <= 0 || !isFinite(bboxWidth) || !isFinite(bboxHeight)) {
-      console.warn('Invalid bounding box dimensions:', {bboxWidth, bboxHeight});
-      return 300;
+      console.warn('Invalid bounding box dimensions:', { bboxWidth, bboxHeight });
+      return 300; // Default resolution
     }
 
     const horizontalRes = (bboxWidth * this.zoomMargin) / width;
@@ -648,6 +578,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private zoomToSetExtent(extent: number[]): void {
+    // Validate extent array
     if (!extent || extent.length !== 4 ||
       extent.some(val => isNaN(val) || !isFinite(val)) ||
       extent[0] >= extent[2] || extent[1] >= extent[3]) {
@@ -674,67 +605,9 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  // Environmental Change Detection Methods
-
-
-  private setupChangeInteraction(): void {
-    this.map.on('click', (event: any) => {
-      const features = this.map.getFeaturesAtPixel(event.pixel);
-
-      if (features && features.length > 0) {
-        // Find the first environmental change feature
-        const changeFeature = features.find((f: any) => {
-          const eventType = f.get('eventType');
-          return eventType && typeof eventType === 'string';
-        });
-
-      }
-    });
-  }
-
-  private showChangePopup(feature: any): void {
-    const eventType = feature.get('eventType');
-    const severity = feature.get('severity');
-    const parcelUpid = feature.get('parcelUpid');
-    const changeAmount = feature.get('changeAmount');
-    const confidence = feature.get('confidence');
-
-    console.log('Change Feature Clicked:', {
-      eventType,
-      severity,
-      parcelUpid,
-      changeAmount,
-      confidence
-    });
-
-    const message = `
-      Environmental Change Detected:
-      Type: ${eventType}
-      Severity: ${severity}
-      Parcel: ${parcelUpid}
-      Change: ${changeAmount?.toFixed(4)}
-      Confidence: ${((confidence || 0) * 100).toFixed(1)}%
-    `;
-
-    alert(message);
-  }
-
-  public clearEnvironmentalChanges(): void {
-    this.environmentalChangeSource.clear();
-    console.log('Cleared environmental changes from map');
-  }
-
-  public toggleChangeLayerVisibility(): void {
-    if (this.environmentalChangeLayer) {
-      const currentVisibility = this.environmentalChangeLayer.getVisible();
-      this.environmentalChangeLayer.setVisible(!currentVisibility);
-      console.log('Environmental change layer visibility:', !currentVisibility);
-    }
-  }
-
   // Public methods
   public googleMapSetting(): void {
-    console.log('Updating map settings:', {mapType: this.mapType, backTo: this.backTo});
+    console.log('Updating map settings:', { mapType: this.mapType, backTo: this.backTo });
 
     localStorage.setItem('mapType', this.mapType);
     localStorage.setItem('backTo', this.backTo);
@@ -819,6 +692,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
       mapContainer.classList.add('full-screen');
     }
 
+    // Update map size after entering full screen
     setTimeout(() => {
       if (this.map) {
         this.map.updateSize();
@@ -832,6 +706,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
       mapContainer.classList.remove('full-screen');
     }
 
+    // Update map size after exiting full screen
     setTimeout(() => {
       if (this.map) {
         this.map.updateSize();
@@ -839,9 +714,71 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     }, 300);
   }
 
+  // NEW METHOD: Refresh WMS layers with cache busting
+  public refreshWmsLayers(): void {
+    console.log('Refreshing WMS layers with cache busting');
 
+    // Update cache buster
+    this.cacheBuster = Date.now();
+
+    this.layers.forEach(layer => {
+      const layerName = layer.get('name');
+      if (layerName && layerName.startsWith('wms-')) {
+        const source = layer.getSource() as OLTileWMS;
+        if (source) {
+          // Update params to force refresh with new cache buster
+          source.updateParams({
+            '_t': this.cacheBuster
+          });
+          source.refresh(); // Force source refresh
+          console.log(`Refreshed layer: ${layerName} with cache buster: ${this.cacheBuster}`);
+        }
+      }
+    });
+  }
+
+  // NEW METHOD: Force complete map refresh
   public forceMapRefresh(): void {
     console.log('Forcing complete map refresh');
     this.rebuildLayers();
   }
+
+  public testGeoServerConnection(): void {
+    const testUrl = '/geoserver/wms?service=WMS&version=1.1.1&request=GetCapabilities&_t=' + Date.now();
+
+    this.http.get(testUrl, { responseType: 'text' }).subscribe({
+      next: () => console.log('GeoServer connection successful'),
+      error: (error) => console.error('GeoServer connection failed:', error)
+    });
+  }
+
+  // Debug method to check current layer status
+  public debugLayers(): void {
+    console.log('=== MAP DEBUG INFO ===');
+    console.log('Online status:', navigator.onLine);
+    console.log('Using offline layer:', this.isUsingOfflineLayer);
+    console.log('Cache buster value:', this.cacheBuster);
+    console.log('Total layers:', this.layers.length);
+
+    this.layers.forEach((layer, index) => {
+      const name = layer.get('name') || 'unnamed-layer';
+      const visible = layer.getVisible();
+      const opacity = layer.getOpacity();
+      console.log(`Layer ${index}: ${name}, visible: ${visible}, opacity: ${opacity}`);
+
+      // Show WMS layer parameters
+      if (name.startsWith('wms-')) {
+        const source = layer.getSource() as OLTileWMS;
+        if (source) {
+          console.log(`  - Params:`, source.getParams());
+        }
+      }
+    });
+
+    console.log('Map target:', this.map?.getTarget());
+    console.log('View center:', this.view?.getCenter());
+    console.log('View resolution:', this.view?.getResolution());
+    console.log('=====================');
+  }
+
 }

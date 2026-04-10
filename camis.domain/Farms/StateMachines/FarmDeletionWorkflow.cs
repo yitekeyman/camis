@@ -156,109 +156,179 @@ namespace intapscamis.camis.domain.Farms.StateMachines
             StateMachine<States, Triggers>.Transition transition)
         {
             var workItemId = Guid.NewGuid();
+             var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
+                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+            var fileSavePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, workItemId.ToString());
+            if (!Directory.Exists(fileSavePath))
+            {
+                Directory.CreateDirectory(fileSavePath);
+            }
+
+            // Process photo - Copy from previous work item if exists
             if (data?.Operator?.Photo != null)
             {
                 const string pathPrefix = "/api/Farms/InWorkItemOperatorPhoto/";
+
+                // Check if this is a reference to a file from a previous work item
                 if (data.Operator.Photo.OverrideFilePath != null &&
-                    data.Operator.Photo.OverrideFilePath.Substring(0, pathPrefix.Length) == pathPrefix)
+                    data.Operator.Photo.OverrideFilePath.Contains(pathPrefix))
                 {
-                    var lastWorkItem = _workflowService.GetLastWorkItem(Workflow.Id);
-                    if (lastWorkItem != null)
+                    // Extract previous work item ID and copy the file
+                    var previousWorkItem = _workflowService.GetLastWorkItem(Workflow.Id);
+                    if (previousWorkItem != null)
                     {
-                        var file = _service.InWorkItemOperatorPhoto(lastWorkItem.Id, data.Operator.Photo.Id??Guid.Empty).File;
-                        if (file != null) data.Operator.Photo.File = Convert.ToBase64String(file);
+                        var previousPath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                            previousWorkItem.Id.ToString());
+                        var sourceFilePath = Path.Combine(previousPath, $"{data.Operator.Photo.Id}");
+                        var destFilePath = Path.Combine(fileSavePath, $"{data.Operator.Photo.Id}");
+
+                        if (File.Exists(sourceFilePath))
+                        {
+                            File.Copy(sourceFilePath, destFilePath, true);
+                        }
                     }
                 }
-                    
-                data.Operator.Photo.Id = data.Operator.Photo.Id ?? Guid.NewGuid();
+                else if (data.Operator.Photo.File != null)
+                {
+                    // New file - save to disk
+                    data.Operator.Photo.Id = data.Operator.Photo.Id ?? Guid.NewGuid();
+                    var filePath = Path.Combine(fileSavePath, $"{data.Operator.Photo.Id}");
+
+                    var fileBytes = Convert.FromBase64String(data.Operator.Photo.File);
+                    File.WriteAllBytes(filePath, fileBytes);
+                    data.Operator.Photo.File = null; // Set to null after saving to disk
+                }
+
+                // Update the override file path
                 data.Operator.Photo.OverrideFilePath = $"{pathPrefix}{workItemId}?photoId={data.Operator.Photo.Id}";
-                
             }
-            // tag each (FarmRequest data).Registrations[i].Document 
+
+            // Process Registrations
             if (data?.Registrations != null)
             {
                 var i = -1;
-                
+                const string pathPrefix = "/api/Farms/InWorkItemRegistrationFile/";
+
                 foreach (var reg in data.Registrations)
                 {
                     if (reg.Document == null) continue;
 
-                    // temp Id used only in this workflow to access the document
                     reg.Id = i;
                     i--;
 
-                    const string pathPrefix = "/api/Farms/InWorkItemRegistrationFile/";
-                    
+                    // Check if this is a reference to a file from a previous work item
                     if (reg.Document.OverrideFilePath != null &&
-                        reg.Document.OverrideFilePath.Substring(0, pathPrefix.Length) == pathPrefix)
+                        reg.Document.OverrideFilePath.Contains(pathPrefix))
                     {
-                        var lastWorkItem = _workflowService.GetLastWorkItem(Workflow.Id);
-                        if (lastWorkItem != null)
+                        var previousWorkItem = _workflowService.GetLastWorkItem(Workflow.Id);
+                        if (previousWorkItem != null)
                         {
-                            var file = _service.InWorkItemRegistrationFile(lastWorkItem.Id, reg.Id).File;
-                            if (file != null) reg.Document.File = Convert.ToBase64String(file);
+                            var previousPath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                                previousWorkItem.Id.ToString());
+                            var sourceFilePath = Path.Combine(previousPath, $"{reg.Document.Id}");
+                            var destFilePath = Path.Combine(fileSavePath, $"{reg.Document.Id}");
+
+                            if (File.Exists(sourceFilePath))
+                            {
+                                File.Copy(sourceFilePath, destFilePath, true);
+                            }
                         }
                     }
+                    else if (reg.Document.File != null)
+                    {
+                        // New file - save to disk
+                        reg.Document.Id = reg.Document.Id ?? Guid.NewGuid();
+                        var filePath = Path.Combine(fileSavePath, $"{reg.Document.Id}");
 
-                    reg.Document.Id = reg.Document.Id ?? Guid.NewGuid();
+                        var fileBytes = Convert.FromBase64String(reg.Document.File);
+                        File.WriteAllBytes(filePath, fileBytes);
+                        reg.Document.File = null; // Set to null after saving
+                    }
+
                     reg.Document.OverrideFilePath = $"{pathPrefix}{workItemId}?regId={reg.Id}";
                 }
             }
-            
-            // tag each (FarmRequest data).Operator.Registrations[i].Document 
+
+            // Process Operator Registrations (similar pattern)
             if (data?.Operator?.Registrations != null)
             {
                 var i = -1;
+                const string pathPrefix = "/api/Farms/InWorkItemOperatorRegistrationFile/";
 
                 foreach (var reg in data.Operator.Registrations)
                 {
                     if (reg.Document == null) continue;
 
-                    // temp Id used only in this workflow to access the document
                     reg.Id = i;
                     i--;
-                    
-                    const string pathPrefix = "/api/Farms/InWorkItemOperatorRegistrationFile/";
 
                     if (reg.Document.OverrideFilePath != null &&
-                        reg.Document.OverrideFilePath.Substring(0, pathPrefix.Length) == pathPrefix)
+                        reg.Document.OverrideFilePath.Contains(pathPrefix))
                     {
-                        var lastWorkItem = _workflowService.GetLastWorkItem(Workflow.Id);
-                        if (lastWorkItem != null)
+                        var previousWorkItem = _workflowService.GetLastWorkItem(Workflow.Id);
+                        if (previousWorkItem != null)
                         {
-                            var file = _service.InWorkItemOperatorRegistrationFile(lastWorkItem.Id, reg.Id).File;
-                            if (file != null) reg.Document.File = Convert.ToBase64String(file);
+                            var previousPath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                                previousWorkItem.Id.ToString());
+                            var sourceFilePath = Path.Combine(previousPath, $"{reg.Document.Id}");
+                            var destFilePath = Path.Combine(fileSavePath, $"{reg.Document.Id}");
+
+                            if (File.Exists(sourceFilePath))
+                            {
+                                File.Copy(sourceFilePath, destFilePath, true);
+                            }
                         }
                     }
-                    
-                    reg.Document.Id = reg.Document.Id ?? Guid.NewGuid();
+                    else if (reg.Document.File != null)
+                    {
+                        reg.Document.Id = reg.Document.Id ?? Guid.NewGuid();
+                        var filePath = Path.Combine(fileSavePath, $"{reg.Document.Id}");
+
+                        var fileBytes = Convert.FromBase64String(reg.Document.File);
+                        File.WriteAllBytes(filePath, fileBytes);
+                        reg.Document.File = null;
+                    }
+
                     reg.Document.OverrideFilePath = $"{pathPrefix}{workItemId}?regId={reg.Id}";
                 }
             }
-            
-            // tag each (FarmRequest data).ActivityPlan.Documents 
+
+            // Process ActivityPlan Documents (similar pattern)
             if (data?.ActivityPlan?.Documents != null)
             {
+                const string pathPrefix = "/api/Farms/InWorkItemActivityPlanFile/";
+
                 foreach (var doc in data.ActivityPlan.Documents)
                 {
                     if (doc == null) continue;
-                    
-                    const string pathPrefix = "/api/Farms/InWorkItemActivityPlanFile/";
 
                     if (doc.OverrideFilePath != null &&
-                        doc.OverrideFilePath.Substring(0, pathPrefix.Length) == pathPrefix)
+                        doc.OverrideFilePath.Contains(pathPrefix))
                     {
-                        var lastWorkItem = _workflowService.GetLastWorkItem(Workflow.Id);
-                        if (lastWorkItem != null)
+                        var previousWorkItem = _workflowService.GetLastWorkItem(Workflow.Id);
+                        if (previousWorkItem != null)
                         {
-                            var file = _service
-                                .InWorkItemActivityPlanFile(lastWorkItem.Id, doc.Id ?? Guid.Empty)
-                                .File;
-                            if (file != null) doc.File = Convert.ToBase64String(file);
+                            var previousPath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                                previousWorkItem.Id.ToString());
+                            var sourceFilePath = Path.Combine(previousPath, $"{doc.Id}");
+                            var destFilePath = Path.Combine(fileSavePath, $"{doc.Id}");
+
+                            if (File.Exists(sourceFilePath))
+                            {
+                                File.Copy(sourceFilePath, destFilePath, true);
+                            }
                         }
                     }
-                    
-                    doc.Id = doc.Id ?? Guid.NewGuid();
+                    else if (doc.File != null)
+                    {
+                        doc.Id = doc.Id ?? Guid.NewGuid();
+                        var filePath = Path.Combine(fileSavePath, $"{doc.Id}");
+
+                        var fileBytes = Convert.FromBase64String(doc.File);
+                        File.WriteAllBytes(filePath, fileBytes);
+                        doc.File = null;
+                    }
+
                     doc.OverrideFilePath = $"{pathPrefix}{workItemId}?documentId={doc.Id}";
                 }
             }
@@ -292,5 +362,6 @@ namespace intapscamis.camis.domain.Farms.StateMachines
                 Approve = machine.SetTriggerParameters<string, long?>(Triggers.Approve);
             }
         }
+        
     }
 }

@@ -267,7 +267,12 @@ namespace intapscamis.camis.domain.Farms
         {
             Document photo = null;
             if (data.Photo != null)
-                photo = _documentService.CreateDocument(data.Photo);
+            {
+                var workItemId = _documentService.ExtractWorkItemIdFromOverrideFilePath(data.Photo.OverrideFilePath);
+                if (workItemId != Guid.Empty)
+                    photo = _documentService.CreateDocumentInFolder(workItemId, data.Photo);
+            }
+
 
             var email = !string.IsNullOrEmpty(data.Email)
                 ? new MailAddress(data.Email).Address
@@ -315,7 +320,14 @@ namespace intapscamis.camis.domain.Farms
             Context.FarmOperatorRegistration.AddRange(data.Registrations.Select(registration =>
             {
                 Document document = null;
-                if (registration.Document != null) document = _documentService.CreateDocument(registration.Document);
+
+                if (registration.Document != null)
+                {
+                    var workItemId =
+                        _documentService.ExtractWorkItemIdFromOverrideFilePath(registration.Document.OverrideFilePath);
+                    if (workItemId != Guid.Empty)
+                        document = _documentService.CreateDocumentInFolder(workItemId, registration.Document);
+                }
 
                 return new FarmOperatorRegistration
                 {
@@ -356,7 +368,14 @@ namespace intapscamis.camis.domain.Farms
             Context.FarmRegistration.AddRange(data.Registrations.Select(registration =>
             {
                 Document document = null;
-                if (registration.Document != null) document = _documentService.CreateDocument(registration.Document);
+
+                if (registration.Document != null)
+                {
+                    var workItemId =
+                        _documentService.ExtractWorkItemIdFromOverrideFilePath(registration.Document.OverrideFilePath);
+                    if (workItemId != Guid.Empty)
+                        document = _documentService.CreateDocumentInFolder(workItemId, registration.Document);
+                }
 
                 return new FarmRegistration
                 {
@@ -387,13 +406,19 @@ namespace intapscamis.camis.domain.Farms
             var oldPhoto = Context.Document.FirstOrDefault(p => p.Id == farmOperator.PhotoId);
             if (oldPhoto != null)
             {
+                _documentService.DeleteDocumentFromFolder(oldPhoto.Id);
                 Context.Remove(oldPhoto);
                 Context.SaveChanges();
             }
 
             Document photo = null;
             if (data.Photo != null)
-                photo = _documentService.CreateDocument(data.Photo);
+            {
+                var workItemId = _documentService.ExtractWorkItemIdFromOverrideFilePath(data.Photo.OverrideFilePath);
+                if (workItemId != Guid.Empty)
+                    photo = _documentService.CreateDocumentInFolder(workItemId, data.Photo);
+            }
+
 
             farmOperator.Name = data.Name;
             farmOperator.Nationality = data.Nationality;
@@ -435,13 +460,20 @@ namespace intapscamis.camis.domain.Farms
             Context.SaveChanges();
             var opRegDocumentIds = opRegs.Select(opReg => opReg.DocumentId).ToList();
             var opRegDocuments = Context.Document.Where(d => opRegDocumentIds.Contains(d.Id)).ToList();
+            _documentService.DeleteFileFromFolder(opRegDocuments);
             Context.Document.RemoveRange(opRegDocuments);
             Context.SaveChanges();
 
             Context.FarmOperatorRegistration.AddRange(data.Registrations.Select(registration =>
             {
                 Document document = null;
-                if (registration.Document != null) document = _documentService.CreateDocument(registration.Document);
+                if (registration.Document != null)
+                {
+                    var workItemId =
+                        _documentService.ExtractWorkItemIdFromOverrideFilePath(registration.Document.OverrideFilePath);
+                    if (workItemId != Guid.Empty)
+                        document = _documentService.CreateDocumentInFolder(workItemId, registration.Document);
+                }
 
                 return new FarmOperatorRegistration
                 {
@@ -483,13 +515,20 @@ namespace intapscamis.camis.domain.Farms
             var farmRegistrationDocumentIds = farmRegistrations.Select(fr => fr.DocumentId);
             var farmRegistrationDocuments =
                 Context.Document.Where(d => farmRegistrationDocumentIds.Contains(d.Id)).ToList();
+            _documentService.DeleteFileFromFolder(farmRegistrationDocuments);
             Context.Document.RemoveRange(farmRegistrationDocuments);
             Context.SaveChanges();
 
             Context.FarmRegistration.AddRange(data.Registrations.Select(registration =>
             {
                 Document document = null;
-                if (registration.Document != null) document = _documentService.CreateDocument(registration.Document);
+                if (registration.Document != null)
+                {
+                    var workItemId =
+                        _documentService.ExtractWorkItemIdFromOverrideFilePath(registration.Document.OverrideFilePath);
+                    if (workItemId != Guid.Empty)
+                        document = _documentService.CreateDocumentInFolder(workItemId, registration.Document);
+                }
 
                 return new FarmRegistration
                 {
@@ -569,6 +608,12 @@ namespace intapscamis.camis.domain.Farms
             {
                 var data = JsonConvert.DeserializeObject<FarmRequest>(
                     JsonConvert.SerializeObject(workItem.Data));
+
+                if (data.Operator.Photo != null)
+                {
+                    data.Operator.Photo.File = Convert.ToBase64String(_documentService
+                        .ParseDocumentFromFolder(workItem.Id, data.Operator.Photo).File);
+                }
 
                 // (FarmRequest data).Registrations[i].Document 
                 if (data?.Registrations != null)
@@ -1202,5 +1247,6 @@ namespace intapscamis.camis.domain.Farms
             var farm = baseQuery.FirstOrDefault(e => e.Id == id);
             return MapFarmToResponse(farm);
         }
+        
     }
 }

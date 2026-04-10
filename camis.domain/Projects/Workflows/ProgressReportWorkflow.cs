@@ -39,25 +39,27 @@ namespace intapscamis.camis.domain.Projects.Workflows
         Approve = 9,
         Submit = 10,
     }
-    
+
     public interface IProgressReportWorkflow : ICamisWorkflow
     {
         Workflow Workflow { get; }
-        
+
         void SetSession(UserSession session);
-        
-        void Fire(Guid workflowId, StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<string, long?> trigger,
+
+        void Fire(Guid workflowId,
+            StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<string, long?> trigger,
             string description, long? assignedUser);
 
         void Fire(Guid workflowId,
-            StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<ActivityPlanRequest, string, long?> trigger,
+            StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<ActivityPlanRequest, string
+                , long?> trigger,
             ActivityPlanRequest data, string description, long? assignedUser);
     }
-    
+
     public class ProgressReportWorkflow : CamisWorkflow, IProgressReportWorkflow
     {
         private UserSession _session;
-        
+
         private readonly IProjectService _service;
         private readonly IWorkflowService _workflowService;
 
@@ -91,9 +93,9 @@ namespace intapscamis.camis.domain.Projects.Workflows
             const ProgressReportStates initialState = ProgressReportStates.Start;
             Workflow = _workflowService.CreateWorkflow(new WorkflowRequest
             {
-                CurrentState = (int) initialState,
+                CurrentState = (int)initialState,
                 Description = "New business plan progress report.",
-                TypeId = (int) WorkflowTypes.ProgressReport
+                TypeId = (int)WorkflowTypes.ProgressReport
             });
             _machine = new StateMachine<ProgressReportStates, ProgressReportTriggers>(initialState);
 
@@ -104,8 +106,9 @@ namespace intapscamis.camis.domain.Projects.Workflows
         public override void ConfigureMachine(Guid workflowId)
         {
             Workflow = Context.Workflow.First(wf =>
-                wf.Id == workflowId && wf.TypeId == (int) WorkflowTypes.ProgressReport);
-            _machine = new StateMachine<ProgressReportStates, ProgressReportTriggers>((ProgressReportStates) Workflow.CurrentState);
+                wf.Id == workflowId && wf.TypeId == (int)WorkflowTypes.ProgressReport);
+            _machine = new StateMachine<ProgressReportStates, ProgressReportTriggers>(
+                (ProgressReportStates)Workflow.CurrentState);
 
             DefineStateMachine();
         }
@@ -155,25 +158,27 @@ namespace intapscamis.camis.domain.Projects.Workflows
 
             _machine.Configure(ProgressReportStates.Cancelled)
                 .OnEntryFrom(ParameterizedTriggers.Cancel, OnCancel);
-            
+
             _machine.Configure(ProgressReportStates.Approved)
                 .OnEntryFrom(ParameterizedTriggers.Approve, OnApprove);
         }
 
 
-        public void Fire(Guid workflowId, StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<string, long?> trigger,
+        public void Fire(Guid workflowId,
+            StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<string, long?> trigger,
             string description, long? assignedUser)
         {
             _machine.Fire(trigger, description, assignedUser);
-            _workflowService.UpdateWorkflow(workflowId, (int) _machine.State, description);
+            _workflowService.UpdateWorkflow(workflowId, (int)_machine.State, description);
         }
 
         public void Fire(Guid workflowId,
-            StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<ActivityPlanRequest, string, long?> trigger,
+            StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<ActivityPlanRequest, string
+                , long?> trigger,
             ActivityPlanRequest data, string description, long? assignedUser)
         {
             _machine.Fire(trigger, data, description, assignedUser);
-            _workflowService.UpdateWorkflow(workflowId, (int) _machine.State, description);
+            _workflowService.UpdateWorkflow(workflowId, (int)_machine.State, description);
         }
 
 
@@ -235,10 +240,15 @@ namespace intapscamis.camis.domain.Projects.Workflows
             StateMachine<ProgressReportStates, ProgressReportTriggers>.Transition transition)
         {
             var data = GetData();
+            var lastWorkItem = _workflowService.GetLastWorkItem(Workflow.Id);
+            if (lastWorkItem != null && data != null)
+            {
+                LoadFilesFromWorkItem(lastWorkItem.Id, data);
+            }
 
             // the real act
             _service.CreateActivityProgressReport(data, data.RootActivityId.ToGuid());
-            
+
             ConfigureAndAddWorkItem(null, data, description, assignedUser, transition);
         }
 
@@ -251,45 +261,66 @@ namespace intapscamis.camis.domain.Projects.Workflows
             return workItem != null ? JsonConvert.DeserializeObject<ActivityPlanRequest>(workItem.Data) : null;
         }
 
-        private void ConfigureAndAddWorkItem(long? role, ActivityPlanRequest data, string description, long? assignedUser,
+        private void ConfigureAndAddWorkItem(long? role, ActivityPlanRequest data, string description,
+            long? assignedUser,
             StateMachine<ProgressReportStates, ProgressReportTriggers>.Transition transition)
         {
             var workItemId = Guid.NewGuid();
-            
+            var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
+                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+            var fileSavePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, workItemId.ToString());
+            if (!Directory.Exists(fileSavePath))
+            {
+                Directory.CreateDirectory(fileSavePath);
+            }
+
             // tag each (ActivityPlanRequest data).ReportDocuments 
             if (data?.ReportDocuments != null)
             {
+                const string pathPrefix = "/api/Projects/InWorkItemReportFile/";
+
                 foreach (var doc in data.ReportDocuments)
                 {
                     if (doc == null) continue;
-                    
-                    const string pathPrefix = "/api/Projects/InWorkItemReportFile/";
 
                     if (doc.OverrideFilePath != null &&
-                        doc.OverrideFilePath.Substring(0, pathPrefix.Length) == pathPrefix)
+                        doc.OverrideFilePath.Contains(pathPrefix))
                     {
-                        var lastWorkItem = _workflowService.GetLastWorkItem(Workflow.Id);
-                        if (lastWorkItem != null)
+                        var previousWorkItem = _workflowService.GetLastWorkItem(Workflow.Id);
+                        if (previousWorkItem != null)
                         {
-                            var file = _service
-                                .InWorkItemReportFile(lastWorkItem.Id, doc.Id ?? Guid.Empty)
-                                .File;
-                            if (file != null) doc.File = Convert.ToBase64String(file);
+                            var previousPath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                                previousWorkItem.Id.ToString());
+                            var sourceFilePath = Path.Combine(previousPath, $"{doc.Id}");
+                            var destFilePath = Path.Combine(fileSavePath, $"{doc.Id}");
+
+                            if (File.Exists(sourceFilePath))
+                            {
+                                File.Copy(sourceFilePath, destFilePath, true);
+                            }
                         }
                     }
-                    
-                    doc.Id = doc.Id ?? Guid.NewGuid();
-                    doc.OverrideFilePath = $"${pathPrefix}{workItemId}?documentId={doc.Id}";
+                    else if (doc.File != null)
+                    {
+                        doc.Id = doc.Id ?? Guid.NewGuid();
+                        var filePath = Path.Combine(fileSavePath, $"{doc.Id}");
+
+                        var fileBytes = Convert.FromBase64String(doc.File);
+                        File.WriteAllBytes(filePath, fileBytes);
+                        doc.File = null;
+                    }
+
+                    doc.OverrideFilePath = $"{pathPrefix}{workItemId}?documentId={doc.Id}";
                 }
             }
-            
+
             _workflowService.CreateWorkItem(new WorkItemRequest
             {
                 Id = workItemId,
                 WorkflowId = Workflow.Id.ToString(),
-                FromState = (int) transition.Source,
-                ToState = (int) transition.Destination,
-                Trigger = (int) transition.Trigger,
+                FromState = (int)transition.Source,
+                ToState = (int)transition.Destination,
+                Trigger = (int)transition.Trigger,
                 DataType = typeof(ActivityPlanRequest).ToString(),
                 Data = data != null ? JsonConvert.SerializeObject(data) : null,
                 Description = description,
@@ -301,29 +332,78 @@ namespace intapscamis.camis.domain.Projects.Workflows
 
         public static class ParameterizedTriggers
         {
-            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<ActivityPlanRequest, string, long?> Request;
-            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<string, long?> Accept;
-            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<string, long?> Survey;
-            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<ActivityPlanRequest, string, long?> Surveyed;
-            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<ActivityPlanRequest, string, long?> Encode;
-            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<string, long?> Reject;
-            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<string, long?> Report;
-            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<string, long?> Cancel;
-            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<string, long?> Approve;
-            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<ActivityPlanRequest, string, long?> Submit;
+            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<
+                ActivityPlanRequest, string, long?> Request;
+
+            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<string, long
+                ?> Accept;
+
+            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<string, long
+                ?> Survey;
+
+            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<
+                ActivityPlanRequest, string, long?> Surveyed;
+
+            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<
+                ActivityPlanRequest, string, long?> Encode;
+
+            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<string, long
+                ?> Reject;
+
+            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<string, long
+                ?> Report;
+
+            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<string, long
+                ?> Cancel;
+
+            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<string, long
+                ?> Approve;
+
+            public static StateMachine<ProgressReportStates, ProgressReportTriggers>.TriggerWithParameters<
+                ActivityPlanRequest, string, long?> Submit;
 
             public static void ConfigureParameters(StateMachine<ProgressReportStates, ProgressReportTriggers> machine)
             {
-                Request = machine.SetTriggerParameters<ActivityPlanRequest, string, long?>(ProgressReportTriggers.Request);
+                Request = machine.SetTriggerParameters<ActivityPlanRequest, string, long?>(ProgressReportTriggers
+                    .Request);
                 Accept = machine.SetTriggerParameters<string, long?>(ProgressReportTriggers.Accept);
                 Survey = machine.SetTriggerParameters<string, long?>(ProgressReportTriggers.Survey);
-                Surveyed = machine.SetTriggerParameters<ActivityPlanRequest, string, long?>(ProgressReportTriggers.Surveyed);
-                Encode = machine.SetTriggerParameters<ActivityPlanRequest, string, long?>(ProgressReportTriggers.Encode);
+                Surveyed = machine.SetTriggerParameters<ActivityPlanRequest, string, long?>(ProgressReportTriggers
+                    .Surveyed);
+                Encode = machine.SetTriggerParameters<ActivityPlanRequest, string, long?>(ProgressReportTriggers
+                    .Encode);
                 Reject = machine.SetTriggerParameters<string, long?>(ProgressReportTriggers.Reject);
                 Report = machine.SetTriggerParameters<string, long?>(ProgressReportTriggers.Report);
                 Cancel = machine.SetTriggerParameters<string, long?>(ProgressReportTriggers.Cancel);
                 Approve = machine.SetTriggerParameters<string, long?>(ProgressReportTriggers.Approve);
-                Submit = machine.SetTriggerParameters<ActivityPlanRequest, string, long?>(ProgressReportTriggers.Submit);
+                Submit = machine.SetTriggerParameters<ActivityPlanRequest, string, long?>(ProgressReportTriggers
+                    .Submit);
+            }
+        }
+
+        private void LoadFilesFromWorkItem(Guid workItemId, ActivityPlanRequest data)
+        {
+            var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
+                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+            var workItemPath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, workItemId.ToString());
+
+            if (!Directory.Exists(workItemPath)) return;
+
+
+            // Load activity plan documents
+            if (data?.ReportDocuments != null)
+            {
+                foreach (var doc in data.ReportDocuments)
+                {
+                    if (doc?.Id != null)
+                    {
+                        var docPath = Path.Combine(workItemPath, $"{doc.Id}");
+                        if (File.Exists(docPath))
+                        {
+                            doc.File = Convert.ToBase64String(File.ReadAllBytes(docPath));
+                        }
+                    }
+                }
             }
         }
     }

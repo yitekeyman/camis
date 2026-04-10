@@ -70,9 +70,9 @@ namespace intapscamis.camis.domain.Projects.Workflows
         {
             Workflow = _workflowService.CreateWorkflow(new WorkflowRequest
             {
-                CurrentState = (int) States.Filing,
+                CurrentState = (int)States.Filing,
                 Description = "Update project plan.",
-                TypeId = (int) WorkflowTypes.PlanUpdate
+                TypeId = (int)WorkflowTypes.PlanUpdate
             });
             _machine = new StateMachine<States, Triggers>(States.Filing);
 
@@ -83,8 +83,8 @@ namespace intapscamis.camis.domain.Projects.Workflows
         public void ConfigureMachine(Guid workflowId)
         {
             Workflow = Context.Workflow.First(wf =>
-                wf.Id == workflowId && wf.TypeId == (int) WorkflowTypes.PlanUpdate);
-            _machine = new StateMachine<States, Triggers>((States) Workflow.CurrentState);
+                wf.Id == workflowId && wf.TypeId == (int)WorkflowTypes.PlanUpdate);
+            _machine = new StateMachine<States, Triggers>((States)Workflow.CurrentState);
 
             DefineStateMachine();
         }
@@ -115,7 +115,7 @@ namespace intapscamis.camis.domain.Projects.Workflows
             string description, long? assignedUser)
         {
             _machine.Fire(trigger, description, assignedUser);
-            _workflowService.UpdateWorkflow(workflowId, (int) _machine.State, description);
+            _workflowService.UpdateWorkflow(workflowId, (int)_machine.State, description);
         }
 
         public void Fire(Guid workflowId,
@@ -123,7 +123,7 @@ namespace intapscamis.camis.domain.Projects.Workflows
             ActivityPlanRequest data, string description, long? assignedUser)
         {
             _machine.Fire(trigger, data, description, assignedUser);
-            _workflowService.UpdateWorkflow(workflowId, (int) _machine.State, description);
+            _workflowService.UpdateWorkflow(workflowId, (int)_machine.State, description);
         }
 
 
@@ -149,6 +149,12 @@ namespace intapscamis.camis.domain.Projects.Workflows
             StateMachine<States, Triggers>.Transition transition)
         {
             var data = GetData();
+            
+            var lastWorkItem = _workflowService.GetLastWorkItem(Workflow.Id);
+            if (lastWorkItem != null && data != null)
+            {
+                LoadFilesFromWorkItem(lastWorkItem.Id, data);
+            }
 
             ConfigureAndAddWorkItem(null, data, description, assignedUser, transition);
 
@@ -169,58 +175,63 @@ namespace intapscamis.camis.domain.Projects.Workflows
             long? assignedUser, StateMachine<States, Triggers>.Transition transition)
         {
             var workItemId = Guid.NewGuid();
-            var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ?? "C:\\usr\\bin\\CAMIS\\data\\docs";
+
+
+            var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
+                                "C:\\usr\\bin\\CAMIS\\data\\docs";
             var fileSavePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, workItemId.ToString());
             if (!Directory.Exists(fileSavePath))
             {
                 Directory.CreateDirectory(fileSavePath);
             }
+
             // tag each (FarmRequest data).ActivityPlan.Documents 
             if (data?.Documents != null)
+            {
+                const string pathPrefix = "/api/Farms/InWorkItemActivityPlanFileForPlanUpdate/";
+
                 foreach (var doc in data.Documents)
                 {
                     if (doc == null) continue;
 
-                    const string pathPrefix = "/api/Farms/InWorkItemActivityPlanFileForPlanUpdate/";
-
                     if (doc.OverrideFilePath != null &&
-                        doc.OverrideFilePath.Substring(0, pathPrefix.Length) == pathPrefix)
+                        doc.OverrideFilePath.Contains(pathPrefix))
                     {
-                        var lastWorkItem = _workflowService.GetLastWorkItem(Workflow.Id);
-                        if (lastWorkItem != null)
+                        var previousWorkItem = _workflowService.GetLastWorkItem(Workflow.Id);
+                        if (previousWorkItem != null)
                         {
-                            var file = _farmsService
-                                .InWorkItemActivityPlanFileForPlanUpdate(lastWorkItem.Id, doc.Id ?? Guid.Empty)
-                                .File;
-                            if (file != null) doc.File = Convert.ToBase64String(file);
+                            var previousPath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                                previousWorkItem.Id.ToString());
+                            var sourceFilePath = Path.Combine(previousPath, $"{doc.Id}");
+                            var destFilePath = Path.Combine(fileSavePath, $"{doc.Id}");
+
+                            if (File.Exists(sourceFilePath))
+                            {
+                                File.Copy(sourceFilePath, destFilePath, true);
+                            }
                         }
                     }
-
-                    doc.Id = doc.Id ?? Guid.NewGuid();
-                    if (doc.File != null)
+                    else if (doc.File != null)
                     {
-                        
-                        var fileName = $"{doc.Id}"; // Adjust extension as needed
-                        var filePath = Path.Combine(fileSavePath, fileName);
+                        doc.Id = doc.Id ?? Guid.NewGuid();
+                        var filePath = Path.Combine(fileSavePath, $"{doc.Id}");
 
-                        if (File.Exists(filePath))
-                        {
-                            File.Delete(filePath);
-                        }
                         var fileBytes = Convert.FromBase64String(doc.File);
                         File.WriteAllBytes(filePath, fileBytes);
+                        doc.File = null;
                     }
-                    doc.File = null;
+
                     doc.OverrideFilePath = $"{pathPrefix}{workItemId}?documentId={doc.Id}";
                 }
+            }
 
             _workflowService.CreateWorkItem(new WorkItemRequest
             {
                 Id = workItemId,
                 WorkflowId = Workflow.Id.ToString(),
-                FromState = (int) transition.Source,
-                ToState = (int) transition.Destination,
-                Trigger = (int) transition.Trigger,
+                FromState = (int)transition.Source,
+                ToState = (int)transition.Destination,
+                Trigger = (int)transition.Trigger,
                 DataType = typeof(ActivityPlanRequest).ToString(),
                 Data = data != null ? JsonConvert.SerializeObject(data) : null,
                 Description = description,
@@ -246,6 +257,31 @@ namespace intapscamis.camis.domain.Projects.Workflows
                 Request = machine.SetTriggerParameters<ActivityPlanRequest, string, long?>(Triggers.Request);
                 Reject = machine.SetTriggerParameters<string, long?>(Triggers.Reject);
                 Approve = machine.SetTriggerParameters<string, long?>(Triggers.Approve);
+            }
+        }
+        private void LoadFilesFromWorkItem(Guid workItemId, ActivityPlanRequest data)
+        {
+            var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
+                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+            var workItemPath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, workItemId.ToString());
+
+            if (!Directory.Exists(workItemPath)) return;
+
+
+            // Load activity plan documents
+            if (data?.Documents != null)
+            {
+                foreach (var doc in data.Documents)
+                {
+                    if (doc?.Id != null)
+                    {
+                        var docPath = Path.Combine(workItemPath, $"{doc.Id}");
+                        if (File.Exists(docPath))
+                        {
+                            doc.File = Convert.ToBase64String(File.ReadAllBytes(docPath));
+                        }
+                    }
+                }
             }
         }
     }

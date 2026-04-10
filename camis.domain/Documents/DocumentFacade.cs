@@ -20,16 +20,22 @@ namespace intapscamis.camis.domain.Documents
         Document CreateDocument(DocumentRequest data);
         Document UpdateDocument(Guid id, DocumentRequest data);
         Document DeleteDocument(Guid id);
+        Document ParseDocumentFromFolder(Guid workItem, DocumentRequest data);
+        Document CreateDocumentInFolder(Guid workItem, DocumentRequest data);
+        Guid ExtractWorkItemIdFromOverrideFilePath(string overrideFilePath);
+        Document GetDocumentFileFromFolder(Guid id);
+        void PatchSaveDocument();
+        Task<int> PatchMigratingWorkItemFile();
     }
 
     public class DocumentFacade : CamisFacade, IDocumentFacade
     {
         private readonly IDocumentService _service;
         private UserSession _session;
-        
+
         private readonly CamisContext _context;
 
-        public  DocumentFacade(CamisContext context, IDocumentService service)
+        public DocumentFacade(CamisContext context, IDocumentService service)
         {
             _context = context;
             _service = service;
@@ -93,6 +99,54 @@ namespace intapscamis.camis.domain.Documents
                 PassContext(_service, _context);
                 return _service.DeleteDocument(id);
             });
+        }
+
+        public Document ParseDocumentFromFolder(Guid workItem, DocumentRequest data)
+        {
+            return Transact(_context, t =>
+            {
+                PassContext(_service, _context);
+                return _service.ParseDocumentFromFolder(workItem, data);
+            });
+        }
+
+        public Document CreateDocumentInFolder(Guid workItem, DocumentRequest data)
+        {
+            return Transact(_context, t =>
+            {
+                PassContext(_service, _context);
+                return _service.CreateDocumentInFolder(workItem, data);
+            });
+        }
+
+        public Guid ExtractWorkItemIdFromOverrideFilePath(string overrideFilePath)
+        {
+            return Transact(_context, t =>
+            {
+                PassContext(_service, _context);
+                return _service.ExtractWorkItemIdFromOverrideFilePath(overrideFilePath);
+            });
+        }
+
+        public Document GetDocumentFileFromFolder(Guid id)
+        {
+            return Transact(_context, t =>
+            {
+                PassContext(_service, _context);
+                return _service.GetDocumentFileFromFolder(id);
+            });
+        }
+
+        public void PatchSaveDocument()
+        {
+            PassContext(_service, _context);
+            _service.PatchSaveDocument();
+        }
+
+        public async Task<int> PatchMigratingWorkItemFile()
+        { 
+            PassContext(_service, _context);
+            return await _service.PatchMigratingWorkItemFile();
         }
     }
 }

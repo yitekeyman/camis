@@ -33,6 +33,7 @@ namespace intapscamis.camis.domain.Workflows
         WorkItem CreateWorkItemChangeState(WorkItemRequest request);
         WorkItemResponse GetLastWorkItem<T>(Guid wfid);
         List<Workflow> GetWorkflows(int prepareLand, int started);
+        void UpdateWorkItem(WorkItemResponse response);
     }
 
     public class WorkflowService : CamisService, IWorkflowService
@@ -461,6 +462,17 @@ where
         public List<Workflow> GetWorkflows(int type, int state)
         {
             return Context.Workflow.Where(x => x.TypeId == type && x.CurrentState == state).ToList();
+        }
+
+        public void UpdateWorkItem(WorkItemResponse response)
+        {
+            var oldworkitem = Context.WorkItem.FirstOrDefault(wi => wi.Id == response.Id);
+            if (oldworkitem != null)
+            {
+                oldworkitem.Data = Newtonsoft.Json.JsonConvert.SerializeObject(response.Data);
+                Context.WorkItem.Update(oldworkitem);
+                Context.SaveChanges();
+            }
         }
     }
 }

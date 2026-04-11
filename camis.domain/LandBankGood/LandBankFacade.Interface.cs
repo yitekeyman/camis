@@ -40,6 +40,13 @@ namespace intapscamis.camis.domain.LandBank
         LandAttributeName GetLandAttributeNames();
         List<LandBankFacadeModel.LandData> GetLandData(Guid[] excludedIds);
 
+        Guid RequestParcelSplit(LandBankFacadeModel.LandPreparationRequest request, string wfid);
+        Guid CancelParcelSplitRequest(Guid wfid, string note);
+        Guid CmssDoneSplitting(LandBankFacadeModel.LandPreparationRequest request, Guid wfid, string note);
+        Guid CmssRejectSplitting(Guid wfid, string note);
+        Guid RejectParcelSplitting(Guid wfid, string note);
+        void SaveCmssWork(Guid wfid, LandBankFacadeModel.LandPreparationRequest request);
+        Guid ApproveParcelSplitting(Guid wfid, string note);
     }
     
 }

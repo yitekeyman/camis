@@ -38,5 +38,6 @@ namespace intapscamis.camis.data.Entities
         public ICollection<LandUsage> LandUsage { get; set; }
         public ICollection<SoilTest> SoilTest { get; set; }
         public ICollection<Topography> Topography { get; set; }
+        public virtual ICollection<LandSplit> LandSplits { get; set; } = new List<LandSplit>();
     }
 }

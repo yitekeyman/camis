@@ -21,46 +21,65 @@
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
-from PyQt4.QtGui import QAction, QIcon
-from PyQt4.QtGui import QApplication
-from PyQt4.QtCore import QUrl
-from PyQt4.QtCore import QFile
-from PyQt4.QtCore import QIODevice
-from PyQt4.QtWebKit import QWebView
-from PyQt4.QtWebKit import QWebPage
-from PyQt4.QtWebKit import QWebSettings
-from PyQt4.QtGui import *
+from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QUrl
+from PyQt5.QtWidgets import QAction, QApplication, QWidget, QMessageBox
+from PyQt5.QtNetwork import QNetworkRequest
+
+try:
+    from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage, QWebEngineSettings
+    USING_WEBENGINE = True
+except ImportError:
+    # Fallback for older setups (unlikely in QGIS 3.40)
+    from PyQt5.QtWebKitWidgets import QWebView, QWebPage
+    from PyQt5.QtWebKit import QWebSettings
+    USING_WEBENGINE = False
+
 
 from qgis.core import *
+from qgis.PyQt.QtGui import QIcon
+from qgis.utils import iface
 
 import configparser
 import json
 import os.path
 
-import resources
-from cmss_task_manager_dockwidget import CMSS2DockWidget
+from . import resources
+from .cmss_task_manager_dockwidget import CMSS2DockWidget
 import requests
 
-from CMSSURLProcessor import CMSSURLProcessor
-from CMSSLoginForm import CMSSLoginForm
+from .CMSSURLProcessor import CMSSURLProcessor
+from .CMSSLoginForm import CMSSLoginForm
 
-class CMSSWebPage(QWebPage):
-    def __init__(self, cmss,parent=None):
-        super(CMSSWebPage, self).__init__(parent)
-        self.setLinkDelegationPolicy(QWebPage.DelegateExternalLinks)
-        self.cmss=cmss;
-        self.urlProcessor=CMSSURLProcessor(self.cmss,self)
-
-    def unload(self):
-        self.urlProcessor.unload()
-        return
-
-    def acceptNavigationRequest(self, frame, request, type):
-        if self.urlProcessor.processURL(request.url().path(), self.cmss.decodeQuery(request.url())):
-            return False
-        return True
-
+if USING_WEBENGINE:
+    class CMSSWebPage(QWebEnginePage):
+        def __init__(self, cmss, parent=None):
+            super(CMSSWebPage, self).__init__(parent)
+            self.cmss = cmss
+            self.urlProcessor = CMSSURLProcessor(self.cmss, self)
+        
+        def unload(self):
+            self.urlProcessor.unload()
+        
+        def acceptNavigationRequest(self, url, type, isMainFrame):
+            if self.urlProcessor.processURL(url.path(), self.cmss.decodeQuery(url)):
+                return False
+            return True
+else:
+    class CMSSWebPage(QWebPage):
+        def __init__(self, cmss, parent=None):
+            super(CMSSWebPage, self).__init__(parent)
+            self.setLinkDelegationPolicy(QWebPage.DelegateExternalLinks)
+            self.cmss = cmss
+            self.urlProcessor = CMSSURLProcessor(self.cmss, self)
+        
+        def unload(self):
+            self.urlProcessor.unload()
+            return
+        
+        def acceptNavigationRequest(self, frame, request, type):
+            if self.urlProcessor.processURL(request.url().path(), self.cmss.decodeQuery(request.url())):
+                return False
+            return True
 class CMSS2:
     """QGIS Plugin Implementation."""
 
@@ -102,56 +121,71 @@ class CMSS2:
         self.toolbar = self.iface.addToolBar(u'CAMIS_Qgis')
         self.toolbar.setObjectName(u'CAMIS_Qgis')
 
-        #print "** INITIALIZING CAMIS Qgis"
+        #print("** INITIALIZING CAMIS Qgis")
 
         self.pluginIsActive = False
         self.dockwidget = None
-        self.sessionid =None
-        self.page=None
-        self.logedIn=False
+        self.sessionid = None
+        self.page = None
+        self.logedIn = False
 
-        self.map_layers=[]
+        self.map_layers = []
 
-    def decodeQuery(self,url):
-        #print(str(url.encodedQuery()))
-        q=str(url.encodedQuery()).split("&")
-        print(str(q))
-        dict={}
-        for qq in q:
-            if len(qq)==0:
-                continue
-            s=qq.split("=")
-            if len(s)==2:
-                dict[s[0]]=QUrl.fromPercentEncoding(s[1])
-        return dict
+    # Python 3 compatible decodeQuery method
+    def decodeQuery(self, url):
+        """Decode URL query parameters."""
+        # Handle both QUrl and string input
+        if isinstance(url, str):
+            # If it's already a string, parse it directly
+            if '?' in url:
+                query_str = url.split('?')[1]
+            else:
+                return {}
+        else:
+            # QUrl object
+            query_str = url.query()
+        
+        # Parse query string
+        result = {}
+        if query_str:
+            for pair in query_str.split('&'):
+                if '=' in pair:
+                    key, value = pair.split('=', 1)
+                    # Use proper URL decoding
+                    from urllib.parse import unquote
+                    result[key] = unquote(value)
+        return result
 
-    def showCriticalMessage(self,title,msg):
-        w = QWidget()
-        QMessageBox.critical(w, title,msg)
-        w.show
+    def showCriticalMessage(self, title, msg):
+        # Proper QMessageBox usage
+        QMessageBox.critical(None, title, msg)
 
-    def showWarningMessage(self,msg):
-        w = QWidget()
-        QMessageBox.warning(w, 'MASSREG',msg)
-        w.show
+    def showWarningMessage(self, msg):
+        # Proper QMessageBox usage
+        QMessageBox.warning(None, 'MASSREG', msg)
 
-    def showUserConfirmation(self,msg):
-        w = QWidget()
-        reply=QMessageBox.question(w,'CMSS 2',msg,QMessageBox.Yes,QMessageBox.No)
-        return reply==QMessageBox.Yes
+    def showUserConfirmation(self, msg):
+        # Proper QMessageBox usage
+        reply = QMessageBox.question(None, 'CMSS 2', msg, 
+                                     QMessageBox.Yes | QMessageBox.No)
+        return reply == QMessageBox.Yes
 
-    def showInformationMessage(self,title,msg):
-        w = QWidget()
-        QMessageBox.information(w, title,msg)
-        w.show
+    def showInformationMessage(self, title, msg):
+        # Proper QMessageBox usage
+        QMessageBox.information(None, title, msg)
 
+    # Python 3 compatible readConfig method
     def readConfig(self):
-        jstr=open(os.path.join(self.plugin_dir,'camis_qgis.json')).read()
-        config=json.loads(jstr)
-        print str(jstr)
-        self.db_host=config['db-host']
-        self.db_port=config['db-port']
-        self.http_server=config['http']
+        """Read configuration from JSON file."""
+        config_path = os.path.join(self.plugin_dir, 'camis_qgis.json')
+        # Use context manager for file handling
+        with open(config_path, 'r', encoding='utf-8') as f:
+            jstr = f.read()
+        config = json.loads(jstr)
+        print(str(jstr))  # Added parentheses
+        self.db_host = config['db-host']
+        self.db_port = config['db-port']
+        self.http_server = config['http']
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -241,17 +275,16 @@ class CMSS2:
 
         return action
 
-
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        icon_path =self.plugin_dir+ '/cmss-login-sm.png'
+        icon_path = self.plugin_dir + '/cmss-login-sm.png'
         self.add_action(
             icon_path,
             text=self.tr(u'Login'),
             callback=self.loginAndRun,
             parent=self.iface.mainWindow())
-        icon_path =self.plugin_dir+ '/cmss-logout-sm.png'	
+        icon_path = self.plugin_dir + '/cmss-logout-sm.png'
         self.add_action(
             icon_path,
             text='Logout',
@@ -267,26 +300,24 @@ class CMSS2:
             return
 
         try:
-            self.invokeServer('/api/admin/logout?sid='+self.sid,{})
+            self.invokeServer('/api/admin/logout?sid=' + self.sid, {})
         except Exception as ex:
             self.showWarningMessage('Error trying to close the server session.\nThe server may be down')
 
         self.deactivatePlugin()
-        self.logedIn=False
+        self.logedIn = False
 
     def add_geometryActions(self):
         self.toolbar.addSeparator()
         self.toolbar.addAction(self.iface.actionAddFeature())
-        self.toolbar.addAction(self.iface.actionNodeTool())
+        self.toolbar.addAction(self.iface.actionVertexTool())
         self.toolbar.addAction(self.iface.actionDeleteSelected())
         self.toolbar.addAction(self.iface.actionSplitFeatures())
-
-
 
     def onClosePlugin(self):
         """Cleanup necessary items here when plugin dockwidget is closed"""
 
-        #print "** CLOSING CAMIS Qgis"
+        #print("** CLOSING CAMIS Qgis")
 
         # disconnects
         self.dockwidget.closingPlugin.disconnect(self.onClosePlugin)
@@ -298,46 +329,49 @@ class CMSS2:
         # self.dockwidget = None
         self.pluginIsActive = False
 
-    def invokeServer(self,cmd,data):
-        url=self.http_server+cmd
-        print str(url)
-        r=None
+    # Python 3 compatible invokeServer method
+    def invokeServer(self, cmd, data):
+        url = self.http_server + cmd
+        print(str(url))
+        r = None
         if data is None:
             if self.sessionid:
-                r=requests.get(url,cookies={'.ASPNetCoreSession':self.sessionid})
+                r = requests.get(url, cookies={'.ASPNetCoreSession': self.sessionid})
             else:
-                r=requests.get(url)
+                r = requests.get(url)
         else:
-            print str(data)
+            print(str(data))
             headers = {'Content-type': 'application/json'}
             if self.sessionid:
-                r=requests.post(url,data=json.dumps(data),cookies={'.ASPNetCoreSession':self.sessionid},headers=headers)
+                r = requests.post(url, data=json.dumps(data), 
+                                 cookies={'.ASPNetCoreSession': self.sessionid}, 
+                                 headers=headers)
             else:
-                r=requests.post(url,data=json.dumps(data),headers=headers)
+                r = requests.post(url, data=json.dumps(data), headers=headers)
         if '.ASPNetCoreSession' in r.cookies.keys():
-            self.sessionid=r.cookies['.ASPNetCoreSession']
-        res=r.json()
-        if r.status_code!=200:
-            res['error']=res['message']
+            self.sessionid = r.cookies['.ASPNetCoreSession']
+        res = r.json()
+        if r.status_code != 200:
+            res['error'] = res['message']
         else:
-            res['error']=None
-        print str(res)
+            res['error'] = None
+        print(str(res))
 
         return res
 
     def deactivatePlugin(self):
         if self.page:
             self.page.unload()
-            self.page=None
+            self.page = None
         if self.dockwidget:
             self.iface.removeDockWidget(self.dockwidget)
-            self.dockwidget=None
+            self.dockwidget = None
         self.unloadCMSSLayers()
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
 
-        #print "** UNLOAD CAMIS Qgis"
+        #print("** UNLOAD CAMIS Qgis")
         self.deactivatePlugin()
 
         for action in self.actions:
@@ -349,78 +383,94 @@ class CMSS2:
         if self.toolbar:
             del self.toolbar
 
-
     #--------------------------------------------------------------------------
 
+    # Updated for Qt5 WebEngine/WebKit
     def fixBrowserSetting(self):
-        self.page.settings().setAttribute(QWebSettings.JavascriptEnabled, True)
-        self.page.settings().setAttribute(QWebSettings.JavascriptCanOpenWindows, True)
-        self.page.settings().setAttribute(QWebSettings.JavascriptCanCloseWindows, True)
-        self.page.settings().setAttribute(QWebSettings.JavascriptCanAccessClipboard, True)
-        self.page.settings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
-        self.page.settings().setAttribute(QWebSettings.OfflineStorageDatabaseEnabled, True)
-        self.page.settings().setAttribute(QWebSettings.OfflineWebApplicationCacheEnabled, True)
-        self.page.settings().setAttribute(QWebSettings.LocalStorageEnabled, True)
-        self.page.settings().setAttribute(QWebSettings.LocalStorageDatabaseEnabled, True)
-        self.page.settings().setAttribute(QWebSettings.LocalContentCanAccessRemoteUrls, True)
-        self.page.settings().setAttribute(QWebSettings.LocalContentCanAccessFileUrls, True)
+        if USING_WEBENGINE:
+            settings = self.page.settings()
+            settings.setAttribute(QWebEngineSettings.JavascriptEnabled, True)
+            settings.setAttribute(QWebEngineSettings.JavascriptCanOpenWindows, True)
+            settings.setAttribute(QWebEngineSettings.LocalStorageEnabled, True)
+            settings.setAttribute(QWebEngineSettings.LocalContentCanAccessRemoteUrls, True)
+            settings.setAttribute(QWebEngineSettings.LocalContentCanAccessFileUrls, True)
+        else:
+            self.page.settings().setAttribute(QWebSettings.JavascriptEnabled, True)
+            self.page.settings().setAttribute(QWebSettings.JavascriptCanOpenWindows, True)
+            self.page.settings().setAttribute(QWebSettings.JavascriptCanCloseWindows, True)
+            self.page.settings().setAttribute(QWebSettings.JavascriptCanAccessClipboard, True)
+            self.page.settings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
+            self.page.settings().setAttribute(QWebSettings.OfflineStorageDatabaseEnabled, True)
+            self.page.settings().setAttribute(QWebSettings.OfflineWebApplicationCacheEnabled, True)
+            self.page.settings().setAttribute(QWebSettings.LocalStorageEnabled, True)
+            self.page.settings().setAttribute(QWebSettings.LocalStorageDatabaseEnabled, True)
+            self.page.settings().setAttribute(QWebSettings.LocalContentCanAccessRemoteUrls, True)
+            self.page.settings().setAttribute(QWebSettings.LocalContentCanAccessFileUrls, True)
 
-
+    # Updated for Qt5 WebEngine/WebKit
     def initBrowser(self):
-        self.view = QWebView()
-        self.page=CMSSWebPage(self)
-        self.fixBrowserSetting()
-        u=QUrl(self.http_server+'/api/cmss/home?sid='+self.sid)
-        self.page.currentFrame().setUrl(u)
-        self.view.setPage(self.page)
+        if USING_WEBENGINE:
+            self.view = QWebEngineView()
+            self.page = CMSSWebPage(self)
+            self.fixBrowserSetting()
+            self.view.setPage(self.page)
+            self.view.setUrl(QUrl(self.http_server + '/api/cmss/home?sid=' + self.sid))
+        else:
+            self.view = QWebView()
+            self.page = CMSSWebPage(self)
+            self.fixBrowserSetting()
+            u = QUrl(self.http_server + '/api/cmss/home?sid=' + self.sid)
+            self.page.currentFrame().setUrl(u)
+            self.view.setPage(self.page)
+        
         self.dockwidget.widget().layout().addWidget(self.view)
 
     def afterLogin(self):
-        self.logedIn=True
+        self.logedIn = True
         self.run()
 
     def loginAndRun(self):
         if self.logedIn:
-            self.showCriticalMessage('CAMIS Qgis','You have already loged in, please logout first')
+            self.showCriticalMessage('CAMIS Qgis', 'You have already loged in, please logout first')
             return
-        self.loginForm=CMSSLoginForm(self,self.afterLogin)
-        self.loginForm.show();
+        self.loginForm = CMSSLoginForm(self, self.afterLogin)
+        self.loginForm.show()
 
-    def loadLayer(self,name,style,uri,schema,table,field,key):
-        uri.setDataSource(schema,table,field,"",key)
-        layer=QgsVectorLayer(uri.uri(False),name,"postgres")
-        if  style:
-            style_path = os.path.dirname(__file__)+'/'+style
+    # Updated for QGIS 3.x API (QgsProject instead of QgsMapLayerRegistry)
+    def loadLayer(self, name, style, uri, schema, table, field, key):
+        uri.setDataSource(schema, table, field, "", key)
+        layer = QgsVectorLayer(uri.uri(False), name, "postgres")
+        if style:
+            style_path = os.path.join(os.path.dirname(__file__), style)
             layer.loadNamedStyle(style_path)
-        QgsMapLayerRegistry.instance().addMapLayer(layer)
+        # QGIS 3.x uses QgsProject.instance().addMapLayer()
+        QgsProject.instance().addMapLayer(layer)
         self.map_layers.append(layer)
-        return layer;
-		
+        return layer
+        
     def loadCMSSLayers(self):
-
-        uri=QgsDataSourceURI()
-        uri.setConnection(self.db_host,self.db_port,"nrlais","user_cmss","cmssUserPW")
-        camis_uri=QgsDataSourceURI()
-        camis_uri.setConnection(self.db_host,self.db_port,"camis","user_cmss","cmssUserPW")
-
+        uri = QgsDataSourceUri()
+        uri.setConnection(self.db_host, self.db_port, "nrlais", "user_cmss", "cmssUserPW")
+        camis_uri = QgsDataSourceUri()
+        camis_uri.setConnection(self.db_host, self.db_port, "camis", "user_cmss", "cmssUserPW")
 
         uri.setDatabase("nrlais")
         uri.setUsername("user_cmss")
         uri.setPassword("cmssUserPW")
 
-        self.loadLayer("Region Boundary",'region.qml',uri,"nrlais_sys","t_regions","geometry","id")
-        self.loadLayer("Woreda Boundary",'zone.qml',uri,"nrlais_sys","t_zones","geometry","id")
-        self.loadLayer("Zone Boundary",'woreda.qml',uri,"nrlais_sys","t_woredas","geometry","id")
-        self.kebele_layer=self.loadLayer("Kebele Boundary",'kebele.qml',uri,"nrlais_sys","t_kebeles","geometry","id")
-        self.loadLayer("NRLAIS Parcels","parcel.qml",uri,"nrlais_inventory","t_parcels","geometry","uid")
-        self.loadLayer("Land Bank","land_bank.qml",camis_uri,"lb","v_gs_land","geometry","id")
-  
+        self.loadLayer("Region Boundary", 'region.qml', uri, "nrlais_sys", "t_regions", "geometry", "id")
+        self.loadLayer("Woreda Boundary", 'zone.qml', uri, "nrlais_sys", "t_zones", "geometry", "id")
+        self.loadLayer("Zone Boundary", 'woreda.qml', uri, "nrlais_sys", "t_woredas", "geometry", "id")
+        self.kebele_layer = self.loadLayer("Kebele Boundary", 'kebele.qml', uri, "nrlais_sys", "t_kebeles", "geometry", "id")
+        self.loadLayer("NRLAIS Parcels", "parcel.qml", uri, "nrlais_inventory", "t_parcels", "geometry", "uid")
+        self.loadLayer("Land Bank", "land_bank.qml", camis_uri, "lb", "v_gs_land", "geometry", "id")
 
-
+    # Updated for QGIS 3.x API
     def unloadCMSSLayers(self):
+        # QGIS 3.x uses QgsProject.instance().removeMapLayer()
         for l in self.map_layers:
-            QgsMapLayerRegistry.instance().removeMapLayer(l.id())
-        self.map_layers=[]
+            QgsProject.instance().removeMapLayer(l.id())
+        self.map_layers = []
 
     def initSnapping(self):
         project = QgsProject.instance()
@@ -433,8 +483,7 @@ class CMSS2:
     def run(self):
         """Run method that loads and starts the plugin"""
 
-
-        #print "** STARTING CAMIS Qgis"
+        #print("** STARTING CAMIS Qgis")
 
         # dockwidget may not exist if:
         #    first run of plugin

@@ -37,7 +37,7 @@
           <div class="modal-body p-2" style="height: 73vh;overflow-y: auto">
             <div class="form-group">
               <label class="control-label" for="inp">Enter Land UPIN:</label>
-              <input [(ngModel)]="upin" list="UPINsList" (keyup)="loadLand()" (change)="loadLand()" class="form-control"
+              <input [(ngModel)]="upin" list="UPINsList" (keyup)="loadLand()" (change)="loadLand()" class="form-select"
                      id="inp" type="search" placeholder="UPIN">
               <datalist id="UPINsList">
                 <option *ngFor="let UPIN of allUPINs" [value]="UPIN">{{ UPIN }}</option>

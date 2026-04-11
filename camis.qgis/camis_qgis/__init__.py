@@ -19,9 +19,10 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+
  This script initializes the plugin, making it known to QGIS.
 """
-
+# (No stray text outside the docstring)
 
 # noinspection PyPep8Naming
 def classFactory(iface):  # pylint: disable=invalid-name
@@ -30,6 +31,5 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :param iface: A QGIS interface instance.
     :type iface: QgsInterface
     """
-    #
     from .cmss_task_manager import CMSS2
     return CMSS2(iface)

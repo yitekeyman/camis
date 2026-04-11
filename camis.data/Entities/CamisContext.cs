@@ -1819,13 +1819,22 @@ namespace intapscamis.camis.data.Entities
 
             modelBuilder.Entity<LandSplit>(entity =>
             {
+                entity.HasKey(e => e.Id).HasName("land_split_pkey");
+
                 entity.ToTable("land_split", "lb");
 
                 entity.Property(e => e.Id)
-                    .HasColumnName("id")
-                    .HasDefaultValueSql("nextval('lb.lb_seq'::regclass)");
-
+                    .HasDefaultValueSql("nextval('lb.lb_seq'::regclass)")
+                    .HasColumnName("id");
                 entity.Property(e => e.Geom).HasColumnName("geom");
+                entity.Property(e => e.Indexes).HasColumnName("indexes");
+                entity.Property(e => e.LandId).HasColumnName("land_id");
+                entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.Wid).HasColumnName("wid");
+
+                entity.HasOne(d => d.Land).WithMany(p => p.LandSplits)
+                    .HasForeignKey(d => d.LandId)
+                    .HasConstraintName("fk_land_id_id");
             });
 
             modelBuilder.Entity<LandType>(entity =>

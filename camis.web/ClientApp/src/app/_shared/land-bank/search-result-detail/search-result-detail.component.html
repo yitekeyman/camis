@@ -5,8 +5,12 @@
         <div class="col-md-8">
           <h5><i class="ti ti-map-2"></i> Parcel Details</h5>
         </div>
-        <div class="col-md-4" style="text-align: right">
-
+        <div class="col-md-4 " style="text-align: right">
+          <div  *ngIf="searchedLandDetail!=null && this.searchedLandDetail['landType']===2 && loginRole==='land-admin'">
+            <button type="button" class="btn btn-custom-light me-1"  data-bs-toggle="modal" data-bs-target="#add-certification-document-dialog">
+             Request Land Split
+            </button>
+          </div>
         </div>
       </div>
     </div>

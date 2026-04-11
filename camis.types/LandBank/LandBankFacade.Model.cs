@@ -47,7 +47,10 @@ namespace intapscamis.camis.domain.LandBank
         {
             Identified = 1,
             Prepared = 2,
-            Transfered = 3,
+            Transferred = 3,
+            OnSplit=4,
+            PreparedWithSplit=5,
+            HalfTransferred=6
         }
         public enum LandRightType
         {
@@ -167,8 +170,11 @@ namespace intapscamis.camis.domain.LandBank
         }
         public class LandPreparationRequest
         {
-            public Guid landID;
+            public string landID;
             public int n;
+            public int subLand;
+            public string Description;
+            public List<String> geoms;
         }
 
         public class SetPrepareGeometries

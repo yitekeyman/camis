@@ -74,11 +74,11 @@ namespace intapscamis.camis.domain.LandBank
             var d = (LandBankFacadeModel.SetPrepareGeometries)w.Data;
             var p=_workflowService.GetLastWorkItem<LandBankFacadeModel.LandPreparationRequest>(this.Workflow.Id).Data  as LandBankFacadeModel.LandPreparationRequest;
 
-            var l = _landBankService.GetLand(p.landID,false,false);
+            var l = _landBankService.GetLand(Guid.Parse(p.landID), false,false);
             var ps=new RestNrlaisInterface().GetParcelsByTranscation(txuid);
             CamisUtils.Assert(ps.Count == d.geoms.Count, "Nrlais returned unexpected number of parcels for split transaction");
 
-            _landBankService.RemoveLand(p.landID);
+            _landBankService.RemoveLand(Guid.Parse(p.landID));
             var oldUpin = l.Upins[0];
 
             var newwi = fireAction(this.Workflow.Id, Triggers.NrlaisApprove, "Approved from NRLAIS", null);
@@ -154,7 +154,7 @@ namespace intapscamis.camis.domain.LandBank
                         id=w.Id.ToString(),
                         description="Split land",
                         n=data.n,
-                        upin=_landBankService.GetLand(data.landID,false,false).Upins[0],
+                        upin=_landBankService.GetLand(Guid.Parse( data.landID),false,false).Upins[0],
                     });
                 }
             }
@@ -201,7 +201,7 @@ namespace intapscamis.camis.domain.LandBank
         {
             var w = _workflowService.GetLastWorkItem<LandBankFacadeModel.LandPreparationRequest>(wfid);
             var r = (LandBankFacadeModel.LandPreparationRequest)w.Data;
-            var p = _landBankService.GetLand(r.landID,false,false);
+            var p = _landBankService.GetLand(Guid.Parse(r.landID),false,false);
 
             return new LandBankFacadeModel.SplitData()
             {
@@ -258,10 +258,10 @@ namespace intapscamis.camis.domain.LandBank
                 prevState = wf.CurrentState;
             }
 
-            var l = _landBankService.GetLand(request.landID,false,false);
+            var l = _landBankService.GetLand(Guid.Parse( request.landID),false,false);
             CamisUtils.Assert(request.n>0, $"Split size should be at least 1");
             CamisUtils.Assert(l != null, $"{request.landID} is land id");
-            CamisUtils.Assert(l.LandType != (int)LandBankFacadeModel.LandTypeEnum.Transfered, $"Land preparation request is allowed only for land that is transfered");
+            CamisUtils.Assert(l.LandType != (int)LandBankFacadeModel.LandTypeEnum.Transferred, $"Land preparation request is allowed only for land that is transfered");
             CamisUtils.Assert(l.Upins.Count == 1, $"Land {request.landID} doesn't have unique UPIN");
             var p = l.parcels[l.Upins[0]];
             CamisUtils.Assert(p.IsStateLand(), $"Only state land can be prepared.");
@@ -332,7 +332,7 @@ namespace intapscamis.camis.domain.LandBank
 
             if (_machine.State==States.ApprovalRequested)
             {
-                _landBankService.SetLandState(data.landID, LandBankFacadeModel.LandTypeEnum.Prepared);
+                _landBankService.SetLandState(Guid.Parse(data.landID), LandBankFacadeModel.LandTypeEnum.Prepared);
                 return fireAction(wfid,Triggers.Approve,note,null).Id;
             }
             else
@@ -340,7 +340,7 @@ namespace intapscamis.camis.domain.LandBank
                 var split = _workflowService.GetLastWorkItem<LandBankFacadeModel.SetPrepareGeometries>(wfid);
                 CamisUtils.Assert(split != null, "Failed to find split geometries data in workflow");
                 var splitData = (LandBankFacadeModel.SetPrepareGeometries)split.Data;
-                var p = _landBankService.GetLand(data.landID,false,false);
+                var p = _landBankService.GetLand(Guid.Parse( data.landID),false,false);
                 CamisUtils.Assert(p != null && p.Upins.Count==1, "Failed to find valid parcel information");
                 var parcel = p.parcels[p.Upins[0]];
                 var tranID=new RestNrlaisInterface().RequestLandSplit(parcel, splitData.geoms);

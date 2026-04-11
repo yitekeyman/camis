@@ -63,6 +63,7 @@
         public const int MnESupervisor = 9;
         public const int MnEDataEncoder = 10;
         public const int ConfigurationAdmin = 11;
+        public const int CMSSUser = 12;
     }
 
     public class LookUpModel

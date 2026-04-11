@@ -7,17 +7,17 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=CMSS_Qgis
-qgisMinimumVersion=2.6
-description=CAMIS Qgis Version 1
-version=0.1
-author=INTAPS Consultancy plc
-email=info@intaps.com
+name=CAMIS QGIS
+qgisMinimumVersion=3.40
+description=CAMIS QGIS Version 2
+version=0.2
+author=INTAPS Consultancy plc & Yitagesu Kebede
+email=info@intaps.com || yitekeyman@gmail.com
 
-about=Qgis plugin for CAMIS
+about=CAMIS QGIS plugin for CAMIS CMSS
 
-tracker=www.intaps.com/git
-repository=www.intaps.com/git
+tracker=https://github.com/yitekeyman/camis.git
+repository=https://github.com/yitekeyman/camis.git
 # End of mandatory metadata
 
 # Recommended items:

@@ -707,13 +707,13 @@ namespace intapscamis.camis.domain.LandBank
             var land = l.First();
             if (request.right == LandBankFacadeModel.LandRightType.SubLease)
             {
-                CamisUtils.Assert(land.LandType == (int) LandBankFacadeModel.LandTypeEnum.Transfered,
+                CamisUtils.Assert(land.LandType == (int) LandBankFacadeModel.LandTypeEnum.Transferred,
                     "Land is not transferred (for sub-leasing). LandID:" + request.landID);
             }
             else {
                 CamisUtils.Assert(land.LandType == (int) LandBankFacadeModel.LandTypeEnum.Prepared,
                     "Land is not prepared id:" + request.landID);
-                land.LandType = (int) LandBankFacadeModel.LandTypeEnum.Transfered;
+                land.LandType = (int) LandBankFacadeModel.LandTypeEnum.Transferred;
             }
             Context.Land.Update(land);
             Context.LandRight.Add(new LandRight()

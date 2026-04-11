@@ -24,6 +24,7 @@ import {DocumentListComponent} from "../../document/document-list/document-list.
 import {SimpleFarmDetailsComponent} from "../../farm/farm-detail/simple-farm-details/simple-farm-details.component";
 import {FarmApiService} from "../../../_services/farm-api.service";
 import {forEach} from "ol/geom/flat/segments";
+import {AdminServices} from "../../../_services/admin.Services";
 
 @Component({
   selector: 'app-search-result-detail',
@@ -85,6 +86,10 @@ export class SearchResultDetailComponent implements OnInit {
     if (localStorage.getItem('role') === '5') {
       this.loginRole = 'land-supervisor';
     }
+    if (localStorage.getItem('role') === '6') {
+      this.loginRole = 'land-admin';
+    }
+
 
   }
 
@@ -111,6 +116,10 @@ export class SearchResultDetailComponent implements OnInit {
     this.landService.GetLand(this.landID).subscribe(data => {
       this.keyCase.camelCase(data);
       this.searchedLandDetail = data;
+
+      const matchingKey = Object.keys(data.parcels).find(
+        key => key.toLowerCase() === data.upins[0]?.toLowerCase()
+      );
       if (this.searchedLandDetail['landType'] === 3) {
         this.farmService.getFarmByLandId(this.landID).subscribe(res => {
           this.keyCase.camelCase(res);
@@ -119,7 +128,7 @@ export class SearchResultDetailComponent implements OnInit {
       }
       this.getDependecies();
       dialog.close();
-      let g = data.parcels[data.upins[0]];
+      let g = data.parcels[matchingKey];
       if (g) {
         let parts = g.geometry.split(";");
         this.map.setWorkFlowGeomByWKT(parts[parts.length - 1]);

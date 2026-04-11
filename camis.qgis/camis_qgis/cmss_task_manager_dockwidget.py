@@ -23,14 +23,17 @@
 
 import os
 
-from PyQt4 import QtGui, uic
-from PyQt4.QtCore import pyqtSignal
+#  Changed from PyQt4 to PyQt5
+from PyQt5 import uic
+from PyQt5.QtWidgets import QDockWidget
+from PyQt5.QtCore import pyqtSignal
 
+# ✅ Load UI file (compatible with PyQt5)
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'cmss_task_manager_dockwidget_base.ui'))
 
 
-class CMSS2DockWidget(QtGui.QDockWidget, FORM_CLASS):
+class CMSS2DockWidget(QDockWidget, FORM_CLASS):
 
     closingPlugin = pyqtSignal()
 
@@ -47,4 +50,3 @@ class CMSS2DockWidget(QtGui.QDockWidget, FORM_CLASS):
     def closeEvent(self, event):
         self.closingPlugin.emit()
         event.accept()
-

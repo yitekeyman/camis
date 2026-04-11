@@ -326,5 +326,63 @@ namespace intapscamis.camis.Controllers
                 });
             }
         }
+        
+        [HttpPost]
+        public IActionResult RequestParcelSplit([FromBody] LandBankFacadeModel.LandPreparationRequest data, [FromQuery]String wfid)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                return Json(_facade.RequestParcelSplit(data, wfid).ToString());
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e.InnerException);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+        [HttpPost]
+        public IActionResult CancelParcelSplitRequest( [FromQuery]String wfid, [FromQuery]String note)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                return Json(_facade.CancelParcelSplitRequest(Guid.Parse(wfid), note).ToString());
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e.InnerException);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+        [HttpPost]
+        public IActionResult RejectParcelSplitting( [FromQuery]String wfid, [FromQuery]String note)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                return Json(_facade.RejectParcelSplitting(Guid.Parse(wfid), note).ToString());
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e.InnerException);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+        
+        [HttpPost]
+        public IActionResult ApproveParcelSplitting( [FromQuery]String wfid, [FromQuery]String note)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                return Json(_facade.ApproveParcelSplitting(Guid.Parse(wfid), note).ToString());
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e.InnerException);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
     }
 }

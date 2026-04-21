@@ -20,10 +20,20 @@
                 <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole===5" (click)="rejectRequest()">Reject
                   Request</a></li>
                 <li>
+                <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole===6 && ([6,8].includes(userWorkflow?.currentState))"  data-bs-toggle="modal"
+                       data-bs-target="#landSplitDialog" (click)="manageModal()">Edit Split Task</a></li>
+                <li>
+                <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole===6 && ([5,7].includes(userWorkflow?.currentState))" (click)="approveRequest()">Approve Split Task</a></li>
+                <li>
+                <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole===6 && ([5,7].includes(userWorkflow?.currentState))" (click)="rejectRequest()">Reject
+                  Split Task</a></li>
+                <li>
                   <hr class="dropdown-divider">
                 </li>
                 <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole===5" (click)="cancelRequest()"> Cancel
                   Request</a></li>
+                <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole===6 && ([1,2,5,6,7,8].includes(userWorkflow?.currentState))" (click)="cancelRequest()"> Cancel
+                  Task</a></li>
               </ul>
             </div>
           </div>
@@ -36,7 +46,7 @@
             <div class="alert alert-primary d-flex align-items-center p-1 mb-1">
               <table class="table p-0 m-0">
                 <tbody>
-                <tr>
+                <tr *ngIf="userWorkflow?.typeId!=7">
                   <td class="m-0 p-1"
                       style="vertical-align: middle; font-size: 2rem; border-right: 2px solid rgba(0,0,0,0.25); text-align: center;color:rgba(0,255,0,0.75)">
                     <i class="ti ti-bell-ringing-filled"></i>
@@ -50,6 +60,34 @@
                     <span *ngIf="isAgricultural === 'No'"
                           style="color: red"> The land is not in agricultural zone</span>
                     <span *ngIf="isAgricultural === 'Yes'" style="color: green"> The land is in agricultural zone</span>
+                  </td>
+                </tr>
+                <tr *ngIf="userWorkflow?.typeId===7">
+                  <td class="m-0 p-1"
+                      style="vertical-align: middle; font-size: 2rem; border-right: 2px solid rgba(0,0,0,0.25); text-align: center;color:rgba(0,255,0,0.75)">
+                    <i class="ti ti-bell-ringing-filled"></i>
+                  </td>
+                  <td class="m-0" style="font-size: 0.75rem; vertical-align: middle">
+                    <b>Task: </b> {{userWorkflow.type.name}}<br/>
+                    <b>Split in to: </b> {{ userWorkItems?.data?.NoOfSplit }}<br/>
+                    <b>Remark: </b> {{ userWorkflow.description }}
+                  </td>
+                  <td class="m-0" style="font-size: 0.75rem; vertical-align: middle">
+                    <b>Sent by: </b> {{ userWorkItems?.sentUserName }}<br/>
+                    <b>Date: </b> {{ userWorkItems?.workItemDate | date }}<br/>
+                    <b>Note: </b> {{ userWorkItems?.workItemNote }}
+                  </td>
+
+                  <td class="m-0" style="font-size: 0.75rem; vertical-align: middle; ">
+                    <span *ngIf="userWorkflow?.currentState === 8"
+                          style="color: red;text-align: right;">CMSS User Rejected Task</span>
+                    <span *ngIf="userWorkflow?.currentState === 7">
+                      <span  style="color: green">CMSS User Done Splitting</span><br/>
+                      <span *ngFor="let p of userWorkItems?.data?.GeomData">
+                        <b>Id: {{p.id}}</b> &nbsp; | &nbsp; <b>Area: </b>{{ getSplitArea(p.area) }}<br/>
+                      </span>
+                    </span>
+
                   </td>
                 </tr>
                 </tbody>
@@ -115,10 +153,14 @@
                         <td><label>Moisture Source:</label></td>
                         <td>
 
-                          <p class="detail-value">{{ moistureSources }}</p>
+                          <ul *ngFor="let moi of moistureSources">
+                            <li class="detail-value"><i
+                              class="ti ti-square-rounded-check-filled"></i>&nbsp;{{ moi }}
+                            </li>
+                          </ul>
 
 
-                          <div class="nested-content" *ngIf="moistureSources === 'Irrigated'">
+                          <div class="nested-content" *ngIf="isIrrigated">
                             <div class="nested-detail-infos">
                               <table class="table mb-1 p-0">
                                 <thead>
@@ -285,6 +327,38 @@
                   </div>
                 </div>
               </div>
+              <div class="accordion-item" *ngIf="workflowLand.landSplit?.length>0">
+                <h2 class="accordion-header" id="panelsStayOpen-headingFive">
+                  <button class="accordion-button " type="button" data-bs-toggle="collapse"
+                          data-bs-target="#panelsStayOpen-collapseFive" aria-expanded="true"
+                          aria-controls="panelsStayOpen-collapseFive">
+                    <i class="ti ti-archive-filled"></i>&nbsp;&nbsp;Splited Parcels
+                  </button>
+                </h2>
+                <div id="panelsStayOpen-collapseFive" class="accordion-collapse collapse show"
+                     aria-labelledby="panelsStayOpen-headingFive">
+                  <div class="accordion-body">
+                    <table class="table">
+                      <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Index</th>
+                        <th>Area</th>
+                        <th>Status</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr *ngFor="let sp of workflowLand.landSplit; index as i">
+                        <td>{{i+1}}</td>
+                        <td>{{workflowLand.upins[0]}}-{{sp.indexes}}</td>
+                        <td>{{getSplitArea(sp.area)}}</td>
+                        <td>{{getSplitStatus(sp.status)}}</td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -296,4 +370,44 @@
   </div>
 
 
+</div>
+
+<div id="landSplitDialog" class="modal fade" tabindex="-1" aria-labelledby="landSplitDialogLabel"
+     aria-hidden="true" >
+  <div class="modal-dialog">
+    <div class="modal-content" *ngIf="showModal">
+      <form [formGroup]="prepareForm" >
+        <div class="modal-header">
+          <h4 class="modal-title" id="landSplitDialogLabel">Re-Request Parcel Split</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                  (click)="manageModal()"></button>
+        </div>
+        <div class="modal-body p-2">
+          <div class="form-group">
+            <label class="control-label" for="inp">Split In to <span class="text-danger">*  </span> <span
+              *ngIf="prepareForm.get('noOfSplit')?.invalid && prepareForm.get('noOfSplit')?.touched"
+              class="error-message">
+            <i class="ti ti-exclamation-circle me-1"></i> Number of parts is required
+          </span></label>
+            <input type="number" class="form-control" formControlName="noOfSplit" [(ngModel)]="prepareModel.noOfSplit">
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="inp">Description: <span class="text-danger">*  </span> <span
+              *ngIf="prepareForm.get('description')?.invalid && prepareForm.get('description')?.touched"
+              class="error-message">
+            <i class="ti ti-exclamation-circle me-1"></i> Message for CMSS user is required
+          </span></label>
+            <textarea class="form-control" rows="5" placeholder="Describe about the split" formControlName="description" [(ngModel)]="prepareModel.description"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer right">
+          <button type="button" class="btn btn-default" data-bs-dismiss="modal" aria-label="Close"
+                  (click)="manageModal()">Cancel
+          </button>
+          <button type="button" class="btn btn-primary btn-md" (click)="splitLandRequest()" [disabled]="!(prepareForm.valid)">Send Request
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

@@ -1,56 +1,53 @@
-﻿<html>
+﻿<!doctype html>
+<html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>CAMIS Qgis Login</title>
     <link rel="stylesheet" href="/scss/cmss.css">
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/jquery-ui.js"></script>
+    <script src="/js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="/js/bootstrap.min.js" type="text/javascript"></script>
 </head>
 
 <body id="cmss-login">
-<div class="cmss-login-warper">
-               
-    <div class="auth-form">
-        <div class="card my-3">
+        <div class="card">
             <div class="card-body">
                 <a href="#" class="d-flex justify-content-center">
                     <img src="/images/camis_logo_2_3.png" alt="logo" style="height: 125px;"/>
                 </a>
                 <div class="row">
                     <div class="d-flex justify-content-center">
-                        <div class="auth-header">
-                            <h3 class="text-secondary mt-2"><b>Hi, Welcome Back to CAMIS Qgis</b></h3>
-                            <p class="fs-5 mt-2">Enter your credentials to continue</p>
+                        <div class="auth-header" style="text-align: center">
+                            <h3 class="text-secondary mt-2"><b>Hi, Welcome Back</b></h3>
+                            <p class="fs-6 mt-2">Enter your credentials to continue</p>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <form id="loginForm" method="POST" action="login.jsp">
+                    <form id="loginForm" style="padding-left: 10%; padding-right: 10%; font-size: 11pt;" class="mb-4">
                         <div class="input-form mb-3 col-md-12">
                             <label for="username">Username <span class="text-danger">*  </span> </label>
                             <input type="text" class="form-control" id="username" name="username" value=""
-                                   placeholder="Username!"/>
+                                   placeholder="Username!" style="border: 2px solid #cccccc"/>
                         </div>
                         <div class="input-form mb-3 col-md-12">
                             <label for="password">Password <span class="text-danger">* </span></label>
                             <input type="password" placeholder="Password!" class="form-control password" id="password"
-                                   name="password" value=""/>
+                                   name="password" value="" style="border: 2px solid #cccccc"/>
                         </div>
                         <div class="d-grid mt-3">
-                            <button type="submit" onclick="valLogin()" class="btn btn-secondary">Sign In
+                            <button type="button" onclick="valLogin()" class="btn btn-secondary w-100">Sign In
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
             <div class="card-footer">
-                <div class="d-flex justify-content-center">
-                    <p>Commercial Agriculture Management Information System</p>
+                <div class=" text-center">
+                    <p><small  style="font-size: 8pt;text-align: center">Commercial Agriculture Management Information System</small></p>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+
 </body>
 <script>
     function valLogin() {
@@ -65,7 +62,6 @@
                 $('#' + requiredField[i] + '_error').hide();
             }
         }
-
         if (valid) {
             document.location = '/cmss/login_cmd?un=' + encodeURIComponent($("#username").val()) + "&pw=" + encodeURIComponent($("#password").val());
         }

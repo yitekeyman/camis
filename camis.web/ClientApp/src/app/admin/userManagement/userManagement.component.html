@@ -63,9 +63,9 @@
               <td class=" "><span *ngFor="let role of user.roles">{{ role.name }}<br/></span></td>
               <td class=" ">{{ user.phoneNo }}</td>
               <td class=" ">{{ user.email }}</td>
-              <td class=" ">{{ user.regOn }}</td>
+              <td class=" ">{{ keyCase.convertDate(user.regOn) }}</td>
               <td class="a-right a-right ">{{ user.status == 1 ? "Active" : "Inactive" }}</td>
-              <td class="">{{ user.lastSeen }}</td>
+              <td class="">{{ keyCase.convertDate(user.lastSeen) }}</td>
               <td class=" last align-center">
                 <div class='btn-group' style='display: flex;'>
                   <button class='btn btn-success btn-sm editButton' data-toggle='tooltip' title='Edit'  [disabled]="!isRegisterShowed && isEdit" (click)="showEditForm(user)">

@@ -62,9 +62,8 @@
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    background-color: var(--bs-body-bg);
-    background-clip: padding-box;
-    border: var(--bs-border-width) solid var(--bs-border-color);
+  
+    border: 1px solid #cccccc;
     &:focus {
         border: 1px solid #4680ff;
     }

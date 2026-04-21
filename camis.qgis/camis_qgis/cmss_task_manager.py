@@ -5,10 +5,10 @@
                                  A QGIS plugin
  CAMIS Qgis Version
                               -------------------
-        begin                : 2018-01-05
+        begin                : 2026-04-01
         git sha              : $Format:%H$
-        copyright            : (C) 2018 by INTAPS Consultancy plc
-        email                : info@intaps.com
+        copyright            : (C) 2026 by Yitagesu
+        email                : yitekeyman@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -80,6 +80,7 @@ else:
             if self.urlProcessor.processURL(request.url().path(), self.cmss.decodeQuery(request.url())):
                 return False
             return True
+
 class CMSS2:
     """QGIS Plugin Implementation."""
 
@@ -116,10 +117,10 @@ class CMSS2:
 
         # Declare instance attributes
         self.actions = []
-        self.menu = self.tr(u'&CAMIS Qgis')
+        self.menu = self.tr(u'&CAMIS-v2 Qgis')
         # TODO: We are going to let the user set this up in a future iteration
-        self.toolbar = self.iface.addToolBar(u'CAMIS_Qgis')
-        self.toolbar.setObjectName(u'CAMIS_Qgis')
+        self.toolbar = self.iface.addToolBar(u'CAMIS-v2 Qgis')
+        self.toolbar.setObjectName(u'CAMIS-v2 Qgis')
 
         #print("** INITIALIZING CAMIS Qgis")
 
@@ -130,6 +131,10 @@ class CMSS2:
         self.logedIn = False
 
         self.map_layers = []
+
+        # Store references to the login/logout actions for dynamic visibility
+        self.login_action = None
+        self.logout_action = None
 
     # Python 3 compatible decodeQuery method
     def decodeQuery(self, url):
@@ -166,7 +171,7 @@ class CMSS2:
 
     def showUserConfirmation(self, msg):
         # Proper QMessageBox usage
-        reply = QMessageBox.question(None, 'CMSS 2', msg, 
+        reply = QMessageBox.question(None, 'CAMIS-v2', msg, 
                                      QMessageBox.Yes | QMessageBox.No)
         return reply == QMessageBox.Yes
 
@@ -200,7 +205,7 @@ class CMSS2:
         :rtype: QString
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
-        return QCoreApplication.translate('CAMIS Qgis', message)
+        return QCoreApplication.translate('CAMIS-v2 Qgis', message)
 
     def add_action(
         self,
@@ -279,22 +284,28 @@ class CMSS2:
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
         icon_path = self.plugin_dir + '/cmss-login-sm.png'
-        self.add_action(
+        self.login_action = self.add_action(
             icon_path,
             text=self.tr(u'Login'),
             callback=self.loginAndRun,
             parent=self.iface.mainWindow())
+        
         icon_path = self.plugin_dir + '/cmss-logout-sm.png'
-        self.add_action(
+        self.logout_action = self.add_action(
             icon_path,
             text='Logout',
             callback=self.logout,
             parent=self.iface.mainWindow())
+        
+        # Initially hide the logout button, show login button
+        self.logout_action.setVisible(False)
+        
         self.add_geometryActions()
+        
     #--------------------------------------------------------------------------
     def logout(self):
         if not(self.logedIn):
-            self.showCriticalMessage('CAMIS Qgis', 'You are not loged in')
+            self.showCriticalMessage('CAMIS Qgis', 'You are not logged in')
             return
         if not(self.showUserConfirmation('Are you sure you want to logout?')):
             return
@@ -306,6 +317,10 @@ class CMSS2:
 
         self.deactivatePlugin()
         self.logedIn = False
+        
+        # Update button visibility: show login, hide logout
+        self.login_action.setVisible(True)
+        self.logout_action.setVisible(False)
 
     def add_geometryActions(self):
         self.toolbar.addSeparator()
@@ -376,7 +391,7 @@ class CMSS2:
 
         for action in self.actions:
             self.iface.removePluginMenu(
-                self.tr(u'&CAMIS Qgis'),
+                self.tr(u'&CAMIS-v2 Qgis'),
                 action)
             self.iface.removeToolBarIcon(action)
         # remove the toolbar
@@ -427,11 +442,14 @@ class CMSS2:
 
     def afterLogin(self):
         self.logedIn = True
+        # Update button visibility: hide login, show logout
+        self.login_action.setVisible(False)
+        self.logout_action.setVisible(True)
         self.run()
 
     def loginAndRun(self):
         if self.logedIn:
-            self.showCriticalMessage('CAMIS Qgis', 'You have already loged in, please logout first')
+            self.showCriticalMessage('CAMIS Qgis', 'You have already logged in, please logout first')
             return
         self.loginForm = CMSSLoginForm(self, self.afterLogin)
         self.loginForm.show()
@@ -452,7 +470,7 @@ class CMSS2:
         uri = QgsDataSourceUri()
         uri.setConnection(self.db_host, self.db_port, "nrlais", "user_cmss", "cmssUserPW")
         camis_uri = QgsDataSourceUri()
-        camis_uri.setConnection(self.db_host, self.db_port, "camis", "user_cmss", "cmssUserPW")
+        camis_uri.setConnection(self.db_host, self.db_port, "camis", "postgres", "admin")
 
         uri.setDatabase("nrlais")
         uri.setUsername("user_cmss")
@@ -462,8 +480,8 @@ class CMSS2:
         self.loadLayer("Woreda Boundary", 'zone.qml', uri, "nrlais_sys", "t_zones", "geometry", "id")
         self.loadLayer("Zone Boundary", 'woreda.qml', uri, "nrlais_sys", "t_woredas", "geometry", "id")
         self.kebele_layer = self.loadLayer("Kebele Boundary", 'kebele.qml', uri, "nrlais_sys", "t_kebeles", "geometry", "id")
-        self.loadLayer("NRLAIS Parcels", "parcel.qml", uri, "nrlais_inventory", "t_parcels", "geometry", "uid")
-        self.loadLayer("Land Bank", "land_bank.qml", camis_uri, "lb", "v_gs_land", "geometry", "id")
+        #self.loadLayer("NRLAIS Parcels", "parcel.qml", uri, "nrlais_inventory", "t_parcels", "geometry", "uid")
+        self.loadLayer("Land Bank", "landbank.qml", camis_uri, "lb", "land_upin", "geometry", "upin")
 
     # Updated for QGIS 3.x API
     def unloadCMSSLayers(self):

@@ -113,7 +113,7 @@ namespace intapscamis.camis.domain.LandBank
             public String FarmID { get; set; } = null;
             public int landHolderType { get; set; } //1:private, 3:state land
 
-
+            public List<LandSplitResponse> LandSplit { get; set; }
 
             #region New Data
             public List<AgroEchologyZone> AgroEchologyZone { get; set; }
@@ -144,6 +144,7 @@ namespace intapscamis.camis.domain.LandBank
             public String description;//description of the work flow
             public String workItemNote;//note entered by the last user
             public int workFlowType;//type of the workflow, see wf.workflow_type table
+            public string data;
         }
         public class Bound
         {
@@ -170,11 +171,12 @@ namespace intapscamis.camis.domain.LandBank
         }
         public class LandPreparationRequest
         {
-            public string landID;
-            public int n;
-            public int subLand;
-            public string Description;
-            public List<String> geoms;
+            public string LandId { get; set; }
+            public int NoOfSplit { get; set; }
+            public int SubLand { get; set; }
+            public string Description { get; set; }
+            public List<String> Geoms { get; set; }
+            public List<SplitGeomData> GeomData { get; set; }
         }
 
         public class SetPrepareGeometries
@@ -231,6 +233,33 @@ namespace intapscamis.camis.domain.LandBank
             public string Result { get; set; }
         }
         #endregion
+        
+        public class SplitGeomData
+        {
+            public int id;
+            public string geom;
+            public double area;
+        }
+        public class SplitParcelData
+        {
+            public String taskID;
+            public List<String> geoms;
+            public List<SplitGeomData>  geomData;
+        }
+
+        public class LandSplitResponse
+        {
+            public int Id { get; set; }
+            public double Area { get; set; }
+
+            public string Geom { get; set; }
+
+            public string LandId { get; set; }
+
+            public int Indexes { get; set; }
+
+            public long Status { get; set; }
+        }
     }
 
 }

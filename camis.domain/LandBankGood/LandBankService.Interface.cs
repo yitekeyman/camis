@@ -16,6 +16,7 @@ namespace intapscamis.camis.domain.LandBank
         LandBankFacadeModel.LandData GetLandByUpin(string u);
         LandBankFacadeModel.LandData GetLand(Guid landID,bool geom,bool dd);
         void SetLandState(Guid landID, LandBankFacadeModel.LandTypeEnum transfered);
+        void SetSubLandState(Guid landID, int subLandId, LandBankFacadeModel.LandTypeEnum transfered);
         void RemoveLand(Guid landID);
         void TransferLand(LandBankFacadeModel.TransferRequest request);
         void CalculateCentroid(LandBankFacadeModel.LandData land);

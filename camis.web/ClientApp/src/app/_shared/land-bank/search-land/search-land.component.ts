@@ -22,7 +22,7 @@ export class SearchLandComponent implements OnInit {
   searchModel: SearchLandModel;
   keyword: AbstractControl;
   landId = '';
-  searchedResult: ResultViewModel[] = null;
+  searchedResult: any[] = [];
   pager: any = {};
   pagedItems: any[];
   defaultLandType: any;
@@ -96,7 +96,6 @@ export class SearchLandComponent implements OnInit {
     if (this.selectedLandId == 0)
       return;
     this.searchResult();
-
   }
 
   searchResult() {
@@ -120,11 +119,12 @@ export class SearchLandComponent implements OnInit {
   }
 
   public setPage(page: number) {
+    this.pager = this.pagerService.getPager(this.searchedResult.length, page);
     if (page < 1 || page > this.pager.totalPages) {
       return;
     }
 
-    this.pager = this.pagerService.getPager(this.searchedResult.length, page);
+
     this.pagedItems = this.searchedResult.slice(this.pager.startIndex, this.pager.endIndex + 1);
 
   }

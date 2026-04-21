@@ -15,7 +15,7 @@ namespace intapscamis.camis.domain.Admin
         void SetSession(UserSession session);
 
         LoginReturnViewModel LoginUser(LoginViewModel loginView);
-
+        LoginReturnViewModel LoginFromQgis(LoginViewModel loginView);
         void RegisterUser(RegisterViewModel user);
 
         void RevokeUserRole(string username, int[] roles);
@@ -82,6 +82,32 @@ namespace intapscamis.camis.domain.Admin
             }
         }
 
+       public LoginReturnViewModel LoginFromQgis(LoginViewModel loginView)
+        {
+            var hashPassword = loginView.Password.Hash();
+            try
+            {
+                var ret = new LoginReturnViewModel();
+                var dbUser = _context.User.First(u => u.Username == loginView.UserName && u.Password == hashPassword);
+                if (dbUser.Status == 0) throw new AccessDeniedException("User Deactivated");
+
+                var userRole = _context.UserRole.FirstOrDefault(e =>
+                    e.UserId==dbUser.Id & e.RoleId == (int)Admin.UserRoles.CMSSUser);
+                if (userRole == null)
+                    throw new AccessDeniedException("only login allowed for CAMIS-v2 Qgis user");
+                
+                _actionService.AddUserAction(new UserSession { Username = dbUser.Username }, UserActionType.Login);
+                _context.SaveChanges();
+                ret.UserName = dbUser.Username;
+                ret.FullName = dbUser.FullName;
+                return ret;
+            }
+            catch (InvalidOperationException e)
+            {
+                Console.Error.WriteLine(e);
+                throw new AccessDeniedException("Invalid Username or Password, Please Try Again");
+            }
+        }
         public void RegisterUser(RegisterViewModel userVm)
         {
             var user = new User

@@ -1,10 +1,10 @@
 ﻿import {Component, OnInit, ViewChild} from "@angular/core";
 import {CommonModule} from "@angular/common";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {
   Accessablity, AgroEchologicalZone, ExistingLandUse, GroundWater, InvestmentType,
   LandBankWorkFlowLand,
-  LandBankWorkItem, LandType, MoistureSource,
+  LandBankWorkItem, LandPreparationModel, LandType, MoistureSource,
   Month,
   SoilTestType, SurfaceWater, Topography, WaterTestParameters
 } from "../../../_shared/land-bank/land.model";
@@ -14,6 +14,10 @@ import {ObjectKeyCasingService} from "../../../_services/object-key-casing.servi
 import dialog from "../../../_shared/dialog";
 import {DocumentListComponent} from "../../../_shared/document/document-list/document-list.component";
 import {CamisMapComponent} from "../../../_shared/camismap/camismap.component";
+import {WorkflowApiService} from "../../../_services/workflow-api.service";
+import js from "@eslint/js";
+import ol from "ol/dist/ol";
+import math = ol.math;
 
 @Component({
   selector: 'app-land-details-table',
@@ -26,6 +30,7 @@ export class LandDetailsTableComponent implements OnInit {
   wfid: string;
   workflowLand: LandBankWorkFlowLand[] | any = [];
   userWorkItems: LandBankWorkItem[] | any = [];
+  userWorkflow: any = null;
 
   // data from api
   monthesList: Month[] = [];
@@ -55,15 +60,20 @@ export class LandDetailsTableComponent implements OnInit {
   waterSourceParams: any[] = [];
   landType: String;
   @ViewChild('camis_map') map: CamisMapComponent;
-
-  public loginRole=0;
+  showModal = false;
+  prepareModel: LandPreparationModel;
+  prepareForm: FormGroup;
+  public loginRole = 0;
+  isIrrigated: boolean = false;
   constructor(
     private router: Router,
     private landService: LandDataService,
     private activeRoute: ActivatedRoute,
-    private keyCase: ObjectKeyCasingService
+    private keyCase: ObjectKeyCasingService,
+    private formBuilder: FormBuilder,
+    private api: WorkflowApiService
   ) {
-    this.loginRole=parseInt(localStorage.getItem('role'), 10);
+    this.loginRole = parseInt(localStorage.getItem('role'), 10);
   }
 
   ngOnInit() {
@@ -77,30 +87,85 @@ export class LandDetailsTableComponent implements OnInit {
     return Math.round(this.workflowLand.area / 10) / 1000 + ' ha';
   }
 
+  getSplitArea(a: number) {
+    return Math.round(a / 10) / 1000 + ' ha';
+  }
+  getSplitStatus(status) {
+    let ret="Unknown";
+    for (const landTypeList of this.landTypeList) {
+      if (landTypeList.id === status) {
+        ret = landTypeList.name;
+      }
+    }
+    return ret;
+  }
   getLandDetail() {
     dialog.loading();
-    this.landService.GetUserWorkItems().subscribe(data => {
-      this.keyCase.camelCase(data);
-      for (const workItem of data) {
-        if (workItem.wfid === this.wfid) {
-          this.userWorkItems = workItem;
+    this.api.getWorkflow(this.wfid).subscribe(res => {
+      this.keyCase.camelCase(res);
+      this.userWorkflow = res;
+      this.landService.GetUserWorkItem(this.wfid).subscribe(data => {
+        this.keyCase.camelCase(data);
+        this.userWorkItems = data;
+        if (this.userWorkflow.typeId == 7) {
+          this.userWorkItems.data = JSON.parse(this.userWorkItems.data);
+          this.prepareModel = {
+            landId: this.userWorkItems.data.LandId.toString(),
+            subLand: this.userWorkItems.data.SubLand,
+            noOfSplit: this.userWorkItems.data.NoOfSplit,
+            geoms: this.userWorkItems.data.Geoms,
+            description: '',
+          }
+          this.landService.GetLand(this.userWorkItems.data.LandId).subscribe(data => {
+            this.keyCase.camelCase(data);
+            this.workflowLand = data;
+            const matchingKey = Object.keys(data.parcels).find(
+              key => key.toLowerCase() === data.upins[0]?.toLowerCase()
+            );
+            let g = data.parcels[matchingKey];
+            if (g) {
+              let parts = g.geometry.split(";");
+              this.map.setWorkFlowGeomByWKT(parts[parts.length - 1]);
+            }
+            console.log(this.workflowLand);
+            this.getDependecies();
+            dialog.close();
+          }, dialog.error);
+          if (this.userWorkItems.data.GeomData?.length > 0) {
+            let splitGeomData: any[] = [];
+            for (let p of this.userWorkItems.data.GeomData) {
+              let parts = p.geom.split(";");
+              let parcel = {
+                id: p.id,
+                wkt: parts[parts.length - 1]
+              }
+              splitGeomData.push(parcel);
+            }
+            this.map.setSplitGeomsByWKT(splitGeomData);
 
+          }
+
+        } else {
+          this.landService.GetWorkFlowLand(this.wfid).subscribe(data => {
+            this.keyCase.camelCase(data);
+            this.workflowLand = data;
+            const matchingKey = Object.keys(data.parcels).find(
+              key => key.toLowerCase() === data.upins[0]?.toLowerCase()
+            );
+            let g = data.parcels[matchingKey];
+            if (g) {
+              let parts = g.geometry.split(";");
+              this.map.setWorkFlowGeomByWKT(parts[parts.length - 1]);
+            }
+            console.log(this.workflowLand);
+            this.getDependecies();
+            dialog.close();
+          }, dialog.error);
         }
-      }
-    }, dialog.error);
+        dialog.close();
+      }, dialog.error);
 
-    this.landService.GetWorkFlowLand(this.wfid).subscribe(data => {
-      this.keyCase.camelCase(data);
-      this.workflowLand = data;
-      let g = data.parcels[data.upins[0]];
-      if (g) {
-        let parts = g.geometry.split(";");
-        this.map.setWorkFlowGeomByWKT(parts[parts.length-1]);
-      }
-      console.log(this.workflowLand);
-      this.getDependecies();
-      dialog.close();
-    }, dialog.error);
+    }, dialog.error)
   }
 
   getDependecies() {
@@ -124,6 +189,11 @@ export class LandDetailsTableComponent implements OnInit {
     this.landService.getMoistureSource().subscribe(data => {
       this.moistureSourceList = data;
       this.prepareMoistureSource();
+      for (const moi of this.moistureSources) {
+        if (moi === 'Irrigated') {
+          this.isIrrigated = true;
+        }
+      }
     });
     this.landService.getWaterTestParameters().subscribe(data => {
       this.waterSourceParamList = data;
@@ -287,75 +357,111 @@ export class LandDetailsTableComponent implements OnInit {
     }
   }
 
-  async approveRequest(): Promise<void>{
-    if (!await dialog.confirm('Are you sure you want to approve this registration request?')) {
+  async approveRequest(): Promise<void> {
+    if (!await dialog.confirm('Are you sure you want to approve this task?')) {
       return;
     }
 
     const message = await dialog.prompt('Enter a note (optional):');
     dialog.loading();
-    if(this.userWorkItems['workFlowType'] === 4) {
-      this.landService.ApproveRegistration(this.wfid, message).subscribe(res=>{
+    if (this.userWorkItems['workFlowType'] === 4) {
+      this.landService.ApproveRegistration(this.wfid, message).subscribe(res => {
         dialog.success('The parcel identification has been approved successfully.');
         this.router.navigate(['default/pending-task']).catch(dialog.error);
       }, dialog.error);
-    }else if(this.userWorkItems['workFlowType'] === 7) {
-      this.landService.ApprovePreparation(this.wfid, message).subscribe(res=>{
-        dialog.success('The parcel preparation has been approved successfully.')
+    } else if (this.userWorkItems['workFlowType'] === 7) {
+      this.landService.ApproveParcelSplitting(this.wfid, message).subscribe(res => {
+        dialog.success('The parcel splitting task has been approved successfully.')
         this.router.navigate(['default/pending-task']).catch(dialog.error);
       }, dialog.error);
     }
   }
-  async rejectRequest(): Promise<void>{
-    if (!await dialog.confirm('Are you sure you want to reject this request?')) {
+
+  async rejectRequest(): Promise<void> {
+    if (!await dialog.confirm('Are you sure you want to reject this task?')) {
       return;
     }
-
-    const message = await dialog.prompt('Enter a rejection note for land bank registrar:');
-    if (message===null) {
+    let msgQue = 'Enter a rejection note for land bank registrar:';
+    if (this.userWorkItems['workFlowType'] === 7)
+      msgQue = "Enter a rejection note for CMSS user";
+    const message = await dialog.prompt(msgQue);
+    if (message === null) {
       return;
     }
     dialog.loading();
-    if(this.userWorkItems['workFlowType'] === 4) {
-      this.landService.RejectRegistrationRequest(this.wfid, message).subscribe(res=>{
+    if (this.userWorkItems['workFlowType'] === 4) {
+      this.landService.RejectRegistrationRequest(this.wfid, message).subscribe(res => {
         dialog.success('The parcel identification has been rejected successfully.');
         this.router.navigate(['default/pending-task']).catch(dialog.error);
       }, dialog.error);
-    }
-    else if(this.userWorkItems['workFlowType'] === 7) {
-      this.landService.RejectPreparationRequest(this.wfid, message).subscribe(res=>{
+    } else if (this.userWorkItems['workFlowType'] === 7) {
+      this.landService.RejectParcelSplitting(this.wfid, message).subscribe(res => {
         dialog.success('The parcel preparation has been rejected successfully.');
         this.router.navigate(['default/pending-task']).catch(dialog.error);
       }, dialog.error);
     }
   }
-  async cancelRequest(): Promise<void>{
+
+  async cancelRequest(): Promise<void> {
     if (!await dialog.confirm('Are you sure you want to cancel this request?')) {
       return;
     }
-
-    const message = await dialog.prompt('Enter a cancellation note for land bank registrar:');
-    if (message===null) {
+    let mesQue = 'Enter a cancellation note for land bank registrar:';
+    if (this.userWorkItems['workFlowType'] === 7)
+      mesQue = 'Enter a task cancellation reason';
+    const message = await dialog.prompt(mesQue);
+    if (message === null) {
       return;
     }
     dialog.loading();
-    if(this.userWorkItems['workFlowType'] === 4) {
-      this.landService.CancelRegistrationRequest(this.wfid, message).subscribe(res=>{
+    if (this.userWorkItems['workFlowType'] === 4) {
+      this.landService.CancelRegistrationRequest(this.wfid, message).subscribe(res => {
 
         dialog.success('The parcel identification has been cancelled successfully.');
         this.router.navigate(['default/pending-task']).catch(dialog.error);
 
       }, dialog.error);
-    }
-    else if(this.userWorkItems['workFlowType'] === 7) {
-      this.landService.CancelPreparationRequest(this.wfid, message).subscribe(res=>{
-        dialog.success('The parcel preparation has been cancelled successfully.');
+    } else if (this.userWorkItems['workFlowType'] === 7) {
+      this.landService.CancelParcelSplitRequest(this.wfid, message).subscribe(res => {
+        dialog.success('The task has been cancelled successfully.');
         this.router.navigate(['default/pending-task']).catch(dialog.error);
       }, dialog.error);
     }
   }
 
-  public editParcel(){
+  public editParcel() {
     this.router.navigate([`land-bank/task/edit-parcel-info/${this.wfid}`]).catch(dialog.error)
   }
+
+  manageModal() {
+    if (this.showModal) {
+      this.showModal = false;
+    } else {
+      this.showModal = true;
+      this.prepareForm = this.formBuilder.group({
+        noOfSplit: ['', [Validators.required, Validators.min(2)]],
+        description: ['', Validators.required],
+      })
+    }
+  }
+
+  splitLandRequest() {
+    dialog.loading();
+
+    this.prepareModel.landId = this.workflowLand.landID;
+    this.prepareModel.noOfSplit = this.prepareForm.controls['noOfSplit'].value;
+    this.prepareModel.description = this.prepareForm.controls['description'].value;
+
+    this.landService.RequestParcelSplit(this.prepareModel, this.wfid).subscribe(
+      () => {
+        dialog.success('Your land split request successfully sent!').then(() => {
+          this.router.navigate(['default/pending-task']).catch(dialog.error);
+        })
+      },
+      (err) => {
+        return dialog.error(err);
+      }
+    );
+  }
+
 }

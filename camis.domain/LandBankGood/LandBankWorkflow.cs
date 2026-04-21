@@ -76,6 +76,33 @@ namespace intapscamis.camis.domain.LandBank
             }
             return ret;
         }
+        internal LandBankFacadeModel.LandBankWorkItem GetUserWorkItem(Guid wfid)
+        {
+            var wi = _workflowService.GetLastWorkItem(wfid);
+            var ws=_workflowService.GetCurrentWorkItemsForUser(_session.Username,new long[] { _session.Role}, wi.Id);
+            var ret = new LandBankFacadeModel.LandBankWorkItem();
+            var user = new UserActionService(Context);
+            
+            foreach(var w in ws)
+            {
+                if (w.Id == wfid)
+                {
+                    var a = user.GetUserAction(w.WorkItem.Aid);
+                    ret = new LandBankFacadeModel.LandBankWorkItem()
+                    {
+                        wfid = w.Id.ToString(),
+                        wiid = w.WorkItem.Id.ToString(),
+                        description = w.WorkItem.Description,
+                        sentUserName = a.Username,
+                        workItemDate = new DateTime(a.Timestamp.Value),
+                        workFlowType = w.TypeId,
+                        workItemNote = w.WorkItem.Description,
+                        data=w.WorkItem.Data.ToString(),
+                    };
+                }
+            }
+            return ret;
+        }
         public LandBankFacadeModel.LandData GetWorkFlowLand(Guid wfid)
         {
 

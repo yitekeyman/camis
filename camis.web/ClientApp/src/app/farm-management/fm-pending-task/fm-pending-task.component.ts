@@ -93,6 +93,68 @@ export class FmPendingTaskComponent implements OnInit {
             });
           }
         },
+        {
+          type: 7,states:[2,3,4,5,6,7,8],
+          asyncMsg$: (e: IWorkflowOpenEvent): Observable<any> => {
+            return Observable.create(observer => {
+              observer.next('Loading...');
+              this.api.getTransferStatus(e.workflowId).subscribe(res => {
+                if (res && res.status == -99) {
+                  observer.next('Refreshing...');
+                  window.location.reload();
+                } else {
+                  let status = 'Unknown';
+                  switch (res.status) {
+                    case 0:
+                      status = 'Initial';
+                      break;
+                    case 1:
+                      status = 'Started';
+                      break;
+                    case 2:
+                      status = 'Parcel Split Requested';
+                      break;
+                    case 3:
+                      status = 'Waiting For NRLAIS';
+                      break;
+                    case 4:
+                      status = 'Waiting For CMSS';
+                      break;
+                    case 5:
+                      status = 'NRLAIS Approved';
+                      break;
+                    case 6:
+                      status = 'NRLAIS Rejected';
+                      break;
+                    case 7:
+                      status = 'CMSS Done Split';
+                      break;
+                    case 8:
+                      status = 'CMSS Rejected';
+                      break;
+                    case 11:
+                      status = 'Rejected';
+                      break;
+                    case -2:
+                      status = 'Executed';
+                      break;
+                    case -3:
+                      status = 'Approved';
+                      break;
+                    case -4:
+                      status = 'Cancelled';
+                      break;
+                  }
+
+                  observer.next('Status: ' + status);
+                }
+              }, dialog.error);
+
+              return () => {
+              };
+            });
+          }
+        }
       ];
     }
     if (this.loginRole === '7') {
@@ -218,6 +280,9 @@ export class FmPendingTaskComponent implements OnInit {
       }
     } else if (this.loginRole === '6') {
       switch (e.workflowTypeId) {
+        case 7:
+          url=`land-bank/task/parcel-details/${e.workflowId}`;
+          break;
         case 10:
           switch (e.currentState) {
             case 2:

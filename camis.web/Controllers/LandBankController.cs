@@ -116,6 +116,20 @@ namespace intapscamis.camis.Controllers
                 return StatusCode(500, new { success = false, message = e.Message });
             }
         }
+        [HttpGet]
+        public IActionResult GetUserWorkItem(string id)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                return Json( _facade.GetUserWorkItem(Guid.Parse(id)));
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
         [HttpPost]
         public IActionResult SearchLand([FromBody]LandBankFacadeModel.LandSearchPar par)
         {
@@ -342,7 +356,7 @@ namespace intapscamis.camis.Controllers
             }
         }
         [HttpPost]
-        public IActionResult CancelParcelSplitRequest( [FromQuery]String wfid, [FromQuery]String note)
+        public IActionResult CancelParcelSplitRequest( [FromQuery]String wfid, [FromBody]String note)
         {
             try
             {
@@ -356,7 +370,7 @@ namespace intapscamis.camis.Controllers
             }
         }
         [HttpPost]
-        public IActionResult RejectParcelSplitting( [FromQuery]String wfid, [FromQuery]String note)
+        public IActionResult RejectParcelSplitting( [FromQuery]String wfid, [FromBody]String note)
         {
             try
             {
@@ -371,7 +385,7 @@ namespace intapscamis.camis.Controllers
         }
         
         [HttpPost]
-        public IActionResult ApproveParcelSplitting( [FromQuery]String wfid, [FromQuery]String note)
+        public IActionResult ApproveParcelSplitting( [FromQuery]String wfid, [FromBody]String note)
         {
             try
             {

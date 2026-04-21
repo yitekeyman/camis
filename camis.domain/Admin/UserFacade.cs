@@ -7,6 +7,7 @@ namespace intapscamis.camis.domain.Admin
     public interface IUserFacade
     {
         LoginReturnViewModel LoginUser(UserSession session, LoginViewModel loginView);
+        LoginReturnViewModel LoginFromQgis(UserSession session, LoginViewModel loginView);
         void RegisterUser(UserSession session, RegisterViewModel registerViewModel);
         void ChangePassword(UserSession session, string username, string oldPassword, string newPassword);
         IList<UserDetialViewModel> GetAllUsers(UserSession session, int status);
@@ -43,7 +44,11 @@ namespace intapscamis.camis.domain.Admin
             _userService.SetSession(userSession);
             return _userService.LoginUser(loginView);
         }
-
+        public LoginReturnViewModel LoginFromQgis(UserSession userSession, LoginViewModel loginView)
+        {
+            _userService.SetSession(userSession);
+            return _userService.LoginFromQgis(loginView);
+        }
         public void RegisterUser(UserSession userSession, RegisterViewModel registerViewModel)
         {
             _userService.SetSession(userSession);

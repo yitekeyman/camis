@@ -22,5 +22,8 @@ export class WorkflowApiService {
   getLastWorkItem(workflowId: string) {
     return this.api.get(`Workflows/LastWorkItem/${workflowId}`);
   }
+  getWorkflow(workflowId: string) {
+    return this.api.get(`Workflows/GetWorkflow?id=${workflowId}`);
+  }
 
 }

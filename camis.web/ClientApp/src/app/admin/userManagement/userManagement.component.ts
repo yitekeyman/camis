@@ -27,7 +27,7 @@ export class UserManagementComponent implements OnInit {
   public pager: any = {};
   pagedItems: any[];
 
-  constructor(private userService: AdminServices, private keyCase: ObjectKeyCasingService, public pagerService: PagerService,) {
+  constructor(private userService: AdminServices, public keyCase: ObjectKeyCasingService, public pagerService: PagerService,) {
   }
 
   ngOnInit() {

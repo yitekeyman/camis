@@ -1826,6 +1826,7 @@ namespace intapscamis.camis.data.Entities
                 entity.Property(e => e.Id)
                     .HasDefaultValueSql("nextval('lb.lb_seq'::regclass)")
                     .HasColumnName("id");
+                entity.Property(e => e.Area).HasColumnName("area");
                 entity.Property(e => e.Geom).HasColumnName("geom");
                 entity.Property(e => e.Indexes).HasColumnName("indexes");
                 entity.Property(e => e.LandId).HasColumnName("land_id");

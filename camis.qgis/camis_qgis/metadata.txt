@@ -7,14 +7,14 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=CAMIS QGIS
-qgisMinimumVersion=3.40
-description=CAMIS QGIS Version 2
-version=0.2
-author=INTAPS Consultancy plc & Yitagesu Kebede
-email=info@intaps.com || yitekeyman@gmail.com
+name=CAMIS-v2 QGIS
+qgisMinimumVersion=3.10
+description=CAMIS-v2 QGIS
+version=2.1
+author=Yitagesu Kebede
+email=yike@niras.fi || yitekeyman@gmail.com
 
-about=CAMIS QGIS plugin for CAMIS CMSS
+about=CAMIS-v2 QGIS plugin for CAMIS-v2 CMSS
 
 tracker=https://github.com/yitekeyman/camis.git
 repository=https://github.com/yitekeyman/camis.git
@@ -30,7 +30,7 @@ tags=
 
 homepage=
 category=Plugins
-icon=icon.png
+icon=favicon.png
 # experimental flag
 experimental=False
 

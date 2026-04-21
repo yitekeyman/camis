@@ -8,6 +8,7 @@ namespace intapscamis.camis.data.Entities
     public partial class LandSplit
     {
         public int Id { get; set; }
+        public double Area { get; set; }
 
         public Geometry Geom { get; set; }
 

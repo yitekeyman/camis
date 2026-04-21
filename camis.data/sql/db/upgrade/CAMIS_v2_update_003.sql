@@ -9,7 +9,8 @@ ALTER TABLE lb.land_split
 
 ALTER TABLE lb.land_split
     ADD COLUMN wid uuid NOT NULL;
-
+ALTER TABLE lb.land_split
+    ADD COLUMN area double precision NOT NULL;
 
 ALTER TABLE lb.land_split
     ADD CONSTRAINT fk_land_id_id FOREIGN KEY (land_id)
@@ -17,3 +18,11 @@ ALTER TABLE lb.land_split
         ON UPDATE CASCADE
         ON DELETE CASCADE
     NOT VALID;
+INSERT INTO lb.land_type(id, name)
+VALUES
+    (1, 'Identified'),
+    (2, 'Prepared'),
+    (3, 'Transferred'),
+    (4, 'OnSplit'),
+    (5, 'PreparedWithSplit'),
+    (6, 'HalfTransferred');

@@ -29,7 +29,7 @@ namespace intapscamis.camis.domain.Workflows
 
         int GetWorkflowState(Guid workItemId);
         Guid GetWorkflowId(Guid workItemId);
-        IList<WorkflowResponse> GetCurrentWorkItemsForUser(String userName, IList<long> role);
+        IList<WorkflowResponse> GetCurrentWorkItemsForUser(String userName, IList<long> role, Guid? wiId = null);
         WorkItem CreateWorkItemChangeState(WorkItemRequest request);
         WorkItemResponse GetLastWorkItem<T>(Guid wfid);
         List<Workflow> GetWorkflows(int prepareLand, int started);
@@ -100,7 +100,7 @@ namespace intapscamis.camis.domain.Workflows
             };
         }
 
-        public IList<WorkflowResponse> GetCurrentWorkItemsForUser(String userName, IList<long> role)
+        public IList<WorkflowResponse> GetCurrentWorkItemsForUser(String userName, IList<long> role, Guid? wiId)
         {
             var us = new UserService(Context, new UserActionService(Context));
             var user = us.GetUser(userName);
@@ -121,6 +121,10 @@ on mx.workflow_id=wi.workflow_id and mx.seq_no=wi.seq_no
 where 
 (wi.assigned_user={user.Id} or wi.assigned_role in ({roles}))
 ";
+            if (wiId != null)
+            {
+                sql = sql + $@" and wi.id='{wiId}'";
+            }
             var workItems = Context.WorkItem.FromSqlRaw(sql).ToList();
             var ret = new List<WorkflowResponse>();
             foreach (var workItem in workItems)

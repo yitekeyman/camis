@@ -1,15 +1,19 @@
 @model intapscamis.camis.domain.LandBank.LandBankFacadeModel.SplitData
-<h4>Original Parcel</h4>
-<hr>
-<ul>
-    <li><label>Unique Parcel ID: </label> @Model.upin</li>
+<p style="font-size: 12pt;  width: 100%; border-bottom: 2px solid #00FF00"><strong>Original Parcel</strong></p>
+<ul style="font-size: 10pt; list-style-type: square">
+    <li><label>UPIN: </label> @Model.upin</li>
     <li><label>Area: </label> @Model.area</li>
+    <li><label>Split in to: </label> @Model.n  parts</li>
 </ul>
-<div id="split_wait_for_split">
-    <h4 id="split_title_first"><label class="faa-flash animated">Split the parcel in to @Model.n parts</label></h4>
+<hr>
+<div id="split_parcels_list" style="margin-top: 15px;">
+    <p style="font-size: 12pt; width: 100%; border-bottom: 2px solid #00FF00"><strong>Split Parcels</strong></p>
+    <ul id="split_parcels_items" style="font-size: 10pt; list-style-type: square;">
+        <li><em>Loading...</em></li>
+    </ul>
 </div>
-
-<div id="split_buttons" class="align-right">
-    <input id="split_button_commit" style="display:none" class="btn btn-primary" type="button" value="Commit" onclick="split_comit()" />
-    <input id="split_button_cancel" type="button" class="btn btn-default" value="Cancel" onclick="split_cancel()" />
+<div class="align-right p-3" >
+    <input id="split_button_commit" style="display:none" class="btn btn-md btn-secondary" type="button" value="Commit for Approval" onclick="split_comit()" />
+    <input type="button" class="btn btn-md btn-warning" value="Reject" onclick="rejectTask()"/>
+    <input id="split_button_cancel" type="button" class="btn btn-md btn-danger" value="Cancel" onclick="split_cancel()" />
 </div>

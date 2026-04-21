@@ -17,5 +17,11 @@ namespace intapscamis.camis.Controllers
         {
             return Json(_lookupService.GetRoles());
         }
+
+        [HttpGet]
+        public IActionResult LandType()
+        {
+            return Json(_lookupService.GetLandType());
+        }
     }
 }

@@ -14,6 +14,7 @@ namespace intapscamis.camis.domain.LandBank
     {
         Guid RequestLandRegistration(LandBankFacadeModel.LandData data,String wfid);
         List<LandBankFacadeModel.LandBankWorkItem> GetUserWorkItems();
+        LandBankFacadeModel.LandBankWorkItem GetUserWorkItem(Guid wfid);
         LandBankFacadeModel.LandData GetWorkFlowLand(Guid wfid);
         Guid ApproveRegistration(Guid wfid, String note);
         void SetSession(UserSession userSession);
@@ -42,11 +43,15 @@ namespace intapscamis.camis.domain.LandBank
 
         Guid RequestParcelSplit(LandBankFacadeModel.LandPreparationRequest request, string wfid);
         Guid CancelParcelSplitRequest(Guid wfid, string note);
-        Guid CmssDoneSplitting(LandBankFacadeModel.LandPreparationRequest request, Guid wfid, string note);
+        Guid CmssDoneSplitting(LandBankFacadeModel.SplitParcelData request, Guid wfid, string note);
         Guid CmssRejectSplitting(Guid wfid, string note);
         Guid RejectParcelSplitting(Guid wfid, string note);
-        void SaveCmssWork(Guid wfid, LandBankFacadeModel.LandPreparationRequest request);
+        void SaveCmssWork(Guid wfid, LandBankFacadeModel.SplitParcelData request);
         Guid ApproveParcelSplitting(Guid wfid, string note);
+        LandBankFacadeModel.SplitData GetParcelSplitData(Guid wfid);
+        LandBankFacadeModel.SplitTaskList GetParcelSplitTaskList();
+        List<LandBankFacadeModel.SplitTaskGeom> GetParcelSplitTaskGeom(Guid wfid);
+        string GetRegionCode();
     }
     
 }

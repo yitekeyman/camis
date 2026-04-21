@@ -140,7 +140,7 @@ class CMSSURLProcessor:
         if id_val > self.maxID:
             self.maxID = id_val
         feature.setAttributes([id_val, arr['label']])
-        self.layer.addFeature(feature, True)
+        self.layer.addFeature(feature)
 
         self.fid_dict[str(id_val)] = feature.id()
         self.layer.commitChanges()

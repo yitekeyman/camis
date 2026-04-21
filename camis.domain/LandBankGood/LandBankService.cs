@@ -459,6 +459,7 @@ namespace intapscamis.camis.domain.LandBank
             ret.Area = 0;
             ret.CentroidX = 0;
             ret.CentroidY = 0;
+            ret.LandSplit = new List<LandBankFacadeModel.LandSplitResponse>();
             using (var tempContext = new CamisContext())
             {
                 foreach (var u in l.LandUpin)
@@ -489,6 +490,36 @@ namespace intapscamis.camis.domain.LandBank
                     ret.Area += u.Area.Value;
                     ret.CentroidX += u.CentroidX.Value;
                     ret.CentroidY += u.CentroidY.Value;
+                }
+                foreach (var lsp in l.LandSplits)
+                {
+                    var geometrySql = $"SELECT {(dd ? "ST_AsText(ST_Transform(geometry,4326))" : "ST_AsText(geom)")} FROM lb.land_split WHERE land_id=@lid AND id=@id";
+            
+                    // Open connection if needed
+                    if (tempContext.Database.GetDbConnection().State != ConnectionState.Open)
+                        tempContext.Database.OpenConnection();
+            
+                    using (var cmd = tempContext.Database.GetDbConnection().CreateCommand())
+                    {
+                        cmd.CommandText = geometrySql;
+                        cmd.Parameters.Add(new NpgsqlParameter("lid", lsp.LandId));
+                        cmd.Parameters.Add(new NpgsqlParameter("id", lsp.Id));
+                
+                        var geometry = cmd.ExecuteScalar()?.ToString();
+
+                        var p = new LandBankFacadeModel.LandSplitResponse()
+                        {
+                            Id = lsp.Id,
+                            Area = lsp.Area,
+                            Geom = geometry,
+                            LandId = lsp.LandId.ToString(),
+                            Status = lsp.Status,
+                            Indexes = lsp.Indexes
+                        };
+                       
+                        ret.LandSplit.Add(p);
+                       
+                    }
                 }
             }
 
@@ -636,6 +667,8 @@ namespace intapscamis.camis.domain.LandBank
 
             #endregion
 
+           
+            
             return ret;
         }
         public LandBankFacadeModel.LandSearchResult SearchLand(LandBankFacadeModel.LandSearchPar par)
@@ -677,7 +710,7 @@ namespace intapscamis.camis.domain.LandBank
             l.LandDoc = Context.LandDoc.Where(x => x.LandId == l.Id).ToList();
             l.LandUsage = Context.LandUsage.Where(x => x.LandId == l.Id).ToList();
             l.Irrigation = Context.Irrigation.Where(x => x.LandId == l.Id).ToList();
-            
+            l.LandSplits=Context.LandSplit.Where(x=>x.LandId == l.Id).ToList();
             l.Topography = Context.Topography.Where(x => x.LandId == l.Id).ToList();
             l.AgriculturalZone = Context.AgriculturalZone.FirstOrDefault(x => x.LandId == l.Id);
         }
@@ -700,6 +733,13 @@ namespace intapscamis.camis.domain.LandBank
             Context.SaveChanges();
         }
 
+       public  void SetSubLandState(Guid landID, int subLandId, LandBankFacadeModel.LandTypeEnum transfered)
+        {
+            var l=Context.LandSplit.Where(x => x.Id == subLandId && x.LandId==landID ).First();
+            l.Status = (int)transfered;
+            Context.LandSplit.Update(l);
+            Context.SaveChanges();
+        }
         public void TransferLand(LandBankFacadeModel.TransferRequest request)
         {
             var l = Context.Land.Where(x => x.Id == request.landID);

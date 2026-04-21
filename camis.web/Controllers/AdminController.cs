@@ -53,7 +53,7 @@ namespace intapscamis.camis.Controllers
                         sessions.Add(sid, us);
                     }
                 }
-                return Json(ret);
+                return Json(new {sid=sid, UserName=ret.UserName, FullName=ret.FullName});
             }
 
             catch (Exception e)
@@ -62,6 +62,41 @@ namespace intapscamis.camis.Controllers
             }
         }
 
+        [HttpPost]
+        public IActionResult LoginFromQgis([FromBody] LoginViewModel loginViewModel)
+        {
+            if (!ModelState.IsValid) return Json(false);
+
+            try
+            {
+                var ret=_userFacade.LoginFromQgis(null, loginViewModel);
+                var us = new UserSession
+                {
+                    Username = loginViewModel.UserName,
+                    CreatedTime = DateTime.Now,
+                    LastSeen = DateTime.Now,
+                    Role = loginViewModel.Role,
+                    id=Guid.NewGuid().ToString(),
+                };
+                HttpContext.Session.SetSession("sessionInfo", us);
+                var sid = base.HttpContext.Session.Id;
+                lock (sessions)
+                {
+                    if (sid != null)
+                    {
+                        if (sessions.ContainsKey(sid))
+                            sessions.Remove(sid);
+                        sessions.Add(sid, us);
+                    }
+                }
+                return Json(new {sid=sid, UserName=ret.UserName, FullName=ret.FullName});
+            }
+
+            catch (Exception e)
+            {
+                return StatusCode(401, new {message = e.Message});
+            }
+        }
         [HttpGet]
         [Roles]
         public IActionResult GetRoles()
@@ -370,7 +405,7 @@ namespace intapscamis.camis.Controllers
         }
 
 
-        [Roles]
+       
         [HttpPost]
         public IActionResult Logout(String sid)
         {

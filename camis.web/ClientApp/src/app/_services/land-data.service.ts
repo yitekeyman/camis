@@ -5,7 +5,7 @@ import {
   LandModel, Accessablity, SoilTestType, LandBankWorkItem,
   LandType, SearchResult, Month, AgroEchologicalZone,
   Topography, InvestmentType, MoistureSource, WaterTestParameters, ExistingLandUse,
-  GroundWater, SurfaceWater, Lookup
+  GroundWater, SurfaceWater, Lookup, LandPreparationModel
 } from '../_shared/land-bank/land.model';
 
 import {ApiService} from './api.service';
@@ -91,8 +91,8 @@ export class LandDataService {
     return this.http.get<Month[]>(this.jsonUrl);
   }
 
-  getLandType(): Observable<LandType[]> {
-    return this.http.get<LandType[]>(this.landTypeUrl);
+  getLandType() {
+    return this.api.get('Lookup/LandType');
   }
   getSoilType(): Observable<Lookup[]> {
     return this.http.get<Lookup[]>(this.SoilTypeUrl);
@@ -110,6 +110,9 @@ export class LandDataService {
   GetUserWorkItems(): Observable<any> {
     return this.api.get(`LandBank/GetUserWorkItems`);
   }
+  GetUserWorkItem(id:any){
+    return this.api.get(`LandBank/GetUserWorkItem?id=${id}`);
+}
   GetSplitWorkItem(wfid: string): Observable<any> {
     return this.api.get(`LandBank/GetSplitWorkItem?wfid=${wfid}`);
   }
@@ -153,4 +156,16 @@ export class LandDataService {
     return this.api.post(`LandBank/CancelPreparationRequest?wfid=${wfid}`, note);
   }
 
+  RequestParcelSplit (data:LandPreparationModel, wi:any){
+    return this.api.post(`LandBank/RequestParcelSplit?wfid=${wi}`, data);
+  }
+  CancelParcelSplitRequest(wfid: string, note: string|null ) {
+    return this.api.post(`LandBank/CancelParcelSplitRequest?wfid=${wfid}`, note);
+  }
+  RejectParcelSplitting(wfid: string, note: string|null ) {
+    return this.api.post(`LandBank/RejectParcelSplitting?wfid=${wfid}`, note);
+  }
+  ApproveParcelSplitting(wfid: string, note: string|null ) {
+    return this.api.post(`LandBank/ApproveParcelSplitting?wfid=${wfid}`, note);
+  }
 }

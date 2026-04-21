@@ -36,6 +36,7 @@ namespace intapscamis.camis.domain.LandBank
             _landBankWorkflow.SetSession(_session);
             _landBankService.SetSession(_session);
             _landPrepareWorkflow.SetSession(_session);
+            _landSplitWorkflow.SetSession(_session);
         }
 
         public Guid RequestLandRegistration(LandBankFacadeModel.LandData data, String wfid)
@@ -51,6 +52,12 @@ namespace intapscamis.camis.domain.LandBank
         {
             PassContext(_landBankWorkflow, _context);
             return _landBankWorkflow.getUserWorkItems();
+        }
+
+        public LandBankFacadeModel.LandBankWorkItem GetUserWorkItem(Guid wfid)
+        {
+            PassContext(_landBankWorkflow, _context);
+            return _landBankWorkflow.GetUserWorkItem(wfid);
         }
 
         public LandBankFacadeModel.LandData GetWorkFlowLand(Guid wfid)
@@ -77,7 +84,7 @@ namespace intapscamis.camis.domain.LandBank
                 if (!(data.Data is LandBankFacadeModel.LandPreparationRequest))
                     return null;
                 return _landBankService.GetLand(
-                    Guid.Parse(((LandBankFacadeModel.LandPreparationRequest)data.Data).landID), false, false);
+                    Guid.Parse(((LandBankFacadeModel.LandPreparationRequest)data.Data).LandId), false, false);
             }
 
             return null;
@@ -275,7 +282,7 @@ namespace intapscamis.camis.domain.LandBank
             });
         }
 
-        public Guid CmssDoneSplitting(LandBankFacadeModel.LandPreparationRequest request, Guid wfid, string note)
+        public Guid CmssDoneSplitting(LandBankFacadeModel.SplitParcelData request, Guid wfid, string note)
         {
             return base.Transact<Guid>(_context, (t) =>
             {
@@ -302,7 +309,7 @@ namespace intapscamis.camis.domain.LandBank
             });
         }
 
-        public void SaveCmssWork(Guid wfid, LandBankFacadeModel.LandPreparationRequest request)
+        public void SaveCmssWork(Guid wfid, LandBankFacadeModel.SplitParcelData request)
         {
             PassContext(_landSplitWorkflow, _context);
             _landSplitWorkflow.SaveCmssWork(wfid, request);
@@ -315,6 +322,29 @@ namespace intapscamis.camis.domain.LandBank
                 PassContext(_landSplitWorkflow, _context);
                 return _landSplitWorkflow.ApproveParcelSplitting(wfid, note);
             });
+        }
+
+        public LandBankFacadeModel.SplitData GetParcelSplitData(Guid wfid)
+        {
+            PassContext(_landSplitWorkflow, _context);
+            return _landSplitWorkflow.GetParcelSplitData(wfid);
+        }
+        public LandBankFacadeModel.SplitTaskList GetParcelSplitTaskList()
+        {
+            PassContext(_landSplitWorkflow, _context);
+            return _landSplitWorkflow.GetParcelSplitTaskList();
+        }
+
+        public string GetRegionCode()
+        {
+            PassContext(_landSplitWorkflow, _context);
+            return _landSplitWorkflow.GetRegionCode();
+        }
+
+        public List<LandBankFacadeModel.SplitTaskGeom> GetParcelSplitTaskGeom(Guid wfid)
+        {
+            PassContext(_landPrepareWorkflow, _context);
+            return _landSplitWorkflow.GetParcelSplitTaskGeom(wfid);
         }
     }
 }

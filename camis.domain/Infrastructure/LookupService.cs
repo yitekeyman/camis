@@ -6,6 +6,7 @@ namespace intapscamis.camis.domain.Infrastructure
     public interface ILookupService
     {
         object GetRoles();
+        object GetLandType();
     }
 
     public class LookupService : ILookupService
@@ -20,6 +21,11 @@ namespace intapscamis.camis.domain.Infrastructure
         public object GetRoles()
         {
             return _camisContext.Role.Select(role => new {id = role.Id, name = role.Name}).ToList();
+        }
+
+        public object GetLandType()
+        {
+            return _camisContext.LandType.Select(lt => new {id = lt.Id, name = lt.Name}).ToList();
         }
     }
 }

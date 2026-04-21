@@ -59,5 +59,18 @@ namespace intapscamis.camis.Controllers
                 return StatusCode(500, new {success = false, message = e.Message});
             }
         }
+        [HttpGet]
+        public IActionResult GetWorkflow([FromQuery] string id)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                return Json(_facade.GetWorkflow(id.ToGuid()));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new {success = false, message = e.Message});
+            }
+        }
     }
 }

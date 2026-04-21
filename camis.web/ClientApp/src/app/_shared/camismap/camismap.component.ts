@@ -10,18 +10,21 @@ import OLTileWMS from 'ol/source/TileWMS';
 import { register } from 'ol/proj/proj4';
 import GeoJSON from 'ol/format/GeoJSON';
 import WKT from 'ol/format/WKT';
-import { Vector as VectorSource } from 'ol/source';
-import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
-import { Fill, Stroke, Style } from 'ol/style';
+import { Tile as TileLayer} from 'ol/layer';
+import { Fill, Stroke, Style, Text } from 'ol/style';
 import XYZ from 'ol/source/XYZ';
 import Feature from 'ol/Feature';
 import Geometry from 'ol/geom/Geometry';
+import VectorSource from 'ol/source/Vector';
+import VectorLayer from 'ol/layer/Vector';
 
 // Services
 import { ApiService } from '../../_services/api.service';
 import { LandDataService } from '../../_services/land-data.service';
 import {FullScreenService} from "../../_services/full-screen.service";
 import {AdminServices} from "../../_services/admin.Services";
+import ol from "ol/dist/ol";
+import vector = ol.renderer.vector;
 
 declare var proj4: any;
 
@@ -59,7 +62,6 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   private nrlaisStyle!: Style;
   private workflowStyle!: Style;
   private splitStyle!: Style;
-
   // Configuration
   zoomMargin = 1.3;
   mapType = 'satellite';
@@ -183,9 +185,21 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Split layer
     this.splitSource = new VectorSource({ features: [] });
-    this.splitStyle = new Style({
+  }
+  private getSplitStyle(feature: Feature<Geometry>): Style {
+    const id = feature.get('id');
+    const label = feature.get('label') || (id ? `parcel-${id}` : '');
+    return new Style({
       stroke: new Stroke({ color: 'red', width: 3 }),
-      fill: new Fill({ color: 'rgba(255, 0, 0, 0.1)' })
+      fill: new Fill({ color: 'rgba(255, 0, 0, 0.1)' }),
+      text: new Text({
+        text: label,
+        font: '12px Calibri,sans-serif',
+        fill: new Fill({ color: '#000' }),
+        stroke: new Stroke({ color: '#fff', width: 3 }),
+        overflow: true,
+        offsetY: -8,
+      })
     });
   }
 
@@ -434,9 +448,14 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     this.layers.push(
       this.createVectorLayer(this.nrlaisSource, this.nrlaisStyle, 'nrlais-vector'),
       this.createVectorLayer(this.workflowSource, this.workflowStyle, 'workflow-vector'),
-      this.createVectorLayer(this.splitSource, this.splitStyle, 'split-vector')
+   //   this.createVectorLayer(this.splitSource, this.splitStyle, 'split-vector')
     );
-
+    const splitLayer = new VectorLayer({
+      source: this.splitSource,
+      style: this.getSplitStyle.bind(this)  // Use the style function
+    });
+    splitLayer.set('name', 'split-vector');
+    this.layers.push(splitLayer);
     console.log('Vector layers added');
   }
 
@@ -661,13 +680,18 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  public setSplitGeomsByWKT(wkts: string[]): void {
-    console.log('Setting split geometries from WKT array, count:', wkts.length);
+  public setSplitGeomsByWKT(parcels: any[]): void {
+    console.log('Setting split geometries from WKT array, count:', parcels.length);
 
     this.splitSource.clear();
-    wkts.forEach(wkt => {
-      const features = new WKT().readFeatures(wkt);
-      this.splitSource.addFeatures(features);
+    parcels.forEach(parcel => {
+      const features = new WKT().readFeatures(parcel.wkt);
+      features.forEach(feature => {
+        feature.set('id', parcel.id);
+        feature.set('label', `parcel-${parcel.id}`);
+       // this.splitStyle=this.getSplitStyle(feature);
+        this.splitSource.addFeature(feature);
+      });
     });
 
     const extent = this.splitSource.getExtent();

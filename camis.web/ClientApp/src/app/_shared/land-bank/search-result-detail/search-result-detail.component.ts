@@ -68,13 +68,14 @@ export class SearchResultDetailComponent implements OnInit {
   moistureSources: any[] = [];
 
   prepareForm: FormGroup;
-  splitNumberControl: AbstractControl;
 
   prepareModel: LandPreparationModel;
   isIrrigated: boolean = false;
   farm: any = null;
   @ViewChild('camis_map') map: CamisMapComponent;
-  @ViewChild('prepareBtnClose') prepareBtnClose: ElementRef;
+ // @ViewChild('prepareBtnClose') prepareBtnClose: ElementRef;
+
+  showModal = false;
 
   constructor(private router: Router, public landService: LandDataService, private activeRoute: ActivatedRoute,
               private formBuilder: FormBuilder, private dialog: DialogService, private keyCase: ObjectKeyCasingService, private farmService: FarmApiService) {
@@ -97,16 +98,16 @@ export class SearchResultDetailComponent implements OnInit {
     this.activeRoute.params.subscribe(params => {
       this.landID = params['landID'];
       this.getLandDetail();
-    });
-    this.prepareForm = this.formBuilder.group({
-      splitNumberControl: ['', Validators.compose([Validators.required, this.positiveNumberValidator()])],
+
     });
 
-    this.splitNumberControl = this.prepareForm.controls['splitNumberControl'];
 
     this.prepareModel = {
-      landID: '',
-      n: null,
+      landId: '',
+      noOfSplit: null,
+      description: '',
+      subLand: 0,
+      geoms: []
     };
 
   }
@@ -127,14 +128,28 @@ export class SearchResultDetailComponent implements OnInit {
         })
       }
       this.getDependecies();
-      dialog.close();
-      let g = data.parcels[matchingKey];
-      if (g) {
-        let parts = g.geometry.split(";");
-        this.map.setWorkFlowGeomByWKT(parts[parts.length - 1]);
+      if (this.searchedLandDetail['landSplit']?.length > 0) {
+        let splitGeomData: any[] = [];
+        for (let p of this.searchedLandDetail['landSplit']) {
+          let parts = p.geom.split(";");
+          let parcel = {
+            id: p.indexes,
+            wkt: parts[parts.length - 1]
+          }
+          splitGeomData.push(parcel);
+        }
+        this.map.setSplitGeomsByWKT(splitGeomData);
+
+      }
+      else {
+        let g = data.parcels[matchingKey];
+        if (g) {
+          let parts = g.geometry.split(";");
+          this.map.setWorkFlowGeomByWKT(parts[parts.length - 1]);
+        }
       }
       //console.log(this.searchedLandDetail);
-
+      dialog.close();
     }, e => {
       return dialog.error(e);
     });
@@ -143,7 +158,18 @@ export class SearchResultDetailComponent implements OnInit {
   getArea() {
     return Math.round(this.searchedLandDetail.area / 10) / 1000 + ' ha';
   }
-
+  getSplitArea(a) {
+    return Math.round(a / 10) / 1000 + ' ha';
+  }
+ getSplitStatus(status) {
+    let ret="Unknown";
+   for (const landTypeList of this.landTypeList) {
+     if (landTypeList.id === status) {
+       ret = landTypeList.name;
+     }
+   }
+   return ret;
+ }
   getDependecies() {
     this.landService.getAccessiblity().subscribe(data => {
       this.keyCase.camelCase(data);
@@ -349,14 +375,13 @@ export class SearchResultDetailComponent implements OnInit {
   }
 
   requestPreparation() {
-    this.prepareBtnClose.nativeElement.click();
 
     dialog.loading();
 
-    const numberOfSplit = this.prepareForm.controls['splitNumberControl'].value;
+    const numberOfSplit = this.prepareForm.controls['noOfSplit'].value;
 
-    this.prepareModel.landID = this.landID;
-    this.prepareModel.n = numberOfSplit;
+    this.prepareModel.landId = this.landID;
+    this.prepareModel.noOfSplit = numberOfSplit;
 
     this.landService.RequestLandPreparation(this.prepareModel).subscribe(
       () => {
@@ -371,5 +396,51 @@ export class SearchResultDetailComponent implements OnInit {
     //console.log(this.prepareModel);
   }
 
+  manageModal() {
+    if (this.showModal) {
+      this.showModal = false;
+    }
+    else {
+      this.showModal = true;
 
+      if(this.searchedLandDetail['landSplit']?.length>0) {
+        this.getAvaPart();
+        this.prepareForm = this.formBuilder.group({
+          parts:[0,[Validators.required,Validators.min(1)]],
+          noOfSplit: ['', [Validators.required, Validators.min(2)]],
+          description:['']
+        });
+      }else{
+        this.prepareForm = this.formBuilder.group({
+          noOfSplit: ['', [Validators.required, Validators.min(2)]],
+          description:['']
+        });
+      }
+    }
+  }
+avalabelParts=[];
+  getAvaPart(){
+    for(let p of this.searchedLandDetail['landSplit']){
+      if(p.status==2)
+        this.avalabelParts.push(p);
+    }
+  }
+  splitLandRequest() {
+    dialog.loading();
+
+    this.prepareModel.landId = this.landID;
+    this.prepareModel.noOfSplit = this.prepareForm.controls['noOfSplit'].value;
+    this.prepareModel.description=this.prepareForm.controls['description'].value;
+
+    this.landService.RequestParcelSplit(this.prepareModel, "").subscribe(
+      () => {
+        dialog.success('Your land split request successfully sent!').then(() => {
+          this.router.navigate(['default/pending-task']).catch(dialog.error);
+        })
+      },
+      (err) => {
+        return dialog.error(err);
+      }
+    );
+  }
 }

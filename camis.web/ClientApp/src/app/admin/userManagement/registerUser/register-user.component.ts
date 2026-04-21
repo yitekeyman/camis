@@ -58,9 +58,9 @@ export class RegisterUserComponent implements OnInit {
     return this.fb.group({
       fullname: ['', [Validators.required, this.validateFullName]],
       phoneno: ['', Validators.required],
-      email: ['', [Validators.required, this.validateEmail]],
+      email: [this.isEditMode ? '' : '', this.isEditMode ? [] : [Validators.required, this.validateEmail]],
       role: [[], Validators.required],
-      username: ['', [Validators.required, Validators.minLength(6)]],
+      username: [this.isEditMode ? '' : '', this.isEditMode ? [] : [Validators.required]],
       password: [this.isEditMode ? '' : '', this.isEditMode ? [] : [Validators.required]],
       confirmPassword: [this.isEditMode ? '' : '', this.isEditMode ? [] : [Validators.required, this.matchValidator]]
     });

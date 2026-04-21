@@ -1,131 +1,176 @@
 @model System.String
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-          "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" href="/style/bootstrap.min.css" />
-    <link rel="stylesheet" href="/style/cmss.css" />
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/jquery-ui.js"></script>
-    <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/bootbox.js"></script>
-    <script src="/cmss/process_split.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>CAMIS Qgis Task Manager</title>
+    <link rel="stylesheet" href="/style/bootstrap.min.css" />
+    <link href="/style/animate.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="/scss/cmss.css"/>
+    <link href="/font/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body>
-    <div id="select_app" class="align-center">
-        <h4>CAMIS Qgis Task Manager</h4>
+<div class="card">
+    <div class="card-header" style="border-bottom: 2px solid #00FF00">
+        <h5 style="font-weight:normal;">CAMIS Task Manager</h5>
     </div>
-    <div id='search_result' style="display:none">
+    <div class="card-body p-1">
+        <div id="search_result" style="display:none">
+        </div>
+        <div id="task_panel" style="display:none">
+        </div>
     </div>
-    <div id='task_panel' style="display:none">
-    </div>
-</body>
+</div>
+<script src="/js/modernizr-latest.js"></script>
+<script src="/js/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="/js/waypoints.js"></script>
+<!-- SweetAlert2 script removed -->
+<script src="/cmss/process_split.js"></script>
 <script>
-$(document).ready(function ()
-        {
-            loadCurrentTasks();
-        });
-        var layerChanged = null;      //called from python
-        var featureSelected = null;   //called from python
 
-        var setFeatureData_done = null;
-        function setGeomData(data)  //called from python
-        {
-            setFeatureData_done(data);
+    $(document).ready(function () {
+        loadCurrentTasks();
+    });
+    let layerChanged = null;      //called from python
+    let featureSelected = null;   //called from python
+
+    let setFeatureData_done = null;
+
+    function setGeomData(data)  //called from python
+    {
+        setFeatureData_done(data);
+    }
+
+    function getGeomData(done, id) {
+        setFeatureData_done = done;
+        let url = '/cmss/qcmd/get_data/';
+        if (id)
+            url = url + "?id=" + id;
+        window.location = url;
+    }
+
+    let sessionid = '@(Model == null ? "" : Model)';
+
+    function setSelectionTool() {
+        window.location = '/cmss/qcmd/set_selection_mod';
+    }
+
+    function openUrl(url) {
+        window.location = '/cmss/qcmd/open_url?url=' + encodeURIComponent(url)
+    }
+
+    function labelGeometry(labels) {
+        let url = null;
+        for (let i = 0; i < labels.length; i++) {
+            if (url)
+                url = url + '&id' + i + '=' + labels[i].id + '&lb' + i + '=' + encodeURIComponent(labels[i].label);
+            else
+                url = 'id' + i + '=' + labels[i].id + '&lb' + i + '=' + encodeURIComponent(labels[i].label);
         }
-        function getGeomData(done,id)
-        {
-            setFeatureData_done = done;
-            var url='/cmss/qcmd/get_data/';
-            if(id)
-                url=url+"?id="+id;
-            window.location = url;
-        }
-        var sessionid = '@(Model==null?"":Model)';
-        function setSelectionTool()
-        {
-            window.location = '/cmss/qcmd/set_selection_mod';
-        }
-        function openUrl(url)
-        {
-            window.location = '/cmss/qcmd/open_url?url=' + encodeURIComponent(url)
-        }
-        function labelGeometry(labels)
-        {
-            var url = null;
-            for (var i = 0; i < labels.length; i++)
-            {
-                if (url)
-                    url = url + '&id' + i + '=' + labels[i].id + '&lb' + i + '=' + encodeURIComponent(labels[i].label);
-                else
-                    url = 'id' + i + '=' + labels[i].id + '&lb' + i + '=' + encodeURIComponent(labels[i].label);
+        window.location = '/cmss/qcmd/label_geom?' + url;
+    }
+
+    function openTaskPage() {
+        $('#search_result').hide();
+        $('#task_panel').show();
+    }
+
+    function unloadTask() {
+        window.location = '/cmss/qcmd/unloadTask';
+    }
+
+    function openHomePage() {
+        $('#search_result').hide();
+        $('#task_panel').hide();
+        $('#select_app').show();
+        loadCurrentTasks();
+    }
+
+    function loadCurrentTasks() {
+        let cal = {
+            method: "GET",
+            url: "/api/cmss/tasklist?sid=" + sessionid,
+            contentType: "application/json",
+            success: function (data) {
+                $("#search_result").show();
+                $("#search_result").html(data);
+            },
+            error: function (err) {
+                alert('failed\n' + err);
             }
-            window.location = '/cmss/qcmd/label_geom?' + url;
-        }
-        function openTaskPage()
-        {
-            $('#search_result').hide();
-            $('#task_panel').show();
-        }
-        function unloadTask()
-        {
-            window.location = '/cmss/qcmd/unloadTask';
-        }
-        function openHomePage()
-        {
-            $('#search_result').hide();
-            $('#task_panel').hide();
-            $('#select_app').show();
-            loadCurrentTasks();
-        }
-        function loadCurrentTasks()
-        {
+        };
+
+        $.ajax(cal);
+    }
+
+    function showMessageInQGIS() {
+        alert('call back');
+    }
+
+    function loadTask(taskid, n, upid) {
+        let url = "/api/cmss/processsplit";
+        if (url) {
             var cal = {
                 method: "GET",
-                url: "/api/cmss/tasklist?sid=" + sessionid,
-                contentType: "application/json",
-                success: function (data)
-                {
-                    $("#search_result").show();
-                    $("#search_result").html(data);
+                url: url + "?sid=" + sessionid + "&taskid=" + taskid,
+                success: function (data) {
+                    $("#task_panel").html(data);
+                    splitInit(taskid, n, upid);
+                    openTaskPage();
+                    window.location = '/cmss/qcmd/loadSplit?task_uid=' + taskid;
+                    renderSplitParcelsList();
                 },
-                error: function (err)
-                {
+                error: function (err) {
                     alert('failed\n' + err);
                 }
             };
 
             $.ajax(cal);
         }
-        function showMessageInQGIS()
-        {
-            alert('call back');
+    }
+    
+    function rejectTask2(taskId) {
+       
+        if (!confirm('Are you sure you want to reject this task?')) {
+            return;
         }
-        function loadTask(taskid, n)
-        {
-            var url = "/api/cmss/processsplit";
-            if (url)
-            {
-                var cal = {
-                    method: "GET",
-                    url: url + "?sid=" + sessionid + "&taskid=" + taskid,
-                    success: function (data)
-                    {
-                        $("#task_panel").html(data);
-                        splitInit(taskid,n);
-                        openTaskPage();
-                        window.location = '/cmss/qcmd/loadSplit?task_uid=' + taskid;
-                    },
-                    error: function (err)
-                    {
-                        alert('failed\n' + err);
-                    }
-                };
-
-                $.ajax(cal);
+     
+        let reason = prompt('Please enter your reason for rejection:');
+        if (reason === null) {
+            return;
+        }
+        if (reason.trim() === '') {
+            alert('Reason cannot be empty. Rejection cancelled.');
+            return;
+        }
+    
+        //alert('Task ' + taskId + ' rejected with reason: ' + reason);
+        let rejectData = {
+            taskId: taskId,      // ← matches C# property name
+            reason: reason,
+            sid: sessionid
+        };
+        $.ajax({
+            url: '/api/Cmss/CmssRejectTask',
+            type: 'POST',
+            data:JSON.stringify(rejectData),
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function(res) {
+                if (res.error) {
+                    alert('Error trying to save change.\n' + res.error);
+                } else {
+                    alert('Task rejected successfully');
+                    loadCurrentTasks();
+                }
+            },
+            error: function(err) {
+                alert('Failed to reject task: ' + err.statusText + ' (' + err.status + ')');
             }
-        }</script>
+        });
+    }
+</script>
+
+</body>
 </html>

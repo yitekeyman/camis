@@ -6,9 +6,10 @@
           <h5><i class="ti ti-map-2"></i> Parcel Details</h5>
         </div>
         <div class="col-md-4 " style="text-align: right">
-          <div  *ngIf="searchedLandDetail!=null && this.searchedLandDetail['landType']===2 && loginRole==='land-admin'">
-            <button type="button" class="btn btn-custom-light me-1"  data-bs-toggle="modal" data-bs-target="#add-certification-document-dialog">
-             Request Land Split
+          <div *ngIf="searchedLandDetail!=null && [2,5,6].includes(this.searchedLandDetail['landType']) && loginRole==='land-admin'">
+            <button type="button" class="btn btn-custom-light me-1" data-bs-toggle="modal"
+                    data-bs-target="#landSplitDialog" (click)="manageModal()">
+              Request Land Split
             </button>
           </div>
         </div>
@@ -79,7 +80,6 @@
                     </ul>
 
 
-
                     <div class="nested-content" *ngIf="isIrrigated">
                       <div class="nested-detail-infos">
                         <table class="table mb-1 p-0">
@@ -105,7 +105,7 @@
                           <tbody>
                           <tr>
                             <td>
-                              <ul >
+                              <ul>
                                 <li *ngFor="let gw of groundWater"><i
                                   class="ti ti-square-rounded-check-filled"></i>&nbsp;{{ gw }}
                                 </li>
@@ -168,6 +168,10 @@
                 <tr>
                   <td><label>Land Status:</label></td>
                   <td>{{ landTypes }}</td>
+                </tr>
+                <tr *ngIf="searchedLandDetail['landSplit']?.length>0">
+                  <td><label>Parcel Split:</label></td>
+                  <td>{{ searchedLandDetail['landSplit']?.length }} Parts</td>
                 </tr>
                 </tbody>
               </table>
@@ -247,18 +251,50 @@
             </div>
           </div>
         </div>
-        <div class="accordion-item" *ngIf="this.searchedLandDetail['landType']===3 && farm">
+        <div class="accordion-item" *ngIf="this.searchedLandDetail['landSplit']?.length>0">
           <h2 class="accordion-header" id="panelsStayOpen-headingFive">
             <button class="accordion-button " type="button" data-bs-toggle="collapse"
                     data-bs-target="#panelsStayOpen-collapseFive" aria-expanded="true"
                     aria-controls="panelsStayOpen-collapseFive">
-              Parcel Assign to
+              <i class="ti ti-archive-filled"></i>&nbsp;&nbsp;Splited Parcels
             </button>
           </h2>
           <div id="panelsStayOpen-collapseFive" class="accordion-collapse collapse show"
                aria-labelledby="panelsStayOpen-headingFive">
+            <div class="accordion-body">
+             <table class="table">
+               <thead>
+               <tr>
+                 <th>#</th>
+                 <th>Index</th>
+                 <th>Area</th>
+                 <th>Status</th>
+               </tr>
+               </thead>
+               <tbody>
+               <tr *ngFor="let sp of this.searchedLandDetail['landSplit']; index as i">
+                 <td>{{i+1}}</td>
+                 <td>{{searchedLandDetail.upins[0]}}-{{sp.indexes}}</td>
+                 <td>{{getSplitArea(sp.area)}}</td>
+                 <td>{{getSplitStatus(sp.status)}}</td>
+               </tr>
+               </tbody>
+             </table>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item" *ngIf="this.searchedLandDetail['landType']===3 && farm">
+          <h2 class="accordion-header" id="panelsStayOpen-headingSix">
+            <button class="accordion-button " type="button" data-bs-toggle="collapse"
+                    data-bs-target="#panelsStayOpen-collapseSix" aria-expanded="true"
+                    aria-controls="panelsStayOpen-collapseSix">
+              Parcel Assign to
+            </button>
+          </h2>
+          <div id="panelsStayOpen-collapseSix" class="accordion-collapse collapse show"
+               aria-labelledby="panelsStayOpen-headingSix">
             <div class="accordion-body p-1">
-             <app-simple-farm-details [farm]="farm"></app-simple-farm-details>
+              <app-simple-farm-details [farm]="farm"></app-simple-farm-details>
             </div>
           </div>
         </div>
@@ -267,5 +303,52 @@
   </div>
   <div class="col-md-5 p-0">
     <app-camis-map #camis_map></app-camis-map>
+  </div>
+</div>
+
+<div id="landSplitDialog" class="modal fade" tabindex="-1" aria-labelledby="landSplitDialogLabel"
+     aria-hidden="true" >
+  <div class="modal-dialog">
+    <div class="modal-content" *ngIf="showModal">
+      <form [formGroup]="prepareForm" >
+        <div class="modal-header">
+          <h4 class="modal-title" id="landSplitDialogLabel">Request Parcel Split</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                  (click)="manageModal()"></button>
+        </div>
+        <div class="modal-body p-2">
+          <div class="form-group" *ngIf="this.searchedLandDetail['landSplit']?.length>0">
+            <label class="control-label" for="inp">Parcel Part <span class="text-danger">*  </span> <span
+              *ngIf="prepareForm.get('parts')?.invalid && prepareForm.get('parts')?.touched"
+              class="error-message">
+            <i class="ti ti-exclamation-circle me-1"></i> Part is required
+          </span></label>
+            <select  class="form-select" formControlName="parts" [(ngModel)]="prepareModel.subLand">
+              <option value="0"> Select Parcel Part</option>
+              <option *ngFor="let p of this.avalabelParts" [value]="p.id"> {{searchedLandDetail.upins[0]}}-{{p.indexes}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="inp">Split In to <span class="text-danger">*  </span> <span
+              *ngIf="prepareForm.get('noOfSplit')?.invalid && prepareForm.get('noOfSplit')?.touched"
+              class="error-message">
+            <i class="ti ti-exclamation-circle me-1"></i> Number is required
+          </span></label>
+            <input type="number" class="form-control" formControlName="noOfSplit" [(ngModel)]="prepareModel.noOfSplit">
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="inp">Description:</label>
+            <textarea class="form-control" rows="5" placeholder="Describe about the split" formControlName="description" [(ngModel)]="prepareModel.description"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer right">
+          <button type="button" class="btn btn-default" data-bs-dismiss="modal" aria-label="Close"
+                  (click)="manageModal()">Cancel
+          </button>
+          <button type="button" class="btn btn-primary btn-md" (click)="splitLandRequest()" [disabled]="!(prepareForm.valid)">Send Request
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

@@ -74,11 +74,11 @@ namespace intapscamis.camis.domain.LandBank
             var d = (LandBankFacadeModel.SetPrepareGeometries)w.Data;
             var p=_workflowService.GetLastWorkItem<LandBankFacadeModel.LandPreparationRequest>(this.Workflow.Id).Data  as LandBankFacadeModel.LandPreparationRequest;
 
-            var l = _landBankService.GetLand(Guid.Parse(p.landID), false,false);
+            var l = _landBankService.GetLand(Guid.Parse(p.LandId), false,false);
             var ps=new RestNrlaisInterface().GetParcelsByTranscation(txuid);
             CamisUtils.Assert(ps.Count == d.geoms.Count, "Nrlais returned unexpected number of parcels for split transaction");
 
-            _landBankService.RemoveLand(Guid.Parse(p.landID));
+            _landBankService.RemoveLand(Guid.Parse(p.LandId));
             var oldUpin = l.Upins[0];
 
             var newwi = fireAction(this.Workflow.Id, Triggers.NrlaisApprove, "Approved from NRLAIS", null);
@@ -147,14 +147,14 @@ namespace intapscamis.camis.domain.LandBank
             {
                 var wi = _workflowService.GetLastWorkItem<LandBankFacadeModel.LandPreparationRequest>(w.Id);
                 var data = wi.Data as LandBankFacadeModel.LandPreparationRequest;
-                if(data.n>0)
+                if(data?.NoOfSplit>0)
                 {
                     ret.tasks.Add(new LandBankFacadeModel.SplitTaskItem()
                     {
                         id=w.Id.ToString(),
                         description="Split land",
-                        n=data.n,
-                        upin=_landBankService.GetLand(Guid.Parse( data.landID),false,false).Upins[0],
+                        n=data.NoOfSplit,
+                        upin=_landBankService.GetLand(Guid.Parse( data.LandId),false,false).Upins[0],
                     });
                 }
             }
@@ -180,7 +180,7 @@ namespace intapscamis.camis.domain.LandBank
             Context.Database.OpenConnection();
             using (var command = Context.Database.GetDbConnection().CreateCommand())
             {
-                var sql = $"Select ST_AsText(geometry) from lb.land_upin where land_id='{r.landID}'";
+                var sql = $"Select ST_AsText(geometry) from lb.land_upin where land_id='{r.LandId}'";
                 command.CommandText = sql;
                 var res=command.ExecuteScalar();
                 var ret = new LandBankFacadeModel.SplitTaskGeom()
@@ -201,11 +201,11 @@ namespace intapscamis.camis.domain.LandBank
         {
             var w = _workflowService.GetLastWorkItem<LandBankFacadeModel.LandPreparationRequest>(wfid);
             var r = (LandBankFacadeModel.LandPreparationRequest)w.Data;
-            var p = _landBankService.GetLand(Guid.Parse(r.landID),false,false);
+            var p = _landBankService.GetLand(Guid.Parse(r.LandId),false,false);
 
             return new LandBankFacadeModel.SplitData()
             {
-                n=r.n,
+                n=r.NoOfSplit,
                 area=p.parcels[p.Upins[0]].areaGeom,
                 upin=p.Upins[0],
             };
@@ -258,18 +258,18 @@ namespace intapscamis.camis.domain.LandBank
                 prevState = wf.CurrentState;
             }
 
-            var l = _landBankService.GetLand(Guid.Parse( request.landID),false,false);
-            CamisUtils.Assert(request.n>0, $"Split size should be at least 1");
-            CamisUtils.Assert(l != null, $"{request.landID} is land id");
+            var l = _landBankService.GetLand(Guid.Parse( request.LandId),false,false);
+            CamisUtils.Assert(request.NoOfSplit>0, $"Split size should be at least 1");
+            CamisUtils.Assert(l != null, $"{request.LandId} is land id");
             CamisUtils.Assert(l.LandType != (int)LandBankFacadeModel.LandTypeEnum.Transferred, $"Land preparation request is allowed only for land that is transfered");
-            CamisUtils.Assert(l.Upins.Count == 1, $"Land {request.landID} doesn't have unique UPIN");
+            CamisUtils.Assert(l.Upins.Count == 1, $"Land {request.LandId} doesn't have unique UPIN");
             var p = l.parcels[l.Upins[0]];
             CamisUtils.Assert(p.IsStateLand(), $"Only state land can be prepared.");
-            CamisUtils.Assert(p!= null, $"Land {request.landID} doesn't have associated land propfile");
+            CamisUtils.Assert(p!= null, $"Land {request.LandId} doesn't have associated land propfile");
             States nexState;
             Triggers triger;
             int role;
-            if (request.n > 1)
+            if (request.NoOfSplit > 1)
             {
                 nexState = States.Started;
                 triger = Triggers.Start;
@@ -307,7 +307,7 @@ namespace intapscamis.camis.domain.LandBank
             ConfigureMachine(wfid);
             var data = GetPreparationRequest(wfid);
             CamisUtils.Assert(data!= null , "Can't find the associated land preparation request");
-            CamisUtils.Assert(data.n == par.geoms.Count, "Number of geometries must be consistent with the prepration request");
+            CamisUtils.Assert(data.NoOfSplit == par.geoms.Count, "Number of geometries must be consistent with the prepration request");
             
             var prevState = _machine.State;
             _machine.Fire(Triggers.RequestAprovalWithSplit);
@@ -332,7 +332,7 @@ namespace intapscamis.camis.domain.LandBank
 
             if (_machine.State==States.ApprovalRequested)
             {
-                _landBankService.SetLandState(Guid.Parse(data.landID), LandBankFacadeModel.LandTypeEnum.Prepared);
+                _landBankService.SetLandState(Guid.Parse(data.LandId), LandBankFacadeModel.LandTypeEnum.Prepared);
                 return fireAction(wfid,Triggers.Approve,note,null).Id;
             }
             else
@@ -340,7 +340,7 @@ namespace intapscamis.camis.domain.LandBank
                 var split = _workflowService.GetLastWorkItem<LandBankFacadeModel.SetPrepareGeometries>(wfid);
                 CamisUtils.Assert(split != null, "Failed to find split geometries data in workflow");
                 var splitData = (LandBankFacadeModel.SetPrepareGeometries)split.Data;
-                var p = _landBankService.GetLand(Guid.Parse( data.landID),false,false);
+                var p = _landBankService.GetLand(Guid.Parse( data.LandId),false,false);
                 CamisUtils.Assert(p != null && p.Upins.Count==1, "Failed to find valid parcel information");
                 var parcel = p.parcels[p.Upins[0]];
                 var tranID=new RestNrlaisInterface().RequestLandSplit(parcel, splitData.geoms);

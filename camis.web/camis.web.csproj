@@ -7,196 +7,68 @@
     <IsPackable>false</IsPackable>
     <SpaRoot>ClientApp\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
-    
+
     <!-- Set this to true if you enable server-side prerendering -->
     <BuildServerSideRenderer>false</BuildServerSideRenderer>
-   <AssemblyName>intapscamis.camis</AssemblyName>
-   <RootNamespace>intapscamis.camis</RootNamespace>
+    <AssemblyName>intapscamis.camis</AssemblyName>
+    <RootNamespace>intapscamis.camis</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
-   
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="8.0.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
-	<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
-	<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.4" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.4" />
   </ItemGroup>
 
-  <!-- Removed old Microsoft.AspNetCore.App package reference -->
-
+  <!-- SPA source files: exclude from publishing but show in project -->
   <ItemGroup>
-    <!-- Don't publish the SPA source files, but do show them in the project files list -->
     <Content Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
     <None Remove="ClientApp\.idea\**" />
     <Content Remove="ClientApp\.idea\**" />
     <None Remove="ClientApp\dist\**" />
     <Content Remove="ClientApp\dist\**" />
-    <None Include="wwwroot\images\A1.png" />
-    <None Include="wwwroot\images\authentication\auth2-login.svg" />
-    <None Include="wwwroot\images\authentication\google-icon.svg" />
-    <None Include="wwwroot\images\bg.png" />
-    <None Include="wwwroot\images\camis_logo_2_3.png" />
-    <None Include="wwwroot\images\camis_logo_txt.png" />
-    <None Include="wwwroot\images\ec-logo.png" />
-    <None Include="wwwroot\images\eu.png" />
-    <None Include="wwwroot\images\favicon.png" />
-    <None Include="wwwroot\images\fmofa.png" />
-    <None Include="wwwroot\images\GIZ-logo.png" />
-    <None Include="wwwroot\images\horticulture.png" />
-    <None Include="wwwroot\images\moa.png" />
-    <None Include="wwwroot\images\niras.png" />
-    <None Include="wwwroot\images\overlay.png" />
-    <None Include="wwwroot\images\reila.png" />
-    <None Include="wwwroot\images\user\avatar-1.jpg" />
-    <None Include="wwwroot\images\user\avatar-2.jpg" />
-    <None Include="wwwroot\images\user\avatar-3.jpg" />
-    <None Include="wwwroot\images\user\avatar.jpg" />
-    <None Include="wwwroot\images\user\avator-4.png" />
-    <None Include="wwwroot\images\user\user_profile.PNG" />
-    <None Include="wwwroot\scss\fonts\berry\berry-icons.css" />
-    <None Include="wwwroot\scss\fonts\berry\fonts\pct.eot" />
-    <None Include="wwwroot\scss\fonts\berry\fonts\pct.svg" />
-    <None Include="wwwroot\scss\fonts\berry\fonts\pct.ttf" />
-    <None Include="wwwroot\scss\fonts\berry\fonts\pct.woff" />
-    <None Include="wwwroot\scss\fonts\phosphor\duotone\Phosphor-Duotone.svg" />
-    <None Include="wwwroot\scss\fonts\phosphor\duotone\Phosphor-Duotone.ttf" />
-    <None Include="wwwroot\scss\fonts\phosphor\duotone\Phosphor-Duotone.woff" />
-    <None Include="wwwroot\scss\fonts\phosphor\duotone\selection.json" />
-    <None Include="wwwroot\scss\fonts\phosphor\duotone\style.css" />
-    <None Include="wwwroot\scss\fonts\tabler-icons.min.css" />
-    <None Include="wwwroot\scss\fonts\tabler\tabler-icons.eot" />
-    <None Include="wwwroot\scss\fonts\tabler\tabler-icons.svg" />
-    <None Include="wwwroot\scss\fonts\tabler\tabler-icons.ttf" />
-    <None Include="wwwroot\scss\fonts\tabler\tabler-icons.woff" />
-    <None Include="wwwroot\scss\fonts\tabler\tabler-icons.woff2" />
-    <None Include="wwwroot\scss\other\style\ol.css" />
-    <None Include="wwwroot\scss\other\style\toastr.css" />
-    <None Include="wwwroot\scss\settings\bootstrap-variables.scss" />
-    <None Include="wwwroot\scss\settings\color-variables.scss" />
-    <None Include="wwwroot\scss\settings\theme-variables.scss" />
-    <None Include="wwwroot\scss\themes\components\avatar.scss" />
-    <None Include="wwwroot\scss\themes\components\card.scss" />
-    <None Include="wwwroot\scss\themes\components\components.scss" />
-    <None Include="wwwroot\scss\themes\components\forms.scss" />
-    <None Include="wwwroot\scss\themes\customizer.scss" />
-    <None Include="wwwroot\scss\themes\general.scss" />
-    <None Include="wwwroot\scss\themes\generic.scss" />
-    <None Include="wwwroot\scss\themes\layouts\font-family.scss" />
-    <None Include="wwwroot\scss\themes\layouts\layouts.scss" />
-    <None Include="wwwroot\scss\themes\layouts\menu-list.scss" />
-    <None Include="wwwroot\scss\themes\layouts\pc-common.scss" />
-    <None Include="wwwroot\scss\themes\layouts\pc-footer.scss" />
-    <None Include="wwwroot\scss\themes\layouts\pc-header.scss" />
-    <None Include="wwwroot\scss\themes\layouts\pc-sidebar.scss" />
-    <None Include="wwwroot\scss\themes\layouts\style-config.scss" />
-    <None Include="wwwroot\scss\themes\pages\authentication.scss" />
-    <None Include="wwwroot\scss\themes\pages\dashboard.scss" />
-    <None Include="wwwroot\scss\themes\pages\page.scss" />
-    <None Include="wwwroot\scss\themes\pages\pages.scss" />
   </ItemGroup>
 
+  <!-- Static assets (no need to copy to output, web root serves from source) -->
+  <ItemGroup>
+    <None Include="wwwroot\images\**\*" />
+    <None Include="wwwroot\scss\**\*" />
+    <None Include="wwwroot\cmss\process_split.js" />
+  </ItemGroup>
+
+  <!-- Project references -->
   <ItemGroup>
     <ProjectReference Include="..\camis.domain\camis.domain.csproj" />
     <ProjectReference Include="..\camis.reportviews\camis.reportviews.csproj" />
   </ItemGroup>
 
+  <!-- Exclude build outputs and temp files -->
   <ItemGroup>
     <Compile Remove="ClientApp\.idea\**" />
     <Compile Remove="ClientApp\dist\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Remove="ClientApp\.idea\**" />
     <EmbeddedResource Remove="ClientApp\dist\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="Views\Cmss\home.cshtml" />
-    <Content Remove="Views\Cmss\processSplit.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Views\Cmss\Home.cshtml" />
-    <None Include="Views\Cmss\ProcessSplit.cshtml" />
-    <None Include="wwwroot\cmss\process_split.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <DistFiles Remove="ClientApp\dist\**" />
   </ItemGroup>
 
+  <!-- This is the key: update existing Content items (Razor views) to copy to output -->
   <ItemGroup>
-    <_ContentIncludedByDefault Remove="ClientApp\dist\assets\data\Accessiblity.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\dist\assets\data\AgroEchologicalZone.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\dist\assets\data\ExistingLandUse.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\dist\assets\data\GroundWater.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\dist\assets\data\InvestmentType.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\dist\assets\data\json.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\dist\assets\data\landData.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\dist\assets\data\LandSearchResult.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\dist\assets\data\LandType.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\dist\assets\data\MoistureSource.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\dist\assets\data\soilTestType.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\dist\assets\data\SurfaceWater.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\dist\assets\data\Topography.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\dist\assets\data\WaterSourceType.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\dist\assets\data\WaterTestParameters.json" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.eot" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.svg" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.ttf" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.woff2" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\FontAwesome.otf" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\glyphicons-halflings-regular.eot" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\glyphicons-halflings-regular.svg" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\glyphicons-halflings-regular.ttf" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\glyphicons-halflings-regular.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\weathericons-regular-webfont.eot" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\weathericons-regular-webfont.svg" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\weathericons-regular-webfont.ttf" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\weathericons-regular-webfont.woff" />
-    <_ContentIncludedByDefault Remove="wwwroot\fonts\WeatherIcons-Regular.otf" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\bootbox.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\bootstrap-progressbar.min.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\bootstrap.min.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\Chart.min.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\custom.min.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\external.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\icheck.min.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\jquery-ui.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\jquery.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\jquery.min.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\map.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\ol-debug.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\ol.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\proj4.js" />
-    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\Accessiblity.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\AgroEchologicalZone.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\ExistingLandUse.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\GroundWater.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\InvestmentType.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\json.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\landData.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\LandSearchResult.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\LandType.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\MoistureSource.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\RegionList.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\ReportType.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\soilTestType.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\SurfaceWater.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\Topography.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\WaterSourceType.json" />
-    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\WaterTestParameters.json" />
+    <Content Update="Views\**\*.cshtml" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <!-- Remove some automatically included patterns that cause warnings (optional) -->
   <ItemGroup>
-    <Folder Include="ClientApp\.angular\" />
+    <_ContentIncludedByDefault Remove="ClientApp\dist\**" />
+    <_ContentIncludedByDefault Remove="ClientApp\src\assets\data\**" />
+    <_ContentIncludedByDefault Remove="wwwroot\fonts\**" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\**" />
   </ItemGroup>
 
+  <!-- Node.js environment for SPA build (unchanged) -->
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
-    <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">
       <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
     </Exec>
@@ -205,20 +77,18 @@
     <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
   </Target>
 
- <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
-  <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
-  <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
-  <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build:production" />
-  <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build:ssr:production" Condition=" '$(BuildServerSideRenderer)' == 'true' " />
-  <!-- Include the newly-built files in the publish output -->
-  <ItemGroup>
-    <DistFiles Include="$(SpaRoot)dist\**; $(SpaRoot)dist-server\**" />
-    <DistFiles Include="$(SpaRoot)node_modules\**" Condition="'$(BuildServerSideRenderer)' == 'true'" />
-    <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
-      <RelativePath>%(DistFiles.Identity)</RelativePath>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </ResolvedFileToPublish>
-  </ItemGroup>
-</Target>
+  <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build:production" />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build:ssr:production" Condition=" '$(BuildServerSideRenderer)' == 'true' " />
+    <ItemGroup>
+      <DistFiles Include="$(SpaRoot)dist\**; $(SpaRoot)dist-server\**" />
+      <DistFiles Include="$(SpaRoot)node_modules\**" Condition="'$(BuildServerSideRenderer)' == 'true'" />
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+        <RelativePath>%(DistFiles.Identity)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
 
 </Project>

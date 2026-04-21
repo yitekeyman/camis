@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>CAMIS Qgis Login</string>
+   <string>CAMIS-v2 Login</string>
   </property>
   <property name="styleSheet">
    <string notr="true"/>

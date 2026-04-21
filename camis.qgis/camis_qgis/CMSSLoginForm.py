@@ -114,7 +114,7 @@ class CMSSLoginForm(QDialog, FORM_CLASS):
 
     def onOk(self, un, pw):
         try:
-            res = self.cmss.invokeServer("/api/admin/login", {'UserName': un, 'Password': pw})
+            res = self.cmss.invokeServer("/api/admin/LoginFromQgis", {'UserName': un, 'Password': pw})
             if res['error'] is None:
                 # Added parentheses for print
                 print(self.cmss.sessionid)

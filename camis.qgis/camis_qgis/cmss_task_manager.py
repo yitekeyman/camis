@@ -283,17 +283,17 @@ class CMSS2:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        icon_path = self.plugin_dir + '/cmss-login-sm.png'
+        icon_path = self.plugin_dir + '/camis_cmss_login.png'
         self.login_action = self.add_action(
             icon_path,
-            text=self.tr(u'Login'),
+            text=self.tr(u'CAMIS-v2 Login'),
             callback=self.loginAndRun,
             parent=self.iface.mainWindow())
         
-        icon_path = self.plugin_dir + '/cmss-logout-sm.png'
+        icon_path = self.plugin_dir + '/camis_cmss_logout.png'
         self.logout_action = self.add_action(
             icon_path,
-            text='Logout',
+            text='CAMIS-v2 Logout',
             callback=self.logout,
             parent=self.iface.mainWindow())
         

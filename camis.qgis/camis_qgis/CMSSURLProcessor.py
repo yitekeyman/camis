@@ -44,7 +44,7 @@ class CMSSURLProcessor:
     def processURL(self, path, query):
         print("request: " + path)
         if path == '/cmss/qcmd/showMessage':
-            self.cmss.showInformationMessage('CMSS 2', query['msg'])
+            self.cmss.showInformationMessage('CAMIS-v2 QGIS', query['msg'])
             return True
         if path == '/cmss/qcmd/loadSplit':
             try:
@@ -97,7 +97,7 @@ class CMSSURLProcessor:
                 if fid:
                     print('get_data single fid: ' + str(fid))
                     f = next(self.layer.getFeatures(QgsFeatureRequest(int(qid))))
-                    oneitem = "{id:" + str(f.attribute('id')) + ",area:" + str(f.geometry().area()) + ",wkt:'" + f.geometry().exportToWkt() + "'}"
+                    oneitem = "{id:" + str(f.attribute('id')) + ",area:" + str(f.geometry().area()) + ",wkt:'" + f.geometry().asWkt() + "'}"
                     # Use helper function for JS execution
                     executeJavaScript(self.page, 'setGeomData(' + oneitem + ')')
                 else:
@@ -106,7 +106,7 @@ class CMSSURLProcessor:
             print('get_data array')
             data = ''
             for f in self.layer.getFeatures():
-                oneitem = "{id:" + str(f.attribute('id')) + ",area:" + str(f.geometry().area()) + ",wkt:'" + f.geometry().exportToWkt() + "'}"
+                oneitem = "{id:" + str(f.attribute('id')) + ",area:" + str(f.geometry().area()) + ",wkt:'" + f.geometry().asWkt() + "'}"
                 if data == '':
                     data = oneitem
                 else:
@@ -120,11 +120,14 @@ class CMSSURLProcessor:
         res = self.cmss.invokeServer('/api/cmss/GetTaskGeom?taskid=' + taskid, None)
         if res['error']:
             raise Exception('Error getting task geometry from server\n' + res['error'])
-        arr = res['res']
+        geom_list = res['res']
+        if not isinstance(geom_list, list):
+             geom_list = [geom_list]
+        
         uri = "MultiPolygon?crs=epsg:20137&field=id:integer&field=label:string"
         self.unloadLayer()
 
-        self.layer = QgsVectorLayer(uri, "Task Geometries", "memory")
+        self.layer = QgsVectorLayer(uri, "CAMIS-v2_T_Geometries", "memory")
         styleFile = self.cmss.plugin_dir + '/task_geom.qml'
         self.layer.loadNamedStyle(styleFile)
 
@@ -132,48 +135,57 @@ class CMSSURLProcessor:
         QgsProject.instance().addMapLayer(self.layer)
         self.layer.startEditing()
 
-        feature = QgsFeature()
-        wkt = arr['geom']
-        gm = QgsGeometry.fromWkt(wkt)
-        feature.setGeometry(gm)
-        id_val = arr['id']
-        if id_val > self.maxID:
-            self.maxID = id_val
-        feature.setAttributes([id_val, arr['label']])
-        self.layer.addFeature(feature)
-
-        self.fid_dict[str(id_val)] = feature.id()
+        self.maxID = 0
+        extents = []
+        for geom_data in geom_list:
+            feature = QgsFeature()
+            raw_wkt = geom_data['geom']
+    
+            # Strip SRID prefix (e.g., "SRID=20137;MultiPolygon(...)" -> "MultiPolygon(...)")
+            if ';' in raw_wkt and raw_wkt.upper().startswith('SRID='):
+                wkt = raw_wkt.split(';', 1)[1]
+            else:
+                wkt = raw_wkt
+            
+            gm = QgsGeometry.fromWkt(wkt)
+            if gm.isNull():
+                print(f"Warning: Failed to parse WKT for id {geom_data['id']}")
+                continue
+                
+            feature.setGeometry(gm)
+            id_val = geom_data['id']
+            if id_val > self.maxID:
+                self.maxID = id_val
+            
+            label = geom_data.get('label', f"parcel-{id_val}")
+            feature.setAttributes([id_val, label])
+            self.layer.addFeature(feature)
+            self.fid_dict[str(id_val)] = feature.id()
+            extents.append(feature.geometry().boundingBox())
         self.layer.commitChanges()
         self.layer.startEditing()
-        ext = self.layer.extent()
-        if self.layer.featureCount() > 0:
-            print('Zooming to:' + str(ext))
-            self.cmss.iface.mapCanvas().setExtent(ext)
-        else:
-            print('Empty extent, trying kebele')
-            res = self.cmss.invokeServer('/api/task_kebele?task_uid=' + taskid, None)
-            print('kebele id:' + str(res))
-            if res['error'] is None:
-                print('kebele id:' + str(res))
-                features = self.cmss.kebele_layer.getFeatures(QgsFeatureRequest(QgsExpression("nrlais_kebeleid='" + res['res'] + "'")))
-                f = next(features, None)
-                if f:
-                    print('kebele found')
-                    bbox = f.geometry().boundingBox()
-                    print(str(bbox))
-                    self.cmss.iface.mapCanvas().setExtent(bbox)
-                else:
-                    print('kebele not found')
 
         self.layer.featureAdded.connect(self.featureAdded)
         self.layer.featureDeleted.connect(self.featureDeleted)
         self.layer.geometryChanged.connect(self.geomChanged)
         self.layer.selectionChanged.connect(self.selectionChanged)
-        self.layer.beforeCommitChanges.connect(self.beforeCommit)
 
-    def beforeCommit(self):
-        for f in self.layer.getFeatures():
-            f.geometry().exportToWkt()
+        if extents:
+            combined_extent = QgsRectangle()
+            for ext in extents:
+                combined_extent.combineExtentWith(ext)
+            self.cmss.iface.mapCanvas().setExtent(combined_extent)
+        else:
+            print('Empty extent, trying kebele')
+            res = self.cmss.invokeServer('/api/task_kebele?task_uid=' + taskid, None)
+            if res['error'] is None:
+                features = self.cmss.kebele_layer.getFeatures(QgsFeatureRequest(QgsExpression("nrlais_kebeleid='" + res['res'] + "'")))
+                f = next(features, None)
+                if f:
+                    self.cmss.iface.mapCanvas().setExtent(f.geometry().boundingBox())
+ 
+
+    # The beforeCommit method has been removed entirely
 
     def onLayerChanged(self, type_val, id_val):
         executeJavaScript(self.page, 'layerChanged(' + str(type_val) + ',' + str(id_val) + ',' + str(self.layer.featureCount()) + ')')
@@ -181,6 +193,7 @@ class CMSSURLProcessor:
     def featureAdded(self, fid):
         self.maxID = self.maxID + 1
         self.layer.changeAttributeValue(fid, 0, self.maxID)
+        self.layer.changeAttributeValue(fid, 1, f"parcel-{self.maxID}")
         self.fid_dict[str(self.maxID)] = fid
         self.onLayerChanged(1, self.maxID)
 

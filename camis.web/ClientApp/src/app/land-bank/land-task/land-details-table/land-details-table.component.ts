@@ -142,9 +142,7 @@ export class LandDetailsTableComponent implements OnInit {
               splitGeomData.push(parcel);
             }
             this.map.setSplitGeomsByWKT(splitGeomData);
-
           }
-
         } else {
           this.landService.GetWorkFlowLand(this.wfid).subscribe(data => {
             this.keyCase.camelCase(data);

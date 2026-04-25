@@ -12,11 +12,14 @@ using intapscamis.camis.domain.Extensions;
 using intapscamis.camis.domain.Farms.Models;
 using intapscamis.camis.domain.Infrastructure;
 using intapscamis.camis.domain.Infrastructure.Architecture;
+using intapscamis.camis.domain.LandBank;
 using intapscamis.camis.domain.Projects;
 using intapscamis.camis.domain.Projects.Models;
 using intapscamis.camis.domain.Workflows;
 using intapscamis.camis.domain.Workflows.Models;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
 using Newtonsoft.Json;
 
 namespace intapscamis.camis.domain.Farms
@@ -61,6 +64,11 @@ namespace intapscamis.camis.domain.Farms
         Document InWorkItemActivityPlanFileForPlanUpdate(Guid workItemId, Guid documentId);
         Document InWorkItemOperatorPhoto(Guid workItemId, Guid photoId);
         FarmResponse GetFarmByLandId(Guid id);
+        IList<LandBankFacadeModel.UpinWithSplitResponse> GetUPINsWithSplitParts();
+        LandBankFacadeModel.UpinWithSplitResponse GetSplitPartsByUpin(string upin);
+        LandRightsResponse GetLandRightsByLandIdandFarmId(Guid landId, Guid farmId, int? partId = 0);
+        List<LandRightsResponse> GetAllLandRightsByLandId(Guid landId);
+        List<LandRightsResponse> GetAllLandRightsByFarmId(Guid farmId);
     }
 
     public class FarmsService : CamisService, IFarmsService
@@ -166,9 +174,54 @@ namespace intapscamis.camis.domain.Farms
 
         public IList<string> GetUPINs()
         {
-            return Context.LandUpin.Where(upin => upin.Land.LandType == 2).Select(upin => upin.Upin).ToList();
+            return Context.LandUpin
+                .Where(upin => upin.Land.LandType == 2 || upin.Land.LandType == 5 || upin.Land.LandType == 6)
+                .Select(upin => upin.Upin).ToList();
         }
 
+        public IList<LandBankFacadeModel.UpinWithSplitResponse> GetUPINsWithSplitParts()
+        {
+            var land = Context.LandUpin
+                .Where(upin => upin.Land.LandType == 2 || upin.Land.LandType == 5 || upin.Land.LandType == 6)
+                .Select(upin => upin.Upin).ToList();
+            var rets = new List<LandBankFacadeModel.UpinWithSplitResponse>();
+            foreach (var upin in land)
+            {
+                rets.Add(GetSplitPartsByUpin(upin));
+            }
+
+            return rets;
+        }
+
+        public LandBankFacadeModel.UpinWithSplitResponse GetSplitPartsByUpin(string upin)
+        {
+            var land = Context.LandUpin.Where(e => e.Upin.Contains(upin)).FirstOrDefault();
+
+            if (land != null)
+            {
+                var ret = new LandBankFacadeModel.UpinWithSplitResponse();
+                ret.Upin = land.Upin;
+                // var sql = $"SELECT id, ST_AsText(geom) AS geom, land_id, indexes, status, wid, area FROM lb.land_split WHERE land_id='{land.LandId}' AND status=2;";
+                var split = Context.LandSplit.Where(l => l.LandId == land.LandId && l.Status == 2).ToList();
+                var writer = new WKTWriter();
+                foreach (var ls in split)
+                {
+                    ret.SplitParts.Add(new LandBankFacadeModel.LandSplitResponse()
+                    {
+                        Id = ls.Id,
+                        Area = ls.Area,
+                        Geom = writer.Write(ls.Geom),
+                        Indexes = ls.Indexes,
+                        Status = ls.Status,
+                        LandId = ls.LandId.ToString()
+                    });
+                }
+
+                return ret;
+            }
+
+            return null;
+        }
 
         public PaginatorResponse<FarmOperatorResponse> SearchFarmOperators(string term, int skip, int take)
         {
@@ -212,6 +265,7 @@ namespace intapscamis.camis.domain.Farms
                 .ThenInclude(fr => fr.Authority)
                 .Include(f => f.FarmRegistration)
                 .ThenInclude(fr => fr.Type)
+                .Include(f => f.StatusNavigation)
                 .Where(f =>
                     (f.Type != null && f.Type.Name.ToLower().Contains(searchTerm)) ||
                     (f.Activity != null && f.Activity.Name.ToLower().Contains(searchTerm)) ||
@@ -896,6 +950,56 @@ namespace intapscamis.camis.domain.Farms
             return null;
         }
 
+        public LandRightsResponse GetLandRightsByLandIdandFarmId(Guid landId, Guid farmId, int? partId = 0)
+        {
+            var lr = Context.LandRight.FirstOrDefault(l =>
+                l.LandId == landId && l.FarmId == farmId && l.SplitIndex == partId);
+            if (lr != null)
+            {
+                var s = Context.FarmStatusTypes.First(e => e.Id == lr.Status);
+                return new LandRightsResponse
+                {
+                    LandId = lr.LandId.ToString(),
+                    FarmId = lr.FarmId.ToString(),
+                    RightFrom = new DateTime(lr.RightFrom ?? 0),
+                    RightTo = new DateTime(lr.RightTo ?? 0),
+                    RightType = lr.RightType,
+                    SplitIndex = lr.SplitIndex,
+                    LandSectionArea = lr.LandSectionArea,
+                    Geom = GetWktFromGeom(lr.Geom),
+                    Status = new FarmStatus { Id = s.Id, Name = s.Name }
+                };
+            }
+
+            return null;
+        }
+
+        public List<LandRightsResponse> GetAllLandRightsByLandId(Guid landId)
+        {
+            var rights = new List<LandRightsResponse>();
+            var rightLists = Context.LandRight.Where(i => i.LandId == landId).ToList();
+            foreach (var lr in rightLists)
+            {
+                var r = GetLandRightsByLandIdandFarmId(lr.LandId, lr.FarmId, lr.SplitIndex);
+                if (r != null)
+                    rights.Add(r);
+            }
+            return rights;
+        }
+
+        public List<LandRightsResponse> GetAllLandRightsByFarmId(Guid farmId)
+        {
+            var rights = new List<LandRightsResponse>();
+            var rightLists = Context.LandRight.Where(i => i.FarmId == farmId).ToList();
+            foreach (var lr in rightLists)
+            {
+                var r = GetLandRightsByLandIdandFarmId(lr.LandId, lr.FarmId, lr.SplitIndex);
+                if (r != null)
+                    rights.Add(r);
+            }
+            return rights;
+        }
+
         private FarmResponse ParseFarmResponse(Farm farm)
         {
             var res = new FarmResponse
@@ -1076,6 +1180,13 @@ namespace intapscamis.camis.domain.Farms
                     {
                         Id = farm.Type.Id,
                         Name = farm.Type.Name
+                    },
+                Status = farm.StatusNavigation == null
+                    ? null
+                    : new FarmStatus
+                    {
+                        Id = farm.StatusNavigation.Id,
+                        Name = farm.StatusNavigation.Name,
                     }
             };
             return ret;
@@ -1091,7 +1202,16 @@ namespace intapscamis.camis.domain.Farms
                 FarmId = land.FarmId,
                 CertificateDoc = MapDocumentResponse(_documentService.GetDocument(land.CertificateDoc)),
                 LeaseContractDoc = MapDocumentResponse(_documentService.GetDocument(land.LeaseContractDoc)),
+                SplitIndex = land.SplitIndex
             };
+        }
+
+        private string GetWktFromGeom(Geometry? geom)
+        {
+            var writer = new WKTWriter();
+            if (geom != null)
+                return writer.Write(geom);
+            return null;
         }
 
         private FarmRegistrationResponse MapFarmRegistrationToResponse(FarmRegistration reg)
@@ -1241,12 +1361,12 @@ namespace intapscamis.camis.domain.Farms
                 .ThenInclude(fr => fr.Authority)
                 .Include(f => f.FarmRegistration)
                 .ThenInclude(fr => fr.Type)
+                .Include(f => f.StatusNavigation)
                 .Where(f => f.Id == id)
                 .AsSplitQuery()
                 .AsNoTracking();
             var farm = baseQuery.FirstOrDefault(e => e.Id == id);
             return MapFarmToResponse(farm);
         }
-        
     }
 }

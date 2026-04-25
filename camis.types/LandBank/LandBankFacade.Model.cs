@@ -1,6 +1,7 @@
 ﻿using intapscamis.camis.domain.Documents.Models;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 namespace intapscamis.camis.domain.LandBank
 {
@@ -113,8 +114,9 @@ namespace intapscamis.camis.domain.LandBank
             public String FarmID { get; set; } = null;
             public int landHolderType { get; set; } //1:private, 3:state land
 
-            public List<LandSplitResponse> LandSplit { get; set; }
-
+            public List<LandSplitResponse> LandSplit { get; set; } = null;
+            public LandRightResponse LandRight { get; set; } = null;
+            
             #region New Data
             public List<AgroEchologyZone> AgroEchologyZone { get; set; }
             public List<int> InvestmentType { get; set; }
@@ -124,6 +126,7 @@ namespace intapscamis.camis.domain.LandBank
             public List<int> ExistLandUse { get; set; }
             public string IsAgriculturalZone { get; set; }
             public List<DocumentRequest> UploadDocument { get; set; }
+            
             
             #endregion
         }
@@ -193,6 +196,7 @@ namespace intapscamis.camis.domain.LandBank
             public LandRightType right = LandRightType.LeaseFromState;
             public double? yearlyLease;
             public double? landSectionArea;
+            public int? landPart;
             public Guid txuid;
         }
 
@@ -247,6 +251,11 @@ namespace intapscamis.camis.domain.LandBank
             public List<SplitGeomData>  geomData;
         }
 
+        public class UpinWithSplitResponse
+        {
+            public string Upin { get; set; }
+            public List<LandSplitResponse> SplitParts { get; set; }
+        }
         public class LandSplitResponse
         {
             public int Id { get; set; }
@@ -259,7 +268,25 @@ namespace intapscamis.camis.domain.LandBank
             public int Indexes { get; set; }
 
             public long Status { get; set; }
+            public LandRightResponse LandRight { get; set; } = null;
         }
+        
+        public class  LandRightResponse
+        {
+            public string LandId { get; set; }
+            public DateTime? RightFrom { get; set; }
+            public DateTime? RightTo { get; set; }
+            public DocumentResponse ContractDocument { get; set; } = null;
+            public DocumentResponse CertificateDocument { get; set; } = null;
+            public int? RightType { get; set; }
+            public double? YearlyRent { get; set; }
+            public double? LandSectionArea { get; set; }
+            public int SplitIndex { get; set; }
+            public string CommonTxtUid { get; set; }
+            public int? Status { get; set; }
+            public string Geom { get; set; }
+        }
+        
     }
 
 }

@@ -19,12 +19,13 @@ namespace intapscamis.camis.data.Entities
         public string Description { get; set; }
         public long? Aid { get; set; }
         public int[] OtherTypeIds { get; set; }
-
+        public int? Status { get; set; }
         public UserAction A { get; set; }
         public Activity Activity { get; set; }
         public FarmOperator Operator { get; set; }
         public FarmType Type { get; set; }
         public ICollection<FarmLand> FarmLand { get; set; }
         public ICollection<FarmRegistration> FarmRegistration { get; set; }
+        public virtual FarmStatusType StatusNavigation { get; set; }
     }
 }

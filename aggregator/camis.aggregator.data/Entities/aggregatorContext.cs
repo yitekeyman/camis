@@ -469,12 +469,7 @@ namespace camis.aggregator.data.Entities
                 entity.Property(e => e.RightType).HasColumnName("right_type");
 
                 entity.Property(e => e.YearlyRent).HasColumnName("yearly_rent");
-
-                entity.HasOne(d => d.Land)
-                    .WithOne(p => p.LandRight)
-                    .HasForeignKey<LandRight>(d => d.LandId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("land_right_land_id_fk");
+                
             });
 
             modelBuilder.Entity<LandSplit>(entity =>

@@ -40,10 +40,18 @@
               <input [(ngModel)]="upin" list="UPINsList" (keyup)="loadLand()" (change)="loadLand()" class="form-select"
                      id="inp" type="search" placeholder="UPIN">
               <datalist id="UPINsList">
-                <option *ngFor="let UPIN of allUPINs" [value]="UPIN">{{ UPIN }}</option>
+                <option *ngFor="let UPIN of allUPINs" [value]="UPIN.upin">{{ UPIN.upin }}</option>
               </datalist>
             </div>
-            <div *ngIf="data.landTransferRequest.landID">
+            <div class="form-group" *ngIf="data.landTransferRequest.landID && this.landPart?.length>0">
+              <label class="control-label" for="landPart">Select Land Part:</label>
+              <select [(ngModel)]="selectedLandPart"   (change)="selectLandPart()" class="form-select" id="landPart">
+              <option value="0">Select Land Part</option>
+                <option *ngFor="let sp of landPart" [value]="sp.id">{{upin}}-{{sp.indexes}}</option>
+              </select>
+            </div>
+
+            <div *ngIf="data.landTransferRequest.landID && (landPart?.length>0 && selectedLandPart &&  selectedLandPart>0)">
               <hr/>
 
               <div class="form-group">

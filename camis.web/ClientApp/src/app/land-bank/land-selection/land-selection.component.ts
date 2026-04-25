@@ -8,6 +8,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {FarmDetailComponent} from "../../_shared/farm/farm-detail/farm-detail.component";
 import {CamisMapComponent} from "../../_shared/camismap/camismap.component";
 import {ObjectKeyCasingService} from "../../_services/object-key-casing.service";
+import {forEach} from "ol/geom/flat/segments";
 
 @Component({
   selector: 'app-land-selection',
@@ -24,9 +25,11 @@ export class LandSelectionComponent implements OnInit {
 
   yearlyLeaseRate?: number;
   landArea?: number;
+  selectedLandPart?: number;
+  landPart:any[]=[];
 
   upin = '';
-  allUPINs: string[] = [];
+  allUPINs = [];
   @ViewChild('camis_map') map: CamisMapComponent;
   constructor (
     private api: FarmApiService,
@@ -54,6 +57,7 @@ export class LandSelectionComponent implements OnInit {
         this.data.landTransferRequest = {
           farmer: this.data['operator'],
           landID: null,
+          landPart:null,
           leaseFrom: null,
           leaseTo: null,
           right: null,
@@ -71,7 +75,10 @@ export class LandSelectionComponent implements OnInit {
         }
       }, dialog.error);
 
-      this.api.getUPINs().subscribe(resp => this.allUPINs = resp, dialog.error);
+      this.api.getUPINs().subscribe(resp =>{
+        this.keyCase.camelCase(resp);
+        this.allUPINs = resp
+      }, dialog.error);
     }, dialog.error);
   }
 
@@ -90,6 +97,13 @@ export class LandSelectionComponent implements OnInit {
           } else {
             this.data.landTransferRequest.landID = null;
           }
+          if(resp && resp.landSplit?.length > 0) {
+            this.landPart=[];
+            for(let ls of resp.landSplit){
+              if(ls.status==2)
+                this.landPart.push(ls);
+            }
+          }
           this.map.setNrlaisParcel(this.upin);
         },
         error => {
@@ -101,7 +115,13 @@ export class LandSelectionComponent implements OnInit {
       this.data.landTransferRequest.landID = null;
     }
   }
-
+ selectLandPart(){
+    for(let ls of this.landPart){
+      if(this.selectedLandPart==ls.id){
+        this.map.setWorkFlowGeomByWKT(ls.geom);
+      }
+    }
+ }
   async selectLand(): Promise<void> {
     const message = await dialog.prompt('Enter a message to display while waiting for NRLAIS officials (optional):');
     if (message === null) {

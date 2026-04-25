@@ -407,7 +407,7 @@ namespace intapscamis.camis.Controllers
 
        
         [HttpPost]
-        public IActionResult Logout(String sid)
+        public IActionResult Logout([FromQuery] String sid)
         {
             if (!string.IsNullOrEmpty(sid))
             {
@@ -418,7 +418,7 @@ namespace intapscamis.camis.Controllers
                 }
             }
             base.HttpContext.Session.Clear();
-            return Json(true);
+            return Json(new { res="ok"});
         }
         [HttpGet]
         public IActionResult CheckSession()

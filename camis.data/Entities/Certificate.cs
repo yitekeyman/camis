@@ -11,5 +11,7 @@ namespace intapscamis.camis.data.Entities
         public string Label { get; set; }
         public Guid? WId { get; set; }
         public Geometry Geom { get; set; }
+        public int SplitIndex { get; set; }
+    
     }
 }

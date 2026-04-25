@@ -40,6 +40,7 @@
               <th>Farm Type</th>
               <th>Invested Capital</th>
               <th>Description</th>
+              <th>Status</th>
               <th class="align-center">
                 <span class="nobr">Action</span>
               </th>
@@ -66,6 +67,9 @@
               </td>
               <td>
                 <label [for]="'farm-open-btn-' + farm.id">{{ farm.description }}</label>
+              </td>
+              <td>
+                <label [for]="'farm-open-btn-' + farm.id">{{ farm.status.name}}</label>
               </td>
               <td class="text-nowrap">
                 <button [id]="'farm-open-btn-' + farm.id" class="btn btn-sm btn-primary" title="Detail"

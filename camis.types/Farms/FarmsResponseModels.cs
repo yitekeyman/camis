@@ -20,6 +20,7 @@ namespace intapscamis.camis.domain.Farms.Models
         public FarmTypeResponse Type { get; set; }
 
         public ICollection<FarmLandResponse> FarmLands { get; set; }
+        public FarmStatus Status { get; set; }
     }
 
     public class FarmLandResponse
@@ -31,6 +32,22 @@ namespace intapscamis.camis.domain.Farms.Models
 
         public DocumentResponse CertificateDoc { get; set; }
         public DocumentResponse LeaseContractDoc { get; set; }
+        public int SplitIndex { get; set; }
+    }
+
+    public class LandRightsResponse
+    {
+        public string LandId { get; set; }
+        public string FarmId { get; set; }
+        public DateTime? RightFrom { get; set; }
+        public DateTime? RightTo { get; set; }
+        public int? RightType { get; set; }
+        public double? YearlyRent { get; set; }
+        public double? LandSectionArea { get; set; }
+        public int SplitIndex { get; set; }
+        public string CommonTxtUid { get; set; }
+        public string Geom { get; set; }
+        public FarmStatus Status { get; set; } = new FarmStatus();
     }
 
     public class FarmRegistrationResponse
@@ -113,6 +130,12 @@ namespace intapscamis.camis.domain.Farms.Models
     }
 
     public class FarmOperatorOriginResponse
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class FarmStatus
     {
         public int Id { get; set; }
         public string Name { get; set; }

@@ -59,6 +59,7 @@ namespace intapscamis.camis.data.Entities
         public virtual DbSet<FarmOperatorRegistration> FarmOperatorRegistration { get; set; }
         public virtual DbSet<FarmOperatorType> FarmOperatorType { get; set; }
         public virtual DbSet<FarmRegistration> FarmRegistration { get; set; }
+        public virtual DbSet<FarmStatusType> FarmStatusTypes { get; set; }
         public virtual DbSet<FarmType> FarmType { get; set; }
         public virtual DbSet<GroundData> GroundData { get; set; }
         public virtual DbSet<GroundWater> GroundWater { get; set; }
@@ -906,13 +907,16 @@ namespace intapscamis.camis.data.Entities
 
             modelBuilder.Entity<Certificate>(entity =>
             {
-                entity.HasKey(e => e.LandId);
+                entity.HasKey(e => new { e.LandId, e.SplitIndex }).HasName("certificate_pkey");
 
                 entity.ToTable("certificate", "lb");
 
                 entity.Property(e => e.LandId)
                     .HasColumnName("land_id")
                     .ValueGeneratedNever();
+                entity.Property(e => e.SplitIndex)
+                    .HasDefaultValue(0)
+                    .HasColumnName("split_index");
 
                 entity.Property(e => e.Geom).HasColumnName("geom");
 
@@ -1204,93 +1208,90 @@ namespace intapscamis.camis.data.Entities
 
             modelBuilder.Entity<Farm>(entity =>
             {
-                entity.ToTable("farm", "frm");
+                 entity.HasKey(e => e.Id).HasName("pk_farm");
 
-                entity.HasIndex(e => e.ActivityId)
-                    .HasName("ixfk_farm_activity");
+            entity.ToTable("farm", "frm");
 
-                entity.HasIndex(e => e.InvestedCapital)
-                    .HasName("farm_investment_capital_index");
+            entity.HasIndex(e => e.InvestedCapital, "farm_investment_capital_index");
 
-                entity.HasIndex(e => e.OperatorId)
-                    .HasName("ixfk_farms_farm_operator");
+            entity.HasIndex(e => e.ActivityId, "ixfk_farm_activity");
 
-                entity.HasIndex(e => e.TypeId)
-                    .HasName("ixfk_farm_farm_type");
+            entity.HasIndex(e => e.TypeId, "ixfk_farm_farm_type");
 
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
-                    .ValueGeneratedNever();
+            entity.HasIndex(e => e.OperatorId, "ixfk_farms_farm_operator");
 
-                entity.Property(e => e.ActivityId).HasColumnName("activity_id");
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("id");
+            entity.Property(e => e.ActivityId).HasColumnName("activity_id");
+            entity.Property(e => e.Aid).HasColumnName("aid");
+            entity.Property(e => e.Description)
+                .HasMaxLength(5000)
+                .HasColumnName("description");
+            entity.Property(e => e.InvestedCapital).HasColumnName("invested_capital");
+            entity.Property(e => e.OperatorId).HasColumnName("operator_id");
+            entity.Property(e => e.OtherTypeIds)
+                .HasDefaultValueSql("ARRAY[]::integer[]")
+                .HasColumnName("other_type_ids");
+            entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.TypeId).HasColumnName("type_id");
 
-                entity.Property(e => e.Aid).HasColumnName("aid");
+            entity.HasOne(d => d.Activity).WithMany(p => p.Farm)
+                .HasForeignKey(d => d.ActivityId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_farm_activity");
 
-                entity.Property(e => e.Description).HasColumnName("description");
+            entity.HasOne(d => d.A).WithMany(p => p.Farm)
+                .HasForeignKey(d => d.Aid)
+                .HasConstraintName("farm_user_action_id_fk");
 
-                entity.Property(e => e.InvestedCapital).HasColumnName("invested_capital");
+            entity.HasOne(d => d.Operator).WithMany(p => p.Farm)
+                .HasForeignKey(d => d.OperatorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_farms_farm_operator");
 
-                entity.Property(e => e.OperatorId).HasColumnName("operator_id");
+            entity.HasOne(d => d.StatusNavigation).WithMany(p => p.Farms)
+                .HasForeignKey(d => d.Status)
+                .HasConstraintName("fk_farms_farm_status");
 
-                entity.Property(e => e.OtherTypeIds)
-                    .HasColumnName("other_type_ids")
-                    .HasDefaultValueSql("ARRAY[]::integer[]");
-
-                entity.Property(e => e.TypeId).HasColumnName("type_id");
-
-                entity.HasOne(d => d.Activity)
-                    .WithMany(p => p.Farm)
-                    .HasForeignKey(d => d.ActivityId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("fk_farm_activity");
-
-                entity.HasOne(d => d.A)
-                    .WithMany(p => p.Farm)
-                    .HasForeignKey(d => d.Aid)
-                    .HasConstraintName("farm_user_action_id_fk");
-
-                entity.HasOne(d => d.Operator)
-                    .WithMany(p => p.Farm)
-                    .HasForeignKey(d => d.OperatorId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("fk_farms_farm_operator");
-
-                entity.HasOne(d => d.Type)
-                    .WithMany(p => p.Farm)
-                    .HasForeignKey(d => d.TypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("fk_farm_farm_type");
+            entity.HasOne(d => d.Type).WithMany(p => p.Farm)
+                .HasForeignKey(d => d.TypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_farm_farm_type");
             });
 
             modelBuilder.Entity<FarmLand>(entity =>
             {
-                entity.HasKey(e => new { e.LandId, e.FarmId });
+                entity.HasKey(e => new { e.LandId, e.FarmId, e.SplitIndex }).HasName("farm_land_pk");
 
                 entity.ToTable("farm_land", "frm");
 
                 entity.Property(e => e.LandId).HasColumnName("land_id");
-
                 entity.Property(e => e.FarmId).HasColumnName("farm_id");
-
+                entity.Property(e => e.SplitIndex)
+                    .HasDefaultValue(0)
+                    .HasColumnName("split_index");
                 entity.Property(e => e.CertificateDoc).HasColumnName("certificate_doc");
-
                 entity.Property(e => e.LeaseContractDoc).HasColumnName("lease_contract_doc");
 
-                entity.HasOne(d => d.CertificateDocNavigation)
-                    .WithMany(p => p.FarmLandCertificateDocNavigation)
+                entity.HasOne(d => d.CertificateDocNavigation).WithMany(p => p.FarmLandCertificateDocNavigation)
                     .HasForeignKey(d => d.CertificateDoc)
                     .HasConstraintName("farm_land_document_id_fk");
 
-                entity.HasOne(d => d.Farm)
-                    .WithMany(p => p.FarmLand)
+                entity.HasOne(d => d.Farm).WithMany(p => p.FarmLand)
                     .HasForeignKey(d => d.FarmId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("farm_land_farm_id_fk");
 
-                entity.HasOne(d => d.LeaseContractDocNavigation)
-                    .WithMany(p => p.FarmLandLeaseContractDocNavigation)
+                entity.HasOne(d => d.Land).WithMany(p => p.FarmLands)
+                    .HasForeignKey(d => d.LandId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("farm_land_land_id_fk");
+
+                entity.HasOne(d => d.LeaseContractDocNavigation).WithMany(p => p.FarmLandLeaseContractDocNavigation)
                     .HasForeignKey(d => d.LeaseContractDoc)
                     .HasConstraintName("farm_land_document_id_fk_2");
+
             });
 
             modelBuilder.Entity<FarmOperator>(entity =>
@@ -1513,7 +1514,19 @@ namespace intapscamis.camis.data.Entities
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_farm_registration_registration_type");
             });
+            modelBuilder.Entity<FarmStatusType>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("farm_status_type_pkey");
 
+                entity.ToTable("farm_status_type", "frm");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .HasColumnName("name");
+            });
             modelBuilder.Entity<FarmType>(entity =>
             {
                 entity.ToTable("farm_type", "frm");
@@ -1778,43 +1791,40 @@ namespace intapscamis.camis.data.Entities
 
             modelBuilder.Entity<LandRight>(entity =>
             {
-                entity.HasKey(e => e.LandId);
+                entity.HasKey(e => new { e.LandId, e.SplitIndex, e.FarmId }).HasName("land_right_pk");
 
                 entity.ToTable("land_right", "lb");
 
-                entity.Property(e => e.LandId)
-                    .HasColumnName("land_id")
-                    .ValueGeneratedNever();
-
+                entity.Property(e => e.LandId).HasColumnName("land_id");
+                entity.Property(e => e.SplitIndex)
+                    .HasDefaultValue(0)
+                    .HasColumnName("split_index");
+                entity.Property(e => e.FarmId).HasColumnName("farm_id");
                 entity.Property(e => e.CertificateDocument).HasColumnName("certificate_document");
-
+                entity.Property(e => e.CommonTxtUid).HasColumnName("common_txt_uid");
                 entity.Property(e => e.ContractDocument).HasColumnName("contract_document");
-
+                entity.Property(e => e.Geom).HasColumnName("geom");
                 entity.Property(e => e.LandSectionArea).HasColumnName("land_section_area");
-
                 entity.Property(e => e.RightFrom).HasColumnName("right_from");
-
                 entity.Property(e => e.RightTo).HasColumnName("right_to");
-
                 entity.Property(e => e.RightType).HasColumnName("right_type");
-
+                entity.Property(e => e.Status)
+                    .HasDefaultValue(4)
+                    .HasColumnName("status");
                 entity.Property(e => e.YearlyRent).HasColumnName("yearly_rent");
 
-                entity.HasOne(d => d.CertificateDocumentNavigation)
-                    .WithMany(p => p.LandRightCertificateDocumentNavigation)
+                entity.HasOne(d => d.CertificateDocumentNavigation).WithMany(p => p.LandRightCertificateDocumentNavigation)
                     .HasForeignKey(d => d.CertificateDocument)
                     .HasConstraintName("land_right_document_id_fk");
 
-                entity.HasOne(d => d.ContractDocumentNavigation)
-                    .WithMany(p => p.LandRightContractDocumentNavigation)
+                entity.HasOne(d => d.ContractDocumentNavigation).WithMany(p => p.LandRightContractDocumentNavigation)
                     .HasForeignKey(d => d.ContractDocument)
                     .HasConstraintName("land_right_document_id_fk_2");
 
-                entity.HasOne(d => d.Land)
-                    .WithOne(p => p.LandRight)
-                    .HasForeignKey<LandRight>(d => d.LandId)
+                entity.HasOne(d => d.Land).WithMany(p => p.LandRights)
+                    .HasForeignKey(d => d.LandId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("land_right_land_id_fk");
+                    .HasConstraintName("land_right_land_land_id_fk");
             });
 
             modelBuilder.Entity<LandSplit>(entity =>
@@ -1940,7 +1950,7 @@ namespace intapscamis.camis.data.Entities
 
                 entity.Property(e => e.Name).HasColumnName("name");
             });
-            
+
             modelBuilder.Entity<RegistrationAuthority>(entity =>
             {
                 entity.ToTable("registration_authority", "frm");

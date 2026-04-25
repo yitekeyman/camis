@@ -273,7 +273,7 @@ export class FcFarmModificationComponent implements OnInit {
   }
 
   getPhotoSource(): string {
-    if (this.opPhoto.file) {
+    if (this.opPhoto?.file) {
       // Convert base64 string to data URL for display
       return `data:${this.opPhoto.mimetype};base64,${this.opPhoto.file}`;
     }

@@ -66,6 +66,9 @@
     <_ContentIncludedByDefault Remove="wwwroot\fonts\**" />
     <_ContentIncludedByDefault Remove="wwwroot\js\**" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ClientApp\.angular\cache\" />
+  </ItemGroup>
 
   <!-- Node.js environment for SPA build (unchanged) -->
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

@@ -48,7 +48,7 @@ export class ObjectKeyCasingService {
     } else if (dateTimePipe.transform(currentDate, 'yyyy') == dateTimePipe.transform(date, 'yyyy')) {
       ret = dateTimePipe.transform(date, 'MMM dd hh:mm:ss aa');
     } else {
-      ret = dateTimePipe.transform(date, 'MMM dd, yyyy hh:mm:ss aa');
+      ret = dateTimePipe.transform(date, 'MMM dd, yyyy');
     }
 
     return ret;

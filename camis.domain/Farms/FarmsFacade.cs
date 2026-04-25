@@ -61,6 +61,11 @@ namespace intapscamis.camis.domain.Farms
         int GetTransferStatus(Guid workflowId);
         void CertifyLandAssignment(Guid workflowId, FarmRequest body, string description);
         FarmResponse GetFarmByLandId(Guid id);
+        IList<LandBankFacadeModel.UpinWithSplitResponse> GetUPINsWithSplitParts();
+        LandBankFacadeModel.UpinWithSplitResponse GetSplitPartsByUpin(string upin);
+        LandRightsResponse GetLandRightsByLandIdandFarmId(Guid landId, Guid farmId, int? partId = 0);
+        List<LandRightsResponse> GetAllLandRightsByLandId(Guid landId);
+        List<LandRightsResponse> GetAllLandRightsByFarmId(Guid farmId);
     }
 
     public class FarmsFacade : CamisFacade, IFarmsFacade
@@ -491,6 +496,36 @@ namespace intapscamis.camis.domain.Farms
         {
             PassContext(_service, _context);
             return _service.GetFarmByLandId(id);
+        }
+
+        public IList<LandBankFacadeModel.UpinWithSplitResponse> GetUPINsWithSplitParts()
+        {
+            PassContext(_service, _context);
+            return _service.GetUPINsWithSplitParts();
+        }
+
+        public LandBankFacadeModel.UpinWithSplitResponse GetSplitPartsByUpin(string upin)
+        {
+            PassContext(_service, _context);
+            return _service.GetSplitPartsByUpin(upin);
+        }
+
+        public LandRightsResponse GetLandRightsByLandIdandFarmId(Guid landId, Guid farmId, int? partId = 0)
+        {
+            PassContext(_service, _context);
+            return _service.GetLandRightsByLandIdandFarmId(landId, farmId, partId);
+        }
+
+        public List<LandRightsResponse> GetAllLandRightsByLandId(Guid landId)
+        {
+            PassContext(_service, _context);
+            return _service.GetAllLandRightsByLandId(landId);
+        }
+
+        public List<LandRightsResponse> GetAllLandRightsByFarmId(Guid farmId)
+        {
+            PassContext(_service, _context);
+            return _service.GetAllLandRightsByFarmId(farmId);
         }
     }
 }

@@ -225,4 +225,22 @@ export class FarmApiService {
   getFarmByLandId(id: string): Observable<any> {
     return this.api.get(`Farms/FarmByLandId/${id}`);
   }
+  getUPINsWithSplitParts():Observable<any[]> {
+    return this.api.get(`Farms/GetUPINsWithSplitParts`);
+  }
+  getSplitPartsByUpin(upid: string): Observable<any> {
+    return this.api.get(`Farms/GetSplitPartsByUpin/${upid}`);
+  }
+  getFarmStatusTypeList(){
+    return this.api.get(`Lookup/FarmStatusType`);
+  }
+  GetLandRightsByLandIdandFarmId(land_id: string, farm_id: string, part_id: number): Observable<any> {
+    return this.api.get(`Farms/GetLandRightsByLandIdandFarmId`,{params:{landId:land_id,farmId:farm_id,partId:part_id.toString() }});
+  }
+  GetAllLandRightsByLandId(land_id: string): Observable<any> {
+    return this.api.get(`Farms/GetAllLandRightsByLandId/${land_id}`);
+  }
+  GetAllLandRightsByFarmId(farm_id: string): Observable<any> {
+    return this.api.get(`Farms/GetAllLandRightsByFarmId/${farm_id}`);
+  }
 }

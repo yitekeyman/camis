@@ -12,6 +12,7 @@ export interface IWaitLandAssignmentRequest {
   landTransferRequest: {
     farmer: any;
     landID: string;
+    landPart:number;
     leaseFrom: Date; // date
     leaseTo: Date; // date
     right: 1 | 2 | 3 | 4 | 5 | number;

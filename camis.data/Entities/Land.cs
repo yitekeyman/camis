@@ -26,7 +26,7 @@ namespace intapscamis.camis.data.Entities
         public Guid Wid { get; set; }
 
         public AgriculturalZone AgriculturalZone { get; set; }
-        public LandRight LandRight { get; set; }
+        //public LandRight LandRight { get; set; }
         public ICollection<AgroEchology> AgroEchology { get; set; }
         public ICollection<Irrigation> Irrigation { get; set; }
         public ICollection<LandAccessibility> LandAccessibility { get; set; }
@@ -39,5 +39,7 @@ namespace intapscamis.camis.data.Entities
         public ICollection<SoilTest> SoilTest { get; set; }
         public ICollection<Topography> Topography { get; set; }
         public virtual ICollection<LandSplit> LandSplits { get; set; } = new List<LandSplit>();
+        public virtual ICollection<LandRight> LandRights { get; set; } = new List<LandRight>();
+        public virtual ICollection<FarmLand> FarmLands { get; set; } = new List<FarmLand>();
     }
 }

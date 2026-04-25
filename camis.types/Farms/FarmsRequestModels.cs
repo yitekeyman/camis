@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using intapscamis.camis.domain.Documents.Models;
 using intapscamis.camis.domain.LandBank;
 using intapscamis.camis.domain.Projects.Models;
+using NetTopologySuite.Geometries;
 
 namespace intapscamis.camis.domain.Farms.Models
 {
@@ -35,6 +36,15 @@ namespace intapscamis.camis.domain.Farms.Models
 
         public DocumentRequest CertificateDoc { get; set; }=new DocumentRequest();
         public DocumentRequest LeaseContractDoc { get; set; }=new DocumentRequest();
+        public DateTime? RightFrom { get; set; }
+        public DateTime? RightTo { get; set; }
+        public int? RightType { get; set; }
+        public double? YearlyRent { get; set; }
+        public double? LandSectionArea { get; set; }
+        public int SplitIndex { get; set; }
+        public string CommonTxtUid { get; set; }
+        public int? Status { get; set; }
+        public string Geom { get; set; }
     }
 
     public class FarmRegistrationRequest
@@ -85,4 +95,5 @@ namespace intapscamis.camis.domain.Farms.Models
 
         public DocumentRequest Document { get; set; }
     }
+    
 }

@@ -32,6 +32,7 @@ export class FarmDetailComponent implements OnInit {
   isOperatorOptional = false;
 
   loading = true;
+  landRight=null;
 
 
   frTypes: any[] = [];
@@ -41,6 +42,14 @@ export class FarmDetailComponent implements OnInit {
   regTypes: any[] = [];
 
   plan: any = {};
+  farmStatusTypes: any[] = [];
+  rightType=[
+    {id:1,name:'Lease From State'},
+    {id:2,name:'Lease From Private'},
+    {id:3,name:'Private'},
+    {id:4,name:'Contract Farming'},
+    {id:5,name:'Sub-lease'},
+  ]
 
   progressPercent: number;
   @ViewChild('camis_map') map: CamisMapComponent;
@@ -48,12 +57,16 @@ export class FarmDetailComponent implements OnInit {
   constructor(
     private api: FarmApiService,
     private projectApi: ProjectApiService,
-    private keyCase: ObjectKeyCasingService,
+    public keyCase: ObjectKeyCasingService,
     private landService: LandDataService
   ) {
   }
 
   ngOnInit(): void {
+    this.api.getFarmStatusTypeList().subscribe(statusType => {
+      this.keyCase.camelCase(statusType);
+      this.farmStatusTypes = statusType;
+    },dialog.error);
     this.api.getAllFarmTypes().subscribe(frTypes => {
       this.keyCase.camelCase(frTypes);
       this.frTypes = frTypes
@@ -78,7 +91,8 @@ export class FarmDetailComponent implements OnInit {
     this.keyCase.camelCase(this.farm);
     if (this.farm.farmLands?.length > 0) {
       this.landService.GetLand(this.farm.farmLands[0].landId).subscribe(data => {
-
+        this.landRight=data.LandRight;
+        this.keyCase.camelCase(this.landRight);
         const g=data.parcels[data.Upins[0]];
         //this.keyCase.camelCase(data);
         if (g) {
@@ -204,5 +218,21 @@ export class FarmDetailComponent implements OnInit {
       return `data:${this.farm.operator.photo.mimetype};base64,${(this.farm.operator.photo.file)}`;
     }
     return 'assets/images/user/user_profile.PNG';
+  }
+  getFarmStatus(id: number): string {
+    for(let l of this.farmStatusTypes) {
+      if (id == l.id) {
+        return l.name;
+      }
+    }
+    return null;
+  }
+  getRightType(id: number): string {
+    for(let l of this.rightType) {
+      if (id == l.id) {
+        return l.name;
+      }
+    }
+    return null;
   }
 }

@@ -23,5 +23,10 @@ namespace intapscamis.camis.Controllers
         {
             return Json(_lookupService.GetLandType());
         }
+        [HttpGet]
+        public IActionResult FarmStatusType()
+        {
+            return Json(_lookupService.GetFarmStatusType());
+        }
     }
 }

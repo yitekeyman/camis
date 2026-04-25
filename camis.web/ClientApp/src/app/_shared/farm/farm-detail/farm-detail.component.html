@@ -241,8 +241,8 @@
                 <thead>
                 <tr>
                   <th style="width:50%">Parcel Info</th>
-                  <th>Land Certificate</th>
-                  <th>Lease Aggrement</th>
+                  <th>LandRight</th>
+                  <th>Right Doc</th>
                 </tr>
                 </thead>
                 <tbody *ngIf="farm.farmLands?.length>0">
@@ -251,11 +251,25 @@
                     <app-simple-land-bank-details [landID]="farmLand.landId"></app-simple-land-bank-details>
                   </td>
                   <td>
+                    <div *ngIf="landRight==null">No right Yet</div>
+                    <table class="table" *ngIf="landRight!=null">
+                      <tbody>
+                        <tr><td><b>Right Type: </b></td><td>{{getRightType(landRight.rightType)}}</td></tr>
+                        <tr><td><b>Right Date From: </b></td><td> {{keyCase.convertDate(landRight.rightFrom)}}</td></tr>
+                        <tr><td><b>Right Date To: </b></td><td>{{keyCase.convertDate(landRight.rightTo)}}</td></tr>
+                        <tr><td><b>Yearly Amount: </b> </td><td> {{landRight.yearlyRent| currency:"Br"}}</td></tr>
+                        <tr><td><b>Status: </b></td><td>{{getFarmStatus(landRight.status)}}</td></tr>
+                      </tbody>
+
+                    </table>
+                  </td>
+                  <td>
+                    <h4>Land Certificate</h4>
                     <div *ngIf="!farmLand.certificateDoc">No certificate, yet.</div>
                     <app-document-detail *ngIf="farmLand.certificateDoc"
                                          [document]="farmLand.certificateDoc"></app-document-detail>
-                  </td>
-                  <td>
+                    <br/>
+                    <h4>Lease Agreement</h4>
                     <div *ngIf="!farmLand.leaseContractDoc">No lease contract, yet.</div>
                     <app-document-detail *ngIf="farmLand.leaseContractDoc"
                                          [document]="farmLand.leaseContractDoc"></app-document-detail>

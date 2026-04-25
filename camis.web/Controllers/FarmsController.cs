@@ -576,7 +576,7 @@ namespace intapscamis.camis.Controllers
             }
         }
 
-        [Roles(UserRoles.LandAdmin)]
+        //[Roles(UserRoles.LandAdmin)]
         [HttpPost]
         public IActionResult WaitLandAssignment(string id, [FromBody] FarmRequest body, string description)
         {
@@ -633,6 +633,76 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 return Json(_facade.GetFarmByLandId(id.ToGuid()));
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+        [HttpGet]
+        public IActionResult GetUPINsWithSplitParts()
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                return Json(_facade.GetUPINsWithSplitParts());
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+        [HttpGet]
+        public IActionResult GetSplitPartsByUpin(string upid)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                return Json(_facade.GetSplitPartsByUpin(upid));
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+        [HttpGet]
+        public IActionResult GetLandRightsByLandIdandFarmId(string landId, string farmId, int? partId = 0)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                return Json(_facade.GetLandRightsByLandIdandFarmId(Guid.Parse(landId),Guid.Parse(farmId), partId ));
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+        [HttpGet]
+        public IActionResult GetAllLandRightsByLandId(string landId)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                return Json(_facade.GetAllLandRightsByLandId(Guid.Parse(landId)));
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+        [HttpGet]
+        public IActionResult GetAllLandRightsByFarmId(string farmId)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                return Json(_facade.GetAllLandRightsByFarmId(Guid.Parse(farmId)));
             }
             catch (Exception e)
             {

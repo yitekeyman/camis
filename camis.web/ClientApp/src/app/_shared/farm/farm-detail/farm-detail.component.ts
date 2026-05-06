@@ -18,7 +18,7 @@ import {LandDataService} from "../../../_services/land-data.service";
 
 @Component({
   selector: 'app-farm-detail',
-  imports: [CommonModule, ReactiveFormsModule, AddressModule, DocumentModule, ProjectModule, SimpleLandBankDetails, CamisMapComponent],
+  imports: [CommonModule, ReactiveFormsModule, AddressModule, DocumentModule, ProjectModule, CamisMapComponent],
   templateUrl: 'farm-detail.component.html',
   styleUrls: ['farm-detail.component.scss']
 
@@ -40,6 +40,7 @@ export class FarmDetailComponent implements OnInit {
   opOrigins: any[] = [];
   regAuths: any[] = [];
   regTypes: any[] = [];
+  farmLands:any[]=[];
 
   plan: any = {};
   farmStatusTypes: any[] = [];
@@ -90,15 +91,19 @@ export class FarmDetailComponent implements OnInit {
 
     this.keyCase.camelCase(this.farm);
     if (this.farm.farmLands?.length > 0) {
-      this.landService.GetLand(this.farm.farmLands[0].landId).subscribe(data => {
-        this.landRight=data.LandRight;
-        this.keyCase.camelCase(this.landRight);
-        const g=data.parcels[data.Upins[0]];
-        //this.keyCase.camelCase(data);
-        if (g) {
-          let parts = g.geometry.split(";");
-          this.map.setWorkFlowGeomByWKT(parts[parts.length - 1]);
+      this.api.getFarmLands(this.farm.id).subscribe(data => {
+        this.keyCase.camelCase(data);
+        this.farmLands = data;
+        let splitGeomData: any[] = [];
+        for (let p of this.farmLands) {
+          let parts = p.rights.geom.split(";");
+          let parcel = {
+            id: p.upin,
+            wkt: parts[parts.length - 1]
+          }
+          splitGeomData.push(parcel);
         }
+        this.map.setSplitGeomsByWKT(splitGeomData);
       }, e => {
         return dialog.error(e);
       });

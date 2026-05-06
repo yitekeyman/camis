@@ -115,11 +115,11 @@
                 method: "GET",
                 url: url + "?sid=" + sessionid + "&taskid=" + taskid,
                 success: function (data) {
+                    
                     $("#task_panel").html(data);
                     splitInit(taskid, n, upid);
                     openTaskPage();
                     window.location = '/cmss/qcmd/loadSplit?task_uid=' + taskid;
-                    renderSplitParcelsList();
                 },
                 error: function (err) {
                     alert('failed\n' + err);

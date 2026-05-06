@@ -243,4 +243,25 @@ export class FarmApiService {
   GetAllLandRightsByFarmId(farm_id: string): Observable<any> {
     return this.api.get(`Farms/GetAllLandRightsByFarmId/${farm_id}`);
   }
+  getUserWorkItem(workflowId: string): Observable<any> {
+    return this.api.get(`LandBank/GetUserWorkItem?id=${workflowId}`);
+  }
+  approveLandAssignment(workflowId: string, message: string | null): Observable<any> {
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Farms/ApproveLandAssignment/${workflowId}`, null,{params});
+  }
+  rejectLandAssignment(workflowId: string, message: string | null): Observable<any> {
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Farms/RejectLandAssignment/${workflowId}`, null,{params});
+  }
+  getFarmLands(id: string): Observable<any> {
+    //return this.api.get(`Farms/GetFarmLandByFarmId/${id}`);
+    return this.api.get(`Farms/GetFarmLandByFarmId/${id}`);
+  }
 }

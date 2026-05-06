@@ -18,5 +18,6 @@ export interface IWaitLandAssignmentRequest {
     right: 1 | 2 | 3 | 4 | 5 | number;
     yearlyLease: number | null; // not null if right != 4
     landSectionArea: number | null; // not null if right == 5
+    farmId:string;
   };
 }

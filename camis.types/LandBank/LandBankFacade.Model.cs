@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.JavaScript;
 using System.Text;
+using intapscamis.camis.domain.Farms.Models;
+
 namespace intapscamis.camis.domain.LandBank
 {
 
@@ -126,8 +128,7 @@ namespace intapscamis.camis.domain.LandBank
             public List<int> ExistLandUse { get; set; }
             public string IsAgriculturalZone { get; set; }
             public List<DocumentRequest> UploadDocument { get; set; }
-            
-            
+            public bool Locked {get;set;}
             #endregion
         }
 
@@ -198,6 +199,7 @@ namespace intapscamis.camis.domain.LandBank
             public double? landSectionArea;
             public int? landPart;
             public Guid txuid;
+            public String farmId;
         }
 
         public class SplitTaskGeom
@@ -268,6 +270,7 @@ namespace intapscamis.camis.domain.LandBank
             public int Indexes { get; set; }
 
             public long Status { get; set; }
+            public bool Locked { get; set; }
             public LandRightResponse LandRight { get; set; } = null;
         }
         
@@ -285,6 +288,7 @@ namespace intapscamis.camis.domain.LandBank
             public string CommonTxtUid { get; set; }
             public int? Status { get; set; }
             public string Geom { get; set; }
+            public string FarmId { get; set; }
         }
         
     }

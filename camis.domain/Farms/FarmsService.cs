@@ -69,6 +69,10 @@ namespace intapscamis.camis.domain.Farms
         LandRightsResponse GetLandRightsByLandIdandFarmId(Guid landId, Guid farmId, int? partId = 0);
         List<LandRightsResponse> GetAllLandRightsByLandId(Guid landId);
         List<LandRightsResponse> GetAllLandRightsByFarmId(Guid farmId);
+        void SetFarmStatus(Guid farmId, int status);
+        void SetFarmLock(Guid farmId, bool val);
+        List<FarmLandResponse2> GetFarmLands(Guid farmId);
+        List<Workflow> GetTransferWorkFlows();
     }
 
     public class FarmsService : CamisService, IFarmsService
@@ -604,16 +608,17 @@ namespace intapscamis.camis.domain.Farms
         public void AssignFarmLand(Guid farmId, FarmLandRequest farmLandRequest)
         {
             var farm = Context.Farm.First(f => f.Id == farmId);
-
-            var certificateDoc = _documentService.CreateDocument(farmLandRequest.CertificateDoc);
-            var leaseContractDoc = _documentService.CreateDocument(farmLandRequest.LeaseContractDoc);
+            farm.Locked = false;
+            var certificateDoc = _documentService.CreateDocumentInFolder(Guid.Empty, farmLandRequest.CertificateDoc);
+            var leaseContractDoc = _documentService.CreateDocumentInFolder(Guid.Empty,farmLandRequest.LeaseContractDoc);
 
             Context.FarmLand.Add(new FarmLand
             {
                 LandId = farmLandRequest.LandId,
                 CertificateDoc = certificateDoc.Id,
                 LeaseContractDoc = leaseContractDoc.Id,
-                FarmId = farmLandRequest.FarmId
+                FarmId = farmLandRequest.FarmId,
+                SplitIndex = farmLandRequest.SplitIndex,
             });
 
             farm.Aid = Context.SaveChanges(_session.Username, (int)UserActionType.UpdateFarm).Id;
@@ -660,34 +665,45 @@ namespace intapscamis.camis.domain.Farms
 
             if (workItem.Data != null)
             {
-                var data = JsonConvert.DeserializeObject<FarmRequest>(
-                    JsonConvert.SerializeObject(workItem.Data));
-
-                if (data.Operator.Photo != null)
+              
+                if (workItem.DataType.Equals("intapscamis.camis.domain.LandBank.LandBankFacadeModel+TransferRequest"))
                 {
-                    data.Operator.Photo.File = Convert.ToBase64String(_documentService
-                        .ParseDocumentFromFolder(workItem.Id, data.Operator.Photo).File);
+                     var data = JsonConvert.DeserializeObject<LandBankFacadeModel.TransferRequest>(
+                        JsonConvert.SerializeObject(workItem.Data));
+                     workItem.Data = data;
                 }
+                else
+                {
+                   var  data = JsonConvert.DeserializeObject<FarmRequest>(
+                        JsonConvert.SerializeObject(workItem.Data));
 
-                // (FarmRequest data).Registrations[i].Document 
-                if (data?.Registrations != null)
-                    foreach (var reg in data.Registrations)
-                        if (reg.Document != null)
-                            reg.Document.File = null;
+                    if (data.Operator.Photo != null)
+                    {
+                        data.Operator.Photo.File = Convert.ToBase64String(_documentService
+                            .ParseDocumentFromFolder(workItem.Id, data.Operator.Photo).File);
+                    }
 
-                // (FarmRequest data).Operator.Registrations[i].Document 
-                if (data?.Operator?.Registrations != null)
-                    foreach (var reg in data.Operator.Registrations)
-                        if (reg.Document != null)
-                            reg.Document.File = null;
+                    // (FarmRequest data).Registrations[i].Document 
+                    if (data?.Registrations != null)
+                        foreach (var reg in data.Registrations)
+                            if (reg.Document != null)
+                                reg.Document.File = null;
 
-                // (FarmRequest data).ActivityPlan.Documents 
-                if (data?.ActivityPlan?.Documents != null)
-                    foreach (var doc in data.ActivityPlan.Documents)
-                        if (doc != null)
-                            doc.File = null;
+                    // (FarmRequest data).Operator.Registrations[i].Document 
+                    if (data?.Operator?.Registrations != null)
+                        foreach (var reg in data.Operator.Registrations)
+                            if (reg.Document != null)
+                                reg.Document.File = null;
 
-                workItem.Data = data;
+                    // (FarmRequest data).ActivityPlan.Documents 
+                    if (data?.ActivityPlan?.Documents != null)
+                        foreach (var doc in data.ActivityPlan.Documents)
+                            if (doc != null)
+                                doc.File = null;
+
+                    workItem.Data = data;
+                }
+                
             }
 
             return workItem;
@@ -1000,6 +1016,61 @@ namespace intapscamis.camis.domain.Farms
             return rights;
         }
 
+        public void SetFarmStatus(Guid farmId, int status)
+        {
+            var l = Context.Farm.Where(x => x.Id == farmId).First();
+            l.Status = (int)status;
+            Context.Farm.Update(l);
+            Context.SaveChanges();
+        }
+        public void SetFarmLock(Guid farmId, bool val)
+        {
+            var l = Context.Farm.Where(x => x.Id == farmId).First();
+            l.Locked = val;
+            Context.Farm.Update(l);
+            Context.SaveChanges();
+        }
+
+       public List<Workflow> GetTransferWorkFlows()
+        {
+            return Context.Workflow.Where(x=>x.TypeId==10 && x.CurrentState==3).ToList();
+        }
+        public List<FarmLandResponse2> GetFarmLands(Guid farmId)
+        {
+            var ret = new List<FarmLandResponse2>();
+            var landRights=Context.LandRight.Where(l => l.FarmId == farmId).ToList();
+           
+            foreach (var fl in landRights)
+            {
+                var l = new FarmLandResponse2();
+                var land = Context.LandUpin.First(x=>x.LandId == fl.LandId);
+                var farmland=Context.FarmLand.FirstOrDefault(x=>x.LandId==fl.LandId && x.FarmId==farmId && x.SplitIndex==fl.SplitIndex);
+                l.Area=land.Area??0;
+                l.CentroidX=land.CentroidX??0;
+                l.CentroidY=land.CentroidY??0;
+                l.Upin = land.Upin;
+                if (farmland != null)
+                {
+                    fl.CertificateDocument = farmland.CertificateDoc;
+                    fl.ContractDocument = farmland.LeaseContractDoc;
+                }
+                if (fl.SplitIndex > 0)
+                {
+                    var sp=Context.LandSplit.First(x=>x.LandId == fl.LandId && x.Id==fl.SplitIndex);
+                    l.Area=sp.Area;
+                    l.Upin = land.Upin + "-" + sp.Indexes;
+                }
+
+                l.SplitIndex = fl.SplitIndex;
+                l.LandId=fl.LandId.ToString();
+                l.FarmId=fl.FarmId.ToString();
+                l.Rights = MapLandRight(fl);
+                
+                ret.Add(l);
+
+            }
+            return ret;
+        }
         private FarmResponse ParseFarmResponse(Farm farm)
         {
             var res = new FarmResponse
@@ -1163,6 +1234,7 @@ namespace intapscamis.camis.domain.Farms
                 InvestedCapital = farm.InvestedCapital,
                 Description = farm.Description,
                 OtherTypeIds = farm.OtherTypeIds,
+                Locked = farm.Locked,
 
                 FarmLands = farm.FarmLand?
                     .Select(MapFarmLandToResponse)
@@ -1189,6 +1261,13 @@ namespace intapscamis.camis.domain.Farms
                         Name = farm.StatusNavigation.Name,
                     }
             };
+            if (ret.Locked)
+                ret.Status = new FarmStatus
+                {
+                    Id = 3,
+                    Name = "Transaction Locked"
+                };
+            
             return ret;
         }
 
@@ -1368,5 +1447,59 @@ namespace intapscamis.camis.domain.Farms
             var farm = baseQuery.FirstOrDefault(e => e.Id == id);
             return MapFarmToResponse(farm);
         }
+        private LandBankFacadeModel.LandRightResponse MapLandRight(LandRight lr)
+        {
+            var cd = Context.Document.FirstOrDefault(c => c.Id == lr.CertificateDocument);
+            var cdDoc = new DocumentResponse();
+            cdDoc = null;
+            if (cd != null)
+            {
+                cdDoc = new DocumentResponse()
+                {
+                    Id = cd.Id,
+                    Date = cd.Date,
+                    Filename = cd.Filename,
+                    Mimetype = cd.Mimetype,
+                    OverrideFilePath = cd.OverrideFilePath,
+                    Ref = cd.Ref,
+                    Type = cd.Type,
+                    Note = cd.Note
+                };
+            }
+
+            var cod = Context.Document.FirstOrDefault(c => c.Id == lr.ContractDocument);
+            var codDoc = new DocumentResponse();
+            codDoc = null;
+            if (cod != null)
+            {
+                codDoc = new DocumentResponse()
+                {
+                    Id = cod.Id,
+                    Date = cod.Date,
+                    Filename = cod.Filename,
+                    Mimetype = cod.Mimetype,
+                    OverrideFilePath = cod.OverrideFilePath,
+                    Ref = cod.Ref,
+                    Type = cod.Type,
+                    Note = cod.Note
+                };
+            }
+
+            return new LandBankFacadeModel.LandRightResponse()
+            {
+                LandId = lr.LandId.ToString(),
+                RightFrom = new DateTime(lr.RightFrom ?? 0),
+                RightTo = new DateTime(lr.RightTo ?? 0),
+                RightType = lr.RightType,
+                LandSectionArea = lr.LandSectionArea,
+                Status = lr.Status,
+                CommonTxtUid = lr.CommonTxtUid.ToString(),
+                YearlyRent = lr.YearlyRent,
+                Geom = GetWktFromGeom(lr.Geom),
+                CertificateDocument = cdDoc,
+                ContractDocument = codDoc,
+            };
+        }
+       
     }
 }

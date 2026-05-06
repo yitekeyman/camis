@@ -20,6 +20,7 @@ namespace intapscamis.camis.data.Entities
         public long? Aid { get; set; }
         public int[] OtherTypeIds { get; set; }
         public int? Status { get; set; }
+        public bool Locked { get; set; }
         public UserAction A { get; set; }
         public Activity Activity { get; set; }
         public FarmOperator Operator { get; set; }

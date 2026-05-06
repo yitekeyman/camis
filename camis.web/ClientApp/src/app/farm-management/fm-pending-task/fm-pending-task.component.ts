@@ -9,6 +9,7 @@ import {IDashboardStates, IWorkflowOpenEvent} from "../../default/pendingTask/in
 import {PagerService} from "../../_services/pager.service";
 import {Router} from "@angular/router";
 import {FarmApiService} from "../../_services/farm-api.service";
+import {LandDataService} from "../../_services/land-data.service";
 
 @Component({
   selector: "app-fm-pending-task",
@@ -33,7 +34,7 @@ export class FmPendingTaskComponent implements OnInit {
   public activeWorkflows: any = [] = [];
   customApi: Observable<any>;
 
-  constructor(private workflowApi: WorkflowApiService, public keyCase: ObjectKeyCasingService, private pagerService: PagerService, private router: Router, private api: FarmApiService) {
+  constructor(private workflowApi: WorkflowApiService, public keyCase: ObjectKeyCasingService, private pagerService: PagerService, private router: Router, private api: FarmApiService, private landApi:LandDataService) {
     this.loginRole = localStorage.getItem("role");
     if (this.loginRole === '2') {
       this.user = 'Commercial Farm Registrar';
@@ -51,6 +52,8 @@ export class FmPendingTaskComponent implements OnInit {
         { type: 2, states: [1] },
         { type: 3, states: [1] },
         { type: 11, states: [1] },
+        { type: 8, states: [3] },
+        { type: 10, states: [4] },
       ];
     }
     if (this.loginRole === '6') {
@@ -58,7 +61,7 @@ export class FmPendingTaskComponent implements OnInit {
       this.filters = [
         {
           type: 10,
-          states: [2,3,4],
+          states: [2,3],
           asyncMsg$: (e: IWorkflowOpenEvent): Observable<any> => {
             return Observable.create(observer => {
               observer.next('Loading...');
@@ -75,6 +78,9 @@ export class FmPendingTaskComponent implements OnInit {
                       break;
                     case 1:
                       status = 'Waiting For NRLAIS';
+                      break;
+                    case 3:
+                      status = 'Waiting For FS approval';
                       break;
                     case -2:
                       status = 'Executed';
@@ -98,7 +104,7 @@ export class FmPendingTaskComponent implements OnInit {
           asyncMsg$: (e: IWorkflowOpenEvent): Observable<any> => {
             return Observable.create(observer => {
               observer.next('Loading...');
-              this.api.getTransferStatus(e.workflowId).subscribe(res => {
+              this.landApi.getSplitStatus(e.workflowId).subscribe(res => {
                 if (res && res.status == -99) {
                   observer.next('Refreshing...');
                   window.location.reload();
@@ -143,6 +149,33 @@ export class FmPendingTaskComponent implements OnInit {
                       break;
                     case -4:
                       status = 'Cancelled';
+                      break;
+                  }
+
+                  observer.next('Status: ' + status);
+                }
+              }, dialog.error);
+
+              return () => {
+              };
+            });
+          }
+        },
+        {
+          type: 8,states:[6],
+          asyncMsg$: (e: IWorkflowOpenEvent): Observable<any> => {
+            return Observable.create(observer => {
+              observer.next('Loading...');
+              this.api.getTransferStatus(e.workflowId).subscribe(res => {
+                if (res && res.status == -99) {
+                  observer.next('Refreshing...');
+                  window.location.reload();
+                } else {
+                  let status = 'Unknown';
+                  switch (res.status) {
+
+                    case 6:
+                      status = 'Farm Supervisor Rejected';
                       break;
                   }
 
@@ -272,8 +305,18 @@ export class FmPendingTaskComponent implements OnInit {
         case 3:
           url = `farm-management/fs/farm/deletion/${e.workflowId}`;
           break;
+        case 8:
+          url = `land-bank/task/land-selection/${e.workflowId}`;
+          break;
         case 11:
           url = `farm-management/fs/plan/update/${e.workflowId}`;
+          break;
+        case 10:
+          switch (e.currentState){
+            case 4:
+              url= `land-bank/task/certification/${e.workflowId}`;
+              break;
+          }
           break;
         default:
           url = `default/pending-task`;
@@ -282,6 +325,15 @@ export class FmPendingTaskComponent implements OnInit {
       switch (e.workflowTypeId) {
         case 7:
           url=`land-bank/task/parcel-details/${e.workflowId}`;
+          break;
+        case 8:
+          switch (e.currentState){
+            case 6:
+              url = `land-bank/task/land-selection/${e.workflowId}`;
+              break;
+            default:
+              url = `default/pending-task`;
+          }
           break;
         case 10:
           switch (e.currentState) {

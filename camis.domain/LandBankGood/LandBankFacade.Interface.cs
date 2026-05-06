@@ -4,6 +4,8 @@ using intapscamis.camis.domain.Workflows.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using intapscamis.camis.domain.Farms.Models;
+
 namespace intapscamis.camis.domain.LandBank
 {
     
@@ -33,7 +35,7 @@ namespace intapscamis.camis.domain.LandBank
         void SplitParcel(Guid wfid, List<string> geoms);
         Guid ApprovePreparation(Guid wfid, String note);
         int GetPreparationStatus(Guid wfid);
-        Guid RequestLandTransfer(LandBankFacadeModel.TransferRequest request);
+        Guid RequestLandTransfer(FarmRequest request, Guid wfid, string note);
         int GetTransferStatus(Guid wfid);
         WorkItemResponse GetLastWorkItem<T>(Guid guid);
 
@@ -52,6 +54,7 @@ namespace intapscamis.camis.domain.LandBank
         LandBankFacadeModel.SplitTaskList GetParcelSplitTaskList();
         List<LandBankFacadeModel.SplitTaskGeom> GetParcelSplitTaskGeom(Guid wfid);
         string GetRegionCode();
+        int GetSplitStatus(Guid wfid);
     }
     
 }

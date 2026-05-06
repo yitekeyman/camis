@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using intapscamis.camis.domain.Farms.Models;
 
 namespace intapscamis.camis.Controllers
 {
@@ -267,12 +268,12 @@ namespace intapscamis.camis.Controllers
             }
         }
         [HttpPost]
-        public IActionResult RequestLandTransfer([FromBody]LandBankFacadeModel.TransferRequest request)
+        public IActionResult RequestLandTransfer([FromBody]FarmRequest request, [FromQuery] string wfid, [FromQuery] string note)
         {
             try
             {
                 _facade.SetSession(GetSession());
-                return Json(_facade.RequestLandTransfer(request));
+                return Json(_facade.RequestLandTransfer(request, Guid.Parse(wfid), note));
             }
             catch (Exception e)
             {
@@ -287,6 +288,20 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 return Json(_facade.GetTransferStatus(Guid.Parse(wfid)));
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+        [HttpGet]
+        public IActionResult GetSplitStatus([FromQuery]String wfid)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                return Json(_facade.GetSplitStatus(Guid.Parse(wfid)));
             }
             catch (Exception e)
             {

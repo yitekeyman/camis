@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using intapscamis.camis.domain.Farms.Models;
 using intapscamis.camis.domain.Workflows;
 using intapscamis.camis.domain.Workflows.Models;
 using intapscamis.camis.domain.LandBankGood.ViewModel;
@@ -116,6 +117,14 @@ namespace intapscamis.camis.domain.LandBank
                 return _landPrepareWorkflow.GetPreparationStatus(wfid);
             });
         }
+        public int GetSplitStatus(Guid wfid)
+        {
+            return base.Transact<int>(_context, (t) =>
+            {
+                PassContext(_landSplitWorkflow, _context);
+                return _landSplitWorkflow.GetSplitStatus(wfid);
+            });
+        }
 
         public LandBankFacadeModel.LandSearchResult SearchLand(LandBankFacadeModel.LandSearchPar par)
         {
@@ -217,14 +226,14 @@ namespace intapscamis.camis.domain.LandBank
             });
         }
 
-        public Guid RequestLandTransfer(LandBankFacadeModel.TransferRequest request)
+        public Guid RequestLandTransfer(FarmRequest request, Guid wfid, string note)
         {
             return Transact<Guid>(_context, tran =>
             {
                 var t = new LandBankTransferWorkflow(_landBankService);
                 t.SetContext(this._context);
                 t.SetSession(this._session);
-                return t.RequestLandTransfer(request);
+                return t.RequestLandTransfer(request, wfid, note);
             });
         }
 

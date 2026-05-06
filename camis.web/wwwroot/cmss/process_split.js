@@ -21,6 +21,7 @@ function splitInit(taskid,n, upid)
             split_selected = [];
         }
     });*/
+ 
     layerChanged = function (type, id, count)
     {
         console.log('split ' + count+' ,state '+split_state);
@@ -29,8 +30,9 @@ function splitInit(taskid,n, upid)
             alert('Unexpected split operation');
             split_cancel();
         }
-        if (split_state != 1)
+        if (split_state != 1){
             return;
+        }
         if (count == split_n)
         {
             split_showReviewPage();

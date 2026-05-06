@@ -226,8 +226,15 @@ namespace intapscamis.camis.domain.Documents
             var filePath = $"{data.Id}";
             if (!Path.IsPathRooted(filePath))
             {
-                filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
-                    workItem.ToString(), Path.GetFileName(filePath));
+                if (workItem != Guid.Empty)
+                {
+                    filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, workItem.ToString(),
+                        Path.GetFileName(filePath));
+                }
+                else
+                {
+                    filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, Path.GetFileName(filePath));
+                }
             }
             if (File.Exists(filePath))
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using intapscamis.camis.domain.Documents.Models;
+using intapscamis.camis.domain.LandBank;
 
 namespace intapscamis.camis.domain.Farms.Models
 {
@@ -20,7 +21,8 @@ namespace intapscamis.camis.domain.Farms.Models
         public FarmTypeResponse Type { get; set; }
 
         public ICollection<FarmLandResponse> FarmLands { get; set; }
-        public FarmStatus Status { get; set; }
+        public FarmStatus Status { get; set; }=new  FarmStatus();
+        public bool Locked { get; set; }
     }
 
     public class FarmLandResponse
@@ -35,6 +37,20 @@ namespace intapscamis.camis.domain.Farms.Models
         public int SplitIndex { get; set; }
     }
 
+    public class FarmLandResponse2
+    {
+        public string LandId { get; set; }
+        public string Upin { get; set; }
+        public string CertificateDocId { get; set; }
+        public string LeaseContractDocId { get; set; }
+        public string FarmId { get; set; }
+        public int SplitIndex { get; set; }
+        public double Area { get; set; }
+        public string Geom { get; set; }
+        public double CentroidX{get;set;}
+        public double CentroidY{get;set;}
+        public LandBankFacadeModel.LandRightResponse Rights { get; set; } = new LandBankFacadeModel.LandRightResponse();
+    }
     public class LandRightsResponse
     {
         public string LandId { get; set; }
@@ -139,5 +155,17 @@ namespace intapscamis.camis.domain.Farms.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
+    }
+
+    public enum FarmStatusEnum
+    {
+        OnEditing=1,
+        Ready=2,
+        TransactionLocked=3,
+        Active=4,
+        Expired=5,
+        Suspended=6,
+        Deleted=7,
+        UnderWarning=8
     }
 }

@@ -256,7 +256,7 @@
             <button class="accordion-button " type="button" data-bs-toggle="collapse"
                     data-bs-target="#panelsStayOpen-collapseFive" aria-expanded="true"
                     aria-controls="panelsStayOpen-collapseFive">
-              <i class="ti ti-archive-filled"></i>&nbsp;&nbsp;Splited Parcels
+              <i class="ti ti-map-code"></i>&nbsp;&nbsp;Parcels Splited Parts
             </button>
           </h2>
           <div id="panelsStayOpen-collapseFive" class="accordion-collapse collapse show"
@@ -269,6 +269,8 @@
                  <th>Index</th>
                  <th>Area</th>
                  <th>Status</th>
+                 <th>Right</th>
+                 <th></th>
                </tr>
                </thead>
                <tbody>
@@ -277,6 +279,29 @@
                  <td>{{searchedLandDetail.upins[0]}}-{{sp.indexes}}</td>
                  <td>{{getSplitArea(sp.area)}}</td>
                  <td>{{getSplitStatus(sp.status)}}</td>
+                 <td>
+                   <div *ngIf="sp.landRight!=null">
+                     <small><b>Right Type: </b>{{getRightType(sp.landRight.rightType)}}</small><br>
+                     <small><b>Date From:</b> {{sp.landRight.rightFrom |date}}</small><br>
+                     <small><b>Date To:</b> {{sp.landRight.rightTo |date}}</small><br>
+                     <small><b>Yearly Amount:</b> {{sp.landRight.yearlyRent |currency:"Br "}}</small><br>
+                     <small><b>Status:</b> {{getFarmStatus(sp.landRight.status)}}</small>
+                   </div>
+                   <div *ngIf="sp.landRight==null">
+                     <small><b>Not Transfer, yet</b> </small>
+                   </div>
+                  </td>
+                 <td>
+                   <div *ngIf="sp.landRight!=null">
+
+                     <small><b><a target="_blank" class="btn btn-custom-light btn-sm"
+                                  [href]="'/farm-management/fc/farm/' + sp.landRight.farmId">
+                       <i class="ti ti-user-dollar"></i>
+                     </a></b></small>
+                   </div>
+
+                 </td>
+
                </tr>
                </tbody>
              </table>

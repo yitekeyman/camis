@@ -462,7 +462,7 @@ namespace intapscamis.camis.domain.LandBank
 
             ret.LandID = l.Id.ToString();
             ret.WID = l.Wid.ToString();
-            ret.LandType = l.LandType;
+            ret.LandType = l.Locked?7:l.LandType;
             ret.Accessablity = new List<int>();
             ret.Description = l.Description;
 
@@ -480,6 +480,7 @@ namespace intapscamis.camis.domain.LandBank
             ret.Area = 0;
             ret.CentroidX = 0;
             ret.CentroidY = 0;
+            ret.Locked = l.Locked;
             ret.LandSplit = new List<LandBankFacadeModel.LandSplitResponse>();
             using (var tempContext = new CamisContext())
             {
@@ -556,9 +557,10 @@ namespace intapscamis.camis.domain.LandBank
                             Area = lsp.Area,
                             Geom = geometry,
                             LandId = lsp.LandId.ToString(),
-                            Status = lsp.Status,
+                            Status = lsp.Locked?7:lsp.Status,
                             Indexes = lsp.Indexes,
-                            LandRight = landRights
+                            LandRight = landRights,
+                            Locked = lsp.Locked
                         };
 
                         ret.LandSplit.Add(p);
@@ -784,6 +786,13 @@ namespace intapscamis.camis.domain.LandBank
             Context.Land.Update(l);
             Context.SaveChanges();
         }
+        public void SetLandLock(Guid landId, bool val)
+        {
+            var l = Context.Land.Where(x => x.Id == landId).First();
+            l.Locked = val;
+            Context.Land.Update(l);
+            Context.SaveChanges();
+        }
 
         public void SetSubLandState(Guid landID, int subLandId, LandBankFacadeModel.LandTypeEnum transfered)
         {
@@ -792,22 +801,48 @@ namespace intapscamis.camis.domain.LandBank
             Context.LandSplit.Update(l);
             Context.SaveChanges();
         }
-
+        public void SetSubLandLock(Guid landId,int subLandId, bool val)
+        {
+            var l = Context.LandSplit.Where(x => x.LandId == landId && x.Id==subLandId).First();
+            l.Locked = val;
+            Context.LandSplit.Update(l);
+            Context.SaveChanges();
+        }
         public void TransferLand(LandBankFacadeModel.TransferRequest request)
         {
             var l = Context.Land.Where(x => x.Id == request.landID);
+            var landParts=Context.LandSplit.Where(x=>x.LandId == request.landID && x.Id==request.landPart).FirstOrDefault();
             CamisUtils.Assert(l.Any(), "No land record found with id " + request.landID);
             var land = l.First();
+            var landUpin=Context.LandUpin.First(x=>x.LandId==request.landID);
+            var geom = landUpin.Geometry;
             if (request.right == LandBankFacadeModel.LandRightType.SubLease)
             {
-                CamisUtils.Assert(land.LandType == (int)LandBankFacadeModel.LandTypeEnum.Transferred,
+                CamisUtils.Assert(land.LandType is (int)LandBankFacadeModel.LandTypeEnum.Transferred or (int)LandBankFacadeModel.LandTypeEnum.HalfTransferred,
                     "Land is not transferred (for sub-leasing). LandID:" + request.landID);
             }
             else
             {
-                CamisUtils.Assert(land.LandType == (int)LandBankFacadeModel.LandTypeEnum.Prepared,
+                CamisUtils.Assert(land.LandType is (int)LandBankFacadeModel.LandTypeEnum.Prepared or (int)LandBankFacadeModel.LandTypeEnum.PreparedWithSplit or (int)LandBankFacadeModel.LandTypeEnum.HalfTransferred,
                     "Land is not prepared id:" + request.landID);
-                land.LandType = (int)LandBankFacadeModel.LandTypeEnum.Transferred;
+                if (landParts != null)
+                {
+                    geom = landParts.Geom;
+                    landParts.Status=(int)LandBankFacadeModel.LandTypeEnum.Transferred;
+                    landParts.Locked=false;
+                    Context.LandSplit.Update(landParts);
+                }
+                var partStatus=Context.LandSplit.Where(x=>x.LandId==request.landID && (x.Status==(int)LandBankFacadeModel.LandTypeEnum.Prepared || x.Status==(int)LandBankFacadeModel.LandTypeEnum.PreparedWithSplit) && x.Id!=request.landPart);
+                if (partStatus.Any())
+                {
+                    land.LandType=(int)LandBankFacadeModel.LandTypeEnum.HalfTransferred;
+                }
+                else
+                {
+                    land.LandType = (int)LandBankFacadeModel.LandTypeEnum.Transferred;
+                }
+
+                land.Locked = false;
             }
 
             Context.Land.Update(land);
@@ -826,6 +861,8 @@ namespace intapscamis.camis.domain.LandBank
                 SplitIndex = request.landPart ?? 0,
                 CommonTxtUid = Guid.NewGuid(),
                 Status = 4,
+                FarmId = Guid.Parse(request.farmId),
+                Geom = geom
             });
             Context.SaveChanges();
         }
@@ -913,6 +950,12 @@ namespace intapscamis.camis.domain.LandBank
 
         private LandBankFacadeModel.LandRightResponse MapLandRight(LandRight lr)
         {
+            var farmLand=Context.FarmLand.Where(x=>x.LandId==lr.LandId && x.FarmId==lr.FarmId && x.SplitIndex==lr.SplitIndex).FirstOrDefault();
+            if (farmLand != null)
+            {
+                lr.CertificateDocument = farmLand.CertificateDoc;
+                lr.ContractDocument = farmLand.LeaseContractDoc;
+            }
             var cd = Context.Document.FirstOrDefault(c => c.Id == lr.CertificateDocument);
             var cdDoc = new DocumentResponse();
             cdDoc = null;
@@ -952,6 +995,8 @@ namespace intapscamis.camis.domain.LandBank
             return new LandBankFacadeModel.LandRightResponse()
             {
                 LandId = lr.LandId.ToString(),
+                FarmId = lr.FarmId.ToString(),
+                SplitIndex = lr.SplitIndex,
                 RightFrom = new DateTime(lr.RightFrom ?? 0),
                 RightTo = new DateTime(lr.RightTo ?? 0),
                 RightType = lr.RightType,

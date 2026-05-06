@@ -14,7 +14,7 @@
             <button class="accordion-button" type="button" data-bs-toggle="collapse"
                     data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
                     aria-controls="panelsStayOpen-collapseOne">
-              <i class="ti ti-user-dollar"></i>&nbsp;&nbsp;Investor Profile
+              <i class="ti ti-user-dollar"></i>&nbsp;&nbsp;Investor Profile <span *ngIf="farm.status">({{farm.status.name}})</span>
             </button>
           </h1>
           <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show"
@@ -240,49 +240,66 @@
               <table class="table mb-0">
                 <thead>
                 <tr>
-                  <th style="width:50%">Parcel Info</th>
-                  <th>LandRight</th>
-                  <th>Right Doc</th>
+                  <th>#</th>
+                  <th>Parcel Info</th>
+                  <th>Land Right</th>
+                  <th>Lease Agreement</th>
+                  <th>Land Certificate</th>
+                  <th></th>
                 </tr>
                 </thead>
-                <tbody *ngIf="farm.farmLands?.length>0">
-                <tr *ngFor="let farmLand of farm.farmLands">
+                <tbody *ngIf="farm && farmLands?.length>0">
+                <tr *ngFor="let farmLand of farmLands; index as i ">
+                  <td>{{i+1}}</td>
                   <td>
-                    <app-simple-land-bank-details [landID]="farmLand.landId"></app-simple-land-bank-details>
-                  </td>
-                  <td>
-                    <div *ngIf="landRight==null">No right Yet</div>
-                    <table class="table" *ngIf="landRight!=null">
+                    <table class="table" >
                       <tbody>
-                        <tr><td><b>Right Type: </b></td><td>{{getRightType(landRight.rightType)}}</td></tr>
-                        <tr><td><b>Right Date From: </b></td><td> {{keyCase.convertDate(landRight.rightFrom)}}</td></tr>
-                        <tr><td><b>Right Date To: </b></td><td>{{keyCase.convertDate(landRight.rightTo)}}</td></tr>
-                        <tr><td><b>Yearly Amount: </b> </td><td> {{landRight.yearlyRent| currency:"Br"}}</td></tr>
-                        <tr><td><b>Status: </b></td><td>{{getFarmStatus(landRight.status)}}</td></tr>
+                      <tr><td><b>Upin: </b></td><td>{{farmLand.upin}}</td></tr>
+                      <tr><td><b>Area: </b></td><td> {{farmLand.area}}</td></tr>
+                      <tr><td><b>Centroid X: </b></td><td>{{farmLand.centroidX}}</td></tr>
+                      <tr><td><b>Centroid Y: </b> </td><td> {{farmLand.centroidY}}</td></tr>
+
                       </tbody>
 
                     </table>
                   </td>
                   <td>
-                    <h4>Land Certificate</h4>
-                    <div *ngIf="!farmLand.certificateDoc">No certificate, yet.</div>
-                    <app-document-detail *ngIf="farmLand.certificateDoc"
-                                         [document]="farmLand.certificateDoc"></app-document-detail>
-                    <br/>
-                    <h4>Lease Agreement</h4>
-                    <div *ngIf="!farmLand.leaseContractDoc">No lease contract, yet.</div>
-                    <app-document-detail *ngIf="farmLand.leaseContractDoc"
-                                         [document]="farmLand.leaseContractDoc"></app-document-detail>
+                    <div *ngIf="!farmLand.rights">No right Yet</div>
+                    <table class="table" *ngIf="farmLand?.rights">
+                      <tbody>
+                        <tr><td><b>Right Type: </b></td><td>{{getRightType(farmLand.rights.rightType)}}</td></tr>
+                        <tr><td><b>Right Date From: </b></td><td> {{keyCase.convertDate(farmLand.rights.rightFrom)}}</td></tr>
+                        <tr><td><b>Right Date To: </b></td><td>{{keyCase.convertDate(farmLand.rights.rightTo)}}</td></tr>
+                        <tr><td><b>Yearly Amount: </b> </td><td> {{farmLand.rights.yearlyRent| currency:"Br"}}</td></tr>
+                        <tr><td><b>Status: </b></td><td>{{getFarmStatus(farmLand.rights.status)}}</td></tr>
+                      </tbody>
+
+                    </table>
+                  </td>
+                  <td>
+                    <div *ngIf="!farmLand.rights.contractDocument">No lease contract, yet.</div>
+                    <app-document-detail *ngIf="farmLand.rights.contractDocument"
+                                         [document]="farmLand.rights.contractDocument"></app-document-detail>
+                  </td>
+
+                  <td><div *ngIf="!farmLand.rights.certificateDocument">No certificate, yet.</div>
+                    <app-document-detail *ngIf="farmLand.rights.certificateDocument"
+                                         [document]="farmLand.rights.certificateDocument"></app-document-detail></td>
+                  <td class="align-right">
+                    <a target="_blank" class="btn btn-custom-light btn-sm"
+                       [href]="'/land-bank/parcel-details/' + farmLand.landId">
+                      <i class="ti ti-map-pin"></i>
+                    </a>
                   </td>
                 </tr>
                 </tbody>
                 <tbody *ngIf="!farm.farmLands || farm.farmLands?.length===0">
                 <tr class="no-data" id="no-data">
-                  <td colspan="3">
+                  <td colspan="6">
                     <div class="align-center mt-5 ">
                       <i class="ti ti-exclamation-circle"></i>
                       <h1>Sorry!</h1>
-                      <p>There is no parcel assignend</p>
+                      <p>There is no parcel assigned</p>
                     </div>
                   </td>
                 </tr>

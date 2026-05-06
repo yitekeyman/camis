@@ -1229,6 +1229,9 @@ namespace intapscamis.camis.data.Entities
                 .HasMaxLength(5000)
                 .HasColumnName("description");
             entity.Property(e => e.InvestedCapital).HasColumnName("invested_capital");
+            entity.Property(e => e.Locked)
+                .HasDefaultValue(false)
+                .HasColumnName("locked");
             entity.Property(e => e.OperatorId).HasColumnName("operator_id");
             entity.Property(e => e.OtherTypeIds)
                 .HasDefaultValueSql("ARRAY[]::integer[]")
@@ -1661,6 +1664,9 @@ namespace intapscamis.camis.data.Entities
                 entity.Property(e => e.Description).HasColumnName("description");
 
                 entity.Property(e => e.LandType).HasColumnName("land_type");
+                entity.Property(e => e.Locked)
+                    .HasDefaultValue(false)
+                    .HasColumnName("locked");
 
                 entity.Property(e => e.Wid).HasColumnName("wid");
             });
@@ -1841,6 +1847,9 @@ namespace intapscamis.camis.data.Entities
                 entity.Property(e => e.Indexes).HasColumnName("indexes");
                 entity.Property(e => e.LandId).HasColumnName("land_id");
                 entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.Locked)
+                    .HasDefaultValue(false)
+                    .HasColumnName("locked");
                 entity.Property(e => e.Wid).HasColumnName("wid");
 
                 entity.HasOne(d => d.Land).WithMany(p => p.LandSplits)

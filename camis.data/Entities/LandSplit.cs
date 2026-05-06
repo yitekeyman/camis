@@ -19,6 +19,7 @@ namespace intapscamis.camis.data.Entities
         public long Status { get; set; }
 
         public Guid Wid { get; set; }
+        public bool Locked { get; set; }
 
         public virtual Land Land { get; set; }
         

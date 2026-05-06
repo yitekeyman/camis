@@ -141,13 +141,15 @@ namespace intapscamis.camis.domain.Farms.StateMachines
             StateMachine<States, Triggers>.Transition transition)
         {
             // the real act (part 2): assign land and wait for NRLAIS
-            data.LandTransferWorkflowId = _landBankTransferWorkflow.RequestLandTransfer(data.LandTransferRequest);
+            
+            data.LandTransferWorkflowId = _landBankTransferWorkflow.RequestLandTransfer(data, data.LandTransferWorkflowId, description);
+
             data.FarmLands = new List<FarmLandRequest>
             {
-                new FarmLandRequest {FarmId = data.Id.ToGuid(), LandId = data.LandTransferRequest.landID}
+                new FarmLandRequest {FarmId = data.Id.ToGuid(), LandId = data.LandTransferRequest.landID, SplitIndex = data.LandTransferRequest.landPart??0}
             };
 
-            ConfigureAndAddWorkItem(UserRoles.LandAdmin, data, description, assignedUser, transition);
+            ConfigureAndAddWorkItem(UserRoles.FarmSupervisor, data, description, assignedUser, transition);
         }
 
         public int GetTransferStatus()
@@ -157,7 +159,7 @@ namespace intapscamis.camis.domain.Farms.StateMachines
 
             if (Workflow.CurrentState == (int) States.Waiting && status == (int) LandBankTransferWorkflow.States.Executed)
             {
-                Fire(Workflow.Id, ParameterizedTriggers.Assign, "Land assignment resolved in NRLAIS.", null);
+                Fire(Workflow.Id, ParameterizedTriggers.Assign, "Land assignment resolved in NRLAIS/Farm Supervisor.", null);
                 return -99;
             }
 
@@ -167,7 +169,7 @@ namespace intapscamis.camis.domain.Farms.StateMachines
         private void OnAssign(string description, long? assignedUser,
             StateMachine<States, Triggers>.Transition transition)
         {
-            ConfigureAndAddWorkItem(UserRoles.LandAdmin, GetData(), description, assignedUser, transition);
+            ConfigureAndAddWorkItem(UserRoles.FarmSupervisor, GetData(), description, assignedUser, transition);
         }
 
         private void OnCertify(FarmRequest data, string description, long? assignedUser,

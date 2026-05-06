@@ -58,6 +58,8 @@ namespace intapscamis.camis.domain.Farms
         
         void NewWaitLandAssignment(FarmRequest body, string description);
         void WaitLandAssignment(Guid workflowId, FarmRequest body, string description);
+        void ApproveLandAssignment(Guid workflowId, string description);
+        void RejectLandAssignment(Guid workflowId, string description);
         int GetTransferStatus(Guid workflowId);
         void CertifyLandAssignment(Guid workflowId, FarmRequest body, string description);
         FarmResponse GetFarmByLandId(Guid id);
@@ -66,6 +68,8 @@ namespace intapscamis.camis.domain.Farms
         LandRightsResponse GetLandRightsByLandIdandFarmId(Guid landId, Guid farmId, int? partId = 0);
         List<LandRightsResponse> GetAllLandRightsByLandId(Guid landId);
         List<LandRightsResponse> GetAllLandRightsByFarmId(Guid farmId);
+        List<FarmLandResponse2> GetFarmLands(Guid farmId);
+        void GetTransferWorkFlows();
     }
 
     public class FarmsFacade : CamisFacade, IFarmsFacade
@@ -74,6 +78,7 @@ namespace intapscamis.camis.domain.Farms
         
         private readonly IFarmsService _service;
         private readonly LandAssignmentWorkflow _landAssignmentWorkflow;
+        private readonly LandBankTransferWorkflow _landBankTransferWorkflow;
         private readonly FarmRegistrationWorkflow _farmRegistrationWorkflow;
         private readonly FarmModificationWorkflow _farmModificationWorkflow;
         private readonly FarmDeletionWorkflow _farmDeletionWorkflow;
@@ -97,6 +102,7 @@ namespace intapscamis.camis.domain.Farms
             _farmRegistrationWorkflow = new FarmRegistrationWorkflow(_service, workflowService, _landAssignmentWorkflow);
             _farmModificationWorkflow = new FarmModificationWorkflow(_service, workflowService);
             _farmDeletionWorkflow = new FarmDeletionWorkflow(_service, workflowService);
+            _landBankTransferWorkflow = new LandBankTransferWorkflow(new LandBankService());
         }
 
         public void SetSession(UserSession session)
@@ -108,6 +114,7 @@ namespace intapscamis.camis.domain.Farms
             _farmRegistrationWorkflow.SetSession(session);
             _farmModificationWorkflow.SetSession(session);
             _farmDeletionWorkflow.SetSession(session);
+            _landBankTransferWorkflow.SetSession(session);
         }
 
 
@@ -449,9 +456,19 @@ namespace intapscamis.camis.domain.Farms
                 PassContext(_landAssignmentWorkflow, _context);
                 _landAssignmentWorkflow.ConfigureMachine();
 
-                _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id, LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
-                    description ?? "Wait for NRLAIS to assign new land to this farm.",
-                    null);
+                var regionCode=_context.SysConfigs.First(e => e.Name.Equals("region_code")).Value;
+                if (regionCode.Equals("AM"))
+                {
+                    _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id, LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
+                        description ?? "Parcel locating request sent for farm suppervisor",
+                        null);
+                }
+                else
+                {
+                    _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id, LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
+                        description ?? "Wait for NRLAIS to assign land to this farm.",
+                        null);
+                }
             });
         }
         
@@ -461,10 +478,47 @@ namespace intapscamis.camis.domain.Farms
             {
                 PassContext(_landAssignmentWorkflow, _context);
                 _landAssignmentWorkflow.ConfigureMachine(workflowId);
-
-                _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id, LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
-                    description ?? "Wait for NRLAIS to assign land to this farm.",
-                    null);
+                var regionCode=_context.SysConfigs.First(e => e.Name.Equals("region_code")).Value;
+                if (regionCode.Equals("AM"))
+                {
+                    _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id, LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
+                        description ?? "Parcel locating request sent for farm suppervisor",
+                        null);
+                }
+                else
+                {
+                    _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id, LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
+                        description ?? "Wait for NRLAIS to assign land to this farm.",
+                        null);
+                }
+                
+            });
+        }
+        public void ApproveLandAssignment(Guid workflowId, string description)
+        {
+            Transact(_context, t =>
+            {
+                PassContext(_landBankTransferWorkflow, _context);
+                _landBankTransferWorkflow.ApproveLandTransfer(workflowId, description);
+            });
+            GetTransferWorkFlows();
+        }
+        public void RejectLandAssignment(Guid workflowId, string description)
+        {
+            Transact(_context, t =>
+            {
+                PassContext(_landBankTransferWorkflow, _context);
+                _landBankTransferWorkflow.RejectLandTransfer(workflowId, description);
+               
+            });
+        }
+        public void RerequestLandAssignment(Guid workflowId, FarmRequest body, string description)
+        {
+            Transact(_context, t =>
+            {
+                PassContext(_landBankTransferWorkflow, _context);
+                _landBankTransferWorkflow.RerequestApproval(workflowId,body, description);
+               
             });
         }
         
@@ -526,6 +580,22 @@ namespace intapscamis.camis.domain.Farms
         {
             PassContext(_service, _context);
             return _service.GetAllLandRightsByFarmId(farmId);
+        }
+
+        public List<FarmLandResponse2> GetFarmLands(Guid farmId)
+        {
+            PassContext(_service, _context);
+            return _service.GetFarmLands(farmId);
+        }
+
+        public void GetTransferWorkFlows()
+        {
+            PassContext(_service, _context);
+            var workflows = _service.GetTransferWorkFlows();
+            foreach (var wf in workflows)
+            {
+                GetTransferStatus(wf.Id);
+            }
         }
     }
 }

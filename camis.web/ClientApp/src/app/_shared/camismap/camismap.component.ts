@@ -688,7 +688,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
       const features = new WKT().readFeatures(parcel.wkt);
       features.forEach(feature => {
         feature.set('id', parcel.id);
-        feature.set('label', `parcel-${parcel.id}`);
+        feature.set('label', `${parcel.id}`);
        // this.splitStyle=this.getSplitStyle(feature);
         this.splitSource.addFeature(feature);
       });

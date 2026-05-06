@@ -27,6 +27,8 @@ namespace intapscamis.camis.domain.Farms.Models
         public Guid LandTransferWorkflowId { get; set; }
 
         public ICollection<FarmLandRequest> FarmLands { get; set; }=new List<FarmLandRequest>();
+        public FarmStatus Status { get; set; } = new FarmStatus();
+       public bool Locked { get; set; }
     }
 
     public class FarmLandRequest
@@ -36,15 +38,7 @@ namespace intapscamis.camis.domain.Farms.Models
 
         public DocumentRequest CertificateDoc { get; set; }=new DocumentRequest();
         public DocumentRequest LeaseContractDoc { get; set; }=new DocumentRequest();
-        public DateTime? RightFrom { get; set; }
-        public DateTime? RightTo { get; set; }
-        public int? RightType { get; set; }
-        public double? YearlyRent { get; set; }
-        public double? LandSectionArea { get; set; }
         public int SplitIndex { get; set; }
-        public string CommonTxtUid { get; set; }
-        public int? Status { get; set; }
-        public string Geom { get; set; }
     }
 
     public class FarmRegistrationRequest

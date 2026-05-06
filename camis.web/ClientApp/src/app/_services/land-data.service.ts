@@ -168,4 +168,7 @@ export class LandDataService {
   ApproveParcelSplitting(wfid: string, note: string|null ) {
     return this.api.post(`LandBank/ApproveParcelSplitting?wfid=${wfid}`, note);
   }
+  getSplitStatus(wfid: string) {
+    return this.api.get(`LandBank/GetSplitStatus?wfid=${wfid}`);
+  }
 }

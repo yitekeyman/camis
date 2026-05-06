@@ -92,7 +92,7 @@ getWorkflow(workflowId: string) {
     body.farmLands = [{
       farmId: body.farmLands[0].farmId,
       landId: body.farmLands[0].landId,
-
+      splitIndex:body.farmLands[0].splitIndex,
       certificateDoc: this.certification.doc,
       leaseContractDoc: this.leaseContract.doc,
     }];

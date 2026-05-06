@@ -4,19 +4,71 @@
       <div class="card-header p-2">
         <div class="row">
           <div class="col-md-6">
-            <h4><i class="ti ti-map-plus"></i> Commercial Farm Details</h4>
+            <h4 *ngIf="workflowId"><i class="ti ti-map-plus"></i> Land Allocation for Commercial Farm Task</h4>
+            <h4 *ngIf="!workflowId"><i class="ti ti-map-plus"></i> Commercial Farm Details</h4>
           </div>
           <div class="col-md-6 " style="text-align: right">
             <div *ngIf="!loading && data">
               <button class="btn btn-custom" type="button" data-bs-toggle="modal"
-                      data-bs-target="#landAssignmentDialog">
+                      data-bs-target="#landAssignmentDialog" *ngIf="((workflowId && workFlowItem?.typeId==10) ||farmId) && !data.locked">
                 Assignment New Parcel
               </button>
+              <div class="btn-group" *ngIf="workflowId && workFlowItem?.typeId==8">
+                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                  Actions <i class="ti ti-caret-down"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="javascript:" data-bs-toggle="modal"
+                         data-bs-target="#landAssignmentDialog" *ngIf="loginRole==6 && workFlowItem.currentState==6" (click)="editParcelAllocation()">Edit Parcel Assignment</a></li>
+                  <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole==3 && workFlowItem.currentState==3" (click)="approveRequest()">Approve
+                    Request</a></li>
+                  <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole==3 && workFlowItem.currentState==3" (click)="rejectRequest()">Reject
+                    Request</a></li>
+                  <li>
+
+                  <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole==6 && workFlowItem.currentState==6" (click)="cancelRequest()"> Cancel
+                    Task</a></li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
 
       </div>
+    </div>
+  </div>
+  <div class="col-md-12" *ngIf="workFlowItem?.typeId===8">
+    <div class="alert alert-primary d-flex align-items-center p-1 mb-1">
+      <table class="table p-0 m-0">
+        <tbody>
+        <tr *ngIf="workFlowItem?.typeId===8">
+          <td class="m-0 p-1"
+              style="vertical-align: middle; font-size: 2rem; border-right: 2px solid rgba(0,0,0,0.25); text-align: center;color:rgba(0,255,0,0.75)">
+            <i class="ti ti-bell-ringing-filled"></i>
+          </td>
+          <td class="m-0" style="font-size: 0.75rem; vertical-align: middle">
+            <b>Task: </b> {{workFlowItem.type.name}}<br/>
+            <b>Task State: </b><span *ngIf="workFlowItem?.currentState === 3" style="color: green;text-align: right;">Parcel Allocated</span><span *ngIf="workFlowItem?.currentState === 6" style="color: red;text-align: right;">Allocation Rejected</span><br>
+            <b>Remark: </b> {{ workFlowItem.description }}
+          </td>
+          <td class="m-0" style="font-size: 0.75rem; vertical-align: middle">
+            <b>Sent by: </b> {{ userWorkItem?.sentUserName }}<br/>
+            <b>Date: </b> {{ userWorkItem?.workItemDate | date }}<br/>
+            <b>Note: </b> {{ userWorkItem?.workItemNote }}
+          </td>
+
+          <td class="m-0" style="font-size: 0.75rem; vertical-align: middle; ">
+            <span><b>Right Type: </b>{{getRightType(data?.landTransferRequest.right)}}</span><br>
+            <span><b>Right From: </b>{{data?.landTransferRequest.leaseFrom | date}}</span><br>
+            <span><b>Right To: </b>{{data?.landTransferRequest.leaseTo | date}}</span><br>
+            <span><b>Lease Amount: </b>{{data?.landTransferRequest.yearlyLease|currency:'Br'}}</span><br>
+            <span><b>UPID: </b> <a [href]="'/land-bank/parcel-details/' + data?.landTransferRequest.landID">{{this.selectedUPID}}</a></span><br>
+            <span><b>Area: </b> {{getArea(this.selectedUPINArea)}}</span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   </div>
   <div *ngIf="!loading && data">

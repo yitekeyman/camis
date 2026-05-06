@@ -217,7 +217,7 @@ namespace intapscamis.camis.Controllers
         }
 
 
-        [Roles(UserRoles.FarmClerk, UserRoles.FarmSupervisor, UserRoles.LandAdmin, UserRoles.LandCertificateIssuer)]
+        [Roles(UserRoles.FarmClerk, UserRoles.FarmSupervisor, UserRoles.LandAdmin, UserRoles.LandCertificateIssuer, UserRoles.LandAdmin)]
         [HttpGet]
         public IActionResult LastWorkItem(string id)
         {
@@ -593,7 +593,7 @@ namespace intapscamis.camis.Controllers
             }
         }
 
-        [Roles(UserRoles.LandAdmin, UserRoles.LandCertificateIssuer)]
+        [Roles(UserRoles.LandAdmin, UserRoles.LandCertificateIssuer, UserRoles.FarmSupervisor, UserRoles.CMSSUser)]
         [HttpGet]
         public IActionResult TransferStatus(string id)
         {
@@ -609,8 +609,39 @@ namespace intapscamis.camis.Controllers
                 return StatusCode(500, new { success = false, message = e.Message });
             }
         }
-
-        [Roles(UserRoles.LandAdmin, UserRoles.LandCertificateIssuer)]
+        [Roles(UserRoles.LandAdmin, UserRoles.FarmSupervisor)]
+        [HttpPut]
+        public IActionResult ApproveLandAssignment(string id, string description)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                _facade.ApproveLandAssignment(id.ToGuid(), description);
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+        [Roles(UserRoles.LandAdmin, UserRoles.FarmSupervisor)]
+        [HttpPut]
+        public IActionResult RejectLandAssignment(string id, string description)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                _facade.RejectLandAssignment(id.ToGuid(), description);
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+        [Roles(UserRoles.LandAdmin, UserRoles.LandCertificateIssuer, UserRoles.FarmSupervisor)]
         [HttpPost]
         public IActionResult CertifyLandAssignment(string id, [FromBody] FarmRequest body, string description)
         {
@@ -703,6 +734,20 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 return Json(_facade.GetAllLandRightsByFarmId(Guid.Parse(farmId)));
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+        [HttpGet]
+        public IActionResult GetFarmLandByFarmId(string id)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                return Json(_facade.GetFarmLands(Guid.Parse(id)));
             }
             catch (Exception e)
             {

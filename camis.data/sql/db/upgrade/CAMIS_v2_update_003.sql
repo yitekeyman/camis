@@ -129,3 +129,51 @@ ALTER TABLE lb.land_right
         ON UPDATE CASCADE
         ON DELETE NO ACTION
     NOT VALID;
+
+ALTER TABLE lb.land
+    ADD COLUMN locked boolean NOT NULL DEFAULT false;
+
+ALTER TABLE frm.farm
+    ADD COLUMN locked boolean NOT NULL DEFAULT false;
+
+ALTER TABLE lb.land_split
+    ADD COLUMN locked boolean NOT NULL DEFAULT false;
+UPDATE frm.farm f
+SET status = CASE
+                 WHEN EXISTS (
+                     SELECT 1
+                     FROM frm.farm_land fl
+                              JOIN lb.land_right lr ON lr.land_id = fl.land_id AND lr.split_index = fl.split_index
+                     WHERE fl.farm_id = f.id
+                       AND lr.right_to < EXTRACT(epoch FROM NOW())::bigint   -- assumes right_to is Unix timestamp (seconds)
+                 ) THEN 5
+                 WHEN EXISTS (
+                     SELECT 1
+                     FROM frm.farm_land fl
+                     WHERE fl.farm_id = f.id
+                 ) THEN 4
+                 ELSE 2
+    END;
+
+
+ALTER TABLE lb.land_right DROP CONSTRAINT land_right_land_id_fk;
+
+ALTER TABLE lb.land_right DROP CONSTRAINT land_right_farm_id_fk;
+
+
+
+ALTER TABLE lb.land_right
+    ADD CONSTRAINT land_right_land_land_id_fk FOREIGN KEY (land_id)
+        REFERENCES lb.land (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+    NOT VALID;
+
+ALTER TABLE frm.farm_land
+    ADD CONSTRAINT farm_land_land_id_fk FOREIGN KEY (land_id)
+        REFERENCES lb.land (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+    NOT VALID;
+
+--20260506 end upgrade

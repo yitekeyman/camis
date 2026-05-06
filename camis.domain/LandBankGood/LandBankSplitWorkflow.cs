@@ -252,7 +252,7 @@ public class
             foreach (var sp in landSplit)
             {
                 if (sp.Id == request.SubLand)
-                    CamisUtils.Assert((sp.Status == 2), $"Parcel part {sp.Indexes} status doesn't allow split");
+                    CamisUtils.Assert((sp.Status == 2 ||sp.Locked), $"Parcel part {sp.Indexes} status doesn't allow split");
             }
         }
 
@@ -282,10 +282,19 @@ public class
             role = UserRoles.LandAdmin;
         }
 
-        _landBankService.SetLandState(Guid.Parse(request.LandId), LandBankFacadeModel.LandTypeEnum.OnSplit);
+       
         if (request.SubLand > 0)
-            _landBankService.SetSubLandState(Guid.Parse(request.LandId), request.SubLand,
-                LandBankFacadeModel.LandTypeEnum.OnSplit);
+        {
+            _landBankService.SetSubLandState(Guid.Parse(request.LandId), request.SubLand, LandBankFacadeModel.LandTypeEnum.OnSplit);
+            _landBankService.SetSubLandLock(Guid.Parse(request.LandId), request.SubLand,true);
+        }
+        else
+        {
+            _landBankService.SetLandState(Guid.Parse(request.LandId), LandBankFacadeModel.LandTypeEnum.OnSplit);
+            _landBankService.SetLandLock(Guid.Parse(request.LandId),true); 
+        }
+        
+
         fireAction(wf.Id, trigger, request.Description, role, request);
         return wf.Id;
     }
@@ -293,6 +302,10 @@ public class
     public Guid CancelParcelSplitRequest(Guid wfid, string note)
     {
         ConfigureMachine(wfid);
+        var data = GetPreparationRequest(wfid);
+        _landBankService.SetLandLock(Guid.Parse(data.LandId), true);
+        if (data.SubLand > 0)
+            _landBankService.SetSubLandLock(Guid.Parse(data.LandId), data.SubLand,true);
         return fireAction(wfid, Triggers.Cancel, note, null).Id;
     }
 
@@ -369,13 +382,15 @@ public class
                 LandId = Guid.Parse(request.LandId),
                 Indexes = oldSplitIndex,
                 Status = (int)LandBankFacadeModel.LandTypeEnum.Prepared,
-                Wid = wfid
+                Wid = wfid,
+                Locked = false
             });
         }
 
         Context.LandSplit.AddRange(splited);
         Context.SaveChanges();
         _landBankService.SetLandState(Guid.Parse(request.LandId), LandBankFacadeModel.LandTypeEnum.PreparedWithSplit);
+        _landBankService.SetLandLock(Guid.Parse(request.LandId), false);
     }
 
     private Geometry ParseGeometry(string geom)
@@ -430,5 +445,31 @@ public class
         _machine.Configure(States.CMSSRejected)
             .Permit(Triggers.WaitForCMSS, States.WaitingForCMSS)
             .Permit(Triggers.Cancel, States.Cancelled);
+    }
+    
+    internal int GetSplitStatus(Guid wfid)
+    {
+        ConfigureMachine(wfid);
+        if (_machine.State == States.WaitingForNRLAIS)
+        {
+            var w = _workflowService.GetLastWorkItem<String>(wfid);
+            var txuid = w.Data.ToString();
+            WorkItem wi;
+            switch (new RestNrlaisInterface().GetApplicationStatus(Guid.Parse(txuid)))
+            {
+                case NrlaisInterfaceModel.NrlaisApplicationStatus.Canceled:
+                    wi = this.fireAction(wfid, Triggers.NRLAISReject, "Rejected by nrlais", null);
+                    return (int)wi.ToState;
+                case NrlaisInterfaceModel.NrlaisApplicationStatus.Completd:
+                    wi = this.fireAction(wfid, Triggers.NRLAISApprov, "Approve by nrlais", null);
+                    return (int)wi.ToState;
+                case NrlaisInterfaceModel.NrlaisApplicationStatus.Processing:
+                    return (int)_machine.State;
+                default:
+                    throw new InvalidOperationException("Invalid status returned by nrlais");
+            }
+        }
+        else
+            return (int)_machine.State;
     }
 }

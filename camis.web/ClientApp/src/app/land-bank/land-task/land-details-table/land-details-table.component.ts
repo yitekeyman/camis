@@ -52,7 +52,7 @@ export class LandDetailsTableComponent implements OnInit {
   agroEchologyZones: any[] = [];
   existingLandes: any[] = [];
   investmentTypes: any[] = [];
-  moistureSources: any;
+  moistureSources: any[]=[];
   groundWater: any[] = [];
   isAgricultural: string;
   topography: any[] = [];
@@ -272,8 +272,10 @@ export class LandDetailsTableComponent implements OnInit {
 
   prepareMoistureSource() {
     for (const moistureSourceList of this.moistureSourceList) {
-      if (moistureSourceList.id === this.workflowLand['moistureSource']) {
-        this.moistureSources = moistureSourceList.name;
+      for (const moi of this.workflowLand['moistureSource']) {
+        if (moistureSourceList.id === moi) {
+          this.moistureSources.push(moistureSourceList.name);
+        }
       }
     }
   }

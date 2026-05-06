@@ -72,6 +72,14 @@ export class SearchResultDetailComponent implements OnInit {
   prepareModel: LandPreparationModel;
   isIrrigated: boolean = false;
   farm: any = null;
+  farmStatusTypes: any[] = [];
+  rightType=[
+    {id:1,name:'Lease From State'},
+    {id:2,name:'Lease From Private'},
+    {id:3,name:'Private'},
+    {id:4,name:'Contract Farming'},
+    {id:5,name:'Sub-lease'},
+  ]
   @ViewChild('camis_map') map: CamisMapComponent;
  // @ViewChild('prepareBtnClose') prepareBtnClose: ElementRef;
 
@@ -91,7 +99,10 @@ export class SearchResultDetailComponent implements OnInit {
       this.loginRole = 'land-admin';
     }
 
-
+    this.farmService.getFarmStatusTypeList().subscribe(statusType => {
+      this.keyCase.camelCase(statusType);
+      this.farmStatusTypes = statusType;
+    },dialog.error);
   }
 
   ngOnInit() {
@@ -133,7 +144,7 @@ export class SearchResultDetailComponent implements OnInit {
         for (let p of this.searchedLandDetail['landSplit']) {
           let parts = p.geom.split(";");
           let parcel = {
-            id: p.indexes,
+            id: `${this.searchedLandDetail['upins'][0]}-${p.indexes}`,
             wkt: parts[parts.length - 1]
           }
           splitGeomData.push(parcel);
@@ -442,5 +453,21 @@ avalabelParts=[];
         return dialog.error(err);
       }
     );
+  }
+  getFarmStatus(id: number): string {
+    for(let l of this.farmStatusTypes) {
+      if (id == l.id) {
+        return l.name;
+      }
+    }
+    return null;
+  }
+  getRightType(id: number): string {
+    for(let l of this.rightType) {
+      if (id == l.id) {
+        return l.name;
+      }
+    }
+    return null;
   }
 }

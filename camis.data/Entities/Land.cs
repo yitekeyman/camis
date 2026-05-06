@@ -24,6 +24,7 @@ namespace intapscamis.camis.data.Entities
         public string Description { get; set; }
         public int LandType { get; set; }
         public Guid Wid { get; set; }
+        public bool Locked { get; set; }
 
         public AgriculturalZone AgriculturalZone { get; set; }
         //public LandRight LandRight { get; set; }

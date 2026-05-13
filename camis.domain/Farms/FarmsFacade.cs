@@ -37,7 +37,7 @@ namespace intapscamis.camis.domain.Farms
         Document InWorkItemActivityPlanFile(Guid workItemId, Guid documentId);
         Document InWorkItemActivityPlanFileForPlanUpdate(Guid workItemId, Guid documentId);
         Document InWorkItemOperatorPhoto(Guid workItemId, Guid photoId);
-        
+
         Guid SaveNewFarmRegistration(FarmRequest body, string description);
         void SaveFarmRegistration(Guid workflowId, FarmRequest body, string description);
         Guid RequestNewFarmRegistration(FarmRequest body, string description);
@@ -55,7 +55,7 @@ namespace intapscamis.camis.domain.Farms
         Guid RequestNewFarmDeletion(FarmRequest body, string description);
         void RejectFarmDeletion(Guid workflowId, string description);
         void ApproveFarmDeletion(Guid workflowId, string description);
-        
+
         void NewWaitLandAssignment(FarmRequest body, string description);
         void WaitLandAssignment(Guid workflowId, FarmRequest body, string description);
         void ApproveLandAssignment(Guid workflowId, string description);
@@ -70,21 +70,27 @@ namespace intapscamis.camis.domain.Farms
         List<LandRightsResponse> GetAllLandRightsByFarmId(Guid farmId);
         List<FarmLandResponse2> GetFarmLands(Guid farmId);
         void GetTransferWorkFlows();
+        Document InWorkItemContractCancellationDoc(Guid workItemId, Guid documentId);
+        void RequestContractCancellation(Guid workflowId, ContractCancellationRequest body, string description);
+        void ApproveContractCancellation(Guid workflowId, string description);
+        void RejectContractCancellation(Guid workflowId, string description);
+        void CancelContractCancellation(Guid workflowId, string description);
     }
 
     public class FarmsFacade : CamisFacade, IFarmsFacade
     {
         private UserSession _session;
-        
+
         private readonly IFarmsService _service;
         private readonly LandAssignmentWorkflow _landAssignmentWorkflow;
         private readonly LandBankTransferWorkflow _landBankTransferWorkflow;
         private readonly FarmRegistrationWorkflow _farmRegistrationWorkflow;
         private readonly FarmModificationWorkflow _farmModificationWorkflow;
         private readonly FarmDeletionWorkflow _farmDeletionWorkflow;
+        private readonly ContractCancellationWorkflow _contractCancellationWorkflow;
 
         private readonly CamisContext _context;
-        
+
         public FarmsFacade(
             CamisContext context,
             IFarmsService service,
@@ -92,29 +98,33 @@ namespace intapscamis.camis.domain.Farms
         )
         {
             _context = context;
-            
+
             _service = service;
             _landAssignmentWorkflow = new LandAssignmentWorkflow(
                 _service,
                 workflowService,
                 new LandBankTransferWorkflow(new LandBankService())
             );
-            _farmRegistrationWorkflow = new FarmRegistrationWorkflow(_service, workflowService, _landAssignmentWorkflow);
+            _farmRegistrationWorkflow =
+                new FarmRegistrationWorkflow(_service, workflowService, _landAssignmentWorkflow);
             _farmModificationWorkflow = new FarmModificationWorkflow(_service, workflowService);
             _farmDeletionWorkflow = new FarmDeletionWorkflow(_service, workflowService);
             _landBankTransferWorkflow = new LandBankTransferWorkflow(new LandBankService());
+            _contractCancellationWorkflow =
+                new ContractCancellationWorkflow(_service, workflowService, new LandBankService());
         }
 
         public void SetSession(UserSession session)
         {
             _session = session;
-            
+
             _service.SetSession(_session);
             _landAssignmentWorkflow.SetSession(session);
             _farmRegistrationWorkflow.SetSession(session);
             _farmModificationWorkflow.SetSession(session);
             _farmDeletionWorkflow.SetSession(session);
             _landBankTransferWorkflow.SetSession(session);
+            _contractCancellationWorkflow.SetSession(session);
         }
 
 
@@ -197,8 +207,8 @@ namespace intapscamis.camis.domain.Farms
             PassContext(_service, _context);
             return _service.GetFarmByActivity(activityId);
         }
-        
-         
+
+
         public WorkItemResponse GetLastWorkItem(Guid workflowId)
         {
             PassContext(_service, _context);
@@ -210,13 +220,13 @@ namespace intapscamis.camis.domain.Farms
             PassContext(_service, _context);
             return _service.InWorkItemRegistrationFile(workItemId, regId);
         }
-        
+
         public Document InWorkItemOperatorRegistrationFile(Guid workItemId, int regId)
         {
             PassContext(_service, _context);
             return _service.InWorkItemOperatorRegistrationFile(workItemId, regId);
         }
-        
+
         public Document InWorkItemActivityPlanFile(Guid workItemId, Guid documentId)
         {
             PassContext(_service, _context);
@@ -228,6 +238,7 @@ namespace intapscamis.camis.domain.Farms
             PassContext(_service, _context);
             return _service.InWorkItemOperatorPhoto(workItemId, photoId);
         }
+
         public Document InWorkItemActivityPlanFileForPlanUpdate(Guid workItemId, Guid documentId)
         {
             PassContext(_service, _context);
@@ -259,7 +270,8 @@ namespace intapscamis.camis.domain.Farms
                 PassContext(_farmRegistrationWorkflow, _context);
                 _farmRegistrationWorkflow.ConfigureMachine(workflowId);
 
-                _farmRegistrationWorkflow.Fire(_farmRegistrationWorkflow.Workflow.Id, FarmRegistrationWorkflow.ParameterizedTriggers.Save, body,
+                _farmRegistrationWorkflow.Fire(_farmRegistrationWorkflow.Workflow.Id,
+                    FarmRegistrationWorkflow.ParameterizedTriggers.Save, body,
                     description ?? "Save a farm registration.",
                     null);
             });
@@ -267,7 +279,7 @@ namespace intapscamis.camis.domain.Farms
 
         public Guid RequestNewFarmRegistration(FarmRequest body, string description)
         {
-                return Transact(_context, t =>
+            return Transact(_context, t =>
             {
                 PassContext(_farmRegistrationWorkflow, _context);
                 _farmRegistrationWorkflow.ConfigureMachine();
@@ -289,7 +301,8 @@ namespace intapscamis.camis.domain.Farms
                 PassContext(_farmRegistrationWorkflow, _context);
                 _farmRegistrationWorkflow.ConfigureMachine(workflowId);
 
-                _farmRegistrationWorkflow.Fire(_farmRegistrationWorkflow.Workflow.Id, FarmRegistrationWorkflow.ParameterizedTriggers.Cancel,
+                _farmRegistrationWorkflow.Fire(_farmRegistrationWorkflow.Workflow.Id,
+                    FarmRegistrationWorkflow.ParameterizedTriggers.Cancel,
                     description ?? "Cancel a farm registration.",
                     null);
             });
@@ -302,7 +315,8 @@ namespace intapscamis.camis.domain.Farms
                 PassContext(_farmRegistrationWorkflow, _context);
                 _farmRegistrationWorkflow.ConfigureMachine(workflowId);
 
-                _farmRegistrationWorkflow.Fire(_farmRegistrationWorkflow.Workflow.Id, FarmRegistrationWorkflow.ParameterizedTriggers.Request, body,
+                _farmRegistrationWorkflow.Fire(_farmRegistrationWorkflow.Workflow.Id,
+                    FarmRegistrationWorkflow.ParameterizedTriggers.Request, body,
                     description ?? "Request a farm registration.",
                     null);
             });
@@ -315,7 +329,8 @@ namespace intapscamis.camis.domain.Farms
                 PassContext(_farmRegistrationWorkflow, _context);
                 _farmRegistrationWorkflow.ConfigureMachine(workflowId);
 
-                _farmRegistrationWorkflow.Fire(_farmRegistrationWorkflow.Workflow.Id, FarmRegistrationWorkflow.ParameterizedTriggers.Reject,
+                _farmRegistrationWorkflow.Fire(_farmRegistrationWorkflow.Workflow.Id,
+                    FarmRegistrationWorkflow.ParameterizedTriggers.Reject,
                     description ?? "Reject a farm registration request.",
                     null);
             });
@@ -328,7 +343,8 @@ namespace intapscamis.camis.domain.Farms
                 PassContext(_farmRegistrationWorkflow, _context);
                 _farmRegistrationWorkflow.ConfigureMachine(workflowId);
 
-                _farmRegistrationWorkflow.Fire(_farmRegistrationWorkflow.Workflow.Id, FarmRegistrationWorkflow.ParameterizedTriggers.Approve,
+                _farmRegistrationWorkflow.Fire(_farmRegistrationWorkflow.Workflow.Id,
+                    FarmRegistrationWorkflow.ParameterizedTriggers.Approve,
                     description ?? "Approve a farm registration request.",
                     null);
             });
@@ -359,7 +375,8 @@ namespace intapscamis.camis.domain.Farms
                 PassContext(_farmModificationWorkflow, _context);
                 _farmModificationWorkflow.ConfigureMachine(workflowId);
 
-                _farmModificationWorkflow.Fire(_farmModificationWorkflow.Workflow.Id, FarmModificationWorkflow.ParameterizedTriggers.Cancel,
+                _farmModificationWorkflow.Fire(_farmModificationWorkflow.Workflow.Id,
+                    FarmModificationWorkflow.ParameterizedTriggers.Cancel,
                     description ?? "Cancel a farm modification.",
                     null);
             });
@@ -372,7 +389,8 @@ namespace intapscamis.camis.domain.Farms
                 PassContext(_farmModificationWorkflow, _context);
                 _farmModificationWorkflow.ConfigureMachine(workflowId);
 
-                _farmModificationWorkflow.Fire(_farmModificationWorkflow.Workflow.Id, FarmModificationWorkflow.ParameterizedTriggers.Request, body,
+                _farmModificationWorkflow.Fire(_farmModificationWorkflow.Workflow.Id,
+                    FarmModificationWorkflow.ParameterizedTriggers.Request, body,
                     description ?? "Request a farm modification.",
                     null);
             });
@@ -385,7 +403,8 @@ namespace intapscamis.camis.domain.Farms
                 PassContext(_farmModificationWorkflow, _context);
                 _farmModificationWorkflow.ConfigureMachine(workflowId);
 
-                _farmModificationWorkflow.Fire(_farmModificationWorkflow.Workflow.Id, FarmModificationWorkflow.ParameterizedTriggers.Reject,
+                _farmModificationWorkflow.Fire(_farmModificationWorkflow.Workflow.Id,
+                    FarmModificationWorkflow.ParameterizedTriggers.Reject,
                     description ?? "Reject a farm modification request.",
                     null);
             });
@@ -398,7 +417,8 @@ namespace intapscamis.camis.domain.Farms
                 PassContext(_farmModificationWorkflow, _context);
                 _farmModificationWorkflow.ConfigureMachine(workflowId);
 
-                _farmModificationWorkflow.Fire(_farmModificationWorkflow.Workflow.Id, FarmModificationWorkflow.ParameterizedTriggers.Approve,
+                _farmModificationWorkflow.Fire(_farmModificationWorkflow.Workflow.Id,
+                    FarmModificationWorkflow.ParameterizedTriggers.Approve,
                     description ?? "Approve a farm modification request.",
                     null);
             });
@@ -429,7 +449,8 @@ namespace intapscamis.camis.domain.Farms
                 PassContext(_farmDeletionWorkflow, _context);
                 _farmDeletionWorkflow.ConfigureMachine(workflowId);
 
-                _farmDeletionWorkflow.Fire(_farmDeletionWorkflow.Workflow.Id, FarmDeletionWorkflow.ParameterizedTriggers.Reject,
+                _farmDeletionWorkflow.Fire(_farmDeletionWorkflow.Workflow.Id,
+                    FarmDeletionWorkflow.ParameterizedTriggers.Reject,
                     description ?? "Reject a farm deletion request.",
                     null);
             });
@@ -442,13 +463,14 @@ namespace intapscamis.camis.domain.Farms
                 PassContext(_farmDeletionWorkflow, _context);
                 _farmDeletionWorkflow.ConfigureMachine(workflowId);
 
-                _farmDeletionWorkflow.Fire(_farmDeletionWorkflow.Workflow.Id, FarmDeletionWorkflow.ParameterizedTriggers.Approve,
+                _farmDeletionWorkflow.Fire(_farmDeletionWorkflow.Workflow.Id,
+                    FarmDeletionWorkflow.ParameterizedTriggers.Approve,
                     description ?? "Approve a farm deletion request.",
                     null);
             });
         }
-        
-        
+
+
         public void NewWaitLandAssignment(FarmRequest body, string description)
         {
             Transact(_context, t =>
@@ -456,44 +478,48 @@ namespace intapscamis.camis.domain.Farms
                 PassContext(_landAssignmentWorkflow, _context);
                 _landAssignmentWorkflow.ConfigureMachine();
 
-                var regionCode=_context.SysConfigs.First(e => e.Name.Equals("region_code")).Value;
+                var regionCode = _context.SysConfigs.First(e => e.Name.Equals("region_code")).Value;
                 if (regionCode.Equals("AM"))
                 {
-                    _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id, LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
+                    _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id,
+                        LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
                         description ?? "Parcel locating request sent for farm suppervisor",
                         null);
                 }
                 else
                 {
-                    _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id, LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
+                    _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id,
+                        LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
                         description ?? "Wait for NRLAIS to assign land to this farm.",
                         null);
                 }
             });
         }
-        
+
         public void WaitLandAssignment(Guid workflowId, FarmRequest body, string description)
         {
             Transact(_context, t =>
             {
                 PassContext(_landAssignmentWorkflow, _context);
                 _landAssignmentWorkflow.ConfigureMachine(workflowId);
-                var regionCode=_context.SysConfigs.First(e => e.Name.Equals("region_code")).Value;
+                var regionCode = _context.SysConfigs.First(e => e.Name.Equals("region_code")).Value;
                 if (regionCode.Equals("AM"))
                 {
-                    _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id, LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
+                    _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id,
+                        LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
                         description ?? "Parcel locating request sent for farm suppervisor",
                         null);
                 }
                 else
                 {
-                    _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id, LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
+                    _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id,
+                        LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
                         description ?? "Wait for NRLAIS to assign land to this farm.",
                         null);
                 }
-                
             });
         }
+
         public void ApproveLandAssignment(Guid workflowId, string description)
         {
             Transact(_context, t =>
@@ -503,25 +529,25 @@ namespace intapscamis.camis.domain.Farms
             });
             GetTransferWorkFlows();
         }
+
         public void RejectLandAssignment(Guid workflowId, string description)
         {
             Transact(_context, t =>
             {
                 PassContext(_landBankTransferWorkflow, _context);
                 _landBankTransferWorkflow.RejectLandTransfer(workflowId, description);
-               
             });
         }
+
         public void RerequestLandAssignment(Guid workflowId, FarmRequest body, string description)
         {
             Transact(_context, t =>
             {
                 PassContext(_landBankTransferWorkflow, _context);
-                _landBankTransferWorkflow.RerequestApproval(workflowId,body, description);
-               
+                _landBankTransferWorkflow.RerequestApproval(workflowId, body, description);
             });
         }
-        
+
         public int GetTransferStatus(Guid workflowId)
         {
             return Transact(_context, t =>
@@ -596,6 +622,71 @@ namespace intapscamis.camis.domain.Farms
             {
                 GetTransferStatus(wf.Id);
             }
+        }
+
+        public Document InWorkItemContractCancellationDoc(Guid workItemId, Guid documentId)
+        {
+            PassContext(_service, _context);
+            return _service.InWorkItemContractCancellationDoc(workItemId, documentId);
+        }
+
+        public void RequestContractCancellation(Guid workflowId, ContractCancellationRequest body, string description)
+        {
+            Transact(_context, t =>
+            {
+                PassContext(_contractCancellationWorkflow, _context);
+                if(workflowId==Guid.Empty)
+                    _contractCancellationWorkflow.ConfigureMachine();
+                else
+                    _contractCancellationWorkflow.ConfigureMachine(workflowId);
+
+                _contractCancellationWorkflow.Fire(_contractCancellationWorkflow.Workflow.Id,
+                    ContractCancellationWorkflow.ParameterizedTriggers.Request, body,
+                    description ?? "Contract Cancellation Request for FS.",
+                    null);
+            });
+        }
+
+        public void ApproveContractCancellation(Guid workflowId, string description)
+        {
+            Transact(_context, t =>
+            {
+                PassContext(_contractCancellationWorkflow, _context);
+                _contractCancellationWorkflow.ConfigureMachine(workflowId);
+
+                _contractCancellationWorkflow.Fire(_contractCancellationWorkflow.Workflow.Id,
+                    ContractCancellationWorkflow.ParameterizedTriggers.Approve,
+                    description ?? "FS Approved Contract Cancellation.",
+                    null);
+            });
+        }
+
+        public void RejectContractCancellation(Guid workflowId, string description)
+        {
+            Transact(_context, t =>
+            {
+                PassContext(_contractCancellationWorkflow, _context);
+                _contractCancellationWorkflow.ConfigureMachine(workflowId);
+
+                _contractCancellationWorkflow.Fire(_contractCancellationWorkflow.Workflow.Id,
+                    ContractCancellationWorkflow.ParameterizedTriggers.Reject,
+                    description ?? "FS Rejected Contract Cancellation.",
+                    null);
+            });
+        }
+
+        public void CancelContractCancellation(Guid workflowId, string description)
+        {
+            Transact(_context, t =>
+            {
+                PassContext(_contractCancellationWorkflow, _context);
+                _contractCancellationWorkflow.ConfigureMachine(workflowId);
+
+                _contractCancellationWorkflow.Fire(_contractCancellationWorkflow.Workflow.Id,
+                    ContractCancellationWorkflow.ParameterizedTriggers.Cancel,
+                    description ?? "FS/FC Cancel Contract Cancellation.",
+                    null);
+            });
         }
     }
 }

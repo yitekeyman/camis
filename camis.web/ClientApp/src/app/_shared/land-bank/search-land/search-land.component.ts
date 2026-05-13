@@ -84,7 +84,9 @@ export class SearchLandComponent implements OnInit {
     });
 
   }
-
+  getArea(a) {
+    return Math.round(a / 10) / 1000 + ' ha';
+  }
   showLandDetail(landID: string) {
     localStorage.setItem('landType', this.selectedLandType.value);
     localStorage.setItem('inputUpin', this.keyword.value);

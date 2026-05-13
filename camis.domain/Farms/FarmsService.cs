@@ -73,6 +73,8 @@ namespace intapscamis.camis.domain.Farms
         void SetFarmLock(Guid farmId, bool val);
         List<FarmLandResponse2> GetFarmLands(Guid farmId);
         List<Workflow> GetTransferWorkFlows();
+        void CancelContract(ContractCancellationRequest request);
+        Document InWorkItemContractCancellationDoc(Guid workItemId, Guid documentId);
     }
 
     public class FarmsService : CamisService, IFarmsService
@@ -609,15 +611,16 @@ namespace intapscamis.camis.domain.Farms
         {
             var farm = Context.Farm.First(f => f.Id == farmId);
             farm.Locked = false;
+            farm.Status =(int) FarmStatusEnum.Active;
             var certificateDoc = _documentService.CreateDocumentInFolder(Guid.Empty, farmLandRequest.CertificateDoc);
             var leaseContractDoc = _documentService.CreateDocumentInFolder(Guid.Empty,farmLandRequest.LeaseContractDoc);
 
             Context.FarmLand.Add(new FarmLand
             {
-                LandId = farmLandRequest.LandId,
+                LandId = Guid.Parse(farmLandRequest.LandId),
                 CertificateDoc = certificateDoc.Id,
                 LeaseContractDoc = leaseContractDoc.Id,
-                FarmId = farmLandRequest.FarmId,
+                FarmId = Guid.Parse(farmLandRequest.FarmId),
                 SplitIndex = farmLandRequest.SplitIndex,
             });
 
@@ -954,7 +957,54 @@ namespace intapscamis.camis.domain.Farms
 
             return DocumentService.ParseDocument(documentRequest);
         }
+ public Document InWorkItemContractCancellationDoc(Guid workItemId, Guid documentId)
+        {
+            var dataStr = Context.WorkItem.Find(workItemId).Data;
+            if (dataStr == null) return null;
+            var data = JsonConvert.DeserializeObject<ActivityPlanRequest>(dataStr);
+            var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
+                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+            var documentRequest = data?.Documents?.First(d => d.Id == documentId);
+            if (documentRequest?.Id != null && documentRequest.File == null)
+            {
+                var doc = _documentService.GetDocument(documentRequest.Id);
+                if (doc != null && doc.File == null)
+                {
+                    var filePath = $"{doc.Id}";
+                    if (!Path.IsPathRooted(filePath))
+                    {
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                            workItemId.ToString(), Path.GetFileName(filePath));
+                    }
 
+                    if (File.Exists(filePath))
+                    {
+                        doc.File = File.ReadAllBytes(filePath);
+                    }
+
+                    return doc;
+                }
+                else
+                {
+                    var filePath = $"{documentRequest.Id}";
+                    if (!Path.IsPathRooted(filePath))
+                    {
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                            workItemId.ToString(), Path.GetFileName(filePath));
+                    }
+
+                    if (File.Exists(filePath))
+                    {
+                        var fileBytes = File.ReadAllBytes(filePath);
+                        documentRequest.File = Convert.ToBase64String(fileBytes);
+                    }
+
+                    return DocumentService.ParseDocument(documentRequest);
+                }
+            }
+
+            return DocumentService.ParseDocument(documentRequest);
+        }
         public FarmResponse GetFarmByLandId(Guid id)
         {
             var farmland = Context.FarmLand.FirstOrDefault(l => l.LandId == id);
@@ -1046,6 +1096,7 @@ namespace intapscamis.camis.domain.Farms
                 var land = Context.LandUpin.First(x=>x.LandId == fl.LandId);
                 var farmland=Context.FarmLand.FirstOrDefault(x=>x.LandId==fl.LandId && x.FarmId==farmId && x.SplitIndex==fl.SplitIndex);
                 l.Area=land.Area??0;
+                l.Geom = GetWktFromGeom(land.Geometry);
                 l.CentroidX=land.CentroidX??0;
                 l.CentroidY=land.CentroidY??0;
                 l.Upin = land.Upin;
@@ -1059,6 +1110,7 @@ namespace intapscamis.camis.domain.Farms
                     var sp=Context.LandSplit.First(x=>x.LandId == fl.LandId && x.Id==fl.SplitIndex);
                     l.Area=sp.Area;
                     l.Upin = land.Upin + "-" + sp.Indexes;
+                    l.Geom = GetWktFromGeom(sp.Geom);
                 }
 
                 l.SplitIndex = fl.SplitIndex;
@@ -1071,6 +1123,51 @@ namespace intapscamis.camis.domain.Farms
             }
             return ret;
         }
+
+        public void CancelContract(ContractCancellationRequest request)
+        {
+            var farm = Context.Farm.First(x => x.Id == Guid.Parse(request.Id));
+            var land=new  List<Land>();
+            var landSplit = new List<LandSplit>();
+            var landRight = new List<LandRight>();
+            var farmLand = new List<FarmLand>();
+            farm.Locked = false;
+            if (request.CancelledRight.Count==request.FarmLands.Count)
+            {
+                farm.Status = (int)FarmStatusEnum.Suspended;
+            }
+            foreach (var cr in request.CancelledRight)
+            {
+                farmLand.Add(Context.FarmLand.First(x=>x.LandId==Guid.Parse(cr.LandId) && x.FarmId==Guid.Parse(cr.FarmId) && x.SplitIndex==cr.SplitIndex));
+                var r = Context.LandRight.First(x =>
+                    x.LandId == Guid.Parse(cr.LandId) && x.FarmId == Guid.Parse(cr.FarmId) &&
+                    x.SplitIndex == cr.SplitIndex);
+                landRight.Add(r);
+                var l = Context.Land.First(x => x.Id == Guid.Parse(cr.LandId));
+                if (cr.SplitIndex > 0)
+                {
+                    var sp = Context.LandSplit.First(x => x.LandId == Guid.Parse(cr.LandId) && x.Id == cr.SplitIndex);
+                    sp.Locked = false;
+                    sp.Status = (int)LandBankFacadeModel.LandTypeEnum.Prepared;
+                    l.LandType=(int)LandBankFacadeModel.LandTypeEnum.PreparedWithSplit;
+                    landSplit.Add(sp);
+                }
+                else
+                {
+                   l.LandType=(int)LandBankFacadeModel.LandTypeEnum.Prepared;
+                   l.Locked = false;
+                }
+                land.Add(l);
+            }
+
+            Context.Farm.Update(farm);
+            Context.FarmLand.RemoveRange(farmLand);
+            Context.LandRight.RemoveRange(landRight);
+            Context.Land.UpdateRange(land);
+            Context.LandSplit.UpdateRange(landSplit);
+            Context.SaveChanges();
+        }
+        
         private FarmResponse ParseFarmResponse(Farm farm)
         {
             var res = new FarmResponse

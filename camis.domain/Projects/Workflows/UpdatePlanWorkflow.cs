@@ -220,7 +220,30 @@ namespace intapscamis.camis.domain.Projects.Workflows
                         File.WriteAllBytes(filePath, fileBytes);
                         doc.File = null;
                     }
+                    else
+                    {
+                        if (doc.Id != null)
+                        {
+                            var filePath2 = $"{doc.Id.ToString()}";
+                            if (!Path.IsPathRooted(filePath2))
+                            {
+                                filePath2 = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, Path.GetFileName(filePath2));
+                            }
+                            if (File.Exists(filePath2))
+                            {
+                                var fileBytes2 = File.ReadAllBytes(filePath2);
+                                doc.File = Convert.ToBase64String(fileBytes2);
+                
+                            }
+                        }
+                           
+                        doc.Id = doc.Id ?? Guid.NewGuid();
+                        var filePath = Path.Combine(fileSavePath, $"{doc.Id}");
 
+                        var fileBytes = Convert.FromBase64String(doc.File);
+                        File.WriteAllBytes(filePath, fileBytes);
+                        doc.File = null;
+                    }
                     doc.OverrideFilePath = $"{pathPrefix}{workItemId}?documentId={doc.Id}";
                 }
             }

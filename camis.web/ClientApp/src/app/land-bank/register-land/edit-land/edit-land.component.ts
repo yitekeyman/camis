@@ -584,6 +584,7 @@ export class EditLandComponent implements OnInit {
 
     let editedLand;
     editedLand = this.editLandFGroup.value;
+    editedLand.locked=false;
 
 // for upins,accessablity and soilTests: mapping as the api needs and filtering all null values
     editedLand.uPINs = editedLand.uPINs.map((upins) => upins + '');

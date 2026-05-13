@@ -7,10 +7,12 @@
             <h5><i class="ti ti-device-desktop-analytics"></i> &nbsp;&nbsp;Report the Progress</h5>
           </div>
           <div class="col-md-8 pb-0 align-right">
-            <div  *ngIf="activityPlan && activityPlan.id">
-              <a class="btn btn-custom-light me-2" [href]="urlPrefix + 'Report/PlanForm/'+ activityPlan.id" target="_blank">Paper
+            <div *ngIf="activityPlan && activityPlan.id">
+              <a class="btn btn-custom-light me-2" [href]="urlPrefix + 'Report/PlanForm/'+ activityPlan.id"
+                 target="_blank">Paper
                 Form</a>
-              <button *ngIf="loginRole==='10'" type="button" class="btn btn-custom me-2" (click)="cancelProgressReport()">
+              <button *ngIf="loginRole==='10'" type="button" class="btn btn-custom me-2"
+                      (click)="cancelProgressReport()">
                 Cancel Report
               </button>
               <button *ngIf="loginRole==='10'" type="button" class="btn btn-custom" (click)="encodeProgressReport()"
@@ -42,58 +44,64 @@
         <h5>Progress Report</h5>
       </div>
       <div class="card-body p-1">
-        <div class="col-md-4">
-          <div class="form-group">
-            <label class="control-label" for="progress-status">Status *:</label>
-            <select [(ngModel)]="activityPlan.reportStatusId" class="form-select input-sm" id="progress-status"
-                    [disabled]="readonlyReporting">
-              <option *ngFor="let statusType of statusTypes" [value]="statusType.id">{{ statusType.name }}</option>
-            </select>
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <label class="control-label" for="progress-status">Status *:</label>
+              <select [(ngModel)]="activityPlan.reportStatusId" class="form-select input-sm" id="progress-status"
+                      [disabled]="readonlyReporting">
+                <option *ngFor="let statusType of statusTypes" [value]="statusType.id">{{ statusType.name }}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="control-label" for="progress-time">Report Date *:</label>
+              <input [(ngModel)]="activityPlan.reportDate" type="date" class="form-control input-sm" id="progress-time"
+                     [readonly]="readonlyReporting">
+            </div>
+            <div class="form-group">
+              <label class="control-label" for="progress-input-type">Progress Input Type *:</label>
+              <select [(ngModel)]="activityPlan.isAdditional" class="form-select input-sm" id="progress-input-type"
+                      [disabled]="readonlyReporting">
+                <option [value]="false">Cumulative</option>
+                <option [value]="true">Additional</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="control-label" for="progress-note">Note *:</label>
+              <textarea [(ngModel)]="activityPlan.reportNote"  class="form-control input-sm" id="progress-note"
+                        [readonly]="readonlyReporting"></textarea>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="control-label" for="progress-time">Report Date *:</label>
-            <input [(ngModel)]="activityPlan.reportDate" type="date" class="form-control input-sm" id="progress-time"
-                   [readonly]="readonlyReporting">
+          <div class="col-md-9">
+            <div style="min-height: 30px">
+              <!-- if !readonlyReporting: -->
+              <app-document-selector
+                *ngIf="!readonlyReporting"
+                title="Progress Report Documents"
+                [documents]="activityPlan.reportDocuments"
+                (change)="onDocumentSelectorChange($event)"
+              ></app-document-selector>
+              <!-- else: -->
+              <app-document-list
+                *ngIf="readonlyReporting"
+                title="Progress Report Documents"
+                [documents]="activityPlan.reportDocuments"
+              ></app-document-list>
+            </div>
+
           </div>
-          <div class="form-group">
-            <label class="control-label" for="progress-input-type">Progress Input Type *:</label>
-            <select [(ngModel)]="activityPlan.isAdditional" class="form-select input-sm" id="progress-input-type"
-                    [disabled]="readonlyReporting">
-              <option [value]="false">Cumulative</option>
-              <option [value]="true">Additional</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="control-label" for="progress-note">Note *:</label>
-            <textarea [(ngModel)]="activityPlan.reportNote" class="form-control input-sm" id="progress-note"
-                      [readonly]="readonlyReporting"></textarea>
+          <div class="col-md-12">
+            <div *ngIf="activityPlan.reportStatusId && activityPlan.reportStatusId != 3">
+              <app-activities
+                *ngIf="activityPlan && activityPlan.rootActivity"
+                [activity]="activityPlan.rootActivity"
+                [reportingMode]="true"
+                [readonlyReporting]="false"
+              ></app-activities>
+            </div>
           </div>
         </div>
-        <div class="col-md-8">
-          <div style="min-height: 30px">
-            <!-- if !readonlyReporting: -->
-            <app-document-selector
-              *ngIf="!readonlyReporting"
-              title="Progress Report Documents"
-              [documents]="activityPlan.reportDocuments"
-              (change)="onDocumentSelectorChange($event)"
-            ></app-document-selector>
-            <!-- else: -->
-            <app-document-list
-              *ngIf="readonlyReporting"
-              title="Progress Report Documents"
-              [documents]="activityPlan.reportDocuments"
-            ></app-document-list>
-          </div>
-          <div *ngIf="activityPlan.reportStatusId && activityPlan.reportStatusId != 3">
-            <app-activities
-              *ngIf="activityPlan && activityPlan.rootActivity"
-              [activity]="activityPlan.rootActivity"
-              [reportingMode]="true"
-              [readonlyReporting]="false"
-            ></app-activities>
-          </div>
-        </div>
+
       </div>
     </div>
   </div>

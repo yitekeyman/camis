@@ -217,7 +217,8 @@ namespace intapscamis.camis.Controllers
         }
 
 
-        [Roles(UserRoles.FarmClerk, UserRoles.FarmSupervisor, UserRoles.LandAdmin, UserRoles.LandCertificateIssuer, UserRoles.LandAdmin)]
+        [Roles(UserRoles.FarmClerk, UserRoles.FarmSupervisor, UserRoles.LandAdmin, UserRoles.LandCertificateIssuer,
+            UserRoles.LandAdmin)]
         [HttpGet]
         public IActionResult LastWorkItem(string id)
         {
@@ -349,7 +350,7 @@ namespace intapscamis.camis.Controllers
             }
         }
 
-       // [Roles(UserRoles.FarmClerk)]
+        // [Roles(UserRoles.FarmClerk)]
         [HttpPost]
         public IActionResult CancelFarmRegistration(string id, string description)
         {
@@ -609,6 +610,7 @@ namespace intapscamis.camis.Controllers
                 return StatusCode(500, new { success = false, message = e.Message });
             }
         }
+
         [Roles(UserRoles.LandAdmin, UserRoles.FarmSupervisor)]
         [HttpPut]
         public IActionResult ApproveLandAssignment(string id, string description)
@@ -625,6 +627,7 @@ namespace intapscamis.camis.Controllers
                 return StatusCode(500, new { success = false, message = e.Message });
             }
         }
+
         [Roles(UserRoles.LandAdmin, UserRoles.FarmSupervisor)]
         [HttpPut]
         public IActionResult RejectLandAssignment(string id, string description)
@@ -641,6 +644,7 @@ namespace intapscamis.camis.Controllers
                 return StatusCode(500, new { success = false, message = e.Message });
             }
         }
+
         [Roles(UserRoles.LandAdmin, UserRoles.LandCertificateIssuer, UserRoles.FarmSupervisor)]
         [HttpPost]
         public IActionResult CertifyLandAssignment(string id, [FromBody] FarmRequest body, string description)
@@ -657,6 +661,7 @@ namespace intapscamis.camis.Controllers
                 return StatusCode(500, new { success = false, message = e.Message });
             }
         }
+
         [HttpGet]
         public IActionResult FarmByLandId(string id)
         {
@@ -671,6 +676,7 @@ namespace intapscamis.camis.Controllers
                 return StatusCode(500, new { success = false, message = e.Message });
             }
         }
+
         [HttpGet]
         public IActionResult GetUPINsWithSplitParts()
         {
@@ -685,6 +691,7 @@ namespace intapscamis.camis.Controllers
                 return StatusCode(500, new { success = false, message = e.Message });
             }
         }
+
         [HttpGet]
         public IActionResult GetSplitPartsByUpin(string upid)
         {
@@ -699,13 +706,14 @@ namespace intapscamis.camis.Controllers
                 return StatusCode(500, new { success = false, message = e.Message });
             }
         }
+
         [HttpGet]
         public IActionResult GetLandRightsByLandIdandFarmId(string landId, string farmId, int? partId = 0)
         {
             try
             {
                 _facade.SetSession(GetSession());
-                return Json(_facade.GetLandRightsByLandIdandFarmId(Guid.Parse(landId),Guid.Parse(farmId), partId ));
+                return Json(_facade.GetLandRightsByLandIdandFarmId(Guid.Parse(landId), Guid.Parse(farmId), partId));
             }
             catch (Exception e)
             {
@@ -713,6 +721,7 @@ namespace intapscamis.camis.Controllers
                 return StatusCode(500, new { success = false, message = e.Message });
             }
         }
+
         [HttpGet]
         public IActionResult GetAllLandRightsByLandId(string landId)
         {
@@ -727,6 +736,7 @@ namespace intapscamis.camis.Controllers
                 return StatusCode(500, new { success = false, message = e.Message });
             }
         }
+
         [HttpGet]
         public IActionResult GetAllLandRightsByFarmId(string farmId)
         {
@@ -741,6 +751,7 @@ namespace intapscamis.camis.Controllers
                 return StatusCode(500, new { success = false, message = e.Message });
             }
         }
+
         [HttpGet]
         public IActionResult GetFarmLandByFarmId(string id)
         {
@@ -748,6 +759,89 @@ namespace intapscamis.camis.Controllers
             {
                 _facade.SetSession(GetSession());
                 return Json(_facade.GetFarmLands(Guid.Parse(id)));
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult InWorkItemContractCancellationDoc(string id, string documentId)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                var doc = _facade.InWorkItemContractCancellationDoc(id.ToGuid(), documentId.ToGuid());
+                return File(doc.File, doc.Mimetype, null); // the filename is null to support in-browser view
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult RequestContractCancellation(string id, [FromBody] ContractCancellationRequest body,
+            string description)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                if(string.IsNullOrEmpty(id))
+                    id=Guid.Empty.ToString();
+                _facade.RequestContractCancellation(id.ToGuid(), body, description);
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+
+        [HttpPut]
+        public IActionResult ApproveContractCancellation(string id, string description)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                _facade.ApproveContractCancellation(id.ToGuid(), description);
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+
+        [HttpPut]
+        public IActionResult RejectContractCancellation(string id, string description)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                _facade.RejectContractCancellation(id.ToGuid(), description);
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+
+        [HttpPut]
+        public IActionResult CancelContractCancellation(string id, string description)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                _facade.CancelContractCancellation(id.ToGuid(), description);
+                return Json(new { success = true });
             }
             catch (Exception e)
             {

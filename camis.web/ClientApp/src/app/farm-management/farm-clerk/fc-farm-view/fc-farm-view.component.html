@@ -7,7 +7,7 @@
             <h5><i class="ti ti-tractor"></i>&nbsp;&nbsp;Commercial Farm & Investment Details</h5>
           </div>
           <div class="col-md-6 " style="text-align: right">
-            <div class="btn-group" *ngIf="loginRole==='2'">
+            <div class="btn-group" *ngIf="loginRole==='2' && farm && !farm.locked">
               <button class="btn btn-custom dropdown-toggle" type="button" data-bs-toggle="dropdown"
                       aria-expanded="false">
                 Actions&nbsp;&nbsp;<i class="ti ti-caret-down"></i>
@@ -17,10 +17,13 @@
                   Farm</a></li>
                 <li><a class="dropdown-item" href="javascript:" (click)="newFarmModification(farm.id)">Edit
                   Investment</a></li>
+                <li><a class="dropdown-item" href="javascript:" (click)="newUpdatePlan(plan.id)"> Update Plan</a></li>
                 <li>
                   <hr class="dropdown-divider">
                 </li>
-                <li><a class="dropdown-item" href="javascript:" (click)="newUpdatePlan(plan.id)"> Update Plan</a></li>
+
+                <li *ngIf="[4,5,8].includes(farm.status.id)"><a class="dropdown-item" href="javascript:" (click)="CancelContBtnClick()">Cancel Contract</a></li>
+                <li *ngIf="[4,5,6,7,8].includes(farm.status.id)"><a class="dropdown-item" href="javascript:" (click)="newUpdatePlan(plan.id)"> Renew/Modify Contract</a></li>
               </ul>
             </div>
           </div>
@@ -36,3 +39,14 @@
 
 </div>
 
+<div class="modal fade" [class.show]="showCancellationForm" [style.display]="showCancellationForm ? 'block' : 'none'"
+     id="resetPassModal" tabindex="-1" aria-labelledby="resetPassModalLabel" aria-hidden="true">
+  <div class="modal-dialog" style="max-width: 95%">
+    <div class="modal-content">
+     <app-contract-cancellation-form *ngIf="showCancellationForm" [farmId]="farmId" [landId]="landId" [splitIndex]="splitIndex"  (closeEditForm)="closeForm($event)"  (reload)="reloadPage($event)"></app-contract-cancellation-form>
+    </div>
+  </div>
+</div>
+
+<!-- Backdrop -->
+<div class="modal-backdrop fade show" *ngIf="showCancellationForm" (click)="closeForm(true)"></div>

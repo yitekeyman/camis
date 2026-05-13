@@ -64,7 +64,10 @@ const routes: Routes = [{
       path: 'fs/plan/update/:workflowId',
       loadComponent: () => import('./farm-supervisor/fs-update-plan/fs-update-plan.component').then((c) => c.FsUpdatePlanComponent)
     },
-
+    {
+      path: 'task/contract-cancellation/:workflowId',
+      loadComponent: () => import('./fm-cancel-contract/cancel-contract.component').then((c) => c.CancelContractComponent)
+    }
   ]
 }];
 

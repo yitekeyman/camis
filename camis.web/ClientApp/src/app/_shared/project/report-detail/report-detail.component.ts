@@ -41,11 +41,18 @@ export class ReportDetailComponent implements OnInit {
     this.keyCase.camelCase(this.report); // intentional repetition
 
     this.api.calculateResourceProgress(this.report.rootActivityId, this.report.reportTime).subscribe(
-      resourceProgresses => this.resourceProgresses = resourceProgresses, dialog.error);
+      resourceProgresses => {
+        this.keyCase.camelCase(resourceProgresses);
+        this.resourceProgresses = resourceProgresses
+      }, dialog.error);
     this.api.calculateOutcomeProgress(this.report.rootActivityId, this.report.reportTime).subscribe(
-      outcomeProgresses => this.outcomeProgresses = outcomeProgresses, dialog.error);
+      outcomeProgresses => {
+        this.keyCase.camelCase(outcomeProgresses)
+        this.outcomeProgresses = outcomeProgresses
+      }, dialog.error);
 
     this.api.getPlanFromRootActivity(this.report.rootActivityId).subscribe(plan => {
+      this.keyCase.camelCase(plan);
       this.plan = plan;
       this.calcTimes();
       this.loading = false;

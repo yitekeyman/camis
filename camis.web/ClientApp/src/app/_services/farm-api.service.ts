@@ -264,4 +264,33 @@ export class FarmApiService {
     //return this.api.get(`Farms/GetFarmLandByFarmId/${id}`);
     return this.api.get(`Farms/GetFarmLandByFarmId/${id}`);
   }
+
+  requestContractCancellation(wfid:string, body:any, message: string | null): Observable<any> {
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Farms/RequestContractCancellation/${wfid}`, body,{params});
+  }
+  approveContractCancellation(workflowId: string, message: string | null): Observable<any> {
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Farms/ApproveContractCancellation/${workflowId}`, null,{params});
+  }
+  rejectContractCancellation(workflowId: string, message: string | null): Observable<any> {
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Farms/RejectContractCancellation/${workflowId}`, null,{params});
+  }
+  cancelContractCancellation(workflowId: string, message: string | null): Observable<any> {
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Farms/CancelContractCancellation/${workflowId}`, null,{params});
+  }
 }

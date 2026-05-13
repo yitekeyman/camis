@@ -34,8 +34,8 @@
         <div *ngIf="!loading" style="padding-bottom: 60px">
           <div class="row">
             <div class="col-md-4">
-              <div class="card p-2">
-                <div class="card-header p-2">
+              <div class="card p-0">
+                <div class="card-header p-0">
                   <h5>Progress Report</h5>
                 </div>
                 <div class="card-body p-0">
@@ -85,6 +85,9 @@
                 ></app-document-list>
               </div>
 
+
+            </div>
+            <div class="col-md-12">
               <div *ngIf="activityPlan.reportStatusId && activityPlan.reportStatusId != 3">
                 <app-activities
                   *ngIf="activityPlan && activityPlan.rootActivity"

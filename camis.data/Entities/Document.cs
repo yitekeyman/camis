@@ -26,7 +26,7 @@ namespace intapscamis.camis.data.Entities
         public int? Type { get; set; }
         public long? Aid { get; set; }
         public string Filename { get; set; }
-        public byte[] File { get; set; }
+        public byte[] File { get; set; } = null;
         public string OverrideFilePath { get; set; }
 
         public DocumentType TypeNavigation { get; set; }

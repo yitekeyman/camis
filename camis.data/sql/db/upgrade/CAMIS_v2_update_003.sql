@@ -177,3 +177,9 @@ ALTER TABLE frm.farm_land
     NOT VALID;
 
 --20260506 end upgrade
+
+--add workflowType for contract cancellation and renewal 
+
+INSERT INTO wf.workflow_type(
+    id, name, description)
+VALUES (12, 'Contract Cancellation', 'Farm Contract Cancellation Workflow'), (13, 'Contract Renewal', 'Farm Contract Renewal/Modification Workflow');

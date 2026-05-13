@@ -40,7 +40,15 @@ loginRole='0';
       dialog.close();
     }, dialog.error);
   }
+searchFarm(skip: number, take=10) {
+  return this.api.searchFarms(this.term, skip, take).subscribe(farmsPaginator => {
 
+    this.keyCase.camelCase(farmsPaginator);
+    this.totalFarms = farmsPaginator.totalSize;
+    this.farms = this.farms.slice(0, skip).concat(farmsPaginator.items);
+    this.loading = false;
+  }, dialog.error);
+}
 
   newFarmRegistration() {
     return this.router.navigate([`farm-management/fc/farm/registration/new`]);

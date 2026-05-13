@@ -64,7 +64,7 @@ import com.android.build.OutputFile
  *   // for example, you might want to remove it from here.
  *   inputExcludes: ["android/**", "ios/**"],
  *
- *   // override which node gets called and with what additional arguments
+ *   // override which node gets called and what additional arguments
  *   nodeExecutableAndArgs: ["node"],
  *
  *   // supply additional arguments to the packager
@@ -100,16 +100,22 @@ def enableSeparateBuildPerCPUArchitecture = true
 def enableProguardInReleaseBuilds = false
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    // Updated to support Android 10+ (API 29). Use latest stable SDK (34) for best compatibility.
+    compileSdkVersion 34
+    buildToolsVersion "34.0.0"
 
     defaultConfig {
         applicationId "com.camismobile"
-        minSdkVersion 16
-        targetSdkVersion 22
+        // Keep minSdkVersion as low as needed, but Android 10+ is API 29.
+        // However, to actually *support* Android 10, we only need targetSdkVersion >= 29.
+        // You can raise minSdkVersion to 21 (Lollipop) if you want, but 16 is kept for legacy devices.
+        minSdkVersion 21   // Android 5.0 – recommended minimum for modern RN
+        targetSdkVersion 34 // Android 14 (API 34) – fully supports Android 10+
+
         versionCode 1
         versionName "1.0"
     }
+
     signingConfigs {
         release {
             if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
@@ -120,6 +126,7 @@ android {
             }
         }
     }
+
     splits {
         abi {
             reset()
@@ -128,6 +135,7 @@ android {
             include "armeabi-v7a", "x86"
         }
     }
+
     buildTypes {
         release {
             minifyEnabled enableProguardInReleaseBuilds
@@ -135,6 +143,7 @@ android {
             signingConfig signingConfigs.release
         }
     }
+
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
@@ -151,18 +160,21 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-splash-screen')
-    compile project(':react-native-keychain')
-    compile project(':react-native-i18n')
-    compile project(':react-native-image-picker')
-    compile fileTree(dir: "libs", include: ["*.jar"])
-    compile "com.android.support:appcompat-v7:23.0.1"
-    compile "com.facebook.react:react-native:+"  // From node_modules
+    // Updated: 'compile' is deprecated, use 'implementation'
+    implementation project(':react-native-splash-screen')
+    implementation project(':react-native-keychain')
+    implementation project(':react-native-i18n')
+    implementation project(':react-native-image-picker')
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+
+    // Migrated from com.android.support to AndroidX (required for modern SDKs)
+    implementation "androidx.appcompat:appcompat:1.6.1"
+    implementation "com.facebook.react:react-native:+"  // From node_modules
 }
 
 // Run this once to be able to run the application with BUCK
 // puts all compile dependencies into folder libs for BUCK to use
 task copyDownloadableDepsToLibs(type: Copy) {
-    from configurations.compile
+    from configurations.implementation
     into 'libs'
 }

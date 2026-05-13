@@ -13,4 +13,32 @@
   <ItemGroup>
     <ProjectReference Include="..\camis.domain\camis.domain.csproj" />
   </ItemGroup>
+	
+  <ItemGroup>
+    <AdditionalFiles Include="Views\Report\non_performance\FarmListByAreaAndDate.cshtml" />
+    <AdditionalFiles Include="Views\Report\non_performance\LandAreaReport.cshtml" />
+    <AdditionalFiles Include="Views\Report\non_performance\LandListReport.cshtml" />
+    <AdditionalFiles Include="Views\Report\non_performance\LandTransferredAtDifferentTimes.cshtml" />
+    <AdditionalFiles Include="Views\Report\non_performance\LandTransferredByFarmSize.cshtml" />
+    <AdditionalFiles Include="Views\Report\non_performance\LeaseAmountByInvestmentType.cshtml" />
+    <AdditionalFiles Include="Views\Report\non_performance\ListOfAllFarmOperators.cshtml" />
+    <AdditionalFiles Include="Views\Report\non_performance\ListOfCommercialFarmOwners.cshtml" />
+    <AdditionalFiles Include="Views\Report\non_performance\ListOfFarmOwnersByTypeAndSize.cshtml" />
+    <AdditionalFiles Include="Views\Report\non_performance\OperatorSummaryByOrigin.cshtml" />
+    <AdditionalFiles Include="Views\Report\non_performance\SummaryOfInvestmentByInvestorOrigin.cshtml" />
+    <AdditionalFiles Include="Views\Report\non_performance\SummaryOfSubLeasedLandByLocation.cshtml" />
+    <AdditionalFiles Include="Views\Report\non_performance\WaterSourceSummary.cshtml" />
+    <AdditionalFiles Include="Views\Report\performance\CampingFacilitiesList.cshtml" />
+    <AdditionalFiles Include="Views\Report\performance\CampingFacilitySummary.cshtml" />
+    <AdditionalFiles Include="Views\Report\performance\ContractFarmingList.cshtml" />
+    <AdditionalFiles Include="Views\Report\performance\ContractFarmingSummary.cshtml" />
+    <AdditionalFiles Include="Views\Report\performance\CropProductionList.cshtml" />
+    <AdditionalFiles Include="Views\Report\performance\FarmMachineryList.cshtml" />
+    <AdditionalFiles Include="Views\Report\performance\InvestmentStatusSummary.cshtml" />
+    <AdditionalFiles Include="Views\Report\performance\JobCreationListByProfession.cshtml" />
+    <AdditionalFiles Include="Views\Report\performance\JobCreationListByType.cshtml" />
+    <AdditionalFiles Include="Views\Report\performance\LandDevelopmentProgressList.cshtml" />
+    <AdditionalFiles Include="Views\Report\performance\LandDevelopmentProgressSummary.cshtml" />
+    <AdditionalFiles Include="Views\Report\performance\TimeSeriesInvestorCropProduction.cshtml" />
+  </ItemGroup>
 </Project>

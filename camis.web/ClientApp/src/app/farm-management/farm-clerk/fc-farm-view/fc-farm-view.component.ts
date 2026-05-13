@@ -8,10 +8,14 @@ import {CommonModule} from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {FarmDetailComponent} from "../../../_shared/farm/farm-detail/farm-detail.component";
 import {ObjectKeyCasingService} from "../../../_services/object-key-casing.service";
+import {ResetPassComponent} from "../../../admin/userManagement/resetPassword/reset-pass.component";
+import {
+  ContractCancellationFormComponent
+} from "../../fm-cancel-contract/contract-cancellation-form/contract-cancellation-form.component";
 
 @Component({
   selector: 'app-fc-farm-view',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, FarmDetailComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, FarmDetailComponent, ContractCancellationFormComponent],
   templateUrl: 'fc-farm-view.component.html'
 })
 export class FcFarmViewComponent implements OnInit {
@@ -23,6 +27,11 @@ export class FcFarmViewComponent implements OnInit {
 
   plan: any;
   loginRole='0';
+  showCancellationForm = false;
+  landId: string=null;
+  workflowId: string=null;
+  splitIndex:number=0;
+  data=null;
 
   constructor (private api: FarmApiService, private projectApi: ProjectApiService, private router: Router, private ar: ActivatedRoute, private keyCase:ObjectKeyCasingService) {
     this.loginRole=localStorage.getItem("role");
@@ -92,5 +101,17 @@ export class FcFarmViewComponent implements OnInit {
       return dialog.error(err);
     });
   }
-
+  public CancelContBtnClick(): void {
+    this.showCancellationForm = true;
+  }
+  public closeForm(close: boolean): void {
+    if (close) {
+      this.showCancellationForm=false;
+    }
+  }
+  public reloadPage(rel:boolean){
+    if(rel){
+      window.location.reload();
+    }
+  }
 }

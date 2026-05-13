@@ -146,7 +146,7 @@ namespace intapscamis.camis.domain.Farms.StateMachines
 
             data.FarmLands = new List<FarmLandRequest>
             {
-                new FarmLandRequest {FarmId = data.Id.ToGuid(), LandId = data.LandTransferRequest.landID, SplitIndex = data.LandTransferRequest.landPart??0}
+                new FarmLandRequest {FarmId = data.Id, LandId = data.LandTransferRequest.landID.ToString(), SplitIndex = data.LandTransferRequest.landPart??0}
             };
 
             ConfigureAndAddWorkItem(UserRoles.FarmSupervisor, data, description, assignedUser, transition);

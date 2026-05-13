@@ -236,15 +236,15 @@
                   </span>
                   <span style="display: inline-block; width: 15px"></span>
                   <span style="width: 90px; display: flex">
-                    <button (click)="removeDetail(create_varTargets, create_varWeights, detail.variableId)" class="btn btn-danger" style="width: 100%">
-                      <i class="fa fa-times"></i>
+                    <button (click)="removeDetail(create_varTargets, create_varWeights, detail.variableId)" class="btn btn-danger btn-sm" >
+                      <i class="ti ti-trash"></i>
                     </button>
                   </span>
                 </p>
               </div>
             </div>
 
-            <div class="bg-info" style="padding: 15px 15px 5px; border-left: 4px solid #337ab7">
+            <div class="" style="padding: 15px 15px 5px; border-left: 4px solid #337ab7">
               <div style="display: flex">
                 <span class="text-muted align-right" style="width: 75px">Add a New Variable: </span>
                 <span style="display: inline-block; width: 15px"></span>
@@ -342,7 +342,7 @@
                         style="width: 100%; margin: 0"
                         [disabled]="!create_newVar || !create_newVarName || !create_newVarTarget || !create_newVarWeight"
                       >
-                        <i class="fa fa-plus"></i>&nbsp; Add Variable
+                        <i class="ti ti-plus"></i>&nbsp; Add Variable
                       </button>
                     </span>
                   </p>
@@ -673,12 +673,12 @@
           </div>
         </div>
         <div class="modal-footer" *ngIf="!readonlyReporting">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancel</button>
           <button
             (click)="setProgress()"
             type="button"
             class="btn btn-primary"
-            data-dismiss="modal"
+            data-bs-dismiss="modal"
             [disabled]="!activity.progressStatusId"
           >
             Set Progress

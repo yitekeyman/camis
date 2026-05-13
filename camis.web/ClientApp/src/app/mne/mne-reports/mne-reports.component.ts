@@ -61,7 +61,7 @@ export class MneReportsComponent implements OnInit {
 
 
   openDetail(reportId: string) {
-    return this.router.navigate([`mne/task/report/${reportId}`]);
+    return this.router.navigate([`mne/report/${reportId}`]);
   }
 
 }

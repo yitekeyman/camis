@@ -57,7 +57,8 @@ export class NewLandFormComponent implements OnInit {
   file_data?: string;
   file_mime?: string;
   land = {
-    uploadDocument: [] = []
+    uploadDocument: [] = [],
+    landSplit:[]=[],
   };
 
   selectedMoisture = null;
@@ -382,7 +383,7 @@ export class NewLandFormComponent implements OnInit {
   }
 
   async saveNewLand(): Promise<void> {
-    if (!this.validateCurrentStep() || !this.newLandFGroup.valid) {
+    if (!this.validateCurrentStep()) {
       await dialog.error('Please fill all required fields correctly before submitting.');
       return ;
     }
@@ -437,7 +438,9 @@ export class NewLandFormComponent implements OnInit {
     })).filter(res => res.result !== '');
 
     land.uploadDocument = this.land.uploadDocument;
-
+land.locked=false;
+land.landRight=null;
+land.landSplit=this.land.landSplit;
 // making values from the preciptation,temp-low,temp-high and temp-avg into one climate array removing empty rows
     land.climate = [];
     for (let i = 0; i < 12; i++) {

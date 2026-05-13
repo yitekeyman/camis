@@ -28,13 +28,29 @@ namespace intapscamis.camis.domain.Farms.Models
 
         public ICollection<FarmLandRequest> FarmLands { get; set; }=new List<FarmLandRequest>();
         public FarmStatus Status { get; set; } = new FarmStatus();
-       public bool Locked { get; set; }
+        public bool Locked { get; set; }
     }
 
+    public class ContractCancellationRequest
+    {
+        public string Id { get; set; } // read-only
+        public string OperatorId { get; set; } // if it is an existing operator
+        public int TypeId { get; set; }
+        public string ActivityId { get; set; } // not needed from client, read-only
+        public double? InvestedCapital { get; set; }
+        public string Description { get; set; }
+        public int[] OtherTypeIds { get; set; } = { };
+        public IList<CancelledRightRequest> CancelledRight { get; set; }=new List<CancelledRightRequest>();
+        public IList<DocumentRequest> CancellationSupDoc { get; set; }=new List<DocumentRequest>();
+        public ICollection<FarmLandRequest> FarmLands { get; set; }=new List<FarmLandRequest>();
+        public string CancellationReason { get; set; }
+        public FarmStatus Status { get; set; } = new FarmStatus();
+        public bool Locked { get; set; }
+    }
     public class FarmLandRequest
     {
-        public Guid LandId { get; set; }
-        public Guid FarmId { get; set; }
+        public string LandId { get; set; }
+        public string FarmId { get; set; }
 
         public DocumentRequest CertificateDoc { get; set; }=new DocumentRequest();
         public DocumentRequest LeaseContractDoc { get; set; }=new DocumentRequest();
@@ -89,5 +105,20 @@ namespace intapscamis.camis.domain.Farms.Models
 
         public DocumentRequest Document { get; set; }
     }
-    
+
+    public class CancelledRightRequest
+    {
+        public string Id { get; set; }
+        public string LandId { get; set; }
+        public string FarmId { get; set; }
+        public DateTime RightFrom { get; set; }
+        public DateTime RightTo { get; set; }
+        public int RightType { get; set; }
+        public double YearlyRent { get; set; }
+        public double LandSectionArea { get; set; }
+        public int SplitIndex { get; set; }
+        public string CommonTxtUid { get; set; }
+        public string Geom { get; set; }
+        public FarmStatus Status { get; set; } = new FarmStatus();
+    }
 }

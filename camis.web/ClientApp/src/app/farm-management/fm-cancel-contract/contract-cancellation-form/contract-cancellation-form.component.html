@@ -1,0 +1,110 @@
+﻿<div class="row me-0">
+  <div class="col-md-8 pe-0">
+    <div class="modal-header">
+      <h4 class="modal-title" id="landAssignmentDialogLabel">Farm Contract Cancellation Form</h4>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="closeForm()"></button>
+    </div>
+    <div class="modal-body p-2" style="height: 75vh; overflow-y: auto">
+      <div class="form-group">
+        <table class="table">
+          <thead>
+          <tr>
+            <th colspan="4">List of Farm Rights</th>
+          </tr>
+          <tr>
+            <th>
+              <input type="checkbox" class="form-check" (change)="toggleSelectAll($event)" [checked]="isAllSelected()">
+            </th>
+            <th>Land Info</th>
+            <th>Right Info</th>
+            <th>Support Doc</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let farmLand of farmLandRights; index as i">
+            <td><input type="checkbox" class="form-check" [(ngModel)]="farmLand.selected" ></td>
+            <td>
+              <table class="table">
+                <tbody>
+                <tr>
+                  <td><small><b>UPID: </b></small></td>
+                  <td><small>{{ farmLand.upin }} ({{ getFarmStatus(farmLand.rights.status) }})</small></td>
+                </tr>
+                <tr>
+                  <td><small><b>Area: </b></small></td>
+                  <td><small>{{ farmLand.area }}</small></td>
+                </tr>
+                <tr>
+                  <td><small><b>Centroid-X: </b></small></td>
+                  <td><small>{{ farmLand.centroidX }}</small></td>
+                </tr>
+                <tr>
+                  <td><small><b>Centroid-Y: </b></small></td>
+                  <td><small>{{ farmLand.centroidY }}</small></td>
+                </tr>
+                </tbody>
+              </table>
+            </td>
+            <td>
+              <table class="table">
+                <tbody>
+                <tr>
+                  <td><small><b>Right Type: </b></small></td>
+                  <td><small>{{ getRightType(farmLand.rights.rightType) }}</small></td>
+                </tr>
+                <tr>
+                  <td><small><b>Right From: </b></small></td>
+                  <td><small>{{ farmLand.rights.rightFrom | date }}</small></td>
+                </tr>
+                <tr>
+                  <td><small><b>Right To: </b></small></td>
+                  <td><small>{{ farmLand.rights.rightTo | date }}</small></td>
+                </tr>
+                <tr>
+                  <td><small><b>Yearly Amount: </b></small></td>
+                  <td><small>{{ farmLand.rights.yearlyRent | currency:"Br" }}</small></td>
+                </tr>
+                </tbody>
+              </table>
+            </td>
+            <td>
+              <small>
+                <div *ngIf="!farmLand.rights.contractDocument">No lease contract, yet.</div>
+                <app-document-detail *ngIf="farmLand.rights.contractDocument"
+                                     [document]="farmLand.rights.contractDocument"></app-document-detail>
+                <div *ngIf="!farmLand.rights.certificateDocument">No certificate, yet.</div>
+                <app-document-detail *ngIf="farmLand.rights.certificateDocument"
+                                     [document]="farmLand.rights.certificateDocument"></app-document-detail>
+              </small>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="form-group">
+        <label for="cancellationReason">
+          Describe Cancellation Reason:<span class="text-danger">(*)&nbsp;</span>
+          <span class="error-message" *ngIf="submitted && !cancellationModel.cancellationReason">
+            <i class="ti ti-exclamation-circle"></i> Cancellation reason is required
+          </span>
+        </label>
+        <textarea class="form-control" id="cancellationReason" rows="3"
+                  [(ngModel)]="cancellationModel.cancellationReason" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <app-landbank-document-selector title="Upload Cancellation Support Documents"
+                                        [documents]="cancellationModel.cancellationSupDoc"></app-landbank-document-selector>
+      </div>
+    </div>
+
+    <div class="modal-footer right">
+      <button type="button" class="btn btn-default" (click)="closeForm()">Cancel</button>
+      <button type="button" class="btn btn-primary btn-md" (click)="saveCancellation()">Save</button>
+    </div>
+  </div>
+  <div class="col-md-4 p-1">
+    <app-camis-map #camis_map></app-camis-map>
+  </div>
+</div>

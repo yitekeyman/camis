@@ -30,6 +30,7 @@ export class FmPendingTaskComponent implements OnInit {
     {type: 2, states: [1]},
     {type: 3, states: [1]},
     {type: 11, states: [1]},
+    {type: 12, states: [1]},
   ];
   public activeWorkflows: any = [] = [];
   customApi: Observable<any>;
@@ -43,6 +44,7 @@ export class FmPendingTaskComponent implements OnInit {
         { type: 2, states: [0] },
         { type: 3, states: [0] },
         { type: 11, states: [0] },
+        { type: 12, states: [3] },
       ];
     }
     if (this.loginRole === '3') {
@@ -54,6 +56,7 @@ export class FmPendingTaskComponent implements OnInit {
         { type: 11, states: [1] },
         { type: 8, states: [3] },
         { type: 10, states: [4] },
+        { type: 12, states: [2] },
       ];
     }
     if (this.loginRole === '6') {
@@ -291,6 +294,9 @@ export class FmPendingTaskComponent implements OnInit {
         case 11:
           url = `farm-management/fc/plan/update/${e.workflowId}`;
           break;
+        case 12:
+          url = `farm-management/task/contract-cancellation/${e.workflowId}`;
+          break;
         default:
           url = `default/pending-task`;
       }
@@ -317,6 +323,9 @@ export class FmPendingTaskComponent implements OnInit {
               url= `land-bank/task/certification/${e.workflowId}`;
               break;
           }
+          break;
+        case 12:
+          url = `farm-management/task/contract-cancellation/${e.workflowId}`;
           break;
         default:
           url = `default/pending-task`;

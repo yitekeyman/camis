@@ -136,25 +136,25 @@ namespace intapscamis.camis.domain.Documents
         }
         public Document UpdateDocumentFromFolder(Guid id, DocumentRequest data)
         {
-            var existingDoc = GetDocument(id);
+            var doc = ParseDocumentFromFolder(id, data);
+            var doc2 = SaveDocumentAtFolder(doc);
+            var existingDoc = GetDocument(doc2.Id);
             if (existingDoc == null) return null;
-    
-            // Update properties
-            existingDoc.Date = data.Date;
-            existingDoc.Ref = data.Ref;
-            existingDoc.Note = data.Note;
-            existingDoc.Mimetype = data.Mimetype;
-            existingDoc.Type = data.Type;
-            existingDoc.Filename = data.Filename;
+            existingDoc.Date = doc2.Date;
+            existingDoc.Ref = doc2.Ref;
+            existingDoc.Note = doc2.Note;
+            existingDoc.Mimetype = doc2.Mimetype;
+            existingDoc.Type = doc2.Type;
+            existingDoc.Filename = doc2.Filename;
     
             // Save to folder and clear the File property
-            var updatedDoc = SaveDocumentAtFolder(existingDoc);
+            //var updatedDoc = SaveDocumentAtFolder(existingDoc);
     
-            Context.Document.Update(updatedDoc);
-            updatedDoc.Aid = Context.SaveChanges(_session.Username, (int)UserActionType.UpdateDocument).Id;
-            Context.Update(updatedDoc);
+            Context.Document.Update(existingDoc);
+            existingDoc.Aid = Context.SaveChanges(_session.Username, (int)UserActionType.UpdateDocument).Id;
+            Context.Update(existingDoc);
     
-            return updatedDoc;
+            return existingDoc;
         }
         public Document DeleteDocument(Guid id)
         {

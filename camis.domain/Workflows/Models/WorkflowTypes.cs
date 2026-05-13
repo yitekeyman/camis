@@ -12,5 +12,7 @@
         LandUpdate=9,
         LandAssignment = 10,
         PlanUpdate = 11,
+        ContractCancellation = 12,
+        ContractModification = 13,
     }
 }

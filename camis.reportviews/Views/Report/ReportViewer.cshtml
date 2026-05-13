@@ -1,0 +1,168 @@
+﻿
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model intapscamis.camis.domain.Farms.Models.ReportResponseModel
+
+@try
+{
+    <div class="report-title">
+        @switch (Model.Request.SelectedReportType)
+        {
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.SummaryOfLandByLandStatus:
+                <h3>SUMMARY OF LAND BY LAND STATUS</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.ListOfLands:
+                <h3>LIST OF LANDS</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.ListOfCommercialFarmOwners:
+                <h3>LIST OF COMMERCIAL FARM OWNERS</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.AnnualLeaseAmountByAdministrativeLocationInvType:
+                <h3>ANNUAL LEASE AMOUNT BY ADMINISTRATIVE LOCATION AND INVESTMENT TYPE</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.LandTransferredAtDifferentTimes:
+                <h3>LAND TRANSFERRED AT DIFFERENT TIMES</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.LandTransferreToInvestorsByFarmSize:
+                <h3>LAND TRANSFERRED TO INVESTORS BY FARM SIZE</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.SummaryOfAgricultureInvestmentByOriginOfInvestors:
+                <h3>SUMMARY OF INVESTMENT BY ORIGIN OF INVESTORS</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.SummaryOfLandByAdministrativeLocationandWaterSource:
+                <h3>SUMMARY OF LAND BY ADMINISTRATIVE LOCATION AND WATER SOURCE </h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.SummaryOfSubLeasedLandByLocation:
+                <h3>SUMMARY OF SUB LEASED LAND BY LOCATION</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.CropProductionList:
+                <h3>CROP PRODUCTION LIST</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.TimeSeriesInvestorCropProduction:
+                <h3>TIME SERIES INVESTOR CROP PRODUCTION</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.FarmMachineryList:
+                <h3>FARM MACHINERY LIST</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.CampingFacilitesList:
+                <h3>CAMPING FACILITIES LIST</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.CampingFacilitySummary:
+                <h3>CAMPING FACILITIES SUMMARY</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.JobCreationListByProfession:
+                <h3>JOB CREATION SUMMARY BY PROFESSION</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.JobCreationListByType:
+                <h3>JOB CREATION SUMMARY BY TYPE</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.LandDevelopmentProgressList:
+                <h3>LAND DEVELOPMENT PROGRESS LIST</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.LandDevelopmentProgressSummary:
+                <h3>LAND DEVELOPMENT PROGRESS SUMMARY</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.InvstmentStatusSummery:
+                <h3>INVESTMENT STATUS SUMMARY BY LOCATION</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.ContractFarmingList:
+                <h3>CONTRACT FARMING LIST</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.ContractFarmingSummary:
+                <h3>CONTRACT FARMING SUMMARY</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.ListOfAllFarmOperators:
+                <h3>List of All Farm Operators</h3>
+                break;
+            case intapscamis.camis.domain.Farms.Models.ReportTypes.OperatorSummaryByOrigin:
+                <h3>Operator Summary By Origin</h3>
+                break;
+            default:
+                break;
+        }
+    </div>
+    @switch (Model.Request.SelectedReportType)
+    {
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.SummaryOfLandByLandStatus:
+            <partial name="non_performance/LandAreaReport.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.ListOfLands:
+            <partial name="non_performance/LandListReport.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.ListOfCommercialFarmOwners:
+            <partial name="non_performance/ListOfCommercialFarmOwners.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.AnnualLeaseAmountByAdministrativeLocationInvType:
+            <partial name="non_performance/LeaseAmountByInvestmentType.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.LandTransferredAtDifferentTimes:
+            <partial name="non_performance/LandTransferredAtDifferentTimes.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.LandTransferreToInvestorsByFarmSize:
+            <partial name="non_performance/LandTransferredByFarmSize.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.SummaryOfAgricultureInvestmentByOriginOfInvestors:
+            <partial name="non_performance/SummaryOfInvestmentByInvestorOrigin.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.SummaryOfLandByAdministrativeLocationandWaterSource:
+            <partial name="non_performance/WaterSourceSummary.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.SummaryOfSubLeasedLandByLocation:
+            <partial name="non_performance/SummaryOfSubLeasedLandByLocation.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.CropProductionList:
+            <partial name="performance/CropProductionList.cshtml" model="@Model" />
+
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.TimeSeriesInvestorCropProduction:
+            <partial name="performance/TimeSeriesInvestorCropProduction.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.FarmMachineryList:
+            <partial name="performance/FarmMachineryList.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.CampingFacilitesList:
+            <partial name="performance/CampingFacilitiesList.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.CampingFacilitySummary:
+            <partial name="performance/CampingFacilitySummary.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.JobCreationListByProfession:
+            <partial name="performance/JobCreationListByProfession.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.JobCreationListByType:
+            <partial name="performance/JobCreationListByType.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.LandDevelopmentProgressList:
+            <partial name="performance/LandDevelopmentProgressList.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.LandDevelopmentProgressSummary:
+            <partial name="performance/LandDevelopmentProgressSummary.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.InvstmentStatusSummery:
+            <partial name="performance/InvestmentStatusSummary.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.ContractFarmingList:
+            <partial name="performance/ContractFarmingList.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.ContractFarmingSummary:
+            <partial name="performance/ContractFarmingSummary.cshtml" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.ListOfAllFarmOperators:
+            <partial name="non_performance/ListOfAllFarmOperators" model="@Model" />
+            break;
+        case intapscamis.camis.domain.Farms.Models.ReportTypes.OperatorSummaryByOrigin:
+            <partial name="non_performance/OperatorSummaryByOrigin" model="@Model" />
+            break;
+        default:
+            break;
+    }
+}
+catch (Exception ex)
+{
+    {
+        Console.WriteLine(ex.ToString());
+        Console.WriteLine(ex.Message);
+    }
+    <h2>@ex.Message</h2>
+}
+
+

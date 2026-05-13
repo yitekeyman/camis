@@ -283,7 +283,7 @@ namespace intapscamis.camis.domain.Projects
             }
 
             // nanny
-            var childrenActivities = Context.Activity.Where(a => a.ParentActivityId.Equals(activity.Id));
+            var childrenActivities = Context.Activity.Where(a => a.ParentActivityId.Equals(activity.Id)).ToList();
             double totalChildrenProgress = 0;
             double totalChildrenWeight = 0;
             foreach (var childActivity in childrenActivities)
@@ -549,7 +549,7 @@ namespace intapscamis.camis.domain.Projects
             var workItem=_documentService.ExtractWorkItemIdFromOverrideFilePath(documentData.OverrideFilePath);
             var document = isNew
                 ? _documentService.CreateDocumentInFolder(workItem,documentData)
-                : _documentService.UpdateDocumentFromFolder(documentData.Id.Value, documentData);
+                : _documentService.UpdateDocumentFromFolder(workItem, documentData);
             Context.SaveChanges();
             var planDocument = isNew
                 ? new ActivityPlanDocument()

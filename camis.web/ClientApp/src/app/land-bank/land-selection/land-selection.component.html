@@ -103,7 +103,7 @@
               </select>
             </div>
 
-            <div *ngIf="data.landTransferRequest.landID && (landPart?.length>0 && selectedLandPart &&  selectedLandPart>0)">
+            <div *ngIf="(data.landTransferRequest.landID && landPart?.length==0) || (data.landTransferRequest.landID && landPart?.length>0 && selectedLandPart &&  selectedLandPart>0)">
               <hr/>
 
               <div class="form-group">

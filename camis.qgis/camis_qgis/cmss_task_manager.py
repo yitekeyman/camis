@@ -305,7 +305,7 @@ class CMSS2:
     #--------------------------------------------------------------------------
     def logout(self):
         if not(self.logedIn):
-            self.showCriticalMessage('CAMIS Qgis', 'You are not logged in')
+            self.showCriticalMessage('CAMIS-v2 Qgis', 'You are not logged in')
             return
         if not(self.showUserConfirmation('Are you sure you want to logout?')):
             return
@@ -449,7 +449,7 @@ class CMSS2:
 
     def loginAndRun(self):
         if self.logedIn:
-            self.showCriticalMessage('CAMIS Qgis', 'You have already logged in, please logout first')
+            self.showCriticalMessage('CAMIS-v2 Qgis', 'You have already logged in, please logout first')
             return
         self.loginForm = CMSSLoginForm(self, self.afterLogin)
         self.loginForm.show()

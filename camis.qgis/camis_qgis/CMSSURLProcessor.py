@@ -162,6 +162,7 @@ class CMSSURLProcessor:
             self.layer.addFeature(feature)
             self.fid_dict[str(id_val)] = feature.id()
             extents.append(feature.geometry().boundingBox())
+            executeJavaScript(self.page, 'renderSplitParcelsList()')
         self.layer.commitChanges()
         self.layer.startEditing()
 
@@ -183,8 +184,8 @@ class CMSSURLProcessor:
                 f = next(features, None)
                 if f:
                     self.cmss.iface.mapCanvas().setExtent(f.geometry().boundingBox())
- 
-
+       
+        
     # The beforeCommit method has been removed entirely
 
     def onLayerChanged(self, type_val, id_val):

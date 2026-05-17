@@ -804,7 +804,7 @@ namespace intapscamis.camis.domain.Projects
             var data = JsonConvert.DeserializeObject<ActivityPlanRequest>(dataStr);
           
             var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
-                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+                                "/usr/bin/CAMIS/data/docs";
             var doc = data?.ReportDocuments?.First(d => d.Id == documentId);
             if (doc != null)
             {

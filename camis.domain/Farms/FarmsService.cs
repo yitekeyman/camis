@@ -718,7 +718,7 @@ namespace intapscamis.camis.domain.Farms
             if (dataStr == null) return null;
             var data = JsonConvert.DeserializeObject<FarmRequest>(dataStr);
             var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
-                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+                                "/usr/bin/CAMIS/data/docs";
 
             var documentRequest = data?.Registrations?.First(d => d.Id == regId)?.Document;
             if (documentRequest?.Id != null && documentRequest.File == null)
@@ -768,7 +768,7 @@ namespace intapscamis.camis.domain.Farms
             if (dataStr == null) return null;
             var data = JsonConvert.DeserializeObject<FarmRequest>(dataStr);
             var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
-                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+                                "/usr/bin/CAMIS/data/docs";
             var documentRequest = data?.Operator?.Registrations?.First(d => d.Id == regId)?.Document;
             if (documentRequest?.Id != null && documentRequest.File == null)
             {
@@ -817,7 +817,7 @@ namespace intapscamis.camis.domain.Farms
             if (dataStr == null) return null;
             var data = JsonConvert.DeserializeObject<FarmRequest>(dataStr);
             var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
-                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+                                "/usr/bin/CAMIS/data/docs";
             var documentRequest = data?.ActivityPlan?.Documents?.First(d => d.Id == documentId);
             if (documentRequest?.Id != null && documentRequest.File == null)
             {
@@ -866,7 +866,7 @@ namespace intapscamis.camis.domain.Farms
             if (dataStr == null) return null;
             var data = JsonConvert.DeserializeObject<FarmRequest>(dataStr);
             var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
-                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+                                "/usr/bin/CAMIS/data/docs";
             var documentRequest = data?.Operator?.Photo;
             if (documentRequest?.Id != null && documentRequest.File == null)
             {
@@ -915,7 +915,7 @@ namespace intapscamis.camis.domain.Farms
             if (dataStr == null) return null;
             var data = JsonConvert.DeserializeObject<ActivityPlanRequest>(dataStr);
             var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
-                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+                                "/usr/bin/CAMIS/data/docs";
             var documentRequest = data?.Documents?.First(d => d.Id == documentId);
             if (documentRequest?.Id != null && documentRequest.File == null)
             {
@@ -963,7 +963,7 @@ namespace intapscamis.camis.domain.Farms
             if (dataStr == null) return null;
             var data = JsonConvert.DeserializeObject<ActivityPlanRequest>(dataStr);
             var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
-                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+                                "/usr/bin/CAMIS/data/docs";
             var documentRequest = data?.Documents?.First(d => d.Id == documentId);
             if (documentRequest?.Id != null && documentRequest.File == null)
             {

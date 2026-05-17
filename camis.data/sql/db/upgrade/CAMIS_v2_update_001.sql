@@ -1,39 +1,12 @@
 -- Create sequence only if it doesn't exist
-CREATE SEQUENCE IF NOT EXISTS lb.ground_water_id_seq INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 OWNED BY NONE;
+CREATE SEQUENCE IF NOT EXISTS lb.ground_data_id_seq INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 OWNED BY NONE;
 
 -- Ensure the owner is set to postgres
-ALTER SEQUENCE IF EXISTS lb.ground_water_id_seq OWNER TO postgres;
+ALTER SEQUENCE IF EXISTS lb.ground_data_id_seq OWNER TO postgres;
 
 -- Check if the column exists before adding it
-DO $$ BEGIN IF EXISTS (
-    SELECT
-        1
-    FROM
-        information_schema.tables
-    WHERE
-        table_schema = 'lb'
-        AND table_name = 'ground_data'
-) THEN -- Check if the column doesn't exist
-IF NOT EXISTS (
-    SELECT
-        1
-    FROM
-        information_schema.columns
-    WHERE
-        table_schema = 'lb'
-        AND table_name = 'ground_data'
-        AND column_name = 'id'
-) THEN -- Add the column with the sequence as default
-ALTER TABLE
-    lb.ground_data
-ADD
-    COLUMN id integer NOT NULL DEFAULT nextval('lb.ground_water_id_seq' :: regclass);
-
-END IF;
-
-END IF;
-
-END $$;
+ALTER TABLE lb.ground_data
+    ALTER COLUMN id SET DEFAULT nextval('lb.ground_data_id_seq'::regclass);
 
 DO $$ BEGIN IF NOT EXISTS (
     SELECT

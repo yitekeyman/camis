@@ -221,7 +221,7 @@ namespace intapscamis.camis.domain.Documents
         public Document ParseDocumentFromFolder(Guid workItem, DocumentRequest data)
         {
             var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
-                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+                                "/usr/bin/CAMIS/data/docs";
             
             var filePath = $"{data.Id}";
             if (!Path.IsPathRooted(filePath))
@@ -249,7 +249,7 @@ namespace intapscamis.camis.domain.Documents
         private Document SaveDocumentAtFolder(Document data)
         {
             var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
-                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+                                "/usr/bin/CAMIS/data/docs";
             
            
             var filePath2 = $"{data.Id}";
@@ -297,7 +297,7 @@ namespace intapscamis.camis.domain.Documents
 
             Document ret = null;
             var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
-                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+                                "/usr/bin/CAMIS/data/docs";
             var doc= GetDocument(id);
             if (doc != null)
             {
@@ -322,7 +322,7 @@ namespace intapscamis.camis.domain.Documents
         public void DeleteDocumentFromFolder(Guid id)
         {
             var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
-                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+                                "/usr/bin/CAMIS/data/docs";
             var filePath = $"{id.ToString()}";
             if (!Path.IsPathRooted(filePath))
             {
@@ -356,7 +356,7 @@ namespace intapscamis.camis.domain.Documents
         public async Task<int> PatchMigratingWorkItemFile()
         {
             var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
-                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+                                "/usr/bin/CAMIS/data/docs";
             var total = Context.WorkItem.Count();
             var pageSize = 100;
             var processor = new WorkItemFileProcessor(fileDirectory);

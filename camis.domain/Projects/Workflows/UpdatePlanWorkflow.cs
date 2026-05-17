@@ -178,7 +178,7 @@ namespace intapscamis.camis.domain.Projects.Workflows
 
 
             var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
-                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+                                "/usr/bin/CAMIS/data/docs";
             var fileSavePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, workItemId.ToString());
             if (!Directory.Exists(fileSavePath))
             {
@@ -285,7 +285,7 @@ namespace intapscamis.camis.domain.Projects.Workflows
         private void LoadFilesFromWorkItem(Guid workItemId, ActivityPlanRequest data)
         {
             var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
-                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+                                "/usr/bin/CAMIS/data/docs";
             var workItemPath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, workItemId.ToString());
 
             if (!Directory.Exists(workItemPath)) return;

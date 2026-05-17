@@ -157,7 +157,7 @@ namespace intapscamis.camis.domain.Farms.StateMachines
         {
             var workItemId = Guid.NewGuid();
              var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
-                                "C:\\usr\\bin\\CAMIS\\data\\docs";
+                                "/usr/bin/CAMIS/data/docs";
             var fileSavePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, workItemId.ToString());
             if (!Directory.Exists(fileSavePath))
             {
@@ -198,7 +198,30 @@ namespace intapscamis.camis.domain.Farms.StateMachines
                     File.WriteAllBytes(filePath, fileBytes);
                     data.Operator.Photo.File = null; // Set to null after saving to disk
                 }
+                else
+                {
+                    if (data.Operator.Photo.Id != null)
+                    {
+                        var filePath2 = $"{data.Operator.Photo.Id.ToString()}";
+                        if (!Path.IsPathRooted(filePath2))
+                        {
+                            filePath2 = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, Path.GetFileName(filePath2));
+                        }
+                        if (File.Exists(filePath2))
+                        {
+                            var fileBytes2 = File.ReadAllBytes(filePath2);
+                            data.Operator.Photo.File = Convert.ToBase64String(fileBytes2);
+                
+                        }
+                    }
+                           
+                    data.Operator.Photo.Id = data.Operator.Photo.Id ?? Guid.NewGuid();
+                    var filePath = Path.Combine(fileSavePath, $"{data.Operator.Photo.Id}");
 
+                    var fileBytes = Convert.FromBase64String(data.Operator.Photo.File);
+                    File.WriteAllBytes(filePath, fileBytes);
+                    data.Operator.Photo.File = null;
+                }
                 // Update the override file path
                 data.Operator.Photo.OverrideFilePath = $"{pathPrefix}{workItemId}?photoId={data.Operator.Photo.Id}";
             }
@@ -244,7 +267,30 @@ namespace intapscamis.camis.domain.Farms.StateMachines
                         File.WriteAllBytes(filePath, fileBytes);
                         reg.Document.File = null; // Set to null after saving
                     }
+                    else
+                    {
+                        if (reg.Document.Id != null)
+                        {
+                            var filePath2 = $"{reg.Document.Id.ToString()}";
+                            if (!Path.IsPathRooted(filePath2))
+                            {
+                                filePath2 = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, Path.GetFileName(filePath2));
+                            }
+                            if (File.Exists(filePath2))
+                            {
+                                var fileBytes2 = File.ReadAllBytes(filePath2);
+                                reg.Document.File = Convert.ToBase64String(fileBytes2);
+                
+                            }
+                        }
+                           
+                        reg.Document.Id = reg.Document.Id ?? Guid.NewGuid();
+                        var filePath = Path.Combine(fileSavePath, $"{reg.Document.Id}");
 
+                        var fileBytes = Convert.FromBase64String(reg.Document.File);
+                        File.WriteAllBytes(filePath, fileBytes);
+                        reg.Document.File = null;
+                    }
                     reg.Document.OverrideFilePath = $"{pathPrefix}{workItemId}?regId={reg.Id}";
                 }
             }
@@ -288,7 +334,30 @@ namespace intapscamis.camis.domain.Farms.StateMachines
                         File.WriteAllBytes(filePath, fileBytes);
                         reg.Document.File = null;
                     }
+                    else
+                    {
+                        if (reg.Document.Id != null)
+                        {
+                            var filePath2 = $"{reg.Document.Id.ToString()}";
+                            if (!Path.IsPathRooted(filePath2))
+                            {
+                                filePath2 = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, Path.GetFileName(filePath2));
+                            }
+                            if (File.Exists(filePath2))
+                            {
+                                var fileBytes2 = File.ReadAllBytes(filePath2);
+                                reg.Document.File = Convert.ToBase64String(fileBytes2);
+                
+                            }
+                        }
+                           
+                        reg.Document.Id = reg.Document.Id ?? Guid.NewGuid();
+                        var filePath = Path.Combine(fileSavePath, $"{reg.Document.Id}");
 
+                        var fileBytes = Convert.FromBase64String(reg.Document.File);
+                        File.WriteAllBytes(filePath, fileBytes);
+                        reg.Document.File = null;
+                    }
                     reg.Document.OverrideFilePath = $"{pathPrefix}{workItemId}?regId={reg.Id}";
                 }
             }
@@ -328,7 +397,30 @@ namespace intapscamis.camis.domain.Farms.StateMachines
                         File.WriteAllBytes(filePath, fileBytes);
                         doc.File = null;
                     }
+                    else
+                    {
+                        if (doc.Id != null)
+                        {
+                            var filePath2 = $"{doc.Id.ToString()}";
+                            if (!Path.IsPathRooted(filePath2))
+                            {
+                                filePath2 = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, Path.GetFileName(filePath2));
+                            }
+                            if (File.Exists(filePath2))
+                            {
+                                var fileBytes2 = File.ReadAllBytes(filePath2);
+                                doc.File = Convert.ToBase64String(fileBytes2);
+                
+                            }
+                        }
+                           
+                        doc.Id = doc.Id ?? Guid.NewGuid();
+                        var filePath = Path.Combine(fileSavePath, $"{doc.Id}");
 
+                        var fileBytes = Convert.FromBase64String(doc.File);
+                        File.WriteAllBytes(filePath, fileBytes);
+                        doc.File = null;
+                    }
                     doc.OverrideFilePath = $"{pathPrefix}{workItemId}?documentId={doc.Id}";
                 }
             }

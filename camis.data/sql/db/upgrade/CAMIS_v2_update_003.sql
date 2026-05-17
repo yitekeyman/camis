@@ -183,3 +183,4 @@ ALTER TABLE frm.farm_land
 INSERT INTO wf.workflow_type(
     id, name, description)
 VALUES (12, 'Contract Cancellation', 'Farm Contract Cancellation Workflow'), (13, 'Contract Renewal', 'Farm Contract Renewal/Modification Workflow');
+

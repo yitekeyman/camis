@@ -252,7 +252,8 @@ public class
             foreach (var sp in landSplit)
             {
                 if (sp.Id == request.SubLand)
-                    CamisUtils.Assert((sp.Status == 2 ||sp.Locked), $"Parcel part {sp.Indexes} status doesn't allow split");
+                    CamisUtils.Assert((sp.Status == 2 || sp.Locked),
+                        $"Parcel part {sp.Indexes} status doesn't allow split");
             }
         }
 
@@ -282,18 +283,24 @@ public class
             role = UserRoles.LandAdmin;
         }
 
-       
-        if (request.SubLand > 0)
+        if (regionId.Equals("AM") || regionId.Equals("am") || regionId.Equals("03"))
         {
-            _landBankService.SetSubLandState(Guid.Parse(request.LandId), request.SubLand, LandBankFacadeModel.LandTypeEnum.OnSplit);
-            _landBankService.SetSubLandLock(Guid.Parse(request.LandId), request.SubLand,true);
+            if (request.SubLand > 0)
+            {
+                _landBankService.SetSubLandState(Guid.Parse(request.LandId), request.SubLand,
+                    LandBankFacadeModel.LandTypeEnum.OnSplit);
+                _landBankService.SetSubLandLock(Guid.Parse(request.LandId), request.SubLand, true);
+            }
+            else
+            {
+                _landBankService.SetLandState(Guid.Parse(request.LandId), LandBankFacadeModel.LandTypeEnum.OnSplit);
+                _landBankService.SetLandLock(Guid.Parse(request.LandId), true);
+            }
         }
         else
         {
-            _landBankService.SetLandState(Guid.Parse(request.LandId), LandBankFacadeModel.LandTypeEnum.OnSplit);
-            _landBankService.SetLandLock(Guid.Parse(request.LandId),true); 
+            throw new InvalidOperationException("Parcel Spliting operation allowed for only Amhara region");
         }
-        
 
         fireAction(wf.Id, trigger, request.Description, role, request);
         return wf.Id;

@@ -28,7 +28,7 @@ export class LoginComponent implements OnInit {
   showPassword = false;
   isLoggedIn = false;
 
-  public ROLES: any[];
+  public ROLES: any[]=[];
 
 
   constructor(public fb: FormBuilder, public router: Router, public adminService: AdminServices, private keyCase: ObjectKeyCasingService) {
@@ -56,6 +56,7 @@ export class LoginComponent implements OnInit {
 
       this.adminService.getUserRoles().subscribe(res2 => {
         this.isLoggedIn = true;
+
         this.ROLES = res2;
 
         dialog.close();

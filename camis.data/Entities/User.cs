@@ -20,7 +20,9 @@ namespace intapscamis.camis.data.Entities
         public int Status { get; set; }
         public long RegOn { get; set; }
         public string Email { get; set; }
+        public virtual ICollection<CHArchive> CHArchiveApprovedByNavigations { get; set; } = new List<CHArchive>();
 
+        public virtual ICollection<CHArchive> CHArchiveRequestedByNavigations { get; set; } = new List<CHArchive>();
         public ICollection<UserAction> UserAction { get; set; }
         public ICollection<UserRole> UserRole { get; set; }
         public ICollection<WorkItem> WorkItem { get; set; }

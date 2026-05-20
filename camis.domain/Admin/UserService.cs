@@ -165,7 +165,7 @@ namespace intapscamis.camis.domain.Admin
         public void AddUserRole(string username, int[] roles)
         {
             var user = GetUser(username);
-            var userRoles = _context.UserRole.Where(u => u.UserId == user.Id).Select(ur => ur.Role.Id);
+            var userRoles = _context.UserRole.Where(u => u.UserId == user.Id).OrderBy(e=>e.Role.Name).Select(ur => ur.Role.Id);
             foreach (var role in roles)
             {
                 if (userRoles.Contains(role)) continue;

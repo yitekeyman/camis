@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using intapscamis.camis.data.Entities;
 using intapscamis.camis.domain.Admin;
+using intapscamis.camis.domain.Exeptions;
 using intapscamis.camis.domain.Infrastructure;
 using intapscamis.camis.Extensions;
 using intapscamis.camis.Filters;
@@ -117,18 +118,28 @@ namespace intapscamis.camis.Controllers
         [Roles]
         public IActionResult SetRole([FromBody] JObject userRole)
         {
-            var role = (int) userRole["role"];
-            var session = GetSession();
-
-            HttpContext.Session.SetSession("sessionInfo", new UserSession
+            try
             {
-                Username = session.Username,
-                CreatedTime = DateTime.Now,
-                LastSeen = DateTime.Now,
-                Role = role
-            });
+                var role = (int) userRole["role"];
+                var session = GetSession();
+                if (role == (int)UserRoles.CMSSUser)
+                    throw new AccessDeniedException("This Role allowed only for QGIS plugin Only");
 
-            return Json(new {message = "success"});
+                HttpContext.Session.SetSession("sessionInfo", new UserSession
+                {
+                    Username = session.Username,
+                    CreatedTime = DateTime.Now,
+                    LastSeen = DateTime.Now,
+                    Role = role
+                });
+
+                return Json(new {message = "success"});
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new {message = e.Message});
+            }
+           
         }
 
         [Roles(UserRoles.Admin)]

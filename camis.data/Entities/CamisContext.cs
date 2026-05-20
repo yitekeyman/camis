@@ -42,7 +42,23 @@ namespace intapscamis.camis.data.Entities
         public virtual DbSet<AgroEchology> AgroEchology { get; set; }
         public virtual DbSet<AgroType> AgroType { get; set; }
         public virtual DbSet<AuditLog> AuditLog { get; set; }
+        public virtual DbSet<CHActivity> CHActivities { get; set; }
+
+        public virtual DbSet<CHArchive> CHArchives { get; set; }
+
+        public virtual DbSet<CHFarm> CHFarms { get; set; }
+
+        public virtual DbSet<CHFarmLand> CHFarmLands { get; set; }
+
+        public virtual DbSet<CHLand> CHLands { get; set; }
+
+        public virtual DbSet<CHLandRight> CHLandRights { get; set; }
+
+        public virtual DbSet<CHLandSplit> CHLandSplits { get; set; }
+
+        public virtual DbSet<CHOperator> CHOperators { get; set; }
         public virtual DbSet<Certificate> Certificate { get; set; }
+        public virtual DbSet<ContractUpdateReason> ContractUpdateReasons { get; set; }
         public virtual DbSet<Document> Document { get; set; }
         public virtual DbSet<DocumentType> DocumentType { get; set; }
         public virtual DbSet<Ethiopia> Ethiopia { get; set; }
@@ -904,6 +920,227 @@ namespace intapscamis.camis.data.Entities
                     .HasForeignKey(d => d.UserAction)
                     .HasConstraintName("audit_log_action_fk");
             });
+            modelBuilder.Entity<CHActivity>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("c_h_activity_id_pk");
+
+                entity.ToTable("c_h_activity", "history");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.ActivityAttr)
+                    .IsRequired()
+                    .HasColumnType("json")
+                    .HasColumnName("activity_attr");
+                entity.Property(e => e.ActivityId).HasColumnName("activity_id");
+                entity.Property(e => e.ArchiveId).HasColumnName("archive_id");
+                entity.Property(e => e.Seq).HasColumnName("seq");
+
+                entity.HasOne(d => d.Archive).WithMany(p => p.CHActivities)
+                    .HasForeignKey(d => d.ArchiveId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("c_h_activity_archive_id_fk");
+            });
+
+            modelBuilder.Entity<CHArchive>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("c_h_archive_id_pk");
+
+                entity.ToTable("c_h_archive", "history");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.Aid).HasColumnName("aid");
+                entity.Property(e => e.ApprovedBy)
+                    .HasMaxLength(50)
+                    .HasColumnName("approved_by");
+                entity.Property(e => e.ApprovedOn).HasColumnName("approved_on");
+                entity.Property(e => e.Data)
+                    .HasColumnType("json")
+                    .HasColumnName("data");
+                entity.Property(e => e.Description)
+                    .HasMaxLength(500)
+                    .HasColumnName("description");
+                entity.Property(e => e.RequestedBy)
+                    .HasMaxLength(50)
+                    .HasColumnName("requested_by");
+                entity.Property(e => e.RequestedOn).HasColumnName("requested_on");
+                entity.Property(e => e.TypeId).HasColumnName("type_id");
+                entity.Property(e => e.UpdateReasonId).HasColumnName("update_reason_id");
+                entity.Property(e => e.Wfid).HasColumnName("wfid");
+
+                entity.HasOne(d => d.ApprovedByNavigation).WithMany(p => p.CHArchiveApprovedByNavigations)
+                    .HasPrincipalKey(p => p.Username)
+                    .HasForeignKey(d => d.ApprovedBy)
+                    .HasConstraintName("c_h_archive_approved_by_fk");
+
+                entity.HasOne(d => d.RequestedByNavigation).WithMany(p => p.CHArchiveRequestedByNavigations)
+                    .HasPrincipalKey(p => p.Username)
+                    .HasForeignKey(d => d.RequestedBy)
+                    .HasConstraintName("c_h_archive_requested_by_fk");
+
+                entity.HasOne(d => d.Type).WithMany(p => p.CHArchives)
+                    .HasForeignKey(d => d.TypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("c_h_archive_workflow_type_id_fk");
+
+                entity.HasOne(d => d.UpdateReason).WithMany(p => p.CHArchives)
+                    .HasForeignKey(d => d.UpdateReasonId)
+                    .HasConstraintName("c_h_archive_update_reason_id_fk");
+
+                entity.HasOne(d => d.Wf).WithMany(p => p.CHArchives)
+                    .HasForeignKey(d => d.Wfid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("c_h_archive_wf_id_fk");
+            });
+
+            modelBuilder.Entity<CHFarm>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("c_h_farm_id_pk");
+
+                entity.ToTable("c_h_farm", "history");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.ArchiveId).HasColumnName("archive_id");
+                entity.Property(e => e.FarmAttr)
+                    .HasColumnType("json")
+                    .HasColumnName("farm_attr");
+                entity.Property(e => e.FarmId).HasColumnName("farm_id");
+                entity.Property(e => e.Seq).HasColumnName("seq");
+
+                entity.HasOne(d => d.Archive).WithMany(p => p.CHFarms)
+                    .HasForeignKey(d => d.ArchiveId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("c_h_farm_archive_id_fk");
+            });
+
+            modelBuilder.Entity<CHFarmLand>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("c_h_farm_land_id_pk");
+
+                entity.ToTable("c_h_farm_land", "history");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.ArchiveId).HasColumnName("archive_id");
+                entity.Property(e => e.FarmId).HasColumnName("farm_id");
+                entity.Property(e => e.FarmLandAttr)
+                    .IsRequired()
+                    .HasColumnType("json")
+                    .HasColumnName("farm_land_attr");
+                entity.Property(e => e.LandId).HasColumnName("land_id");
+                entity.Property(e => e.LandSplitId).HasColumnName("land_split_id");
+                entity.Property(e => e.Seq).HasColumnName("seq");
+
+                entity.HasOne(d => d.Archive).WithMany(p => p.CHFarmLands)
+                    .HasForeignKey(d => d.ArchiveId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("c_h_farm_land_archive_id_fk");
+            });
+
+            modelBuilder.Entity<CHLand>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("c_h_land_id_pk");
+
+                entity.ToTable("c_h_land", "history");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.ArchiveId).HasColumnName("archive_id");
+                entity.Property(e => e.LandAttr)
+                    .IsRequired()
+                    .HasColumnType("json")
+                    .HasColumnName("land_attr");
+                entity.Property(e => e.LandId).HasColumnName("land_id");
+                entity.Property(e => e.Seq).HasColumnName("seq");
+                entity.Property(e => e.Upid)
+                    .HasMaxLength(25)
+                    .HasColumnName("upid");
+
+                entity.HasOne(d => d.Archive).WithMany(p => p.CHLands)
+                    .HasForeignKey(d => d.ArchiveId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("c_h_land_archive_id_fk");
+            });
+
+            modelBuilder.Entity<CHLandRight>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("c_h_land_right_id_pk");
+
+                entity.ToTable("c_h_land_right", "history");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.ArchiveId).HasColumnName("archive_id");
+                entity.Property(e => e.CommonTxtUid).HasColumnName("common_txt_uid");
+                entity.Property(e => e.FarmId).HasColumnName("farm_id");
+                entity.Property(e => e.LandId).HasColumnName("land_id");
+                entity.Property(e => e.LandRightAttr)
+                    .IsRequired()
+                    .HasColumnType("json")
+                    .HasColumnName("land_right_attr");
+                entity.Property(e => e.LandSplitId).HasColumnName("land_split_id");
+                entity.Property(e => e.Seq).HasColumnName("seq");
+
+                entity.HasOne(d => d.Archive).WithMany(p => p.CHLandRights)
+                    .HasForeignKey(d => d.ArchiveId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("c_h_land_right_archive_id_fk");
+            });
+
+            modelBuilder.Entity<CHLandSplit>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("c_h_land_split_id_pk");
+
+                entity.ToTable("c_h_land_split", "history");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.ArchiveId).HasColumnName("archive_id");
+                entity.Property(e => e.LandId).HasColumnName("land_id");
+                entity.Property(e => e.LandSplitAttr)
+                    .IsRequired()
+                    .HasColumnType("json")
+                    .HasColumnName("land_split_attr");
+                entity.Property(e => e.Seq).HasColumnName("seq");
+                entity.Property(e => e.SplitId).HasColumnName("split_id");
+
+                entity.HasOne(d => d.Archive).WithMany(p => p.CHLandSplits)
+                    .HasForeignKey(d => d.ArchiveId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("c_h_land_split_archive_id_fk");
+            });
+
+            modelBuilder.Entity<CHOperator>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("c_h_operator_id_pk");
+
+                entity.ToTable("c_h_operator", "history");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.ArchiveId).HasColumnName("archive_id");
+                entity.Property(e => e.OperatorAttr)
+                    .IsRequired()
+                    .HasColumnType("json")
+                    .HasColumnName("operator_attr");
+                entity.Property(e => e.OperatorId).HasColumnName("operator_id");
+                entity.Property(e => e.Seq).HasColumnName("seq");
+
+                entity.HasOne(d => d.Archive).WithMany(p => p.CHOperators)
+                    .HasForeignKey(d => d.ArchiveId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("c_h_operator_archive_id_fk");
+            });
 
             modelBuilder.Entity<Certificate>(entity =>
             {
@@ -924,7 +1161,25 @@ namespace intapscamis.camis.data.Entities
 
                 entity.Property(e => e.WId).HasColumnName("w_id");
             });
+            modelBuilder.Entity<ContractUpdateReason>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("contract_update_reason_pkey");
 
+                entity.ToTable("contract_update_reason", "frm");
+
+                entity.HasIndex(e => e.Name, "reason_name_uq").IsUnique();
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.Description)
+                    .HasMaxLength(500)
+                    .HasColumnName("description");
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(250)
+                    .HasColumnName("name");
+            });
             modelBuilder.Entity<Document>(entity =>
             {
                 entity.ToTable("document", "doc");
@@ -1208,59 +1463,59 @@ namespace intapscamis.camis.data.Entities
 
             modelBuilder.Entity<Farm>(entity =>
             {
-                 entity.HasKey(e => e.Id).HasName("pk_farm");
+                entity.HasKey(e => e.Id).HasName("pk_farm");
 
-            entity.ToTable("farm", "frm");
+                entity.ToTable("farm", "frm");
 
-            entity.HasIndex(e => e.InvestedCapital, "farm_investment_capital_index");
+                entity.HasIndex(e => e.InvestedCapital, "farm_investment_capital_index");
 
-            entity.HasIndex(e => e.ActivityId, "ixfk_farm_activity");
+                entity.HasIndex(e => e.ActivityId, "ixfk_farm_activity");
 
-            entity.HasIndex(e => e.TypeId, "ixfk_farm_farm_type");
+                entity.HasIndex(e => e.TypeId, "ixfk_farm_farm_type");
 
-            entity.HasIndex(e => e.OperatorId, "ixfk_farms_farm_operator");
+                entity.HasIndex(e => e.OperatorId, "ixfk_farms_farm_operator");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("id");
-            entity.Property(e => e.ActivityId).HasColumnName("activity_id");
-            entity.Property(e => e.Aid).HasColumnName("aid");
-            entity.Property(e => e.Description)
-                .HasMaxLength(5000)
-                .HasColumnName("description");
-            entity.Property(e => e.InvestedCapital).HasColumnName("invested_capital");
-            entity.Property(e => e.Locked)
-                .HasDefaultValue(false)
-                .HasColumnName("locked");
-            entity.Property(e => e.OperatorId).HasColumnName("operator_id");
-            entity.Property(e => e.OtherTypeIds)
-                .HasDefaultValueSql("ARRAY[]::integer[]")
-                .HasColumnName("other_type_ids");
-            entity.Property(e => e.Status).HasColumnName("status");
-            entity.Property(e => e.TypeId).HasColumnName("type_id");
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.ActivityId).HasColumnName("activity_id");
+                entity.Property(e => e.Aid).HasColumnName("aid");
+                entity.Property(e => e.Description)
+                    .HasMaxLength(5000)
+                    .HasColumnName("description");
+                entity.Property(e => e.InvestedCapital).HasColumnName("invested_capital");
+                entity.Property(e => e.Locked)
+                    .HasDefaultValue(false)
+                    .HasColumnName("locked");
+                entity.Property(e => e.OperatorId).HasColumnName("operator_id");
+                entity.Property(e => e.OtherTypeIds)
+                    .HasDefaultValueSql("ARRAY[]::integer[]")
+                    .HasColumnName("other_type_ids");
+                entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.TypeId).HasColumnName("type_id");
 
-            entity.HasOne(d => d.Activity).WithMany(p => p.Farm)
-                .HasForeignKey(d => d.ActivityId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_farm_activity");
+                entity.HasOne(d => d.Activity).WithMany(p => p.Farm)
+                    .HasForeignKey(d => d.ActivityId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_farm_activity");
 
-            entity.HasOne(d => d.A).WithMany(p => p.Farm)
-                .HasForeignKey(d => d.Aid)
-                .HasConstraintName("farm_user_action_id_fk");
+                entity.HasOne(d => d.A).WithMany(p => p.Farm)
+                    .HasForeignKey(d => d.Aid)
+                    .HasConstraintName("farm_user_action_id_fk");
 
-            entity.HasOne(d => d.Operator).WithMany(p => p.Farm)
-                .HasForeignKey(d => d.OperatorId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_farms_farm_operator");
+                entity.HasOne(d => d.Operator).WithMany(p => p.Farm)
+                    .HasForeignKey(d => d.OperatorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_farms_farm_operator");
 
-            entity.HasOne(d => d.StatusNavigation).WithMany(p => p.Farms)
-                .HasForeignKey(d => d.Status)
-                .HasConstraintName("fk_farms_farm_status");
+                entity.HasOne(d => d.StatusNavigation).WithMany(p => p.Farms)
+                    .HasForeignKey(d => d.Status)
+                    .HasConstraintName("fk_farms_farm_status");
 
-            entity.HasOne(d => d.Type).WithMany(p => p.Farm)
-                .HasForeignKey(d => d.TypeId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_farm_farm_type");
+                entity.HasOne(d => d.Type).WithMany(p => p.Farm)
+                    .HasForeignKey(d => d.TypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_farm_farm_type");
             });
 
             modelBuilder.Entity<FarmLand>(entity =>
@@ -1294,7 +1549,6 @@ namespace intapscamis.camis.data.Entities
                 entity.HasOne(d => d.LeaseContractDocNavigation).WithMany(p => p.FarmLandLeaseContractDocNavigation)
                     .HasForeignKey(d => d.LeaseContractDoc)
                     .HasConstraintName("farm_land_document_id_fk_2");
-
             });
 
             modelBuilder.Entity<FarmOperator>(entity =>
@@ -1819,7 +2073,8 @@ namespace intapscamis.camis.data.Entities
                     .HasColumnName("status");
                 entity.Property(e => e.YearlyRent).HasColumnName("yearly_rent");
 
-                entity.HasOne(d => d.CertificateDocumentNavigation).WithMany(p => p.LandRightCertificateDocumentNavigation)
+                entity.HasOne(d => d.CertificateDocumentNavigation)
+                    .WithMany(p => p.LandRightCertificateDocumentNavigation)
                     .HasForeignKey(d => d.CertificateDocument)
                     .HasConstraintName("land_right_document_id_fk");
 

@@ -18,6 +18,7 @@ namespace intapscamis.camis.data.Entities
 
         public UserAction A { get; set; }
         public WorkflowType Type { get; set; }
+        public virtual ICollection<CHArchive> CHArchives { get; set; } = new List<CHArchive>();
         public ICollection<WorkItem> WorkItem { get; set; }
     }
 }

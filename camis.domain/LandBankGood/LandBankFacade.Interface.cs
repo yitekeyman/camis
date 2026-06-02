@@ -55,6 +55,8 @@ namespace intapscamis.camis.domain.LandBank
         List<LandBankFacadeModel.SplitTaskGeom> GetParcelSplitTaskGeom(Guid wfid);
         string GetRegionCode();
         int GetSplitStatus(Guid wfid);
+        string GetGeoServerURL();
+        LandBankFacadeModel.RegionsAttr GetRegionsAttr();
     }
     
 }

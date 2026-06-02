@@ -290,7 +290,15 @@ namespace intapscamis.camis.domain.LandBank
             public string Geom { get; set; }
             public string FarmId { get; set; }
         }
-        
+
+        public class RegionsAttr
+        {
+            public string RegionCode { get; set; }
+            public string RegionName { get; set; }
+            public string Geom { get; set; }
+            public double CenterX { get; set; }
+            public double CenterY { get; set; }
+        }
     }
 
 }

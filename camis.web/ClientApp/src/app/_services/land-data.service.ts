@@ -171,4 +171,7 @@ export class LandDataService {
   getSplitStatus(wfid: string) {
     return this.api.get(`LandBank/GetSplitStatus?wfid=${wfid}`);
   }
+  GetRegionsAttr() {
+    return this.api.get(`LandBank/GetRegionsAttr`);
+  }
 }

@@ -17,11 +17,13 @@ namespace intapscamis.camis.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly ILandBankFacade _facade;
+        private readonly string _GeoServerURL;
 
         public MapController(IConfiguration configuration, ILandBankFacade facade)
         {
             _configuration = configuration;
             _facade = facade;
+            _GeoServerURL = _facade.GetGeoServerURL();
         }
         [HttpGet]
         public IActionResult GetLandMapBound()
@@ -39,7 +41,8 @@ namespace intapscamis.camis.Controllers
         }
         public class GSClient
         {
-            String urlBase = "http://localhost:8080/ows"; // todo: may not be localhost
+            
+            String urlBase = $"http://localhost:8080/ows"; // todo: may not be localhost
             public GSResponse GetJson(string baseUrl, string cmd)
             {
                 var client = new HttpClient();
@@ -98,7 +101,8 @@ namespace intapscamis.camis.Controllers
         {
             try
             {
-                var geoserverBaseUrl = _configuration.GetConnectionString("geoserver_base_url");
+                //var geoserverBaseUrl = _configuration.GetConnectionString("geoserver_base_url");
+                var geoserverBaseUrl = $"{_GeoServerURL}/ows";
                 var cmd = base.HttpContext.Request.QueryString.ToString();
                 GSClient client = new GSClient();
                 var resp = client.GetJson(geoserverBaseUrl, cmd);

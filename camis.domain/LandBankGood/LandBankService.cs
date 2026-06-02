@@ -1009,5 +1009,39 @@ namespace intapscamis.camis.domain.LandBank
                 ContractDocument = codDoc,
             };
         }
+
+        public string GetGeoServerURL()
+        {
+            return Context.SysConfigs.Where(e => e.Name.Equals("GoeServer_url")).Select(e => e.Value).First() ??
+                   "http://localhost:8080";
+        }
+
+        public LandBankFacadeModel.RegionsAttr GetRegionsAttr()
+        {
+            var ret=new  LandBankFacadeModel.RegionsAttr();
+            
+            var code=Context.SysConfigs.First(e=>e.Name.Equals("region_code")).Value;
+            var region=Context.TRegions.FirstOrDefault(e=>e.Csaregionid==code);
+            if (region != null)
+            {
+                Context.Database.OpenConnection();
+                var sql = $"select ST_AsText(ST_Centroid(ST_GeometryFromText('{region.Geometry}')));";
+                var point = new Npgsql.NpgsqlCommand(sql, (Npgsql.NpgsqlConnection)Context.Database.GetDbConnection()).ExecuteScalar().ToString();
+
+                sql = $"select ST_AsText(ST_Transform(ST_GeometryFromText('SRID=20137;{point}'),4326));";
+                point = new Npgsql.NpgsqlCommand(sql, (Npgsql.NpgsqlConnection)Context.Database.GetDbConnection())
+                    .ExecuteScalar().ToString();
+
+                var center = LandBankFacadeModel.LatLng.FromWkt(point);
+                ret.CenterX = center.lng;
+                ret.CenterY = center.lat;
+                ret.Geom=region.Geometry;
+                ret.RegionCode=code;
+                ret.RegionName=region.Csaregionnameeng;
+            }
+          
+
+            return ret;
+        }
     }
 }

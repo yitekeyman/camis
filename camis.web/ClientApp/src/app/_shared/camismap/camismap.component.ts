@@ -61,7 +61,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   // Styles
   private nrlaisStyle!: Style;
   private workflowStyle!: Style;
-  private splitStyle!: Style;
+  //private splitStyle!: Style;
   // Configuration
   zoomMargin = 1.3;
   mapType = 'satellite';
@@ -132,7 +132,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private setupConnectivityMonitoring(): void {
     this.onlineListener = () => {
-      console.log('Internet connection restored');
+     // console.log('Internet connection restored');
       this.isUsingOfflineLayer = false;
       // Reload the map layers when connection is restored
       setTimeout(() => {
@@ -141,7 +141,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     };
 
     this.offlineListener = () => {
-      console.log('Internet connection lost');
+      //console.log('Internet connection lost');
       this.isUsingOfflineLayer = true;
       setTimeout(() => {
         this.rebuildLayers();
@@ -153,7 +153,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private rebuildLayers(): void {
-    console.log('Rebuilding layers, online:', navigator.onLine);
+   // console.log('Rebuilding layers, online:', navigator.onLine);
     // Update cache buster when rebuilding layers
     this.cacheBuster = Date.now();
     this.buildLayers();
@@ -229,7 +229,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private createMap(): void {
     const mapElement = this.elementRef.nativeElement.querySelector('#camis_map');
-    console.log('Map element:', mapElement);
+    //console.log('Map element:', mapElement);
 
     if (!mapElement) {
       console.error('Map element #camis_map not found!');
@@ -242,18 +242,18 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
       view: this.view,
     });
 
-    console.log('Map created with layers:', this.layers.length);
+    //console.log('Map created with layers:', this.layers.length);
   }
 
   private buildLayers(): void {
-    console.log('Building layers, online status:', navigator.onLine);
+    //console.log('Building layers, online status:', navigator.onLine);
     this.layers = [];
 
     this.addBaseLayer();
     this.addWmsLayers();
     this.addVectorLayers();
 
-    console.log('Total layers built:', this.layers.length);
+    //console.log('Total layers built:', this.layers.length);
   }
 
   private addBaseLayer(): void {
@@ -264,13 +264,13 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Check internet connectivity
     if (!navigator.onLine) {
-      console.log('Offline detected, using offline base layer');
+      //console.log('Offline detected, using offline base layer');
       this.addOfflineBaseLayer();
       this.isUsingOfflineLayer = true;
       return;
     }
 
-    console.log('Online detected, using Google Maps base layer');
+    //console.log('Online detected, using Google Maps base layer');
     // If online, try to load Google Maps
     this.addOnlineBaseLayer();
     this.isUsingOfflineLayer = false;
@@ -284,7 +284,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     };
 
     const url = googleUrls[this.mapType] || googleUrls['roadmap'];
-    console.log('Using Google Maps URL:', url);
+    //console.log('Using Google Maps URL:', url);
 
     const baseLayer = new TileLayer({
       source: new XYZ({
@@ -306,11 +306,11 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
     baseLayer.set('name', 'google-base-layer');
     this.layers.push(baseLayer);
-    console.log('Added online base layer');
+    //console.log('Added online base layer');
   }
 
   private addOfflineBaseLayer(): void {
-    console.log('Creating offline base layer');
+    //console.log('Creating offline base layer');
 
     // Create a simple blank layer as offline base
     const offlineLayer = new TileLayer({
@@ -361,11 +361,11 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
     offlineLayer.set('name', 'offline-base-layer');
     this.layers.push(offlineLayer);
-    console.log('Added offline base layer');
+    //console.log('Added offline base layer');
   }
 
   private fallbackToOfflineBaseLayer(): void {
-    console.log('Falling back to offline base layer');
+    //console.log('Falling back to offline base layer');
 
     // Remove any existing base layers
     this.layers = this.layers.filter(layer => {
@@ -381,7 +381,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.map) {
       this.map.setLayers(this.layers);
       this.map.updateSize();
-      console.log('Map updated with offline layer');
+     // console.log('Map updated with offline layer');
     }
   }
 
@@ -395,14 +395,14 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     ];
 
     const visibleConfigs = wmsConfigs.filter(config => config.visible);
-    console.log('Adding WMS layers:', visibleConfigs.map(c => c.name));
+    //console.log('Adding WMS layers:', visibleConfigs.map(c => c.name));
 
     visibleConfigs.forEach(config => this.createCacheFreeWmsLayer(config));
   }
 
   private createCacheFreeWmsLayer(config: WmsLayerConfig): void {
     try {
-      console.log('Creating cache-free WMS layer:', config.layerName);
+      //console.log('Creating cache-free WMS layer:', config.layerName);
 
       const wmsSource = new OLTileWMS({
         url: '/geoserver/wms',
@@ -432,11 +432,11 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
       });
 
       wmsSource.on('tileloadstart', () => {
-        console.log(`Loading WMS tile: ${config.layerName}`);
+        //console.log(`Loading WMS tile: ${config.layerName}`);
       });
 
       this.layers.push(wmsLayer);
-      console.log(`WMS layer ${config.name} added successfully`);
+      //console.log(`WMS layer ${config.name} added successfully`);
     } catch (error) {
       console.error(`Error creating layer ${config.name}:`, error);
     }
@@ -456,7 +456,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     });
     splitLayer.set('name', 'split-vector');
     this.layers.push(splitLayer);
-    console.log('Vector layers added');
+    //console.log('Vector layers added');
   }
 
   private createVectorLayer(source: VectorSource, style: Style, name: string) {
@@ -469,11 +469,11 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private zoomToExtent(): void {
-    console.log('Zooming to extent');
+    //console.log('Zooming to extent');
 
     this.api.get('map/GetLandMapBound').subscribe({
       next: (response: any) => {
-        console.log('Raw API response:', response);
+        //console.log('Raw API response:', response);
 
         // Handle different response formats
         let bbox: BoundingBox;
@@ -499,7 +499,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
           return;
         }
 
-        console.log('Processed bounding box:', bbox);
+        //console.log('Processed bounding box:', bbox);
 
         // Validate bounding box values
         if (!this.isValidBoundingBox(bbox)) {
@@ -522,7 +522,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
           resolution,
           duration: 1000
         });
-        console.log('Zoom animation started with resolution:', resolution);
+        //console.log('Zoom animation started with resolution:', resolution);
       },
       error: (error) => {
         console.error('Failed to get map bounds:', error);
@@ -554,7 +554,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private useDefaultView(): void {
-    console.log('Using default map view');
+    //console.log('Using default map view');
     this.view.animate({
       center: [335320.696579432, 1294832.60257192],
       zoom: 10,
@@ -573,11 +573,11 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     const width = mapElement.clientWidth || 800;
     const height = mapElement.clientHeight || 600;
 
-    console.log('Map dimensions:', { width, height });
-    console.log('Bounding box dimensions:', {
-      width: bbox.x2 - bbox.x1,
-      height: bbox.y2 - bbox.y1
-    });
+    //console.log('Map dimensions:', { width, height });
+    // console.log('Bounding box dimensions:', {
+    //   width: bbox.x2 - bbox.x1,
+    //   height: bbox.y2 - bbox.y1
+    // });
 
     // Validate bounding box dimensions
     const bboxWidth = bbox.x2 - bbox.x1;
@@ -592,7 +592,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
     const verticalRes = (bboxHeight * this.zoomMargin) / height;
 
     const resolution = Math.max(horizontalRes, verticalRes) * 1.2;
-    console.log('Calculated resolution:', resolution);
+    //console.log('Calculated resolution:', resolution);
     return resolution;
   }
 
@@ -626,7 +626,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // Public methods
   public googleMapSetting(): void {
-    console.log('Updating map settings:', { mapType: this.mapType, backTo: this.backTo });
+    //console.log('Updating map settings:', { mapType: this.mapType, backTo: this.backTo });
 
     localStorage.setItem('mapType', this.mapType);
     localStorage.setItem('backTo', this.backTo);
@@ -637,7 +637,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   public setNrlaisParcel(upin: string): void {
     if (!upin) return;
 
-    console.log('Setting NRLais parcel for UPIN:', upin);
+    //console.log('Setting NRLais parcel for UPIN:', upin);
 
     const wmsUrl = `map/WfsGet?service=WFS&version=1.0.0&request=GetFeature&typeName=nrlais:nrlais_inventory.t_parcels&maxFeatures=50&outputFormat=application/json&CQL_FILTER=upid='${upin}'`;
 
@@ -649,7 +649,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
         }
 
         const features = new GeoJSON().readFeatures(data.response);
-        console.log(`Loaded ${features.length} features for parcel ${upin}`);
+        //console.log(`Loaded ${features.length} features for parcel ${upin}`);
 
         this.nrlaisSource.clear();
         this.nrlaisSource.addFeatures(features);
@@ -668,7 +668,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public setWorkFlowGeomByWKT(wkt: string): void {
-    console.log('Setting workflow geometry from WKT');
+    //console.log('Setting workflow geometry from WKT');
 
     this.workflowSource.clear();
     const features = new WKT().readFeatures(wkt);
@@ -681,7 +681,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public setSplitGeomsByWKT(parcels: any[]): void {
-    console.log('Setting split geometries from WKT array, count:', parcels.length);
+    //console.log('Setting split geometries from WKT array, count:', parcels.length);
 
     this.splitSource.clear();
     parcels.forEach(parcel => {
@@ -740,7 +740,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // NEW METHOD: Refresh WMS layers with cache busting
   public refreshWmsLayers(): void {
-    console.log('Refreshing WMS layers with cache busting');
+    //console.log('Refreshing WMS layers with cache busting');
 
     // Update cache buster
     this.cacheBuster = Date.now();
@@ -755,7 +755,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
             '_t': this.cacheBuster
           });
           source.refresh(); // Force source refresh
-          console.log(`Refreshed layer: ${layerName} with cache buster: ${this.cacheBuster}`);
+         // console.log(`Refreshed layer: ${layerName} with cache buster: ${this.cacheBuster}`);
         }
       }
     });
@@ -763,7 +763,7 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // NEW METHOD: Force complete map refresh
   public forceMapRefresh(): void {
-    console.log('Forcing complete map refresh');
+    //console.log('Forcing complete map refresh');
     this.rebuildLayers();
   }
 
@@ -778,31 +778,31 @@ export class CamisMapComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // Debug method to check current layer status
   public debugLayers(): void {
-    console.log('=== MAP DEBUG INFO ===');
-    console.log('Online status:', navigator.onLine);
-    console.log('Using offline layer:', this.isUsingOfflineLayer);
-    console.log('Cache buster value:', this.cacheBuster);
-    console.log('Total layers:', this.layers.length);
+    // console.log('=== MAP DEBUG INFO ===');
+    // console.log('Online status:', navigator.onLine);
+    // console.log('Using offline layer:', this.isUsingOfflineLayer);
+    // console.log('Cache buster value:', this.cacheBuster);
+    // console.log('Total layers:', this.layers.length);
 
     this.layers.forEach((layer, index) => {
       const name = layer.get('name') || 'unnamed-layer';
       const visible = layer.getVisible();
       const opacity = layer.getOpacity();
-      console.log(`Layer ${index}: ${name}, visible: ${visible}, opacity: ${opacity}`);
+      //console.log(`Layer ${index}: ${name}, visible: ${visible}, opacity: ${opacity}`);
 
       // Show WMS layer parameters
       if (name.startsWith('wms-')) {
         const source = layer.getSource() as OLTileWMS;
         if (source) {
-          console.log(`  - Params:`, source.getParams());
+         // console.log(`  - Params:`, source.getParams());
         }
       }
     });
 
-    console.log('Map target:', this.map?.getTarget());
-    console.log('View center:', this.view?.getCenter());
-    console.log('View resolution:', this.view?.getResolution());
-    console.log('=====================');
+    // console.log('Map target:', this.map?.getTarget());
+    // console.log('View center:', this.view?.getCenter());
+    // console.log('View resolution:', this.view?.getResolution());
+    // console.log('=====================');
   }
 
 }

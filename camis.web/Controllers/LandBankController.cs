@@ -413,5 +413,19 @@ namespace intapscamis.camis.Controllers
                 return StatusCode(500, new { success = false, message = e.Message });
             }
         }
+        [HttpGet]
+        public IActionResult GetRegionsAttr()
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                return Json(_facade.GetRegionsAttr());
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e.InnerException);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
     }
 }

@@ -1,15 +1,8 @@
-// Angular import
-import { Component, output } from '@angular/core';
-
-// project import
+import { Component, output, OnDestroy, HostListener } from '@angular/core';
 import { BerryConfig } from 'src/app/app-config';
-
 import { NavLeftComponent } from './nav-left/nav-left.component';
 import { NavLogoComponent } from './nav-logo/nav-logo.component';
 import { NavRightComponent } from './nav-right/nav-right.component';
-import {NgIf} from "@angular/common";
-import {ResetPassComponent} from "../../../../admin/userManagement/resetPassword/reset-pass.component";
-import {SimpleLoginComponent} from "../../../../login/simpleLogin/simple-login.component";
 
 @Component({
   selector: 'app-nav-bar',
@@ -17,22 +10,35 @@ import {SimpleLoginComponent} from "../../../../login/simpleLogin/simple-login.c
   templateUrl: './nav-bar.component.html',
   styleUrls: ['./nav-bar.component.scss']
 })
-export class NavBarComponent {
-  // public props
+export class NavBarComponent implements OnDestroy {
   NavCollapse = output();
   NavCollapsedMob = output();
+
   navCollapsed: boolean;
   windowWidth: number;
   navCollapsedMob: boolean;
 
-  // Constructor
   constructor() {
     this.windowWidth = window.innerWidth;
     this.navCollapsed = this.windowWidth >= 1025 ? BerryConfig.isCollapse_menu : false;
     this.navCollapsedMob = false;
   }
 
-  // public method
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    this.windowWidth = window.innerWidth;
+    // Re-evaluate navCollapsed when crossing the desktop breakpoint
+    const wasDesktop = this.navCollapsed !== undefined; // or store previous
+    const isDesktop = this.windowWidth >= 1025;
+    if (isDesktop) {
+      // On desktop, use configured collapse state
+      this.navCollapsed = BerryConfig.isCollapse_menu;
+    } else {
+      // On mobile, ensure it's expanded (or keep whatever makes sense)
+      this.navCollapsed = false;
+    }
+  }
+
   navCollapse() {
     if (this.windowWidth >= 1025) {
       this.navCollapsed = !this.navCollapsed;
@@ -44,5 +50,9 @@ export class NavBarComponent {
     if (this.windowWidth < 1025) {
       this.NavCollapsedMob.emit();
     }
+  }
+
+  ngOnDestroy() {
+    // No explicit unsubscribe needed for @HostListener, but keep if using RxJS
   }
 }

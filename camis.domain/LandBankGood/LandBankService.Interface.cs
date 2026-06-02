@@ -23,5 +23,7 @@ namespace intapscamis.camis.domain.LandBank
         void TransferLand(LandBankFacadeModel.TransferRequest request);
         void CalculateCentroid(LandBankFacadeModel.LandData land);
         List<LandBankFacadeModel.LandData> GetLandData(Guid[] excludedIds);
+        string GetGeoServerURL();
+        LandBankFacadeModel.RegionsAttr GetRegionsAttr();
     }
 }

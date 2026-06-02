@@ -355,5 +355,17 @@ namespace intapscamis.camis.domain.LandBank
             PassContext(_landPrepareWorkflow, _context);
             return _landSplitWorkflow.GetParcelSplitTaskGeom(wfid);
         }
+
+        public string GetGeoServerURL()
+        {
+            PassContext(_landBankService, _context);
+            return _landBankService.GetGeoServerURL();
+        }
+
+        public LandBankFacadeModel.RegionsAttr GetRegionsAttr()
+        {
+            PassContext(_landBankService, _context);
+            return _landBankService.GetRegionsAttr();
+        }
     }
 }

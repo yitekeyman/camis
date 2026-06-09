@@ -1,7 +1,9 @@
 import React, { FormEvent } from 'react';
-import { Card, Row, Form, Col, Select, Input, Icon, Button, DatePicker } from 'antd';
+import { Card, Row, Form, Col, Select, Input, Button, DatePicker } from 'antd';
+import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import ReportService from '../../_setup/services/report.service';
 import ReportTypes from '../../assets/data/ReportTypes.json';
+// @ts-ignore
 import './report.scss';
 import Swal from 'sweetalert2';
 
@@ -281,11 +283,10 @@ export class Report extends React.Component<any,IStateProps>{
                 ],
               })(<DatePicker   style={{width : '80%', marginRight : 8}}/>)}
               {dateKeys.length > 1 ? (
-                <Icon
-                  className="dynamic-delete-button"
-                  type="minus-circle-o"
-                  onClick={() => this.removeDateField(k)}
-                />
+                                <MinusCircleOutlined
+                                    className="dynamic-delete-button"
+                                    onClick={() => this.removeDateField(k)}
+                                />
               ) : null}
             </Form.Item>
           ));
@@ -308,11 +309,10 @@ export class Report extends React.Component<any,IStateProps>{
                 ],
               })(<Input   style={{width : '80%', marginRight : 8}}/>)}
               {sizeKeys.length > 1 ? (
-                <Icon
-                  className="dynamic-delete-button"
-                  type="minus-circle-o"
-                  onClick={() => this.removeSizeField(k)}
-                />
+                                <MinusCircleOutlined
+                                    className="dynamic-delete-button"
+                                    onClick={() => this.removeSizeField(k)}
+                                />
               ) : null}
             </Form.Item>
           ));
@@ -322,7 +322,8 @@ export class Report extends React.Component<any,IStateProps>{
             <div>
                 <Card
                 title="Report">
-                    <Form className="" {...formItemLayout} onSubmit={this.generateReport}>
+                    <form onSubmit={this.generateReport}>
+                        <Form className="" {...formItemLayout}>
                 <Row gutter={24}>
                 <Col span={10}>
                         <Form.Item label="Report Types" style={{display : 'block'}} >
@@ -472,7 +473,7 @@ export class Report extends React.Component<any,IStateProps>{
                         {dateFormItems}
                         <Form.Item {...formItemLayoutWithOutLabel}>
                         <Button type="dashed" onClick={this.addDateField} style={{ width: '100%' }}>
-                            <Icon type="plus" /> Add Date Field
+                            <PlusOutlined /> Add Date Field
                         </Button>
                         </Form.Item>
 
@@ -486,7 +487,7 @@ export class Report extends React.Component<any,IStateProps>{
                         {sizeFormItems}
                         <Form.Item {...formItemLayoutWithOutLabel}>
                         <Button type="dashed" onClick={this.addSizeField} style={{ width: '100%' }}>
-                            <Icon type="plus" /> Add Size Field
+                            <PlusOutlined /> Add Size Field
                         </Button>
                         </Form.Item>
 
@@ -619,6 +620,7 @@ export class Report extends React.Component<any,IStateProps>{
           </Col>
                 </Row>
                 </Form>
+                    </form>
                     </Card>
                     <Card>
                         <div dangerouslySetInnerHTML={{ __html : this.state.reportResponse }}>

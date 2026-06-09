@@ -56,8 +56,7 @@ export class EditUser extends React.Component<any,IStateProps>{
         this.props.toggleEditModal();
     }
 
-    edituser(e : FormEvent<HTMLFormElement>){
-      e.preventDefault();
+    edituser = (e : any) => {
       var self = this;
       this.props.form.validateFields((err: any, values : any) => {
          var s = Object.keys(err);
@@ -109,7 +108,7 @@ export class EditUser extends React.Component<any,IStateProps>{
 
 
         return(
-                    this.state.user != {} || this.state.user != undefined ?
+                    this.state.user ?
                 <Modal
                 title="Edit User"
                 onCancel={this.toggleEditModal}
@@ -117,7 +116,7 @@ export class EditUser extends React.Component<any,IStateProps>{
                 visible={this.state.editUserModal}
                 okText="Edit"
                 >
-                <Form {...formItemLayout} onSubmit={this.edituser}>
+                <Form {...formItemLayout} onFinish={this.edituser}>
                         <Form.Item label="Username">
                         {getFieldDecorator('username', {
                             rules: [

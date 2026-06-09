@@ -11,33 +11,38 @@ using Stateless;
 
 namespace intapscamis.camis.domain.Farms.StateMachines;
 
-public class ContractCancellationWorkflow : CamisService
+public class ContractModificationWorkflow: CamisService
 {
     public enum States
     {
         Filing = 1,
         Reviewing = 2,
-        Rejected = 3,
+        WaitingCMSS=3,
+        CMSSDone=4,
+        CMSSRejected=5,
+        Rejected = 6,
         Approved = -2,
         Cancelled = -3
     }
-
     public enum Triggers
     {
         Request = 1,
-        Reject = 2,
-        Approve = 3,
-        Cancel = 4,
+        WaitCMSS=2,
+        CMSSDone=3,
+        CMSSRejected=4,
+        Reject = 5,
+        Approve = 6,
+        Cancel = 7,
     }
-
+    
     private readonly IFarmsService _service;
 
     private readonly IWorkflowService _workflowService;
-    private readonly ILandBankService _landBankService;
+    public readonly ILandBankService _landBankService;
 
     private StateMachine<States, Triggers> _machine;
-
-    public ContractCancellationWorkflow(IFarmsService service, IWorkflowService workflowService,
+    
+    public ContractModificationWorkflow(IFarmsService service, IWorkflowService workflowService,
         ILandBankService landBankService)
     {
         _service = service;
@@ -62,14 +67,13 @@ public class ContractCancellationWorkflow : CamisService
         _workflowService.SetContext(Context);
         _landBankService.SetContext(Context);
     }
-
     public void ConfigureMachine()
     {
         Workflow = _workflowService.CreateWorkflow(new WorkflowRequest
         {
             CurrentState = (int)States.Filing,
-            Description = "Farm Contract Cancellation.",
-            TypeId = (int)WorkflowTypes.ContractCancellation
+            Description = "Farm Contract Renewal/Modification.",
+            TypeId = (int)WorkflowTypes.ContractModification
         });
         _machine = new StateMachine<States, Triggers>(States.Filing);
 
@@ -79,88 +83,12 @@ public class ContractCancellationWorkflow : CamisService
     public void ConfigureMachine(Guid workflowId)
     {
         Workflow = Context.Workflow.First(wf =>
-            wf.Id == workflowId && wf.TypeId == (int)WorkflowTypes.ContractCancellation);
+            wf.Id == workflowId && wf.TypeId == (int)WorkflowTypes.ContractModification);
         _machine = new StateMachine<States, Triggers>((States)Workflow.CurrentState);
 
         DefineStateMachine();
     }
-
-    public void Fire(Guid workflowId, StateMachine<States, Triggers>.TriggerWithParameters<string, long?> trigger,
-        string description, long? assignedUser)
-    {
-        _machine.Fire(trigger, description, assignedUser);
-        _workflowService.UpdateWorkflow(workflowId, (int)_machine.State, description);
-    }
-
-    public void Fire(Guid workflowId,
-        StateMachine<States, Triggers>.TriggerWithParameters<ContractCancellationRequest, string, long?> trigger,
-        ContractCancellationRequest data,
-        string description, long? assignedUser)
-    {
-        _machine.Fire(trigger, data, description, assignedUser);
-        _workflowService.UpdateWorkflow(workflowId, (int)_machine.State, description);
-    }
-
-    private void OnRequest(ContractCancellationRequest data, string description, long? assignedUser,
-        StateMachine<States, Triggers>.Transition transition)
-    {
-        ConfigureAndAddWorkItem(UserRoles.FarmSupervisor, data, description, assignedUser, transition);
-        _service.SetFarmLock(Guid.Parse(data.Id), true);
-        foreach (var r in data.CancelledRight)
-        {
-            if (r.SplitIndex > 0)
-            {
-                _landBankService.SetSubLandLock(Guid.Parse(r.LandId), r.SplitIndex, true);
-            }
-            else
-            {
-                _landBankService.SetLandLock(Guid.Parse(r.LandId), true);
-            }
-        }
-    }
-
-    private void OnReject(string description, long? assignedUser,
-        StateMachine<States, Triggers>.Transition transition)
-    {
-        ConfigureAndAddWorkItem(UserRoles.FarmClerk, GetData(), description, assignedUser, transition);
-    }
-
-    private void OnCancel(string description, long? assignedUser,
-        StateMachine<States, Triggers>.Transition transition)
-    {
-        var data = GetData();
-        ConfigureAndAddWorkItem(null, data, description, assignedUser, transition);
-        _service.SetFarmLock(Guid.Parse(data.Id), false);
-        foreach (var r in data.CancelledRight)
-        {
-            if (r.SplitIndex > 0)
-            {
-                _landBankService.SetSubLandLock(Guid.Parse(r.LandId), r.SplitIndex, false);
-            }
-            else
-            {
-                _landBankService.SetLandLock(Guid.Parse(r.LandId), false);
-            }
-        }
-    }
-
-    private void OnApprove(string description, long? assignedUser,
-        StateMachine<States, Triggers>.Transition transition)
-    {
-        var data = GetData();
-        ConfigureAndAddWorkItem(null, data, description, assignedUser, transition);
-        _service.CancelContract(data);
-    }
-
-    private ContractCancellationRequest GetData()
-    {
-        var workItem = Context.WorkItem.Where(wi => wi.WorkflowId == Workflow.Id).OrderBy(wi => wi.SeqNo)
-            .LastOrDefault();
-
-        return workItem != null ? JsonConvert.DeserializeObject<ContractCancellationRequest>(workItem.Data) : null;
-    }
-
-    private void DefineStateMachine()
+     private void DefineStateMachine()
     {
         ParameterizedTriggers.ConfigureParameters(_machine);
 
@@ -183,7 +111,7 @@ public class ContractCancellationWorkflow : CamisService
             .OnEntryFrom(ParameterizedTriggers.Cancel, OnCancel);
     }
 
-    private void ConfigureAndAddWorkItem(long? role, ContractCancellationRequest data, string description,
+    private void ConfigureAndAddWorkItem(long? role, ContractModificationRequest data, string description,
         long? assignedUser,
         StateMachine<States, Triggers>.Transition transition)
     {
@@ -197,11 +125,11 @@ public class ContractCancellationWorkflow : CamisService
         }
 
 
-        if (data?.CancellationSupDoc != null)
+        if (data?.SupportiveDocument != null)
         {
             const string pathPrefix = "/api/Farms/InWorkItemContractCancellationDoc/";
 
-            foreach (var doc in data.CancellationSupDoc)
+            foreach (var doc in data.SupportiveDocument)
             {
                 if (doc == null) continue;
 
@@ -276,7 +204,7 @@ public class ContractCancellationWorkflow : CamisService
 
     public static class ParameterizedTriggers
     {
-        public static StateMachine<States, Triggers>.TriggerWithParameters<ContractCancellationRequest, string, long?>
+        public static StateMachine<States, Triggers>.TriggerWithParameters<ContractModificationRequest, string, long?>
             Request;
 
         public static StateMachine<States, Triggers>.TriggerWithParameters<string, long?> Reject;
@@ -285,10 +213,63 @@ public class ContractCancellationWorkflow : CamisService
 
         public static void ConfigureParameters(StateMachine<States, Triggers> machine)
         {
-            Request = machine.SetTriggerParameters<ContractCancellationRequest, string, long?>(Triggers.Request);
+            Request = machine.SetTriggerParameters<ContractModificationRequest, string, long?>(Triggers.Request);
             Reject = machine.SetTriggerParameters<string, long?>(Triggers.Reject);
             Approve = machine.SetTriggerParameters<string, long?>(Triggers.Approve);
             Cancel = machine.SetTriggerParameters<string, long?>(Triggers.Cancel);
         }
+    }
+    public void Fire(Guid workflowId, StateMachine<States, Triggers>.TriggerWithParameters<string, long?> trigger,
+        string description, long? assignedUser)
+    {
+        _machine.Fire(trigger, description, assignedUser);
+        _workflowService.UpdateWorkflow(workflowId, (int)_machine.State, description);
+    }
+
+    public void Fire(Guid workflowId,
+        StateMachine<States, Triggers>.TriggerWithParameters<ContractModificationRequest, string, long?> trigger,
+        ContractCancellationRequest data,
+        string description, long? assignedUser)
+    {
+        _machine.Fire(trigger, data, description, assignedUser);
+        _workflowService.UpdateWorkflow(workflowId, (int)_machine.State, description);
+    }
+
+    private void OnRequest(ContractModificationRequest data, string description, long? assignedUser,
+        StateMachine<States, Triggers>.Transition transition)
+    {
+        ConfigureAndAddWorkItem(UserRoles.FarmSupervisor, data, description, assignedUser, transition);
+        _service.SetFarmLock(Guid.Parse(data.Id), true);
+       
+    }
+
+    private void OnReject(string description, long? assignedUser,
+        StateMachine<States, Triggers>.Transition transition)
+    {
+        ConfigureAndAddWorkItem(UserRoles.FarmClerk, GetData(), description, assignedUser, transition);
+    }
+
+    private void OnCancel(string description, long? assignedUser,
+        StateMachine<States, Triggers>.Transition transition)
+    {
+        var data = GetData();
+        ConfigureAndAddWorkItem(null, data, description, assignedUser, transition);
+        _service.SetFarmLock(Guid.Parse(data.Id), false);
+       
+    }
+
+    private void OnApprove(string description, long? assignedUser,
+        StateMachine<States, Triggers>.Transition transition)
+    {
+        var data = GetData();
+        ConfigureAndAddWorkItem(null, data, description, assignedUser, transition);
+       // _service.CancelContract(data);
+    }
+    private ContractModificationRequest GetData()
+    {
+        var workItem = Context.WorkItem.Where(wi => wi.WorkflowId == Workflow.Id).OrderBy(wi => wi.SeqNo)
+            .LastOrDefault();
+
+        return workItem != null ? JsonConvert.DeserializeObject<ContractModificationRequest>(workItem.Data) : null;
     }
 }

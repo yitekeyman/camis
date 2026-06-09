@@ -7,7 +7,7 @@
                             <i class="ti ti-exclamation-circle me-1"></i>
                             This field is required
                           </span></label>
-    <select [(ngModel)]="activityPlan.statusId" class="form-control input-sm" id="plan-status">
+    <select [(ngModel)]="activityPlan.statusId" class="form-select input-sm" id="plan-status">
       <option *ngFor="let statusType of statusTypes" [value]="statusType.id">{{statusType.name}}</option>
     </select>
   </div>

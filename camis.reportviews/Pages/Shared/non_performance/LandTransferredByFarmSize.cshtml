@@ -33,15 +33,15 @@
 
 
 
-<table class="table" id="tclick">
+<table class="table table-bordered" id="tclick">
     <thead>
 
-    <tr class="headings">
+    <tr class="">
         <th class="column-title">@Model.AddressType</th>
 
         @foreach (var item in size)
         {
-            <th class="column-title numberValue" colspan="2">
+            <th class="column-title " colspan="2">
                 @if (item[1] == -1)
                 {
                     <p>@item[0] - Inf (ha)</p>
@@ -56,7 +56,7 @@
         <th class="column-title ">Total Area (ha)</th>
 
     </tr>
-    <tr class="headings">
+    <tr class="">
         <th class="column-title"></th>
 
         @foreach (var item in size)
@@ -71,7 +71,7 @@
     @for (int i = 0; i < regions.Count; i++)
     {
         <tr>
-            <th class="column-title">
+            <td class="column-title">
                 @if (lookup.ContainsKey(regions[i]))
                 {
                     <p> @lookup[regions[i]] (@regions[i]) </p>
@@ -80,10 +80,10 @@
                 {
                     <p> @regions[i] </p>
                 }
-            </th>
+            </td>
             @foreach (var item in size)
             {
-                <th class="column-title numberValue">
+                <td class="column-title numberValue">
                     @if (count.SelectMany(m => m.RegionAreaCount).Where(m => m.Key == regions[i]).Count() > 0)
                     {
                         <a>@count.Where(m => m.areaFrom == item[0] && m.areaTo == item[1]).SelectMany(m => m.RegionAreaCount).Where(m => m.Key == regions[i]).Sum(m => m.Value.count)</a>
@@ -92,8 +92,8 @@
                     {
                         <a>0</a>
                     }
-                </th>
-                <th class="column-title numberValue">
+                </td>
+                <td class="column-title numberValue">
                     @if (count.SelectMany(m => m.RegionAreaCount).Where(m => m.Key == regions[i]).Count() > 0)
                     {
                         <a>@Math.Round(count.Where(m => m.areaFrom == item[0] && m.areaTo == item[1]).SelectMany(m => m.RegionAreaCount).Where(m => m.Key == regions[i]).Sum(m => m.Value.area), 2)</a>
@@ -102,9 +102,9 @@
                     {
                         <a>0</a>
                     }
-                </th>
+                </td>
             }
-            <th class="column-title numberValue">@Math.Round(areas[regions[i]], 2)</th>
+            <td class="column-title numberValue">@Math.Round(areas[regions[i]], 2)</td>
 
         </tr>
     }
@@ -113,16 +113,16 @@
     {
         <tfoot>
         <tr class="headings">
-            <th class="column-title">Total</th>
+            <td class="column-title">Total</td>
 
             @foreach (var item in size)
             {
-                <th class="column-title numberValue" colspan="2">
+                <td class="column-title numberValue" colspan="2">
                     <p></p>
 
-                </th>
+                </td>
             }
-            <th class="column-title numberValue">@Math.Round(areas.Sum(m => m.Value), 2)</th>
+            <td class="column-title numberValue">@Math.Round(areas.Sum(m => m.Value), 2)</td>
 
         </tr>
         </tfoot>

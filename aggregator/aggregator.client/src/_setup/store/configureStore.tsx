@@ -1,14 +1,12 @@
-import { applyMiddleware, combineReducers, createStore } from 'redux';
-import thunk from 'redux-thunk'
+import { applyMiddleware, combineReducers, createStore, AnyAction } from 'redux';
+import {thunk} from 'redux-thunk';
 // import { routerReducer, routerMiddleware } from 'react-router-redux';
 import { routerMiddleware, } from 'connected-react-router';
 import { compose } from 'redux'
 import reducers from '../reducer'
-import { persistStore, persistReducer } from 'redux-persist'
+import { persistStore, persistReducer, PersistConfig } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web and AsyncStorage for react-native
-import { routerReducer } from 'react-router-redux';
 import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2';
-import rootReducer from '../reducer';
 import { RootState } from './MyTypes';
 declare global {
     
@@ -30,12 +28,15 @@ export function configureStore(history :any) {
     enhancers.push(window.devToolsExtension());
   }
 
-  const persistConfig = {
+  const persistConfig: PersistConfig<RootState> = {
     key: 'admin',
     storage,
+    stateReconciler: autoMergeLevel2,
   }
   console.log(persistConfig);
-  const persistedReducer = persistReducer(persistConfig, reducers)
+  // persistReducer typing can be strict; use any for reducer state to avoid
+  // incompatibilities between reducer inferred types and PersistConfig
+  const persistedReducer = persistReducer<any, AnyAction>(persistConfig, reducers)
 
   let store = createStore(persistedReducer);
   let persistor = persistStore(store)

@@ -44,8 +44,10 @@ export class AddUsers extends React.Component<any,IStateProps>{
         this.props.toggleRegisterModal();
     }
 
-    registerUser(e : FormEvent<HTMLFormElement>){
-      e.preventDefault();
+    registerUser(e?: FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) {
+      if (e && 'preventDefault' in e) {
+        e.preventDefault();
+      }
       var self = this;
       this.props.form.validateFields((err: any, values : any) => {
         var s = Object.keys(err);
@@ -127,7 +129,7 @@ export class AddUsers extends React.Component<any,IStateProps>{
                 onOk={this.registerUser}
                 visible={this.state.registerUserModal}
                 >
-                <Form {...formItemLayout} onSubmit={this.registerUser}>
+                <Form {...formItemLayout}>
                         <Form.Item label="Username">
                         {getFieldDecorator('username', {
                             rules: [

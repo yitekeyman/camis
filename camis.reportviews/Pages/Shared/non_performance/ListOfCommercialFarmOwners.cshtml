@@ -12,23 +12,23 @@
     var lookup = Model.LocationLookup;
 }
 
-<table class="table" id="tclick">
+<table class="table table-responsive" id="tclick">
     <thead>
 
     <tr class="headings">
         <th class="column-title">#</th>
 
         <th class="column-title">Woreda</th>
+        <th class="column-title">UPIN</th>
 
         <th class="column-title">Farm</th>
         <th class="column-title ">Area (ha)</th>
         <th class="column-title">Investor Origin</th>
         <th class="column-title">Type Of Investment</th>
-
-        <th class="column-title">Start Date</th>
-
         <th class="column-title">Investment Capital</th>
-        <th class="column-title">Inv. License Number</th>
+        <th class="column-title">Reg Date</th>
+        
+        <th class="column-title">Lease Period</th>
 
 
     </tr>
@@ -48,13 +48,14 @@
                     <p> @item.Woreda </p>
                 }
             </td>
+            <td class="column-title">@item.Upin</td>
             <td class="column-title">@item.Name</td>
             <td class="column-title numberValue">@Math.Round(item.Area / 10000, 2)</td>
             <td class="column-title">@origins.Where(m => m.Id == item.OriginId).First().Name</td>
             <td class="column-title">@farmTyes.Where(m => m.Id == item.InvestmentType).First().Name</td>
+            <td class="column-title numberValue">@item.InvestedCapital.ToString("#,##0.00") Br</td>
             <td class="column-title">@item.StartDate</td>
-            <td class="column-title numberValue">@item.InvestedCapital</td>
-            <td class="column-title">@item.LicenseNumber</td>
+            <td class="column-title">@item.RightFrom.ToString("dd/MM/yyyy") - @item.RightTo.ToString("dd/MM/yyyy")</td>
 
         </tr>
     }
@@ -65,13 +66,12 @@
 
         <tr>
             <td class="column-title"></td>
-            <td class="column-title">Total</td>
-            <td class="column-title"></td>
+            <td class="column-title" colspan="3">Total</td>
             <td class="column-title numberValue">@Math.Round(Model.OperatorList.Sum(m => m.Area) / 10000, 2)</td>
             <td class="column-title"></td>
             <td class="column-title"></td>
+            <td class="column-title numberValue">@Model.OperatorList.Sum(m => m.InvestedCapital).ToString("#,##0.00") Br</td>
             <td class="column-title"></td>
-            <td class="column-title numberValue">@Math.Round(Model.OperatorList.Sum(m => m.InvestedCapital), 2)</td>
             <td class="column-title"></td>
 
         </tr>

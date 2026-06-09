@@ -83,7 +83,8 @@ export class FcFarmRegistrationComponent implements OnInit {
   frInvestedCapital = '';
   frDescription = '';
   frRegistrations: IAuthorityRegistration[] = [];
-
+parseCapital=0;
+investedCapital=0;
   plan = {
     rootActivity: {
       name: 'Business Plan',
@@ -315,7 +316,7 @@ export class FcFarmRegistrationComponent implements OnInit {
   async onSubmit(e: any): Promise<void> {
     this.dumpSubmit(e);
 
-    const message = await dialog.prompt('Enter a message for the supervisor (optional):');
+    const message = await dialog.prompt('Enter a message for the supervisor');
     if (message === null) {
       return
     }
@@ -474,6 +475,13 @@ export class FcFarmRegistrationComponent implements OnInit {
     const fileInput = document.getElementById('opPhoto') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = '';
+    }
+  }
+  parseCurrency(d:any){
+    if(d==1){
+      this.parseCapital=parseFloat(this.opCapital);
+    }else{
+      this.investedCapital=parseFloat(this.frInvestedCapital);
     }
   }
 }

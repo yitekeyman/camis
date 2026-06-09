@@ -21,7 +21,7 @@
                             <i class="ti ti-exclamation-circle me-1"></i>
                             This field is required
                           </span></label>
-                          <select [(ngModel)]="opType" name="op-type" id="op-type" class="form-control" required>
+                          <select [(ngModel)]="opType" name="op-type" id="op-type" class="form-select" required>
                             <option *ngFor="let type of farmOperatorTypes" [value]="type.id">{{ type.name }}</option>
                           </select>
                         </div>
@@ -44,7 +44,7 @@
                             <i class="ti ti-exclamation-circle me-1"></i>
                             This field is required
                           </span></label>
-                          <select [(ngModel)]="opOriginId" name="op-origin" id="op-origin" class="form-control" required>
+                          <select [(ngModel)]="opOriginId" name="op-origin" id="op-origin" class="form-select" required>
                             <option *ngFor="let origin of farmOperatorOrigins" [value]="origin.id">{{ origin.name }}</option>
                           </select>
                         </div>
@@ -68,7 +68,7 @@
                             <i class="ti ti-exclamation-circle me-1"></i>
                             This field is required
                           </span></label>
-                          <select [(ngModel)]="opGender" name="op-gender" id="op-gender" class="form-control" required>
+                          <select [(ngModel)]="opGender" name="op-gender" id="op-gender" class="form-select" required>
                             <option value="F">Female</option>
                             <option value="M">Male</option>
                           </select>
@@ -82,7 +82,7 @@
                             This field is required
                           </span></label>
                           <select [(ngModel)]="opMartialStatus" name="op-martial-status" id="op-martial-status"
-                                  class="form-control" required>
+                                  class="form-select" required>
                             <option [value]="1">Not Married</option>
                             <option [value]="2">Married</option>
                             <option [value]="3">Divorced</option>
@@ -256,13 +256,13 @@
                             <i class="ti ti-exclamation-circle me-1"></i>
                             This field is required
                           </span></label>
-                    <select [(ngModel)]="frType" name="fr-type" id="fr-type" class="form-control" required>
+                    <select [(ngModel)]="frType" name="fr-type" id="fr-type" class="form-select" required>
                       <option *ngFor="let type of farmTypes" [value]="type.id">{{ type.name }}</option>
                     </select>
                   </div>
                   <div class="form-group">
                     <label class="control-label" for="fr-other-types">Other Farm Types:</label>
-                    <select [(ngModel)]="frOtherTypeIds" name="fr-other-types" id="fr-other-types" class="form-control"
+                    <select [(ngModel)]="frOtherTypeIds" name="fr-other-types" id="fr-other-types" class="form-select"
                             multiple>
                       <option *ngFor="let type of farmTypes" [value]="type.id">
                         {{ type.name }}

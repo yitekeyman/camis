@@ -47,6 +47,21 @@ namespace intapscamis.camis.domain.Farms.Models
         public FarmStatus Status { get; set; } = new FarmStatus();
         public bool Locked { get; set; }
     }
+
+    public class ContractModificationRequest
+    {
+        public string Id { get; set; }
+        public string FarmId { get; set; }
+        public FarmRequest Farm { get; set; }=new FarmRequest();
+        public FarmStatus ModificationReason { get; set; } = new FarmStatus();
+        public string Description { get; set; }
+        public IList<DocumentRequest> SupportiveDocument { get; set; }=new List<DocumentRequest>();
+        public IList<CancelledRightRequest> ModifiedRight { get; set; }=new List<CancelledRightRequest>();
+        public DateTime RequestDate { get; set; }
+        public string RequestedBy { get; set; }
+        public DateTime ApprovalDate { get; set; }
+        public string ApprovedBy { get; set; }
+    }
     public class FarmLandRequest
     {
         public string LandId { get; set; }

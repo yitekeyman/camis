@@ -236,7 +236,7 @@ namespace intapscamis.camis.domain.Report
                     type = "Zone";
                     return res;
                 }
-                else if(len == 6 || len == 8)
+                else if(len > 6 && len <= 9)
                 {
                     var val = Context.TWoredas.Where(m => locations.Contains(m.NrlaisWoredaid)).ToList();
                     var res = val.ToDictionary(m => m.NrlaisWoredaid, m => m.Woredanameeng);

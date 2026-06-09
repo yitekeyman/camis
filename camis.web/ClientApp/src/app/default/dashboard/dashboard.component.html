@@ -82,7 +82,7 @@
             <i class="text-warning ti ti-flag-pin f-24"></i>
           </div>
           <div class="ms-2">
-            <h4 class="f-w-600 mb-1">{{dashboardData.identifiedParcels.totalParcels | number}} Parcels | ({{(dashboardData.identifiedParcels.totalArea)/1000 | number}} Hr)</h4>
+            <h4 class="f-w-600 mb-1">{{dashboardData.identifiedParcels.totalParcels | number}} Parcels | ({{(dashboardData.identifiedParcels.totalArea)/10000 | number}} Hr)</h4>
             <p class="mb-0 opacity-50 text-sm">Identified Parcels</p>
           </div>
         </div>
@@ -97,7 +97,7 @@
             <i class="text-white ti ti-map-check f-24"></i>
           </div>
           <div class="ms-2">
-            <h4 class="f-w-600 mb-1">{{dashboardData.preparedParcel.totalParcels | number}} Parcels | ({{(dashboardData.preparedParcel.totalArea)/1000 | number}} Hr)</h4>
+            <h4 class="f-w-600 mb-1">{{dashboardData.preparedParcel.totalParcels | number}} Parcels | ({{(dashboardData.preparedParcel.totalArea)/10000 | number}} Hr)</h4>
             <p class="mb-0 opacity-50 text-sm">Prepared Parcels</p>
           </div>
         </div>
@@ -112,7 +112,7 @@
             <i class="text-warning ti ti-user-pin f-24"></i>
           </div>
           <div class="ms-2">
-            <h4 class="f-w-600 mb-1">{{dashboardData.transferredParcel.totalParcels | number}} Parcels | ({{(dashboardData.transferredParcel.totalArea)/1000 | number}} Hr)</h4>
+            <h4 class="f-w-600 mb-1">{{dashboardData.transferredParcel.totalParcels | number}} Parcels | ({{(dashboardData.transferredParcel.totalArea)/10000 | number}} Hr)</h4>
             <p class="mb-0 opacity-50 text-sm">Transferred Parcels</p>
           </div>
         </div>
@@ -127,7 +127,7 @@
             <i class="text-warning ti ti-droplets f-24"></i>
           </div>
           <div class="ms-2">
-            <h4 class="f-w-600 mb-1">{{dashboardData.irrigatedParcel.totalParcels | number}} Parcels | ({{(dashboardData.irrigatedParcel.totalArea)/1000 | number}} Hr)</h4>
+            <h4 class="f-w-600 mb-1">{{dashboardData.irrigatedParcel.totalParcels | number}} Parcels | ({{(dashboardData.irrigatedParcel.totalArea)/10000 | number}} Hr)</h4>
             <p class="mb-0 opacity-50 text-sm">Moisture Source (Irrigation)</p>
           </div>
         </div>
@@ -140,7 +140,7 @@
             <i class="text-warning ti ti-map-pause f-24"></i>
           </div>
           <div class="ms-2">
-            <h4 class="f-w-600 mb-1">{{item.totalParcels | number}} Parcels | ({{(item.totalArea)/1000 | number}} Hr)</h4>
+            <h4 class="f-w-600 mb-1">{{item.totalParcels | number}} Parcels | ({{(item.totalArea)/10000 | number}} Hr)</h4>
             <p class="mb-0 opacity-50 text-sm">Suitable for {{item.parcelStatus.name}}</p>
           </div>
         </div>

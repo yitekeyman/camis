@@ -211,13 +211,13 @@
 
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label class="control-label" for="op-capital">Capital:<span class="text-danger">(*)&nbsp;</span>
+                        <label class="control-label" for="op-capital">Capital:<span class="text-danger">(*)&nbsp; <small>({{parseCapital|currency : "Br "}})</small></span>
                           <span *ngIf="!opCapital" class="error-message">
                             <i class="ti ti-exclamation-circle me-1"></i>
                             This field is required
                           </span></label>
                         <input [(ngModel)]="opCapital" type="number" name="op-capital" id="op-capital"
-                               class="form-control" required placeholder="Enter initial capital">
+                               class="form-control" required placeholder="Enter initial capital" (keyup)="parseCurrency(1)">
                       </div>
                     </div>
                     <div class="col-md-6">
@@ -423,14 +423,14 @@
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label class="control-label" for="fr-invested-capital">Invested Capital:<span class="text-danger">(*)&nbsp;</span>
+                    <label class="control-label" for="fr-invested-capital">Invested Capital:<span class="text-danger">(*)&nbsp;<small>({{investedCapital|currency : "Br "}})</small></span>
                       <span *ngIf="!frInvestedCapital" class="error-message">
                             <i class="ti ti-exclamation-circle me-1"></i>
                             This field is required
                           </span></label>
                     <input [(ngModel)]="frInvestedCapital" type="number" name="fr-invested-capital"
                            id="fr-invested-capital"
-                           class="form-control" required placeholder="Enter invested capital">
+                           class="form-control" required placeholder="Enter invested capital" (keyup)="parseCurrency(2)">
                   </div>
                   <div class="form-group">
                     <label class="control-label" for="fr-description">Description: </label>

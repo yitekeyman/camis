@@ -104,6 +104,7 @@ export class SearchLandComponent implements OnInit {
 
     dialog.loading();
     this.searchedResult = [];
+    this.pagedItems=[];
     this.searchModel.landType = this.selectedLandType.value;
     this.searchModel.upin = this.keyword.value;
    this.keyCase.PascalCase(this.searchModel);

@@ -46,7 +46,7 @@ export class FcFarmModificationComponent implements OnInit {
   opBirthdate = new Date(Date.now() - 1000 * 60 * 60 * 24 * 365.25 * 18).toISOString().slice(0, 10);
   opPhotoId: string = null;
   opPhoto: IDocument = {
-    file: undefined,
+    file: null,
     filename: '',
     mimetype: '',
     date: null,
@@ -204,54 +204,61 @@ export class FcFarmModificationComponent implements OnInit {
   async onSubmit(e: any): Promise<void> {
     this.dumpSubmit(e);
 
-    const message = await dialog.prompt('Enter a message for the supervisor (optional):');
-    if (message === "null") {
+    const message = await dialog.prompt('Enter a message for the supervisor :');
+    if (message === "") {
+      await dialog.error("Enter a message for the supervisor :");
       return
     }
+    else {
+      dialog.loading();
 
-    dialog.loading();
+      const body: any = {
+        id: this.frId,
+        typeId: Number(this.frType),
+        otherTypeIds: this.frOtherTypeIds.map(str => Number(str)),
+        investedCapital: Number(this.frInvestedCapital),
+        description: this.frDescription,
+        registrations: this.frRegistrations,
+        locked:true,
+        status:{
+          id:3,
+          name:'Transaction Locked'
+        },
+        operator: {
+          id: this.opId,
+          name: this.opName,
+          nationality: this.opNationality,
+          typeId: Number(this.opType),
+          addressId: this.opAddress,
+          phone: this.opPhone,
+          email: this.opEmail,
+          originId: Number(this.opOriginId),
+          capital: Number(this.opCapital),
+          registrations: this.opRegistrations,
 
-    const body: any = {
-      id: this.frId,
-      typeId: Number(this.frType),
-      otherTypeIds: this.frOtherTypeIds.map(str => Number(str)),
-      investedCapital: Number(this.frInvestedCapital),
-      description: this.frDescription,
-      registrations: this.frRegistrations,
-      operator: {
-        id: this.opId,
-        name: this.opName,
-        nationality: this.opNationality,
-        typeId: Number(this.opType),
-        addressId: this.opAddress,
-        phone: this.opPhone,
-        email: this.opEmail,
-        originId: Number(this.opOriginId),
-        capital: Number(this.opCapital),
-        registrations: this.opRegistrations,
+          gender: this.opGender,
+          martialStatus: Number(this.opMartialStatus),
+          birthdate: new Date(this.opBirthdate).getTime(),
 
-        gender: this.opGender,
-        martialStatus: Number(this.opMartialStatus),
-        birthdate: new Date(this.opBirthdate).getTime(),
+          ventures: this.opType == '6' ? this.opVentures : [],
+          photo: (this.opPhoto && this.opPhoto.file != null) ? this.opPhoto : null,
+          photoId: this.opPhotoId,
+        }
+      };
 
-        ventures: this.opType == '6' ? this.opVentures : [],
-        photo:this.opPhoto.file!=null?this.opPhoto:null,
-        photoId:this.opPhotoId,
-      }
-    };
+      this.keyCase.PascalCase(body);
 
-    this.keyCase.PascalCase(body);
+      const req = this.workflowId ?
+        this.api.requestFarmModification(this.workflowId, body, message) :
+        this.api.requestNewFarmModification(body, message);
 
-    const req = this.workflowId ?
-      this.api.requestFarmModification(this.workflowId, body, message) :
-      this.api.requestNewFarmModification(body, message);
-
-    req.toPromise()
-      .then(() => dialog.success('Your modification request has been sent to the supervisor successfully.'))
-      .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
-      .catch(err => {
-        return dialog.error(err)
-      });
+      req.toPromise()
+        .then(() => dialog.success('Your modification request has been sent to the supervisor successfully.'))
+        .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+        .catch(err => {
+          return dialog.error(err)
+        });
+    }
   }
 
   validEmail = true;
@@ -284,7 +291,7 @@ export class FcFarmModificationComponent implements OnInit {
     const file = e.target.files[0] as File;
 
     if (!file) {
-      this.opPhoto.file = undefined;
+      this.opPhoto.file = null;
       return;
     }
 
@@ -332,7 +339,7 @@ export class FcFarmModificationComponent implements OnInit {
   }
 
   resetPhoto(): void {
-    this.opPhoto.file = undefined;
+    this.opPhoto.file = null;
     this.opPhoto.filename = '';
     this.opPhoto.mimetype = '';
     this.opPhoto.date = null;

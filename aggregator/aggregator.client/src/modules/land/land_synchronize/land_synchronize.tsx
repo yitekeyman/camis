@@ -62,7 +62,7 @@ export default class LandSynchronize extends Component<any, IStateProps>{
         return(
             <div>
             <h1>Synchronize Land </h1>
-            <Form onSubmit={this.handleSubmit}>
+            <Form onFinish={this.handleSubmit}>
             <Form.Item label="Region" style={{display : 'block'}} >
                             {
                                 getFieldDecorator('regions',{

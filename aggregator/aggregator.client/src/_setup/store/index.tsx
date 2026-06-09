@@ -1,11 +1,11 @@
-import { createStore, applyMiddleware } from 'redux'
+import { createStore, applyMiddleware, compose, Middleware } from 'redux'
 import thunk from 'redux-thunk'
-import { compose } from 'redux'
 import rootReducer from '../reducer/index'
 
 const initialState = {}
 
-const middleware = [thunk] //Add more middleware here
+const thunkMiddleware = ((thunk as any).default || thunk) as Middleware
+const middleware: Middleware[] = [thunkMiddleware] //Add more middleware here
 
 const store = createStore(
   rootReducer,

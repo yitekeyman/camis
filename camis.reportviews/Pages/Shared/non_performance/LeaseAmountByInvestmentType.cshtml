@@ -42,9 +42,9 @@
             </td>
             @foreach (var k in t)
             {
-                <td class="column-title numberValue">@Model.LeaseSummary.Where(m => m.location == item && m.land_type == k).Sum(m => m.lease) Br.</td>
+                <td class="column-title numberValue">@Model.LeaseSummary.Where(m => m.location == item && m.land_type == k).Sum(m => m.lease).ToString("#,##0.00") Br.</td>
             }
-            <td class="column-title  numberValue">@Model.LeaseSummary.Where(m => m.location == item).Sum(m => m.lease) Br.</td>
+            <td class="column-title  numberValue">@Model.LeaseSummary.Where(m => m.location == item).Sum(m => m.lease).ToString("#,##0.00") Br.</td>
         </tr>
     }
     </tbody>
@@ -56,9 +56,9 @@
             <td class="column-title">Total</td>
             @foreach (var s in t)
             {
-                <td class="column-title numberValue">@Model.LeaseSummary.Where(m => m.land_type == s).Sum(m => m.lease) Br.</td>
+                <td class="column-title numberValue">@Model.LeaseSummary.Where(m => m.land_type == s).Sum(m => m.lease).ToString("#,##0.00") Br.</td>
             }
-            <td class="column-title  numberValue">@Model.LeaseSummary.Sum(m => m.lease) Br.</td>
+            <td class="column-title  numberValue">@Model.LeaseSummary.Sum(m => m.lease).ToString("#,##0.00") Br.</td>
         </tr>
         </tfoot>
     }

@@ -8,6 +8,8 @@ import OlTileLayer from 'ol/layer/Tile';
 import { register } from 'ol/proj/proj4';
 import GeoJSON from 'ol/format/GeoJSON'
 import WKT from 'ol/format/WKT';
+import Feature from 'ol/Feature';
+import Geometry from 'ol/geom/Geometry';
 import { OSM, Vector as VectorSource } from 'ol/source';
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
 import { Fill, Stroke, Style } from 'ol/style';
@@ -16,7 +18,7 @@ import LandService from '../../../_setup/services/land.service';
 import {Api} from '../../../_setup/services/api';
 import Projection from 'ol/proj/Projection';
 import * as proj4 from 'proj4';
-import './land_map.scss';
+// import './land_map.scss';
 
 //declare var proj4: proj4;
 
@@ -30,13 +32,13 @@ export default class Map extends Component<any, any>{
     mapConfig: any;
   
   
-    nrlais_features: VectorSource;
+    nrlais_features: VectorSource<Feature<Geometry>>;
     nrlais_style: any;
   
-    workflow_features: VectorSource;
+    workflow_features: VectorSource<Feature<Geometry>>;
     workflow_style: any;
   
-    split_features: VectorSource;
+    split_features: VectorSource<Feature<Geometry>>;
     split_style: any;
   
     zoomMargin: number = 1.3;
@@ -51,9 +53,9 @@ export default class Map extends Component<any, any>{
         this.mapRef = React.createRef();
         this.view = new OlView();
         this.map = new OlMap({});
-        this.nrlais_features = new VectorSource();
-        this.workflow_features = new VectorSource();
-        this.split_features = new VectorSource();
+        this.nrlais_features = new VectorSource<Feature<Geometry>>();
+        this.workflow_features = new VectorSource<Feature<Geometry>>();
+        this.split_features = new VectorSource<Feature<Geometry>>();
 
 
     }
@@ -63,7 +65,7 @@ export default class Map extends Component<any, any>{
     }
 
     defineNrlaisLayer() {
-        this.nrlais_features = new VectorSource({
+        this.nrlais_features = new VectorSource<Feature<Geometry>>({
           features: []
         });
         this.nrlais_style = new Style({
@@ -84,7 +86,7 @@ export default class Map extends Component<any, any>{
       }
 
       defineWorkFlowLayer(): any {
-        this.workflow_features = new VectorSource({
+        this.workflow_features = new VectorSource<Feature<Geometry>>({
           features: []
         });
     
@@ -108,7 +110,7 @@ export default class Map extends Component<any, any>{
 
 
       defineSplitLayer(): any {
-        this.split_features = new VectorSource({
+        this.split_features = new VectorSource<Feature<Geometry>>({
           features: []
         });
     

@@ -1,4 +1,4 @@
-import { Reducer } from 'redux';
+import { Reducer, AnyAction } from 'redux';
 import {AuthActions} from '../actions/AuthActions';
 import  {AuthState} from '../../_infrastructure/state/authState';
 
@@ -7,7 +7,7 @@ let initialState : AuthState = {
     session : undefined
 }
 
-const authReducer : Reducer<AuthState> = (
+const authReducer : Reducer<AuthState, AnyAction> = (
    state = initialState,
    action
 ): AuthState => {

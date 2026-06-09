@@ -58,8 +58,8 @@ export class ChangePassword extends React.Component<any,IStateProps>{
         this.props.toggleChangePasswordModal();
     }
 
-    changePassword(e : FormEvent<HTMLFormElement>){
-      e.preventDefault();
+        changePassword(e?: React.SyntheticEvent){
+            if(e && e.preventDefault) e.preventDefault();
       var self = this;
       this.props.form.validateFields((err: any, values : any) => {
          var s = Object.keys(err);
@@ -132,7 +132,7 @@ export class ChangePassword extends React.Component<any,IStateProps>{
                 visible={this.state.changePasswordModal}
                 okText="Edit"
                 >
-                <Form {...formItemLayout} onSubmit={this.changePassword}>
+                <Form {...formItemLayout}>
                         <Form.Item label="Username">
                         {getFieldDecorator('username', {
                             rules: [

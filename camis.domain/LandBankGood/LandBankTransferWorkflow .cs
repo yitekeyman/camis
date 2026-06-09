@@ -240,6 +240,7 @@ namespace intapscamis.camis.domain.LandBank
         {
             ConfigureMachine(wfid);
             var data = GetPreparationRequest(wfid);
+            data.LandTransferRequest.farmId = data.Id;
             ExecuteLandTransfer(data.LandTransferRequest);
             var workflowId=this.fireAction(wfid, Triggers.Execute, note??"Accepted by Farm supervisor", null).WorkflowId;
             // _landAssignmentWorkflow.ConfigureMachine();

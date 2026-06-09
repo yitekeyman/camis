@@ -15,8 +15,8 @@
         </div>
       </div>
     </div>
-    <div class="card-body p-2" style="height: calc(65vh);">
-      <div class="accordion" id="accordionPanelsStayOpenExample" style="max-height: calc(64vh); overflow-y: auto">
+    <div class="card-body p-2" style="height: calc(73vh - 10px);">
+      <div class="accordion" id="accordionPanelsStayOpenExample" style="max-height: calc(72vh - 10px); overflow-y: auto">
         <div class="accordion-item">
           <h2 class="accordion-header" id="panelsStayOpen-headingOne">
             <button class="accordion-button" type="button" data-bs-toggle="collapse"
@@ -195,6 +195,16 @@
                   <td><label>{{ soil.name }}:</label></td>
                   <td>{{ soil.result }}</td>
                 </tr>
+                <tr *ngIf="soilTestTypes?.length==0" class="no-data">
+                  <td>
+
+                    <div class="align-center mt-4 ">
+                      <i class="ti ti-exclamation-circle"></i>
+                      <h1>Sorry!</h1>
+                      <p>There is no Records Found</p>
+                    </div>
+                  </td>
+                </tr>
                 </tbody>
               </table>
             </div>
@@ -229,6 +239,16 @@
                   <td>{{ climate.temp_low }} °c</td>
                   <td>{{ climate.temp_high }} °c</td>
                   <td>{{ climate.temp_avg }} °c</td>
+                </tr>
+                <tr *ngIf="climates?.length==0" class="no-data">
+                  <td colspan="5">
+
+                    <div class="align-center mt-4 ">
+                      <i class="ti ti-exclamation-circle"></i>
+                      <h1>Sorry!</h1>
+                      <p>There is no Records Found</p>
+                    </div>
+                  </td>
                 </tr>
                 </tbody>
               </table>

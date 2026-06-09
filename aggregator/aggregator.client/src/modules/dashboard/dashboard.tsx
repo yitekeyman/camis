@@ -1,12 +1,17 @@
 import React, { Component, Suspense } from 'react'
-import './dashboard.scss';
-import {Button, Form, Spin, Row, Col} from 'antd';
-import 'antd/dist/antd.css';
+// Suppress missing type declarations for SCSS side-effect import
+// @ts-ignore
+
+import { Spin, Row, Col } from 'antd';
+// Suppress missing type declarations for CSS side-effect import
+// @ts-ignore
+//import 'antd/dist/antd.css';
 //import Login from '../modules/shared/login/login'
 import {
-  Layout, Menu, Breadcrumb, Icon,
+  Layout, Menu,
 } from 'antd';
-import { Link, Switch, Route } from 'react-router-dom';
+import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
+import { Link, Routes, Route } from 'react-router-dom';
 
 
 import { Container } from 'reactstrap';
@@ -16,7 +21,7 @@ import {routes} from '../../_infrastructure/routes/routes';
 import { GetNaviations } from '../../_setup/roles/roles';
 import { mapStateToProps } from '../../_setup/mapStateToProps';
 import { mapDispatchToProps } from '../../_setup/mapDispatchToProps';
-
+require('./dashboard.scss');
 const {
   Header, Content, Footer, Sider,
 } = Layout;
@@ -108,10 +113,8 @@ class Dash extends React.Component<any,any> {
             return (
             <Menu.Item key={item.path}>
                       <Link to={item.path}>
-                      <Icon type={item.icon} />
                         <span>{item.title}</span>
                     </Link>
-                        
                       </Menu.Item>
             )
           }) : null
@@ -127,11 +130,10 @@ class Dash extends React.Component<any,any> {
         mode="horizontal"
         style={{ lineHeight: '64px' }}
       >
-         <Icon
-              className="trigger"
-              type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
-              onClick={this.toggle}
-            />
+        {this.state.collapsed ?
+          <MenuUnfoldOutlined className="trigger" onClick={this.toggle} /> :
+          <MenuFoldOutlined className="trigger" onClick={this.toggle} />
+        }
         <Menu.Item key="1" className="logout" onClick={this.Logout}>Logout</Menu.Item>
       </Menu>
           </Header>
@@ -141,21 +143,16 @@ class Dash extends React.Component<any,any> {
                         >
                        
                         <Container fluid>   
-                                <Suspense fallback={this.loading}>
-                                <Switch>
-                                    {routes.map((route, idx) => {
-                                    return <Route
-                                        key={idx}
-                                        path={route.path}
-                                        exact={route.exact}
-                                        name={route.name}
-                                     
-                                        render = {
-                                            (props : any) => (<route.component {...this.props} {...props} />)
-                                        }
-                                    />
-                                    })}
-                                </Switch>
+                                <Suspense fallback={this.loading()}>
+                                <Routes>
+                                  {routes.map((route, idx) => {
+                                  return <Route
+                                    key={idx}
+                                    path={route.path}
+                                    element={(<route.component {...this.props} />)}
+                                  />
+                                  })}
+                                </Routes>
                             </Suspense>    
                         </Container>
                         </Spin>
@@ -170,5 +167,5 @@ class Dash extends React.Component<any,any> {
 }
 
 
-const Dashboard = connect(mapStateToProps,mapDispatchToProps)(Form.create()(Dash));
+const Dashboard = connect(mapStateToProps,mapDispatchToProps)(Dash);
 export {Dashboard};

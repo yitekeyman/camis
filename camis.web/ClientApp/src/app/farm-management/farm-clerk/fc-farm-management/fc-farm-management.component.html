@@ -7,7 +7,7 @@
             <h5><i class="ti ti-building-cottage"></i> Search Farms & Owners</h5>
           </div>
           <div class="col-md-5 pb-0">
-            <div class="input-group mb-0">
+            <div class="input-group mb-0" *ngIf="!loading">
                <span class="input-group-text">
                   <i class="ti ti-search"></i>
                 </span>
@@ -16,42 +16,49 @@
             </div>
           </div>
           <div class="col-md-3" style="text-align: right">
-            <button class="btn-custom btn align-right" (click)="newFarmRegistration()" *ngIf="loginRole=='2'">
+            <button class="btn-custom btn align-right" (click)="newFarmRegistration()" *ngIf="!loading && loginRole=='2' ">
               Register New Farm & Owners
             </button>
 
           </div>
         </div>
       </div>
-      <div class="card-block p-1" style="min-height: calc(65vh)">
-        <div *ngIf="!loading && !farms.length" class="align-center">
-          <h1><i class="ti ti-exclamation-circle"></i></h1>
-          <p>{{ term ? ('No search results found for "' + term + '".') : 'No registered farms, yet.' }}</p>
-        </div>
-        <div class="table-responsive" *ngIf="!loading && farms.length">
-          <table id="datatable" class="table">
-            <caption class="title text-success">Showing {{ farms.length }}
-              of {{ totalFarms }} {{ term ? 'search result' : 'registered farm' }}{{ farms.length == 1 ? '' : 's' }}{{ term ? (' found for "' + term + '"') : null }}
-              .
-            </caption>
+      <div class="card-block p-1 mb-0" style="min-height: calc(65vh - 10px)">
+
+        <div class="table-responsive" >
+          <table id="datatable" class="table table-striped mb-0" >
+
             <thead>
             <tr class="headings">
               <th>
                 #
               </th>
               <th>Owner Name</th>
-              <th>Owner Type</th>
-              <th>Farm Type</th>
-              <th>Invested Capital</th>
+              <th>
+                <select class="form-select-sm w-75 p-1" [(ngModel)]="searchParm.ownerType" (change)="searchFarm(0)" style="font-size: 9pt">
+                  <option value="0">All Owner Type</option>
+                  <option *ngFor="let x of ownerTypes" [value]="x.id">{{ x.name }}</option>
+                </select>
+              </th>
+              <th>
+                <select class="form-select-sm w-75 p-1" [(ngModel)]="searchParm.farmType" (change)="searchFarm(0)" style="font-size: 9pt">
+                  <option value="0">All Owner Type</option>
+                  <option *ngFor="let x of farmTypes" [value]="x.id">{{ x.name }}</option>
+                </select>
+              </th>
+              <th>Invested_Capital</th>
               <th style="width: 20%">Description</th>
-              <th>Status</th>
+              <th> <select class="form-select-sm w-75 p-1" [(ngModel)]="searchParm.farmStatus" (change)="searchFarm(0)" style="font-size: 9pt;">
+                <option value="0">All Status</option>
+                <option *ngFor="let x of farmStatusTypes" [value]="x.id">{{ x.name }}</option>
+              </select></th>
               <th class="align-center">
                 <span class="nobr">Action</span>
               </th>
             </tr>
             </thead>
 
-            <tbody style="font-size: 0.775rem">
+            <tbody style="font-size: 0.775rem" *ngIf="farms?.length>0">
             <tr class="even pointer" *ngFor="let farm of farms; index as i">
               <td class="a-center ">
                 {{ i+1 }}
@@ -83,13 +90,37 @@
               </td>
             </tr>
             </tbody>
+            <tbody *ngIf="farms?.length==0">
+            <tr class="no-data">
+              <td colspan="8">
+
+                <div class="align-center mt-4 ">
+                  <i class="ti ti-exclamation-circle"></i>
+                  <h1>Sorry!</h1>
+                  <p>There is no Records Found</p>
+                </div>
+              </td>
+            </tr>
+            </tbody>
           </table>
         </div>
       </div>
-      <div class="card-footer pb-1">
-        <div class="text-center">
-          <button type="button" class="btn btn-outline-success btn-sm" (click)="load()">Load More...</button>
+      <div class="card-footer p-1">
+        <div class="row">
+          <div class="col-md-6">
+            <small class="title text-success" *ngIf="!loading">Showing {{ farms.length }}
+              of {{ totalFarms }} {{ term ? 'search result' : 'registered farm' }}{{ farms.length == 1 ? '' : 's' }}{{ term ? (' found for "' + term + '"') : null }}
+              .
+            </small>
+          </div>
+          <div class="col-md-6">
+            <div class="text-left" *ngIf="!loading">
+              <button type="button" class="btn btn-custom-light" (click)="load()">Load More...</button>
+            </div>
+          </div>
         </div>
+
+
       </div>
     </div>
   </div>

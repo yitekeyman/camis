@@ -260,10 +260,10 @@ namespace intapscamis.camis.domain.Report
 
             var condition = GetFilterSqlCommand(Request);
 
-            var sql = "select CONCAT(split_part(lu.upin,'/',1),'/',split_part(lu.upin,'/',2),'/',split_part(lu.upin,'/',3)), fo.name, lu.area, fo.origin_id," +
-                " fa.type_id, ua.timestamp, fa.invested_capital, fr.registration_number from lb.land_upin lu inner " +
+            var sql = "select CONCAT(split_part(lu.upin,'/',1),'/',split_part(lu.upin,'/',2),'/',split_part(lu.upin,'/',3)),  fo.name, lu.area, fo.origin_id," +
+                " fa.type_id, ua.timestamp, fa.invested_capital, lu.upin,lr.right_from, lr.right_to from lb.land_upin lu inner " +
                 "join frm.farm_land fl on lu.land_id = fl.land_id inner join frm.farm fa on fl.farm_id = fa.id inner join frm.farm_operator fo on fa.operator_id = fo.id " +
-                $"inner join sys.user_action ua on fa.aid = ua.id left outer join frm.farm_registration fr on fa.id = fr.farm_id {condition}";
+                $"inner join sys.user_action ua on fa.aid = ua.id inner join lb.land_right lr on (lr.farm_id=fa.id and lr.land_id=lu.land_id) {condition}";
 
 
 
@@ -281,7 +281,9 @@ namespace intapscamis.camis.domain.Report
                     InvestmentType = int.Parse(dr[4].ToString()),
                     StartDate = new DateTime(long.Parse(dr[5].ToString())),
                     InvestedCapital = double.Parse(dr[6].ToString()),
-                    LicenseNumber = dr[7].ToString(),
+                    Upin = dr[7].ToString(),
+                    RightFrom = new DateTime(long.Parse(dr[8].ToString())),
+                    RightTo = new DateTime(long.Parse(dr[9].ToString())),
                 });
             }
             Context.Database.CloseConnection();

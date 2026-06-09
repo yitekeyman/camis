@@ -1,11 +1,14 @@
-import React, { Component, FormEvent } from 'react'
+import React, { Component } from 'react'
+// @ts-ignore
 import './login.scss';
+// @ts-ignore
+//import 'antd/dist/antd.css';
 import {Button, Input, Checkbox, Card, Row, Col} from 'antd';
-import 'antd/dist/antd.css';
 //import Login from '../modules/shared/login/login'
 import {
-  Layout, Menu, Breadcrumb, Icon, Form
+  Layout, Menu, Breadcrumb, Form
 } from 'antd';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import SecurityService from '../../_setup/services/security.service';
 import {connect } from 'react-redux';
 import { mapStateToProps } from '../../_setup/mapStateToProps';
@@ -51,26 +54,17 @@ class L extends React.Component<any,any> {
   }
 
 
-  handleSubmit = (e : FormEvent) => {
-    var test : any = {
-      accessibilityType : [{id : '1', name :"Name"}]
-    }
-    var self = this;
-    e.preventDefault();
-    this.props.form.validateFields((err:any, values:any) => {
-      if (err == undefined) {
-          this.SecurityService.Login({UserName : values.userName, Password: values.password}).then(function(response){
-            console.log(response.data);
-            self.props.auth.login(response.data);
-            self.LandService.GetInitData().then((response) => self.props.base.set(response.data));
-            self.props.history.push('/report');
-          }).catch((error) => {console.log(error)})
-      }
-    });
+  handleSubmit = (values: any) => {
+    const self = this;
+    this.SecurityService.Login({UserName : values.userName, Password: values.password}).then(function(response){
+      console.log(response.data);
+      self.props.auth.login(response.data);
+      self.LandService.GetInitData().then((response) => self.props.base.set(response.data));
+      self.props.history.push('/report');
+    }).catch((error) => {console.log(error)})
   };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
     return (
       <Row>
         <Col span={7} offset={14}>
@@ -79,31 +73,28 @@ class L extends React.Component<any,any> {
       title="Login">
       
       
-      <Form onSubmit={this.handleSubmit} >
-        <FormItem>
-          {getFieldDecorator("userName", {
-            rules: [
-              { required: true, message: "Please input your username!" },
-             
-            ]
-          })(
-            <Input
-              prefix={<Icon type="user" style={{ fontSize: 13 }} />}
-              placeholder="Username"
-            />
-          )}
+      <Form onFinish={this.handleSubmit} >
+        <FormItem
+          name="userName"
+          rules={[
+            { required: true, message: "Please input your username!" },
+          ]}
+        >
+          <Input
+            prefix={<UserOutlined style={{ fontSize: 13 }} />}
+            placeholder="Username"
+          />
         </FormItem>
 
-        <FormItem>
-          {getFieldDecorator("password", {
-            rules: [{ required: true, message: "Please input your Password!" }]
-          })(
-            <Input
-              prefix={<Icon type="lock" style={{ fontSize: 13 }} />}
-              type="password"
-              placeholder="Password"
-            />
-          )}
+        <FormItem
+          name="password"
+          rules={[{ required: true, message: "Please input your Password!" }]}
+        >
+          <Input
+            prefix={<LockOutlined style={{ fontSize: 13 }} />}
+            type="password"
+            placeholder="Password"
+          />
         </FormItem>
 
         <FormItem>
@@ -125,6 +116,6 @@ class L extends React.Component<any,any> {
     );
   }
 }
-const Login = connect(mapStateToProps,mapDispatchToProps)(Form.create()(L));
+const Login = connect(mapStateToProps,mapDispatchToProps)(L);
 export {Login};
 //export { L as Login }

@@ -57,6 +57,26 @@ export class FsFarmModificationComponent implements OnInit {
         return dialog.error(err)
       });
   }
+  async onCancel(): Promise<void> {
+    if (!await dialog.confirm('Are you sure you want to approve this modification request?')) {
+      return;
+    }
+    const message = await dialog.prompt('Enter a message for the clerk :');
+    if (message === "") {
+      await dialog.error('Please enter a message for the farm data registrar');
+      return;
+    }
+
+    this.loading = true;
+    dialog.loading();
+    this.api.cancelFarmModification(this.workflowId, message).toPromise()
+      .then(() => dialog.success('The modification request has been cancelled successfully.'))
+      .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+      .catch(err => {
+        this.loading = false;
+        return dialog.error(err)
+      });
+  }
 
   async onApprove(): Promise<void> {
     if (!await dialog.confirm('Are you sure you want to approve this modification request?')) {

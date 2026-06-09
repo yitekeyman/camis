@@ -362,6 +362,7 @@ namespace intapscamis.camis.domain.Farms.Models
     public class OperatorResponse
     {
         public string Woreda { get; set; }
+        public string Upin { get; set; }
         public string Name { get; set; }
         public double Area { get; set; }
         public int OriginId { get; set; }
@@ -369,6 +370,8 @@ namespace intapscamis.camis.domain.Farms.Models
         public DateTime StartDate { get; set; }
         public double InvestedCapital { get; set; }
         public string LicenseNumber { get; set; }
+        public DateTime RightFrom { get; set; }
+        public DateTime RightTo { get; set; }
 
         public string Location { get; set; }
 

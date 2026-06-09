@@ -15,7 +15,11 @@ let initialState : BaseData = {
     groundWaterType : undefined,
 }
 
-const baseReducer : Reducer<BaseData> = (
+type BaseDataAction =
+    | { type: BaseDataActions.SetData; baseData: BaseData }
+    | { type: BaseDataActions.ClearData };
+
+const baseReducer : Reducer<BaseData, BaseDataAction> = (
     state = initialState,
     action
 ) : BaseData => {

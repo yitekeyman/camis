@@ -3,42 +3,40 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@types/history": "^4.7.2",
-    "@types/jest": "24.0.14",
-    "@types/jwt-decode": "^2.2.1",
-    "@types/node": "12.0.8",
-    "@types/ol": "^5.3.3",
-    "@types/proj4": "^2.5.0",
-    "@types/react": "16.8.20",
-    "@types/react-dom": "16.8.4",
-    "@types/react-redux": "^7.1.0",
-    "@types/react-router-dom": "^4.3.4",
-    "@types/react-router-redux": "^5.0.18",
-    "@types/reactstrap": "^8.0.1",
-    "antd": "^3.19.3",
-    "axios": "^0.19.0",
-    "connected-react-router": "^6.4.0",
-    "history": "^4.9.0",
-    "node-sass": "^4.12.0",
-    "ol": "^5.3.3",
-    "proj4": "^2.5.0",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "react-redux": "^7.1.0",
-    "react-router": "^5.0.1",
-    "react-router-dom": "^5.0.1",
-    "react-router-redux": "^4.0.8",
-    "react-scripts": "3.0.1",
-    "react-scroll": "^1.7.12",
-    "reactstrap": "^8.0.0",
-    "redux": "^4.0.1",
-    "redux-persist": "^5.10.0",
-    "redux-thunk": "^2.3.0",
-    "sass": "^1.20.1",
-    "sass-loader": "^7.1.0",
-    "sweetalert2": "^8.12.1",
-    "typesafe-actions": "^4.4.1",
-    "typescript": "3.4.5"
+    "@reduxjs/toolkit": "^2.2.7",
+    "@types/history": "^5.0.0",
+    "@types/jest": "^29.5.12",
+    "@types/jwt-decode": "^3.1.0",
+    "@types/node": "^20.14.10",
+    "@types/proj4": "^2.5.5",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/react-redux": "^7.1.33",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/react-scroll": "^1.8.10",
+    "@types/reactstrap": "^8.0.5",
+    "antd": "^5.19.1",
+    "axios": "^1.7.2",
+    "connected-react-router": "^6.9.3",
+    "history": "^5.3.0",
+    "jwt-decode": "^4.0.0",
+    "ol": "^9.2.4",
+    "proj4": "^2.11.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-redux": "^9.1.2",
+    "react-router": "^6.25.1",
+    "react-router-dom": "^6.25.1",
+    "react-scripts": "5.0.1",
+    "react-scroll": "^1.9.0",
+    "reactstrap": "^9.2.2",
+    "redux": "^5.0.1",
+    "redux-persist": "^6.0.0",
+    "sass": "^1.77.8",
+    "sass-loader": "^14.2.1",
+    "sweetalert2": "^11.12.0",
+    "typesafe-actions": "^5.1.0",
+    "typescript": "^5.5.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -47,7 +45,10 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
   "browserslist": {
     "production": [
@@ -60,5 +61,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "ajv": "^7.2.4"
   }
 }

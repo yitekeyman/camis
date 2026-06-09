@@ -39,7 +39,7 @@ namespace intapscamis.camis.domain.Farms
 
 
         PaginatorResponse<FarmOperatorResponse> SearchFarmOperators(string term, int skip, int take);
-        PaginatorResponse<FarmResponse> SearchFarms(string term, int skip, int take);
+        PaginatorResponse<FarmResponse> SearchFarms(string term, int ownerType, int farmType, int status, int skip, int take);
 
         FarmOperatorResponse GetFarmOperator(Guid id);
         FarmResponse GetFarm(Guid id);
@@ -247,7 +247,8 @@ namespace intapscamis.camis.domain.Farms
             };
         }
 
-        public PaginatorResponse<FarmResponse> SearchFarms(string term, int skip, int take)
+        public PaginatorResponse<FarmResponse> SearchFarms(string term, int ownerType, int farmType, int status,
+            int skip, int take)
         {
             // Normalize search term
             var searchTerm = term?.ToLower() ?? string.Empty;
@@ -284,9 +285,29 @@ namespace intapscamis.camis.domain.Farms
                     (f.Operator != null && f.Operator.Phone != null &&
                      f.Operator.Phone.ToLower().Contains(searchTerm)) ||
                     (f.Operator != null && f.Operator.Email != null && f.Operator.Email.ToLower().Contains(searchTerm))
+                    
                 )
                 .AsSplitQuery()
                 .AsNoTracking();
+          
+            if (farmType > 0)
+                baseQuery = baseQuery.Where(f => f.TypeId == farmType);
+
+            if (ownerType > 0)
+                baseQuery = baseQuery.Where(f => f.Operator != null && f.Operator.TypeId == ownerType);
+
+            if (status > 0)
+            {
+                if (status == (int)FarmStatusEnum.TransactionLocked)
+                {
+                    baseQuery = baseQuery.Where(f => f.Locked == true);
+                }
+                else
+                {
+                    baseQuery = baseQuery.Where(f => f.Status == status && f.Locked==false);
+                }
+               
+            }
 
             // Get total count
             var totalSize = baseQuery.Count();
@@ -420,7 +441,9 @@ namespace intapscamis.camis.domain.Farms
                 ActivityId = data.ActivityId.ToGuid(),
                 InvestedCapital = data.InvestedCapital,
                 Description = data.Description,
-                OtherTypeIds = data.OtherTypeIds
+                OtherTypeIds = data.OtherTypeIds,
+                Status = (int)FarmStatusEnum.Ready,
+                Locked = false
             };
 
             Context.Farm.Add(farm);
@@ -565,7 +588,7 @@ namespace intapscamis.camis.domain.Farms
             farm.InvestedCapital = data.InvestedCapital;
             farm.Description = data.Description;
             farm.OtherTypeIds = data.OtherTypeIds;
-
+            farm.Locked = false;
             Context.Farm.Update(farm);
             Context.SaveChanges();
 

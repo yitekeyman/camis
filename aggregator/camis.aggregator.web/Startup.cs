@@ -75,7 +75,9 @@ namespace camis.aggregator.web
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseDefaultFiles();
             app.UseStaticFiles();
+            
             
             app.UseCors(builder => builder
                  .AllowAnyMethod()

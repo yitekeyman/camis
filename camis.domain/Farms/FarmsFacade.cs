@@ -25,7 +25,7 @@ namespace intapscamis.camis.domain.Farms
         IList<string> GetUPINs();
 
         PaginatorResponse<FarmOperatorResponse> SearchFarmOperators(string term, int skip, int take);
-        PaginatorResponse<FarmResponse> SearchFarms(string term, int skip, int take);
+        PaginatorResponse<FarmResponse> SearchFarms(string term, int ownerType, int farmType, int status, int skip, int take);
 
         FarmOperatorResponse GetFarmOperator(Guid id);
         FarmResponse GetFarm(Guid id);
@@ -107,7 +107,7 @@ namespace intapscamis.camis.domain.Farms
             );
             _farmRegistrationWorkflow =
                 new FarmRegistrationWorkflow(_service, workflowService, _landAssignmentWorkflow);
-            _farmModificationWorkflow = new FarmModificationWorkflow(_service, workflowService);
+            _farmModificationWorkflow = new FarmModificationWorkflow(_service, workflowService, new LandBankService());
             _farmDeletionWorkflow = new FarmDeletionWorkflow(_service, workflowService);
             _landBankTransferWorkflow = new LandBankTransferWorkflow(new LandBankService());
             _contractCancellationWorkflow =
@@ -183,10 +183,10 @@ namespace intapscamis.camis.domain.Farms
             return _service.SearchFarmOperators(term, skip, take);
         }
 
-        public PaginatorResponse<FarmResponse> SearchFarms(string term, int skip, int take)
+        public PaginatorResponse<FarmResponse> SearchFarms(string term, int ownerType, int farmType, int status, int skip, int take)
         {
             PassContext(_service, _context);
-            return _service.SearchFarms(term, skip, take);
+            return _service.SearchFarms(term, ownerType, farmType, status, skip, take);
         }
 
 

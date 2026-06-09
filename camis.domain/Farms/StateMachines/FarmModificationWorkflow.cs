@@ -5,6 +5,7 @@ using intapscamis.camis.domain.Admin;
 using intapscamis.camis.domain.Farms.Models;
 using intapscamis.camis.domain.Infrastructure;
 using intapscamis.camis.domain.Infrastructure.Architecture;
+using intapscamis.camis.domain.LandBank;
 using intapscamis.camis.domain.Workflows;
 using intapscamis.camis.domain.Workflows.Models;
 using Newtonsoft.Json;
@@ -33,13 +34,15 @@ namespace intapscamis.camis.domain.Farms.StateMachines
         private readonly IFarmsService _service;
 
         private readonly IWorkflowService _workflowService;
+        private readonly ILandBankService _landBankService;
 
         private StateMachine<States, Triggers> _machine;
 
-        public FarmModificationWorkflow(IFarmsService service, IWorkflowService workflowService)
+        public FarmModificationWorkflow(IFarmsService service, IWorkflowService workflowService, ILandBankService landBankService)
         {
             _service = service;
             _workflowService = workflowService;
+            _landBankService = landBankService;
         }
 
 
@@ -50,6 +53,8 @@ namespace intapscamis.camis.domain.Farms.StateMachines
         {
             _service.SetSession(session);
             _workflowService.SetSession(session);
+            _landBankService.SetSession(session);
+            
         }
 
         public override void SetContext(CamisContext value)
@@ -57,6 +62,7 @@ namespace intapscamis.camis.domain.Farms.StateMachines
             Context = value;
             _service.SetContext(Context);
             _workflowService.SetContext(Context);
+            _landBankService.SetContext(Context);
         }
 
 
@@ -132,12 +138,38 @@ namespace intapscamis.camis.domain.Farms.StateMachines
             StateMachine<States, Triggers>.Transition transition)
         {
             ConfigureAndAddWorkItem(null, GetData(), description, assignedUser, transition);
+            _service.SetFarmLock(Guid.Parse(GetData().Id),false);
+            var farmLand=_service.GetFarmLands(Guid.Parse(GetData().Id));
+            foreach (var r in farmLand)
+            {
+                if (r.SplitIndex > 0)
+                {
+                    _landBankService.SetSubLandLock(Guid.Parse(r.LandId), r.SplitIndex, false);
+                }
+                else
+                {
+                    _landBankService.SetLandLock(Guid.Parse(r.LandId), false);
+                }
+            }
         }
 
         private void OnRequest(FarmRequest data, string description, long? assignedUser,
             StateMachine<States, Triggers>.Transition transition)
         {
             ConfigureAndAddWorkItem(UserRoles.FarmSupervisor, data, description, assignedUser, transition);
+            _service.SetFarmLock(Guid.Parse(data.Id),true);
+            var farmLand=_service.GetFarmLands(Guid.Parse(data.Id));
+            foreach (var r in farmLand)
+            {
+                if (r.SplitIndex > 0)
+                {
+                    _landBankService.SetSubLandLock(Guid.Parse(r.LandId), r.SplitIndex, true);
+                }
+                else
+                {
+                    _landBankService.SetLandLock(Guid.Parse(r.LandId), true);
+                }
+            }
         }
 
         private void OnApprove(string description, long? assignedUser,
@@ -155,6 +187,18 @@ namespace intapscamis.camis.domain.Farms.StateMachines
             // the real act
             if (data.OperatorId == null) data.OperatorId = _service.UpdateFarmOperator(data.Operator).Id.ToString();
             _service.UpdateFarm(data);
+            var farmLands=_service.GetFarmLands(Guid.Parse(data.Id));
+            foreach (var r in farmLands)
+            {
+                if (r.SplitIndex > 0)
+                {
+                    _landBankService.SetSubLandLock(Guid.Parse(r.LandId), r.SplitIndex, false);
+                }
+                else
+                {
+                    _landBankService.SetLandLock(Guid.Parse(r.LandId), false);
+                }
+            }
         }
 
 
@@ -212,6 +256,30 @@ namespace intapscamis.camis.domain.Farms.StateMachines
                     File.WriteAllBytes(filePath, fileBytes);
                     data.Operator.Photo.File = null; // Set to null after saving to disk
                 }
+                else
+                {
+                    if (data.Operator.Photo.Id != null)
+                    {
+                        var filePath2 = $"{data.Operator.Photo.Id.ToString()}";
+                        if (!Path.IsPathRooted(filePath2))
+                        {
+                            filePath2 = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, Path.GetFileName(filePath2));
+                        }
+                        if (File.Exists(filePath2))
+                        {
+                            var fileBytes2 = File.ReadAllBytes(filePath2);
+                            data.Operator.Photo.File = Convert.ToBase64String(fileBytes2);
+                
+                        }
+                    }
+                           
+                    data.Operator.Photo.Id = data.Operator.Photo.Id ?? Guid.NewGuid();
+                    var filePath = Path.Combine(fileSavePath, $"{data.Operator.Photo.Id}");
+
+                    var fileBytes = Convert.FromBase64String(data.Operator.Photo.File);
+                    File.WriteAllBytes(filePath, fileBytes);
+                    data.Operator.Photo.File = null;
+                }
 
                 // Update the override file path
                 data.Operator.Photo.OverrideFilePath = $"{pathPrefix}{workItemId}?photoId={data.Operator.Photo.Id}";
@@ -258,6 +326,30 @@ namespace intapscamis.camis.domain.Farms.StateMachines
                         File.WriteAllBytes(filePath, fileBytes);
                         reg.Document.File = null; // Set to null after saving
                     }
+                    else
+                    {
+                        if (reg.Document.Id != null)
+                        {
+                            var filePath2 = $"{reg.Document.Id.ToString()}";
+                            if (!Path.IsPathRooted(filePath2))
+                            {
+                                filePath2 = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, Path.GetFileName(filePath2));
+                            }
+                            if (File.Exists(filePath2))
+                            {
+                                var fileBytes2 = File.ReadAllBytes(filePath2);
+                                reg.Document.File = Convert.ToBase64String(fileBytes2);
+                
+                            }
+                        }
+                           
+                        reg.Document.Id = reg.Document.Id ?? Guid.NewGuid();
+                        var filePath = Path.Combine(fileSavePath, $"{reg.Document.Id}");
+
+                        var fileBytes = Convert.FromBase64String(reg.Document.File);
+                        File.WriteAllBytes(filePath, fileBytes);
+                        reg.Document.File = null;
+                    }
 
                     reg.Document.OverrideFilePath = $"{pathPrefix}{workItemId}?regId={reg.Id}";
                 }
@@ -302,7 +394,30 @@ namespace intapscamis.camis.domain.Farms.StateMachines
                         File.WriteAllBytes(filePath, fileBytes);
                         reg.Document.File = null;
                     }
+                    else
+                    {
+                        if (reg.Document.Id != null)
+                        {
+                            var filePath2 = $"{reg.Document.Id.ToString()}";
+                            if (!Path.IsPathRooted(filePath2))
+                            {
+                                filePath2 = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, Path.GetFileName(filePath2));
+                            }
+                            if (File.Exists(filePath2))
+                            {
+                                var fileBytes2 = File.ReadAllBytes(filePath2);
+                                reg.Document.File = Convert.ToBase64String(fileBytes2);
+                
+                            }
+                        }
+                           
+                        reg.Document.Id = reg.Document.Id ?? Guid.NewGuid();
+                        var filePath = Path.Combine(fileSavePath, $"{reg.Document.Id}");
 
+                        var fileBytes = Convert.FromBase64String(reg.Document.File);
+                        File.WriteAllBytes(filePath, fileBytes);
+                        reg.Document.File = null;
+                    }
                     reg.Document.OverrideFilePath = $"{pathPrefix}{workItemId}?regId={reg.Id}";
                 }
             }
@@ -335,6 +450,30 @@ namespace intapscamis.camis.domain.Farms.StateMachines
                     }
                     else if (doc.File != null)
                     {
+                        doc.Id = doc.Id ?? Guid.NewGuid();
+                        var filePath = Path.Combine(fileSavePath, $"{doc.Id}");
+
+                        var fileBytes = Convert.FromBase64String(doc.File);
+                        File.WriteAllBytes(filePath, fileBytes);
+                        doc.File = null;
+                    }
+                    else
+                    {
+                        if (doc.Id != null)
+                        {
+                            var filePath2 = $"{doc.Id.ToString()}";
+                            if (!Path.IsPathRooted(filePath2))
+                            {
+                                filePath2 = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory, Path.GetFileName(filePath2));
+                            }
+                            if (File.Exists(filePath2))
+                            {
+                                var fileBytes2 = File.ReadAllBytes(filePath2);
+                                doc.File = Convert.ToBase64String(fileBytes2);
+                
+                            }
+                        }
+                           
                         doc.Id = doc.Id ?? Guid.NewGuid();
                         var filePath = Path.Combine(fileSavePath, $"{doc.Id}");
 

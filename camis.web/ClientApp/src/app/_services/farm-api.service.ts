@@ -49,8 +49,8 @@ export class FarmApiService {
     return this.api.get(`Farms/SearchFarmOperators`,{params:{term:term,skip:skip.toString(),take:take.toString() }});
   }
 
-  searchFarms(term: string, skip: number, take: number): Observable<any> {
-    return this.api.get(`Farms/SearchFarms`,{params:{term:term,skip:skip.toString(),take:take.toString() }});
+  searchFarms(term: string, ownerType:number, farmType:number, farmStatus:number,  skip: number, take: number): Observable<any> {
+    return this.api.get(`Farms/SearchFarms`,{params:{term:term,ownerType:ownerType.toString(), farmType:farmType.toString(), status:farmStatus.toString(), skip:skip.toString(),take:take.toString() }});
   }
 
 

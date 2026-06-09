@@ -156,12 +156,12 @@ namespace intapscamis.camis.Controllers
         }
 
         [HttpGet]
-        public IActionResult SearchFarms(string term, int? skip, int? take)
+        public IActionResult SearchFarms(string term, int? ownerType, int? farmType, int? status, int? skip, int? take)
         {
             try
             {
                 _facade.SetSession(GetSession());
-                return Json(_facade.SearchFarms(term ?? "", skip ?? 0, take ?? 100));
+                return Json(_facade.SearchFarms(term ?? "", ownerType??0, farmType??0, status??0, skip ?? 0, take ?? 100));
             }
             catch (Exception e)
             {

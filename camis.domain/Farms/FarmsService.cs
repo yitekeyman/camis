@@ -75,6 +75,12 @@ namespace intapscamis.camis.domain.Farms
         List<Workflow> GetTransferWorkFlows();
         void CancelContract(ContractCancellationRequest request);
         Document InWorkItemContractCancellationDoc(Guid workItemId, Guid documentId);
+        object GetAllModificationReasonList();
+        void RenewContract(ContractModificationRequest request);
+        Document InWorkItemContractRenewalDoc(Guid workItemId, Guid documentId);
+        Document InWorkItemContractWarningDoc(Guid workItemId, Guid documentId);
+        void RegisterContractWarning(ContractWarningRequest request);
+        FarmWarningResponse GetRightWarning(Guid farmId, Guid landId, int splitIndex);
     }
 
     public class FarmsService : CamisService, IFarmsService
@@ -984,10 +990,106 @@ namespace intapscamis.camis.domain.Farms
         {
             var dataStr = Context.WorkItem.Find(workItemId).Data;
             if (dataStr == null) return null;
-            var data = JsonConvert.DeserializeObject<ActivityPlanRequest>(dataStr);
+            var data = JsonConvert.DeserializeObject<ContractCancellationRequest>(dataStr);
             var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
                                 "/usr/bin/CAMIS/data/docs";
-            var documentRequest = data?.Documents?.First(d => d.Id == documentId);
+            var documentRequest = data?.CancellationSupDoc?.First(d => d.Id == documentId);
+            if (documentRequest?.Id != null && documentRequest.File == null)
+            {
+                var doc = _documentService.GetDocument(documentRequest.Id);
+                if (doc != null && doc.File == null)
+                {
+                    var filePath = $"{doc.Id}";
+                    if (!Path.IsPathRooted(filePath))
+                    {
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                            workItemId.ToString(), Path.GetFileName(filePath));
+                    }
+
+                    if (File.Exists(filePath))
+                    {
+                        doc.File = File.ReadAllBytes(filePath);
+                    }
+
+                    return doc;
+                }
+                else
+                {
+                    var filePath = $"{documentRequest.Id}";
+                    if (!Path.IsPathRooted(filePath))
+                    {
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                            workItemId.ToString(), Path.GetFileName(filePath));
+                    }
+
+                    if (File.Exists(filePath))
+                    {
+                        var fileBytes = File.ReadAllBytes(filePath);
+                        documentRequest.File = Convert.ToBase64String(fileBytes);
+                    }
+
+                    return DocumentService.ParseDocument(documentRequest);
+                }
+            }
+
+            return DocumentService.ParseDocument(documentRequest);
+        }
+ public Document InWorkItemContractRenewalDoc(Guid workItemId, Guid documentId)
+        {
+            var dataStr = Context.WorkItem.Find(workItemId).Data;
+            if (dataStr == null) return null;
+            var data = JsonConvert.DeserializeObject<ContractModificationRequest>(dataStr);
+            var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
+                                "/usr/bin/CAMIS/data/docs";
+            var documentRequest = data?.SupportiveDocument?.First(d => d.Id == documentId);
+            if (documentRequest?.Id != null && documentRequest.File == null)
+            {
+                var doc = _documentService.GetDocument(documentRequest.Id);
+                if (doc != null && doc.File == null)
+                {
+                    var filePath = $"{doc.Id}";
+                    if (!Path.IsPathRooted(filePath))
+                    {
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                            workItemId.ToString(), Path.GetFileName(filePath));
+                    }
+
+                    if (File.Exists(filePath))
+                    {
+                        doc.File = File.ReadAllBytes(filePath);
+                    }
+
+                    return doc;
+                }
+                else
+                {
+                    var filePath = $"{documentRequest.Id}";
+                    if (!Path.IsPathRooted(filePath))
+                    {
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                            workItemId.ToString(), Path.GetFileName(filePath));
+                    }
+
+                    if (File.Exists(filePath))
+                    {
+                        var fileBytes = File.ReadAllBytes(filePath);
+                        documentRequest.File = Convert.ToBase64String(fileBytes);
+                    }
+
+                    return DocumentService.ParseDocument(documentRequest);
+                }
+            }
+
+            return DocumentService.ParseDocument(documentRequest);
+        }
+  public Document InWorkItemContractWarningDoc(Guid workItemId, Guid documentId)
+        {
+            var dataStr = Context.WorkItem.Find(workItemId).Data;
+            if (dataStr == null) return null;
+            var data = JsonConvert.DeserializeObject<ContractWarningRequest>(dataStr);
+            var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
+                                "/usr/bin/CAMIS/data/docs";
+            var documentRequest = data?.SupportiveDocument?.First(d => d.Id == documentId);
             if (documentRequest?.Id != null && documentRequest.File == null)
             {
                 var doc = _documentService.GetDocument(documentRequest.Id);
@@ -1154,7 +1256,10 @@ namespace intapscamis.camis.domain.Farms
             var landSplit = new List<LandSplit>();
             var landRight = new List<LandRight>();
             var farmLand = new List<FarmLand>();
+
+            var sourceTxtUid = Guid.NewGuid();
             farm.Locked = false;
+            var cancellations = new List<CancelledContract>();
             if (request.CancelledRight.Count==request.FarmLands.Count)
             {
                 farm.Status = (int)FarmStatusEnum.Suspended;
@@ -1181,16 +1286,149 @@ namespace intapscamis.camis.domain.Farms
                    l.Locked = false;
                 }
                 land.Add(l);
+                cancellations.Add(new CancelledContract
+                {
+                    Id = Guid.NewGuid(),
+                    Date = request.Date.Ticks,
+                    Reason = request.Reason,
+                    ReasonDetails = request.CancellationReason,
+                    FarmId = Guid.Parse(request.Id),
+                    LandId = Guid.Parse(cr.LandId),
+                    SplitIndex = cr.SplitIndex,
+                    SourceTxtUid = sourceTxtUid,
+                    Wfid = Guid.Parse(request.wfid)
+                });
             }
-
-            Context.Farm.Update(farm);
             Context.FarmLand.RemoveRange(farmLand);
             Context.LandRight.RemoveRange(landRight);
             Context.Land.UpdateRange(land);
             Context.LandSplit.UpdateRange(landSplit);
+            Context.Farm.Update(farm);
             Context.SaveChanges();
+            Context.CancelledContracts.AddRange(cancellations);
+            Context.CancelledContractDocs.AddRange(request.CancellationSupDoc.Select(doc =>
+            {
+                Document document = null;
+                
+                if (doc != null)
+                {
+                    var workItemId =
+                        _documentService.ExtractWorkItemIdFromOverrideFilePath(doc.OverrideFilePath);
+                    if (workItemId != Guid.Empty)
+                        document = _documentService.CreateDocumentInFolder(workItemId, doc);
+                    return new CancelledContractDoc()
+                    {
+                        Id = Guid.NewGuid(),
+                        CancellationId = cancellations.First(e=>e.FarmId==Guid.Parse(request.Id)).Id,
+                        DocId = document.Id
+                    };
+                }
+                return null;
+            }));
+
+            var aid=Context.SaveChanges(_session.Username, (int)UserActionType.CancelContract).Id;
+            Context.CancelledContracts.UpdateRange(cancellations.Select(c=>
+            {
+                c.Aid = aid;
+                return c;
+            }));
         }
-        
+
+        public object GetAllModificationReasonList()
+        {
+            return Context.ContractUpdateReasons.Select(c => new { id = c.Id, name = c.Name }).ToList();
+        }
+
+        public void RenewContract(ContractModificationRequest request)
+        {
+            var farm = Context.Farm.First(f => f.Id == Guid.Parse(request.FarmId));
+            var modifiedRight = new List<LandRight>();
+            foreach (var mr in request.ModifiedRight)
+            {
+                var lr=Context.LandRight.FirstOrDefault(e=>e.LandId==Guid.Parse(mr.LandId) && e.FarmId==Guid.Parse(mr.FarmId) && e.SplitIndex==mr.SplitIndex);
+                if (lr != null)
+                {
+                    lr.RightFrom = mr.RightFrom.Ticks;
+                    lr.RightTo = mr.RightTo.Ticks;
+                    lr.YearlyRent = mr.YearlyRent;
+                    lr.Status = (int)FarmStatusEnum.Active;
+                    modifiedRight.Add(lr);
+                }
+            }
+            Context.LandRight.UpdateRange(modifiedRight);
+            Context.SaveChanges();
+            farm.Locked = false;
+            farm.Status=(int)FarmStatusEnum.Active;
+            Context.Farm.Update(farm);
+            Context.SaveChanges(_session.Username, (int)UserActionType.UpdateContract);
+        }
+
+        public void RegisterContractWarning(ContractWarningRequest request)
+        {
+           
+            var right=Context.LandRight.FirstOrDefault(r=>r.FarmId==Guid.Parse(request.FarmId) && r.LandId==Guid.Parse(request.LandId)&& r.SplitIndex==request.SplitIndex);
+            if (right != null)
+            {
+                right.Status=(int)FarmStatusEnum.UnderWarning;
+                Context.LandRight.Update(right);
+                Context.SaveChanges();
+            }
+
+            var warning = new FarmWarning()
+            {
+                Id = Guid.NewGuid(),
+                FarmId = request.FarmId.ToGuid(),
+                LandId = request.LandId.ToGuid(),
+                SplitIndex = request.SplitIndex,
+                Date = request.Date.Ticks,
+                Reason = request.Reason,
+                ReasonDetails = request.Description,
+                Stage = request.Stage,
+                Wfid = request.wfid.ToGuid()
+            };
+            Context.FarmWarnings.Add(warning);
+            Context.WarningDocs.AddRange(request.SupportiveDocument.Select(doc =>
+            {
+                Document document = null;
+                
+                if (doc != null)
+                {
+                    var workItemId =
+                        _documentService.ExtractWorkItemIdFromOverrideFilePath(doc.OverrideFilePath);
+                    if (workItemId != Guid.Empty)
+                        document = _documentService.CreateDocumentInFolder(workItemId, doc);
+                    return new WarningDoc
+                    {
+                        Id = Guid.NewGuid(),
+                        WarningId = warning.Id,
+                        DocId = document.Id
+                    };
+                }
+                return null;
+            }));
+
+            warning.Aid = Context.SaveChanges(_session.Username, (int)UserActionType.ContractWarning).Id;
+            Context.FarmWarnings.Update(warning);
+        }
+
+        public FarmWarningResponse GetRightWarning(Guid farmId, Guid landId, int splitIndex)
+        {
+            var right=Context.LandRight.FirstOrDefault(e=>e.FarmId ==farmId && e.LandId==landId && e.SplitIndex==splitIndex);
+            if (right == null)
+                return null;
+            var warnings=Context.FarmWarnings.Where(e=>e.FarmId==farmId && e.LandId==landId && e.SplitIndex==splitIndex).OrderByDescending(e=>e.Date).ToList();
+            var parseWarnings = new List<WarningResponse>();
+            foreach (var wr in warnings)
+            {
+                parseWarnings.Add(ParseWaringResponse(wr.Id));
+            }
+
+            return new FarmWarningResponse
+            {
+                LandRight = MapLandRight(right),
+                Warnings = parseWarnings
+            };
+        }
         private FarmResponse ParseFarmResponse(Farm farm)
         {
             var res = new FarmResponse
@@ -1620,6 +1858,34 @@ namespace intapscamis.camis.domain.Farms
                 ContractDocument = codDoc,
             };
         }
-       
+
+        private WarningResponse ParseWaringResponse(Guid warningId)
+        {
+            var ret = new WarningResponse();
+            var warning=Context.FarmWarnings.FirstOrDefault(w => w.Id == warningId);
+            if (warning == null)
+                return null;
+            var docs = new List<DocumentResponse>();
+            var supDoc=Context.WarningDocs.Where(e=>e.WarningId==warningId).ToList();
+            foreach (var wd in supDoc)
+            {
+                docs.Add(MapDocumentResponse(_documentService.GetDocument(wd.DocId)));
+            }
+
+            return new WarningResponse()
+            {
+                Id = warning.Id.ToString(),
+                FarmId = warning.FarmId.ToString(),
+                LandId = warning.LandId.ToString(),
+                SplitIndex = warning.SplitIndex,
+                Date = new DateTime(warning.Date),
+                Stage = warning.Stage,
+                Reason = warning.Reason,
+                ReasonDetails = warning.ReasonDetails,
+                Wfid = warning.Wfid,
+                Aid = warning.Aid,
+                SupportiveDocuments = docs
+            };
+        }
     }
 }

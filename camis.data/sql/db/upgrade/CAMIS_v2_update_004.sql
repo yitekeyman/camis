@@ -231,3 +231,123 @@ CREATE TABLE history.c_h_activity
 
 ALTER TABLE history.c_h_activity
     OWNER to postgres;
+
+CREATE TABLE frm.farm_warning
+(
+    id uuid NOT NULL,
+    farm_id uuid NOT NULL,
+    land_id uuid NOT NULL,
+    split_index integer NOT NULL,
+    date bigint NOT NULL,
+    stage integer NOT NULL,
+    reason character varying(256),
+    reason_details text,
+    aid bigint,
+    wfid uuid,
+    PRIMARY KEY (id),
+    CONSTRAINT farm_warning_fm_id_fk FOREIGN KEY (farm_id)
+        REFERENCES frm.farm (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        NOT VALID,
+    CONSTRAINT farm_warning_land_id_fk FOREIGN KEY (land_id)
+        REFERENCES lb.land (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        NOT VALID
+)
+    WITH (
+        OIDS = FALSE
+        );
+
+ALTER TABLE frm.farm_warning
+    OWNER to postgres;
+
+-- Table: frm.warning_doc
+
+-- DROP TABLE frm.warning_doc;
+
+CREATE TABLE frm.warning_doc
+(
+    id uuid NOT NULL,
+    warning_id uuid NOT NULL,
+    doc_id uuid NOT NULL,
+    CONSTRAINT warning_doc_pkey PRIMARY KEY (id),
+    CONSTRAINT warning_doc_doc_id_fk FOREIGN KEY (doc_id)
+        REFERENCES doc.document (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT warning_doc_farm_warning_id_fk FOREIGN KEY (warning_id)
+        REFERENCES frm.farm_warning (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+    WITH (
+        OIDS = FALSE
+        )
+    TABLESPACE pg_default;
+
+ALTER TABLE frm.warning_doc
+    OWNER to postgres;
+
+INSERT INTO wf.workflow_type(
+    id, name, description)
+VALUES (14, 'Contract Warning', 'Register Contract Warning Workflow');
+
+INSERT INTO sys.action_type(
+    id, name)
+VALUES (1007, 'Warning Contract');
+
+CREATE TABLE frm.cancelled_contract
+(
+    id uuid NOT NULL,
+    farm_id uuid NOT NULL,
+    land_id uuid NOT NULL,
+    split_index integer NOT NULL DEFAULT 0,
+    date bigint NOT NULL,
+    reason character varying(255) NOT NULL,
+    reason_details text,
+    source_txt_uid uuid,
+    aid bigint,
+    wfid uuid NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT cancelled_contract_farm_id_farm_id_fk FOREIGN KEY (farm_id)
+        REFERENCES frm.farm (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT cancelled_contract_land_id_land_id_fk FOREIGN KEY (land_id)
+        REFERENCES lb.land (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+)
+    WITH (
+        OIDS = FALSE
+        );
+
+ALTER TABLE frm.cancelled_contract
+    OWNER to postgres;
+
+CREATE TABLE frm.cancelled_contract_doc
+(
+    id uuid NOT NULL,
+    cancellation_id uuid NOT NULL,
+    doc_id uuid NOT NULL,
+    CONSTRAINT cancelled_contract_doc_pkey PRIMARY KEY (id),
+    CONSTRAINT contract_cancellation_doc_doc_id_fk FOREIGN KEY (doc_id)
+        REFERENCES doc.document (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT contract_cancellation_doc_id_fk FOREIGN KEY (cancellation_id)
+        REFERENCES frm.cancelled_contract (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+    WITH (
+        OIDS = FALSE
+        )
+    TABLESPACE pg_default;
+
+ALTER TABLE frm.cancelled_contract_doc
+    OWNER to postgres;

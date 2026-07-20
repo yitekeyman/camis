@@ -1,0 +1,140 @@
+﻿<div class="row me-0">
+  <div class="col-md-8 pe-0">
+    <div class="modal-header">
+      <h4 class="modal-title" id="landAssignmentDialogLabel">Farm Contract Warning Registration Form</h4>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="closeForm()"></button>
+    </div>
+    <div class="modal-body p-2" style="height: 75vh; overflow-y: auto">
+      <div class="form-group">
+        <table class="table">
+          <thead>
+          <tr>
+            <th colspan="4">Right Select For Warning</th>
+          </tr>
+          <tr>
+            <th>Land Info</th>
+            <th>Right Info</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngIf="warningModel.warnedRight!=null">
+
+            <td>
+              <table class="table">
+                <tbody>
+                <tr>
+                  <td><small><b>UPID: </b></small></td>
+                  <td><small>{{ warningModel.warnedRight.id }} ({{ getFarmStatus(warningModel.warnedRight.status.id) }}
+                    )</small></td>
+                </tr>
+                <tr>
+                  <td><small><b>Area: </b></small></td>
+                  <td><small>{{ getArea(warningModel.warnedRight.landSectionArea) }}</small></td>
+                </tr>
+                <tr>
+                  <td><small><b>Centroid-X: </b></small></td>
+                  <td><small></small></td>
+                </tr>
+                <tr>
+                  <td><small><b>Centroid-Y: </b></small></td>
+                  <td><small></small></td>
+                </tr>
+                </tbody>
+              </table>
+            </td>
+            <td>
+              <table class="table">
+                <tbody>
+                <tr>
+                  <td><small><b>Right Type: </b></small></td>
+                  <td><small>{{ getRightType(warningModel.warnedRight.rightType) }}</small></td>
+                </tr>
+                <tr>
+                  <td><small><b>Right From: </b></small></td>
+                  <td><small>{{ warningModel.warnedRight.rightFrom | date }}</small></td>
+                </tr>
+                <tr>
+                  <td><small><b>Right To: </b></small></td>
+                  <td><small>{{ warningModel.warnedRight.rightTo | date }}</small></td>
+                </tr>
+                <tr>
+                  <td><small><b>Yearly Amount: </b></small></td>
+                  <td><small>{{ warningModel.warnedRight.yearlyRent | currency:"Br" }}</small></td>
+                </tr>
+                </tbody>
+              </table>
+            </td>
+
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="row me-0">
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="warningReason">
+              Warning Reason:<span class="text-danger">(*)&nbsp;</span>
+              <span class="error-message" *ngIf="!warningModel.reason">
+            <i class="ti ti-exclamation-circle"></i> this is required
+          </span>
+            </label>
+            <input type="text" class="form-control" id="warningReason"
+                   [(ngModel)]="warningModel.reason" required/>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="warningStage">
+              Warning Stage:<span class="text-danger">(*)&nbsp;</span>
+              <span class="error-message" *ngIf="!warningModel.stage">
+            <i class="ti ti-exclamation-circle"></i> this is required
+          </span>
+            </label>
+            <input type="number" class="form-control" id="warningStage"
+                   [(ngModel)]="warningModel.stage" required/>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="warningDate">
+              Warning Date:<span class="text-danger">(*)&nbsp;</span>
+              <span class="error-message" *ngIf="!warningModel.date">
+            <i class="ti ti-exclamation-circle"></i> this is required
+          </span>
+            </label>
+            <input type="date" class="form-control" id="warningDate"
+                   [(ngModel)]="warningModel.date" required/>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="form-group">
+            <label for="cancellationReason">
+              Describe Warning Reason:<span class="text-danger">(*)&nbsp;</span>
+              <span class="error-message" *ngIf="!warningModel.description">
+            <i class="ti ti-exclamation-circle"></i> reason description is required
+          </span>
+            </label>
+            <textarea class="form-control" id="cancellationReason" rows="3"
+                      [(ngModel)]="warningModel.description" required></textarea>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="form-group">
+            <app-landbank-document-selector title="Upload Warning Support Documents"
+                                            [documents]="warningModel.supportiveDocument"></app-landbank-document-selector>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer right">
+      <button type="button" class="btn btn-default" (click)="closeForm()">Cancel</button>
+      <button type="button" class="btn btn-primary btn-md" [disabled]="!(warningModel.date!='' && warningModel.reason!='' && warningModel.description!='' && warningModel.stage>=1 && warningModel.supportiveDocument?.length>0 )" (click)="saveWarning()">Save & Request Approval</button>
+    </div>
+  </div>
+  <div class="col-md-4 p-1">
+    <app-camis-map #camis_map></app-camis-map>
+  </div>
+</div>

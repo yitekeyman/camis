@@ -782,6 +782,21 @@ namespace intapscamis.camis.Controllers
                 return StatusCode(500, new { success = false, message = e.Message });
             }
         }
+        [HttpGet]
+        public IActionResult InWorkItemContractRenewalDoc(string id, string documentId)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                var doc = _facade.InWorkItemContractRenewalDoc(id.ToGuid(), documentId.ToGuid());
+                return File(doc.File, doc.Mimetype, null); // the filename is null to support in-browser view
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
 
         [HttpPost]
         public IActionResult RequestContractCancellation(string id, [FromBody] ContractCancellationRequest body,
@@ -842,6 +857,185 @@ namespace intapscamis.camis.Controllers
                 _facade.SetSession(GetSession());
                 _facade.CancelContractCancellation(id.ToGuid(), description);
                 return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+         [HttpPost]
+        public IActionResult RequestContractModification(string id, [FromBody] ContractModificationRequest body,
+            string description)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                if(string.IsNullOrEmpty(id))
+                    id=Guid.Empty.ToString();
+                _facade.RequestContractModification(id.ToGuid(), body, description);
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+
+        [HttpPut]
+        public IActionResult ApproveContractModification(string id, string description)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                _facade.ApproveContractModification(id.ToGuid(), description);
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+
+        [HttpPut]
+        public IActionResult RejectContractModification(string id, string description)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                _facade.RejectContractModification(id.ToGuid(), description);
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+
+        [HttpPut]
+        public IActionResult CancelContractModification(string id, string description)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                _facade.CancelContractModification(id.ToGuid(), description);
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+        [HttpGet]
+        public IActionResult GetAllModificationReasonList()
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                return Json(_facade.GetAllModificationReasonList());
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+        
+        [HttpGet]
+        public IActionResult InWorkItemContractWarningDoc(string id, string documentId)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                var doc = _facade.InWorkItemContractWarningDoc(id.ToGuid(), documentId.ToGuid());
+                return File(doc.File, doc.Mimetype, null); // the filename is null to support in-browser view
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+        
+         [HttpPost]
+        public IActionResult RequestContractWarning(string id, [FromBody] ContractWarningRequest body,
+            string description)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                if(string.IsNullOrEmpty(id))
+                    id=Guid.Empty.ToString();
+                _facade.RequestContractWarning(id.ToGuid(), body, description);
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+
+        [HttpPut]
+        public IActionResult ApproveContractWarning(string id, string description)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                _facade.ApproveContractWarning(id.ToGuid(), description);
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+
+        [HttpPut]
+        public IActionResult RejectContractWarning(string id, string description)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                _facade.RejectContractWarning(id.ToGuid(), description);
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+
+        [HttpPut]
+        public IActionResult CancelContractWarning(string id, string description)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                _facade.CancelContractWarning(id.ToGuid(), description);
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+        
+        [HttpGet]
+        public IActionResult GetRightWarning(string farmId, string landId, int splitIndex)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                var doc = _facade.GetRightWarning(Guid.Parse(farmId), Guid.Parse(landId),splitIndex);
+                return Json(doc);
             }
             catch (Exception e)
             {

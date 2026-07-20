@@ -42,6 +42,9 @@ namespace intapscamis.camis.data.Entities
         public virtual DbSet<AgroEchology> AgroEchology { get; set; }
         public virtual DbSet<AgroType> AgroType { get; set; }
         public virtual DbSet<AuditLog> AuditLog { get; set; }
+        public virtual DbSet<CancelledContract> CancelledContracts { get; set; }
+
+        public virtual DbSet<CancelledContractDoc> CancelledContractDocs { get; set; }
         public virtual DbSet<CHActivity> CHActivities { get; set; }
 
         public virtual DbSet<CHArchive> CHArchives { get; set; }
@@ -76,6 +79,7 @@ namespace intapscamis.camis.data.Entities
         public virtual DbSet<FarmOperatorType> FarmOperatorType { get; set; }
         public virtual DbSet<FarmRegistration> FarmRegistration { get; set; }
         public virtual DbSet<FarmStatusType> FarmStatusTypes { get; set; }
+        public virtual DbSet<FarmWarning> FarmWarnings { get; set; }
         public virtual DbSet<FarmType> FarmType { get; set; }
         public virtual DbSet<GroundData> GroundData { get; set; }
         public virtual DbSet<GroundWater> GroundWater { get; set; }
@@ -111,6 +115,7 @@ namespace intapscamis.camis.data.Entities
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<UserAction> UserAction { get; set; }
         public virtual DbSet<UserRole> UserRole { get; set; }
+        public virtual DbSet<WarningDoc> WarningDocs { get; set; }
         public virtual DbSet<WaterSourceType> WaterSourceType { get; set; }
         public virtual DbSet<WaterSrcParam> WaterSrcParam { get; set; }
         public virtual DbSet<WoretaWatershed> WoretaWatershed { get; set; }
@@ -1180,6 +1185,64 @@ namespace intapscamis.camis.data.Entities
                     .HasMaxLength(250)
                     .HasColumnName("name");
             });
+
+            modelBuilder.Entity<CancelledContract>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("cancelled_contract_pkey");
+
+                entity.ToTable("cancelled_contract", "frm");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.Aid).HasColumnName("aid");
+                entity.Property(e => e.Date).HasColumnName("date");
+                entity.Property(e => e.FarmId).HasColumnName("farm_id");
+                entity.Property(e => e.LandId).HasColumnName("land_id");
+                entity.Property(e => e.Reason)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("reason");
+                entity.Property(e => e.ReasonDetails).HasColumnName("reason_details");
+                entity.Property(e => e.SourceTxtUid).HasColumnName("source_txt_uid");
+                entity.Property(e => e.SplitIndex)
+                    .HasDefaultValue(0)
+                    .HasColumnName("split_index");
+                entity.Property(e => e.Wfid).HasColumnName("wfid");
+
+                entity.HasOne(d => d.Farm).WithMany(p => p.CancelledContracts)
+                    .HasForeignKey(d => d.FarmId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("cancelled_contract_farm_id_farm_id_fk");
+
+                entity.HasOne(d => d.Land).WithMany(p => p.CancelledContracts)
+                    .HasForeignKey(d => d.LandId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("cancelled_contract_land_id_land_id_fk");
+            });
+
+            modelBuilder.Entity<CancelledContractDoc>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("cancelled_contract_doc_pkey");
+
+                entity.ToTable("cancelled_contract_doc", "frm");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.CancellationId).HasColumnName("cancellation_id");
+                entity.Property(e => e.DocId).HasColumnName("doc_id");
+
+                entity.HasOne(d => d.Cancellation).WithMany(p => p.CancelledContractDocs)
+                    .HasForeignKey(d => d.CancellationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("contract_cancellation_doc_id_fk");
+
+                entity.HasOne(d => d.Doc).WithMany(p => p.CancelledContractDocs)
+                    .HasForeignKey(d => d.DocId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("contract_cancellation_doc_doc_id_fk");
+            });
             modelBuilder.Entity<Document>(entity =>
             {
                 entity.ToTable("document", "doc");
@@ -1796,7 +1859,35 @@ namespace intapscamis.camis.data.Entities
                     .IsRequired()
                     .HasColumnName("name");
             });
+            modelBuilder.Entity<FarmWarning>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("farm_warning_pkey");
 
+                entity.ToTable("farm_warning", "frm");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.Aid).HasColumnName("aid");
+                entity.Property(e => e.Date).HasColumnName("date");
+                entity.Property(e => e.FarmId).HasColumnName("farm_id");
+                entity.Property(e => e.LandId).HasColumnName("land_id");
+                entity.Property(e => e.Reason)
+                    .HasMaxLength(256)
+                    .HasColumnName("reason");
+                entity.Property(e => e.ReasonDetails).HasColumnName("reason_details");
+                entity.Property(e => e.SplitIndex).HasColumnName("split_index");
+                entity.Property(e => e.Stage).HasColumnName("stage");
+                entity.Property(e => e.Wfid).HasColumnName("wfid");
+
+                entity.HasOne(d => d.Farm).WithMany(p => p.FarmWarnings)
+                    .HasForeignKey(d => d.FarmId)
+                    .HasConstraintName("farm_warning_fm_id_fk");
+
+                entity.HasOne(d => d.Land).WithMany(p => p.FarmWarnings)
+                    .HasForeignKey(d => d.LandId)
+                    .HasConstraintName("farm_warning_land_id_fk");
+            });
             modelBuilder.Entity<GroundData>(entity =>
             {
                 entity.ToTable("ground_data", "lb");
@@ -2556,7 +2647,28 @@ namespace intapscamis.camis.data.Entities
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_userrole_user");
             });
+            modelBuilder.Entity<WarningDoc>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("warning_doc_pkey");
 
+                entity.ToTable("warning_doc", "frm");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.DocId).HasColumnName("doc_id");
+                entity.Property(e => e.WarningId).HasColumnName("warning_id");
+
+                entity.HasOne(d => d.Doc).WithMany(p => p.WarningDocs)
+                    .HasForeignKey(d => d.DocId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("warning_doc_doc_id_fk");
+
+                entity.HasOne(d => d.Warning).WithMany(p => p.WarningDocs)
+                    .HasForeignKey(d => d.WarningId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("warning_doc_farm_warning_id_fk");
+            });
             modelBuilder.Entity<WaterSourceType>(entity =>
             {
                 entity.ToTable("water_source_type", "lb");

@@ -254,10 +254,12 @@ export class LandSelectionComponent implements OnInit {
     const message = await dialog.prompt('Enter a note (optional):');
     dialog.loading();
 
-    this.api.approveLandAssignment(this.workflowId, message).subscribe(res => {
-      dialog.success('The parcel allocation has been approved successfully.');
-      this.router.navigate(['default/pending-task']).catch(dialog.error);
-    }, dialog.error);
+    this.api.approveLandAssignment(this.workflowId, message).toPromise()
+      .then(() => dialog.success('The parcel allocation has been approved successfully.'))
+      .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+      .catch(err => {
+        return dialog.error(err)
+      });
   }
 
   async rejectRequest(): Promise<void> {
@@ -266,16 +268,19 @@ export class LandSelectionComponent implements OnInit {
     }
     let msgQue = '';
     const message = await dialog.prompt("Enter a rejection note for land bank Administrator:");
-    if (message === null)
+    if (message === ""){
+      await dialog.error("Putting note is required");
       return;
+    }else{
+      dialog.loading();
 
-    dialog.loading();
-
-    this.api.rejectLandAssignment(this.workflowId, message).subscribe(res => {
-      dialog.success('The parcel allocation has been rejected successfully.');
-      this.router.navigate(['default/pending-task']).catch(dialog.error);
-    }, dialog.error);
-
+      this.api.rejectLandAssignment(this.workflowId, message).toPromise()
+        .then(() => dialog.success('The parcel allocation has been rejected successfully.'))
+        .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+        .catch(err => {
+          return dialog.error(err)
+        });
+    }
   }
 
   async cancelRequest(): Promise<void> {
@@ -283,7 +288,7 @@ export class LandSelectionComponent implements OnInit {
       return;
     }
     const message = await dialog.prompt("Enter a task cancellation reason");
-    if (message === null) {
+    if (message === '') {
       return;
     }
     dialog.loading();

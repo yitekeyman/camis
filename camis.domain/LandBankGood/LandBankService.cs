@@ -733,7 +733,17 @@ namespace intapscamis.camis.domain.LandBank
             if (par.AreaMax > 0)
                 cr = StringExtensions.addDelimitedListItem(cr, " and ", $"l.area<={par.AreaMax}");
             if (par.LandType != -1)
-                cr = StringExtensions.addDelimitedListItem(cr, " and ", $"l.land_type={par.LandType}");
+            {
+                if (par.LandType == (int)LandBankFacadeModel.LandTypeEnum.TransactionLocked)
+                {
+                    cr = StringExtensions.addDelimitedListItem(cr, " and ", $"l.locked=true");
+                }
+                else
+                {
+                    cr = StringExtensions.addDelimitedListItem(cr, " and ", $"l.land_type={par.LandType} and l.locked=false");
+                }
+            }
+                
             var sql = $"Select l.* from lb.Land l {(cr == null ? "" : " where " + cr)}";
             var ret = new LandBankFacadeModel.LandSearchResult();
             ret.Result = new List<LandBankFacadeModel.LandData>();

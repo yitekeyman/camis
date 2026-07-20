@@ -556,7 +556,7 @@ namespace intapscamis.camis.Controllers
         }
         
         
-        [Roles(UserRoles.ConfigurationAdmin)]
+        [Roles(UserRoles.ConfigurationAdmin, UserRoles.Admin)]
         [HttpPost]
         public IActionResult ActivityPlanTemplate([FromBody] ActivityPlanTemplateRequest body)
         {
@@ -587,7 +587,7 @@ namespace intapscamis.camis.Controllers
             }
         }
         
-        [Roles(UserRoles.ConfigurationAdmin)]
+        [Roles(UserRoles.ConfigurationAdmin, UserRoles.Admin)]
         [HttpPut]
         public IActionResult ActivityPlanTemplate(string id, [FromBody] ActivityPlanTemplateRequest body)
         {
@@ -603,7 +603,7 @@ namespace intapscamis.camis.Controllers
             }
         }
         
-        [Roles(UserRoles.ConfigurationAdmin)]
+        [Roles(UserRoles.ConfigurationAdmin, UserRoles.Admin)]
         [HttpDelete]
         public IActionResult ActivityPlanTemplate(string id)
         {

@@ -12,10 +12,16 @@ import {ResetPassComponent} from "../../../admin/userManagement/resetPassword/re
 import {
   ContractCancellationFormComponent
 } from "../../fm-cancel-contract/contract-cancellation-form/contract-cancellation-form.component";
+import {
+  ContractRenewalFormComponent
+} from "../../fm-renew-contract/contract-renewal-form/contract-renewal-form.component";
+import {
+  ContractWarningFormComponent
+} from "../../fm-warning-contract/contract-warning-form/contract-warning-form.component";
 
 @Component({
   selector: 'app-fc-farm-view',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, FarmDetailComponent, ContractCancellationFormComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, FarmDetailComponent, ContractCancellationFormComponent, ContractRenewalFormComponent, ContractWarningFormComponent],
   templateUrl: 'fc-farm-view.component.html'
 })
 export class FcFarmViewComponent implements OnInit {
@@ -28,10 +34,13 @@ export class FcFarmViewComponent implements OnInit {
   plan: any;
   loginRole='0';
   showCancellationForm = false;
+  showRenewalForm = false;
+  showWarningForm = false;
   landId: string=null;
   workflowId: string=null;
   splitIndex:number=0;
   data=null;
+  selectedFarmLand=null;
 
   constructor (private api: FarmApiService, private projectApi: ProjectApiService, private router: Router, private ar: ActivatedRoute, private keyCase:ObjectKeyCasingService) {
     this.loginRole=localStorage.getItem("role");
@@ -101,17 +110,33 @@ export class FcFarmViewComponent implements OnInit {
       return dialog.error(err);
     });
   }
-  public CancelContBtnClick(): void {
-    this.showCancellationForm = true;
+  public CancelContBtnClick(id:any, farmLand:any): void {
+    if(id==="cancellation"){
+      this.showCancellationForm = true;
+    }else if(id==="renewal"){
+      this.showRenewalForm = true;
+    }
+
   }
   public closeForm(close: boolean): void {
     if (close) {
       this.showCancellationForm=false;
+      this.showRenewalForm=false;
+      this.showWarningForm=false;
+      this.selectedFarmLand=null;
     }
   }
   public reloadPage(rel:boolean){
     if(rel){
-      window.location.reload();
+      this.router.navigate(['default/pending-task']).catch(dialog.error);
+    }
+  }
+  public async getFarmLand(data:any):Promise<void>{
+    if(data!=null){
+      this.selectedFarmLand=data;
+      this.showWarningForm=true;
+    }else{
+      await dialog.error("sorry, i can't find farm land right");
     }
   }
 }

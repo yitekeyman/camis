@@ -38,6 +38,23 @@ export interface ContractCancellationRequest {
   cancelledRight: CancelledRightRequest[];
   cancellationSupDoc: IDocument[];
   farmLands: FarmLandRequest[];
+  reason: string;
+  wfid: string;
+  date: any;
+}
+
+export interface ContractWarningRequest {
+  id: string;
+  farmId: string;
+  landId: string;
+  splitIndex: number;
+  date: any;
+  description: string;
+  stage: number;
+  reason: string;
+  wfid: string;
+  warnedRight: CancelledRightRequest;
+  supportiveDocument: IDocument[];
 }
 
 export interface CancelledRightRequest {
@@ -61,4 +78,15 @@ export interface FarmLandRequest {
   certificateDoc: IDocument;
   leaseContractDoc: IDocument;
   splitIndex: number;
+}
+
+export interface ContractRenewalRequest {
+  farmId: string;
+  modificationReason: IRegistrationType;
+  description: string;
+  status: IRegistrationType;
+  locked: boolean;
+  modifiedRight: CancelledRightRequest[];
+  supportiveDocument: IDocument[];
+  farmLands: FarmLandRequest[];
 }

@@ -677,7 +677,7 @@ export class EditLandComponent implements OnInit {
 
     this.landDataService.RequestLandEdit(editedLand, this.wfid).subscribe
     (() => {
-        dialog.success('Your work has been edited successfully!').then(
+        dialog.success('Your work has been edited & requested for approval successfully!').then(
           () => {
             this.router.navigate(['/default/pending-task']);
           });

@@ -31,6 +31,7 @@ export class FmPendingTaskComponent implements OnInit {
     {type: 3, states: [1]},
     {type: 11, states: [1]},
     {type: 12, states: [1]},
+    {type: 7, states: [1]},
   ];
   public activeWorkflows: any = [] = [];
   customApi: Observable<any>;
@@ -45,6 +46,8 @@ export class FmPendingTaskComponent implements OnInit {
         { type: 3, states: [0] },
         { type: 11, states: [0] },
         { type: 12, states: [3] },
+        { type: 13, states: [6] },
+        { type: 14, states: [3] },
       ];
     }
     if (this.loginRole === '3') {
@@ -57,6 +60,8 @@ export class FmPendingTaskComponent implements OnInit {
         { type: 8, states: [3] },
         { type: 10, states: [4] },
         { type: 12, states: [2] },
+        { type: 13, states: [2] },
+        { type: 14, states: [2] },
       ];
     }
     if (this.loginRole === '6') {
@@ -103,66 +108,8 @@ export class FmPendingTaskComponent implements OnInit {
           }
         },
         {
-          type: 7,states:[2,3,4,5,6,7,8],
-          asyncMsg$: (e: IWorkflowOpenEvent): Observable<any> => {
-            return Observable.create(observer => {
-              observer.next('Loading...');
-              this.landApi.getSplitStatus(e.workflowId).subscribe(res => {
-                if (res && res.status == -99) {
-                  observer.next('Refreshing...');
-                  window.location.reload();
-                } else {
-                  let status = 'Unknown';
-                  switch (res.status) {
-                    case 0:
-                      status = 'Initial';
-                      break;
-                    case 1:
-                      status = 'Started';
-                      break;
-                    case 2:
-                      status = 'Parcel Split Requested';
-                      break;
-                    case 3:
-                      status = 'Waiting For NRLAIS';
-                      break;
-                    case 4:
-                      status = 'Waiting For CMSS';
-                      break;
-                    case 5:
-                      status = 'NRLAIS Approved';
-                      break;
-                    case 6:
-                      status = 'NRLAIS Rejected';
-                      break;
-                    case 7:
-                      status = 'CMSS Done Split';
-                      break;
-                    case 8:
-                      status = 'CMSS Rejected';
-                      break;
-                    case 11:
-                      status = 'Rejected';
-                      break;
-                    case -2:
-                      status = 'Executed';
-                      break;
-                    case -3:
-                      status = 'Approved';
-                      break;
-                    case -4:
-                      status = 'Cancelled';
-                      break;
-                  }
-
-                  observer.next('Status: ' + status);
-                }
-              }, dialog.error);
-
-              return () => {
-              };
-            });
-          }
+          type: 7,states:[2,5,6,7,8],
+          asyncMsg$: this.getSplitStatusAsyncMsg.bind(this)
         },
         {
           type: 8,states:[6],
@@ -249,19 +196,19 @@ export class FmPendingTaskComponent implements OnInit {
       this.keyCase.camelCase(workflows);
       for (const filter of this.filters) {
         for (const workflow of workflows) {
-          if (filter.asyncMsg$) {
-            workflow.asyncMsgValue$ = filter.asyncMsg$({
-              workflowId: workflow.id,
-              workflowTypeId: workflow.typeId,
-              currentState: workflow.currentState
-            });
-          }
           if (workflow.typeId == filter.type) {
+            // ✅ Only set asyncMsg$ for this workflow if the filter matches its type
+            if (filter.asyncMsg$) {
+              workflow.asyncMsgValue$ = filter.asyncMsg$({
+                workflowId: workflow.id,
+                workflowTypeId: workflow.typeId,
+                currentState: workflow.currentState
+              });
+            }
             if (filter.states.indexOf(workflow.currentState) >= 0) {
               this.activeWorkflows.push(workflow);
             }
           }
-
         }
       }
       this.setPage(1);
@@ -280,7 +227,63 @@ export class FmPendingTaskComponent implements OnInit {
     this.pagedItems = this.activeWorkflows.slice(this.pager.startIndex, this.pager.endIndex + 1);
 
   }
+  private getSplitStatusAsyncMsg(e: IWorkflowOpenEvent): Observable<any> {
+    return Observable.create(observer => {
+      observer.next('Loading...');
+      this.landApi.getSplitStatus(e.workflowId).subscribe(res => {
+        if (res == -99) {
+          observer.next('Refreshing...');
+          window.location.reload();
+        } else {
+          let status = 'Unknown';
+          switch (res) {
+            case 0:
+              status = 'Initial';
+              break;
+            case 1:
+              status = 'Started';
+              break;
+            case 2:
+              status = 'Parcel Split Requested';
+              break;
+            case 3:
+              status = 'Waiting For NRLAIS';
+              break;
+            case 4:
+              status = 'Waiting For CMSS';
+              break;
+            case 5:
+              status = 'NRLAIS Approved';
+              break;
+            case 6:
+              status = 'NRLAIS Rejected';
+              break;
+            case 7:
+              status = 'CMSS Done Split';
+              break;
+            case 8:
+              status = 'CMSS Rejected';
+              break;
+            case 11:
+              status = 'Rejected';
+              break;
+            case -2:
+              status = 'Executed';
+              break;
+            case -3:
+              status = 'Approved';
+              break;
+            case -4:
+              status = 'Cancelled';
+              break;
+          }
 
+          observer.next('Status: ' + status);
+        }
+      }, dialog.error);
+      return () => {};
+    });
+  }
   workOnThis(e: IWorkflowOpenEvent) {
     let url: string;
     if (this.loginRole === '2') {
@@ -296,6 +299,12 @@ export class FmPendingTaskComponent implements OnInit {
           break;
         case 12:
           url = `farm-management/task/contract-cancellation/${e.workflowId}`;
+          break;
+        case 13:
+          url = `farm-management/task/contract-renewal/${e.workflowId}`;
+          break;
+        case 14:
+          url = `farm-management/task/contract-warning/${e.workflowId}`;
           break;
         default:
           url = `default/pending-task`;
@@ -326,6 +335,12 @@ export class FmPendingTaskComponent implements OnInit {
           break;
         case 12:
           url = `farm-management/task/contract-cancellation/${e.workflowId}`;
+          break;
+        case 13:
+          url = `farm-management/task/contract-renewal/${e.workflowId}`;
+          break;
+        case 14:
+          url = `farm-management/task/contract-warning/${e.workflowId}`;
           break;
         default:
           url = `default/pending-task`;

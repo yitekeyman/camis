@@ -53,7 +53,8 @@ namespace intapscamis.camis.domain.LandBank
             Transferred = 3,
             OnSplit=4,
             PreparedWithSplit=5,
-            HalfTransferred=6
+            HalfTransferred=6,
+            TransactionLocked=7
         }
         public enum LandRightType
         {

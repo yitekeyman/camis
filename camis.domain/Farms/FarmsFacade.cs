@@ -25,7 +25,9 @@ namespace intapscamis.camis.domain.Farms
         IList<string> GetUPINs();
 
         PaginatorResponse<FarmOperatorResponse> SearchFarmOperators(string term, int skip, int take);
-        PaginatorResponse<FarmResponse> SearchFarms(string term, int ownerType, int farmType, int status, int skip, int take);
+
+        PaginatorResponse<FarmResponse> SearchFarms(string term, int ownerType, int farmType, int status, int skip,
+            int take);
 
         FarmOperatorResponse GetFarmOperator(Guid id);
         FarmResponse GetFarm(Guid id);
@@ -71,10 +73,23 @@ namespace intapscamis.camis.domain.Farms
         List<FarmLandResponse2> GetFarmLands(Guid farmId);
         void GetTransferWorkFlows();
         Document InWorkItemContractCancellationDoc(Guid workItemId, Guid documentId);
+        Document InWorkItemContractRenewalDoc(Guid workItemId, Guid documentId);
         void RequestContractCancellation(Guid workflowId, ContractCancellationRequest body, string description);
         void ApproveContractCancellation(Guid workflowId, string description);
         void RejectContractCancellation(Guid workflowId, string description);
         void CancelContractCancellation(Guid workflowId, string description);
+        void RequestContractModification(Guid workflowId, ContractModificationRequest body, string description);
+        void ApproveContractModification(Guid workflowId, string description);
+        void RejectContractModification(Guid workflowId, string description);
+        void CancelContractModification(Guid workflowId, string description);
+        object GetAllModificationReasonList();
+        
+        Document InWorkItemContractWarningDoc(Guid workItemId, Guid documentId);
+        void RequestContractWarning(Guid workflowId, ContractWarningRequest body, string description);
+        void ApproveContractWarning(Guid workflowId, string description);
+        void RejectContractWarning(Guid workflowId, string description);
+        void CancelContractWarning(Guid workflowId, string description);
+        FarmWarningResponse GetRightWarning(Guid farmId, Guid landId, int splitIndex);
     }
 
     public class FarmsFacade : CamisFacade, IFarmsFacade
@@ -88,6 +103,8 @@ namespace intapscamis.camis.domain.Farms
         private readonly FarmModificationWorkflow _farmModificationWorkflow;
         private readonly FarmDeletionWorkflow _farmDeletionWorkflow;
         private readonly ContractCancellationWorkflow _contractCancellationWorkflow;
+        private readonly ContractModificationWorkflow _contractModificationWorkflow;
+        private readonly FarmWarningWorkflow _contractWarningWorkflow;
 
         private readonly CamisContext _context;
 
@@ -112,6 +129,9 @@ namespace intapscamis.camis.domain.Farms
             _landBankTransferWorkflow = new LandBankTransferWorkflow(new LandBankService());
             _contractCancellationWorkflow =
                 new ContractCancellationWorkflow(_service, workflowService, new LandBankService());
+            _contractModificationWorkflow =
+                new ContractModificationWorkflow(_service, workflowService, new LandBankService());
+            _contractWarningWorkflow = new FarmWarningWorkflow(_service, workflowService, new LandBankService());
         }
 
         public void SetSession(UserSession session)
@@ -125,6 +145,8 @@ namespace intapscamis.camis.domain.Farms
             _farmDeletionWorkflow.SetSession(session);
             _landBankTransferWorkflow.SetSession(session);
             _contractCancellationWorkflow.SetSession(session);
+            _contractModificationWorkflow.SetSession(session);
+            _contractWarningWorkflow.SetSession(session);
         }
 
 
@@ -183,7 +205,8 @@ namespace intapscamis.camis.domain.Farms
             return _service.SearchFarmOperators(term, skip, take);
         }
 
-        public PaginatorResponse<FarmResponse> SearchFarms(string term, int ownerType, int farmType, int status, int skip, int take)
+        public PaginatorResponse<FarmResponse> SearchFarms(string term, int ownerType, int farmType, int status,
+            int skip, int take)
         {
             PassContext(_service, _context);
             return _service.SearchFarms(term, ownerType, farmType, status, skip, take);
@@ -478,21 +501,16 @@ namespace intapscamis.camis.domain.Farms
                 PassContext(_landAssignmentWorkflow, _context);
                 _landAssignmentWorkflow.ConfigureMachine();
 
-                var regionCode = _context.SysConfigs.First(e => e.Name.Equals("region_code")).Value;
-                if (regionCode.Equals("AM"))
-                {
-                    _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id,
-                        LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
-                        description ?? "Parcel locating request sent for farm suppervisor",
-                        null);
-                }
-                else
-                {
-                    _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id,
-                        LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
-                        description ?? "Wait for NRLAIS to assign land to this farm.",
-                        null);
-                }
+
+                _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id,
+                    LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
+                    description ?? "Parcel locating request sent for farm suppervisor",
+                    null);
+
+                // _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id,
+                //     LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
+                //     description ?? "Wait for NRLAIS to assign land to this farm.",
+                //     null);
             });
         }
 
@@ -502,21 +520,16 @@ namespace intapscamis.camis.domain.Farms
             {
                 PassContext(_landAssignmentWorkflow, _context);
                 _landAssignmentWorkflow.ConfigureMachine(workflowId);
-                var regionCode = _context.SysConfigs.First(e => e.Name.Equals("region_code")).Value;
-                if (regionCode.Equals("AM"))
-                {
-                    _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id,
-                        LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
-                        description ?? "Parcel locating request sent for farm suppervisor",
-                        null);
-                }
-                else
-                {
-                    _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id,
-                        LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
-                        description ?? "Wait for NRLAIS to assign land to this farm.",
-                        null);
-                }
+
+                _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id,
+                    LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
+                    description ?? "Parcel locating request sent for farm suppervisor",
+                    null);
+
+                // _landAssignmentWorkflow.Fire(_landAssignmentWorkflow.Workflow.Id,
+                //     LandAssignmentWorkflow.ParameterizedTriggers.Wait, body,
+                //     description ?? "Wait for NRLAIS to assign land to this farm.",
+                //     null);
             });
         }
 
@@ -630,12 +643,17 @@ namespace intapscamis.camis.domain.Farms
             return _service.InWorkItemContractCancellationDoc(workItemId, documentId);
         }
 
+        public Document InWorkItemContractRenewalDoc(Guid workItemId, Guid documentId)
+        {
+            PassContext(_service, _context);
+            return _service.InWorkItemContractRenewalDoc(workItemId, documentId);
+        }
         public void RequestContractCancellation(Guid workflowId, ContractCancellationRequest body, string description)
         {
             Transact(_context, t =>
             {
                 PassContext(_contractCancellationWorkflow, _context);
-                if(workflowId==Guid.Empty)
+                if (workflowId == Guid.Empty)
                     _contractCancellationWorkflow.ConfigureMachine();
                 else
                     _contractCancellationWorkflow.ConfigureMachine(workflowId);
@@ -687,6 +705,141 @@ namespace intapscamis.camis.domain.Farms
                     description ?? "FS/FC Cancel Contract Cancellation.",
                     null);
             });
+        }
+        
+          public void RequestContractModification(Guid workflowId, ContractModificationRequest body, string description)
+        {
+            Transact(_context, t =>
+            {
+                PassContext(_contractModificationWorkflow, _context);
+                if (workflowId == Guid.Empty)
+                    _contractModificationWorkflow.ConfigureMachine();
+                else
+                    _contractModificationWorkflow.ConfigureMachine(workflowId);
+
+                _contractModificationWorkflow.Fire(_contractModificationWorkflow.Workflow.Id,
+                    ContractModificationWorkflow.ParameterizedTriggers.Request, body,
+                    description ?? "Contract Renewal/Modification Request for FS.",
+                    null);
+            });
+        }
+
+        public void ApproveContractModification(Guid workflowId, string description)
+        {
+            Transact(_context, t =>
+            {
+                PassContext(_contractModificationWorkflow, _context);
+                _contractModificationWorkflow.ConfigureMachine(workflowId);
+
+                _contractModificationWorkflow.Fire(_contractModificationWorkflow.Workflow.Id,
+                    ContractModificationWorkflow.ParameterizedTriggers.Approve,
+                    description ?? "FS Approved Contract Renewal/Modification.",
+                    null);
+            });
+        }
+
+        public void RejectContractModification(Guid workflowId, string description)
+        {
+            Transact(_context, t =>
+            {
+                PassContext(_contractModificationWorkflow, _context);
+                _contractModificationWorkflow.ConfigureMachine(workflowId);
+
+                _contractModificationWorkflow.Fire(_contractModificationWorkflow.Workflow.Id,
+                    ContractModificationWorkflow.ParameterizedTriggers.Reject,
+                    description ?? "FS Rejected Contract Renewal/Modification.",
+                    null);
+            });
+        }
+
+        public void CancelContractModification(Guid workflowId, string description)
+        {
+            Transact(_context, t =>
+            {
+                PassContext(_contractModificationWorkflow, _context);
+                _contractModificationWorkflow.ConfigureMachine(workflowId);
+
+                _contractModificationWorkflow.Fire(_contractModificationWorkflow.Workflow.Id,
+                    ContractModificationWorkflow.ParameterizedTriggers.Cancel,
+                    description ?? "FS/FC Cancel Contract Renewal/Modification.",
+                    null);
+            });
+        }
+
+        public object GetAllModificationReasonList()
+        {
+            PassContext(_service, _context);
+            return _service.GetAllModificationReasonList();
+        }
+
+        public Document InWorkItemContractWarningDoc(Guid workItemId, Guid documentId)
+        {
+            PassContext(_service, _context);
+            return _service.InWorkItemContractWarningDoc(workItemId, documentId);
+        }
+        
+         public void RequestContractWarning(Guid workflowId, ContractWarningRequest body, string description)
+        {
+            Transact(_context, t =>
+            {
+                PassContext(_contractWarningWorkflow, _context);
+                if (workflowId == Guid.Empty)
+                    _contractWarningWorkflow.ConfigureMachine();
+                else
+                    _contractWarningWorkflow.ConfigureMachine(workflowId);
+
+                _contractWarningWorkflow.Fire(_contractWarningWorkflow.Workflow.Id,
+                    FarmWarningWorkflow.ParameterizedTriggers.Request, body,
+                    description ?? "Farm Contract Warning Registration Request for FS.",
+                    null);
+            });
+        }
+
+        public void ApproveContractWarning(Guid workflowId, string description)
+        {
+            Transact(_context, t =>
+            {
+                PassContext(_contractWarningWorkflow, _context);
+                _contractWarningWorkflow.ConfigureMachine(workflowId);
+
+                _contractWarningWorkflow.Fire(_contractWarningWorkflow.Workflow.Id, FarmWarningWorkflow.ParameterizedTriggers.Approve,
+                    description ?? "FS Approved Contract Warning Registration.",
+                    null);
+            });
+        }
+
+        public void RejectContractWarning(Guid workflowId, string description)
+        {
+            Transact(_context, t =>
+            {
+                PassContext(_contractWarningWorkflow, _context);
+                _contractWarningWorkflow.ConfigureMachine(workflowId);
+
+                _contractWarningWorkflow.Fire(_contractWarningWorkflow.Workflow.Id,
+                    FarmWarningWorkflow.ParameterizedTriggers.Reject,
+                    description ?? "FS Rejected Contract Warning Registration.",
+                    null);
+            });
+        }
+
+        public void CancelContractWarning(Guid workflowId, string description)
+        {
+            Transact(_context, t =>
+            {
+                PassContext(_contractWarningWorkflow, _context);
+                _contractWarningWorkflow.ConfigureMachine(workflowId);
+
+                _contractWarningWorkflow.Fire(_contractWarningWorkflow.Workflow.Id,
+                    FarmWarningWorkflow.ParameterizedTriggers.Cancel,
+                    description ?? "FS/FC Cancel Contract Warning Registration.",
+                    null);
+            });
+        }
+
+        public FarmWarningResponse GetRightWarning(Guid farmId, Guid landId, int splitIndex)
+        {
+            PassContext(_service, _context);
+            return _service.GetRightWarning(farmId, landId, splitIndex);
         }
     }
 }

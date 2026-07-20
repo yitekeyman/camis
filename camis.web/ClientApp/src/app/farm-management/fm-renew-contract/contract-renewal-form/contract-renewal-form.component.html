@@ -1,0 +1,164 @@
+﻿<div class="row me-0">
+  <div class="col-md-8 pe-0">
+    <div class="modal-header">
+      <h4 class="modal-title" id="landAssignmentDialogLabel">Farm Contract Renewal Form</h4>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="closeForm()"></button>
+    </div>
+    <div class="modal-body p-2" style="height: 75vh; overflow-y: auto">
+      <div class="form-group" *ngIf="farmLandRights?.length>1">
+        <table class="table">
+          <thead>
+          <tr>
+            <th colspan="7">List of Farm Rights</th>
+          </tr>
+          <tr>
+            <th>
+              #
+            </th>
+            <th>UPID</th>
+            <th>Right_Type</th>
+            <th>Right_From</th>
+            <th>Right_To</th>
+            <th>Year_Amount</th>
+            <th>Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let farmLand of farmLandRights; index as i">
+            <td>{{i+1}}</td>
+            <td><small>{{ farmLand.upin }} ({{ getFarmStatus(farmLand.rights.status) }})</small></td>
+            <td><small>{{ getRightType(farmLand.rights.rightType) }}</small></td>
+            <td><small>{{ farmLand.rights.rightFrom | date }}</small></td>
+            <td><small>{{ farmLand.rights.rightTo | date }}</small></td>
+            <td><small>{{ farmLand.rights.yearlyRent | currency:"Br" }}</small></td>
+            <td>
+              <button type="button" class="btn btn-custom-light" (click)="renewRight(farmLand)" [disabled]="showEditRightForm">Renew</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="form-group" *ngIf="renewFarmLandRights?.length>0">
+        <table class="table">
+          <thead>
+          <tr>
+            <th colspan="7">List of Renew Farm Rights</th>
+          </tr>
+          <tr>
+            <th>
+              #
+            </th>
+            <th>UPID</th>
+            <th>Right_Type</th>
+            <th>Right_From</th>
+            <th>Right_To</th>
+            <th>Year_Amount</th>
+            <th>Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let farmLand of renewFarmLandRights; index as i">
+            <td>{{i+1}}</td>
+            <td><small>{{ farmLand.upin }} ({{ getFarmStatus(farmLand.rights.status) }})</small></td>
+            <td><small>{{ getRightType(farmLand.rights.rightType) }}</small></td>
+            <td><small>{{ farmLand.rights.rightFrom | date }}</small></td>
+            <td><small>{{ farmLand.rights.rightTo | date }}</small></td>
+            <td><small>{{ farmLand.rights.yearlyRent | currency:"Br" }}</small></td>
+            <td class="text-right">
+              <button type="button" class="btn btn-custom-light btn-sm" (click)="renewRight(farmLand)" [disabled]="showEditRightForm">Edit</button>
+              <button type="button" class="btn btn-custom-light btn-sm" (click)="renewRight(i)" *ngIf="farmLandRights?.length>1" [disabled]="showEditRightForm">Cancel</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="row" *ngIf="showEditRightForm && selectedFarmLandRights!=null">
+        <div class="col-md-3">
+          <div class="form-group">
+            <label for="datefrom">
+              Right From:<span class="text-danger">(*)&nbsp;</span>
+              <span class="error-message" *ngIf="!selectedFarmLandRights.rights.rightFrom">
+            <i class="ti ti-exclamation-circle"></i> Date is required
+          </span>
+            </label>
+            <input type="date" class="form-control" id="datefrom"
+                   [(ngModel)]="selectedFarmLandRights.rights.rightFrom" required>
+          </div>
+
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label for="dateto">
+              Right To:<span class="text-danger">(*)&nbsp;</span>
+              <span class="error-message" *ngIf="!selectedFarmLandRights.rights.rightTo">
+            <i class="ti ti-exclamation-circle"></i> Date is required
+          </span>
+            </label>
+            <input type="date" class="form-control" id="dateto"
+                   [(ngModel)]="selectedFarmLandRights.rights.rightTo" required>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="amount">
+              Yearly Amount:<span class="text-danger">(*)&nbsp;</span>
+              <span class="error-message" *ngIf="!selectedFarmLandRights.rights.yearlyRent">
+            <i class="ti ti-exclamation-circle"></i> Amount is required
+          </span>
+            </label>
+            <input type="number" class="form-control" id="amount"
+                   [(ngModel)]="selectedFarmLandRights.rights.yearlyRent" required>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="form-group align-right ">
+           <button type="button" class="btn btn-sm btn-custom-light mt-4" (click)="doneEditRightForm()">Done Editing</button>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <app-landbank-document-selector title="Upload Renewal Support Documents"
+                                        [documents]="renewalModel.supportiveDocument"></app-landbank-document-selector>
+      </div>
+      <div class="row">
+        <div class="col-md-3">
+          <div class="form-group">
+            <label for="reason">
+              Renewal Reason:<span class="text-danger">(*)&nbsp;</span>
+              <span class="error-message" *ngIf="renewalModel.modificationReason.id==0">
+            <i class="ti ti-exclamation-circle"></i> Reason is required
+          </span>
+            </label>
+            <select  class="form-select" id="reason"
+                     [(ngModel)]="renewalModel.modificationReason.id" >
+              <option value="0">Select Renewal Reason</option>
+              <option *ngFor="let r of modificationReasonList" [value]="r.id">{{r.name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-9">
+          <div class="form-group">
+            <label for="description">
+              Describe Renewal Reason:<span class="text-danger">(*)&nbsp;</span>
+              <span class="error-message" *ngIf="submitted && !renewalModel.description">
+            <i class="ti ti-exclamation-circle"></i> renewal reason description is required
+          </span>
+            </label>
+            <textarea class="form-control" id="description" rows="3"
+                      [(ngModel)]="renewalModel.description" required></textarea>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer right">
+      <button type="button" class="btn btn-default" (click)="closeForm()">Cancel</button>
+      <button type="button" class="btn btn-primary btn-md" (click)="saveRenewal()">Save</button>
+    </div>
+  </div>
+  <div class="col-md-4 p-1">
+    <app-camis-map #camis_map></app-camis-map>
+  </div>
+</div>

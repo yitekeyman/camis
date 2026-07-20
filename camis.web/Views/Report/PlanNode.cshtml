@@ -1,0 +1,82 @@
+﻿@using intapscamis.camis.domain.Report.Models
+@model intapscamis.camis.domain.Report.Models.PlanNodePartialModel
+
+@{
+    var node = Model.Node;
+    var hierarchy = Model.Hierarchy;
+    var indentLevel = Model.IndentLevel;
+}
+
+@* Empty spacer row for top-level items *@
+@if (indentLevel == 0)
+{
+    <tr><td colspan="3">@{ }</td></tr>
+}
+
+@* Activity name row with indentation *@
+<tr>
+    <th colspan="3" style="padding-left: @(indentLevel * 2)em">
+        @node.Activity.Name
+    </th>
+</tr>
+
+@* Variable and target rows *@
+@for (var i = 0; i < node.Detail.Count; i++)
+{
+    <tr>
+        @if (i == 0)
+        {
+            <td rowspan="@node.Detail.Count">
+                <small>@node.Activity.Description</small>
+            </td>
+        }
+        <td>
+            @(node.Detail[i].Detail.CustomVariableName ?? node.Detail[i].Detail.Variable.Name):
+            @if (node.Detail[i].VariableValueList.Count > 0)
+            {
+                <div style="padding-left: 1em">
+                    @foreach (var li in node.Detail[i].VariableValueList)
+                    {
+                        <div>
+                            <input type="radio" disabled />
+                            <span style="padding-left: 0.5em">@li.Name</span>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <span>
+                    ______________
+                    <small>@node.Detail[i].ProgressMeasuringUnit.Name</small>
+                </span>
+            }
+        </td>
+        <td>
+            @if (node.Detail[i].VariableValueList.Count > 0)
+            {
+                @node.Detail[i].TargetVariableValueList.Name
+            }
+            else
+            {
+                @node.Detail[i].Detail.Target
+                <small>@node.Detail[i].ProgressMeasuringUnit.Name</small>
+            }
+        </td>
+    </tr>
+}
+
+@* Recursively render all children *@
+@if (hierarchy.ContainsKey(node))
+{
+    foreach (var child in hierarchy[node].OrderBy(m => m.Activity.Id))
+    {
+        var childModel = new PlanNodePartialModel()
+        {
+            Node = child,
+            Hierarchy = hierarchy,
+            IndentLevel = indentLevel + 1
+        };
+        @await Html.PartialAsync("PlanNode", childModel)
+    }
+}

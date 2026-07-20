@@ -47,7 +47,9 @@
         UpdateLand = 1002,
         DeleteLand = 1003,
         UpdateSystemConfigurationValue = 1004,
-        
+        CancelContract=1005,
+        UpdateContract=1006,
+        ContractWarning=1007
     }
 
     public static class UserRoles
@@ -191,6 +193,7 @@
         public InvestorStat EthiopianOrigin { get; set; } = new InvestorStat();
         public InvestorStat Local { get; set; } = new InvestorStat();
         public InvestorStat ForeignOrigin { get; set; } = new InvestorStat();
+        public InvestorStat Indigenous { get; set; }=new InvestorStat();
     }
 
     public class InvestorStat

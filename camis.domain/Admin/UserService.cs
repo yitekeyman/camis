@@ -496,6 +496,7 @@ namespace intapscamis.camis.domain.Admin
                 EthiopianOrigin = GetInvestorStat(3),
                 ForeignOrigin = GetInvestorStat(2),
                 Local = GetInvestorStat(1),
+                Indigenous = GetInvestorStat(4),
                 InvestorCapital = _context.FarmOperator.Sum(i => i.Capital ?? 0)
             };
         }

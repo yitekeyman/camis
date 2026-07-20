@@ -11,7 +11,12 @@ namespace intapscamis.camis.domain.Report.Models
         public List<ActivityViewModel> SubActivites { get; set; }
         public Dictionary<ActivityViewModel, ActivityViewModel[]> Hierarchy { get; set; }
     }
-
+    public class PlanNodePartialModel
+    {
+        public ActivityViewModel Node { get; set; }        // Replace with actual node type
+        public Dictionary<ActivityViewModel, ActivityViewModel[]> Hierarchy { get; set; }
+        public int IndentLevel { get; set; }
+    }
     public class ActivityViewModel
     {
         public Activity Activity { get; set; }

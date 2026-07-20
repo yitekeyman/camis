@@ -81,7 +81,7 @@
               <div class="align-center mt-5 no-data" *ngIf="clerkRole">
                 <i class="ti ti-exclamation-circle"></i>
                 <h2>Sorry!</h2>
-                <p>There is no identified parcel to display!</p>
+                <p>There is no {{ prepareLandType(searchModel.landType) }} parcel to display!</p>
                 <p>Go to <a  href="javascript:" class="goto-link" (click)="goToRegistration()"><b>Land Profile Registration</b></a> to register identified land!</p>
               </div>
             </td>

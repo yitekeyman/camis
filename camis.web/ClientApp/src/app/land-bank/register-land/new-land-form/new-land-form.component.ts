@@ -483,8 +483,8 @@ land.landSplit=this.land.landSplit;
 // calling the api to register the above returned land array
     this.landService.RequestLandRegistration(land).subscribe
     (() => {
-        dialog.success('Your work has been saved').then(() => {
-          this.router.navigate(['/land-bank/search-parcel']);
+        dialog.success('Your work has been saved & requested approval').then(() => {
+         window.location.reload();
         })
       },
       (err) => {

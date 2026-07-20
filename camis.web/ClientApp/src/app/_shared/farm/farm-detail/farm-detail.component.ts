@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 
 import {FarmApiService} from '../../../_services/farm-api.service';
 import {ProjectApiService} from '../../../_services/project-api.service';
@@ -15,10 +15,22 @@ import {
 } from "../../land-bank/search-result-detail/simple-land-bank-details/simple-land-bank-details.component";
 import {CamisMapComponent} from "../../camismap/camismap.component";
 import {LandDataService} from "../../../_services/land-data.service";
+import {
+  ContractCancellationFormComponent
+} from "../../../farm-management/fm-cancel-contract/contract-cancellation-form/contract-cancellation-form.component";
+import {
+  ContractRenewalFormComponent
+} from "../../../farm-management/fm-renew-contract/contract-renewal-form/contract-renewal-form.component";
+import {
+  ContractWarningFormComponent
+} from "../../../farm-management/fm-warning-contract/contract-warning-form/contract-warning-form.component";
+import {
+  ContractWarningDetailsComponent
+} from "../../../farm-management/fm-warning-contract/contract-warning-details/contract-warning-details.component";
 
 @Component({
   selector: 'app-farm-detail',
-  imports: [CommonModule, ReactiveFormsModule, AddressModule, DocumentModule, ProjectModule, CamisMapComponent],
+  imports: [CommonModule, ReactiveFormsModule, AddressModule, DocumentModule, ProjectModule, CamisMapComponent, ContractCancellationFormComponent, ContractRenewalFormComponent, ContractWarningFormComponent, ContractWarningDetailsComponent],
   templateUrl: 'farm-detail.component.html',
   styleUrls: ['farm-detail.component.scss']
 
@@ -31,43 +43,48 @@ export class FarmDetailComponent implements OnInit {
   @Input('isOperatorOptional')
   isOperatorOptional = false;
 
-  loading = true;
-  landRight=null;
+  @Output() selectedFarmLand = new EventEmitter<any>();
 
+  loading = true;
+  landRight = null;
+  loginRole='0';
 
   frTypes: any[] = [];
   opTypes: any[] = [];
   opOrigins: any[] = [];
   regAuths: any[] = [];
   regTypes: any[] = [];
-  farmLands:any[]=[];
-
+  farmLands: any[] = [];
   plan: any = {};
   farmStatusTypes: any[] = [];
-  rightType=[
-    {id:1,name:'Lease From State'},
-    {id:2,name:'Lease From Private'},
-    {id:3,name:'Private'},
-    {id:4,name:'Contract Farming'},
-    {id:5,name:'Sub-lease'},
+  rightType = [
+    {id: 1, name: 'Lease From State'},
+    {id: 2, name: 'Lease From Private'},
+    {id: 3, name: 'Private'},
+    {id: 4, name: 'Contract Farming'},
+    {id: 5, name: 'Sub-lease'},
   ]
 
   progressPercent: number;
   @ViewChild('camis_map') map: CamisMapComponent;
 
+  showWarning=false;
+  selectedLandId:string=null
+  selectedSplitIndex = 0;
   constructor(
     private api: FarmApiService,
     private projectApi: ProjectApiService,
     public keyCase: ObjectKeyCasingService,
     private landService: LandDataService
   ) {
+    this.loginRole=localStorage.getItem("role");
   }
 
   ngOnInit(): void {
     this.api.getFarmStatusTypeList().subscribe(statusType => {
       this.keyCase.camelCase(statusType);
       this.farmStatusTypes = statusType;
-    },dialog.error);
+    }, dialog.error);
     this.api.getAllFarmTypes().subscribe(frTypes => {
       this.keyCase.camelCase(frTypes);
       this.frTypes = frTypes
@@ -217,6 +234,7 @@ export class FarmDetailComponent implements OnInit {
         return 'Unknown.';
     }
   }
+
   getPhotoSource(): string {
     if (this.farm?.operator?.photo?.file) {
       // Convert base64 string to data URL for display
@@ -224,20 +242,40 @@ export class FarmDetailComponent implements OnInit {
     }
     return 'assets/images/user/user_profile.PNG';
   }
+
   getFarmStatus(id: number): string {
-    for(let l of this.farmStatusTypes) {
+    for (let l of this.farmStatusTypes) {
       if (id == l.id) {
         return l.name;
       }
     }
     return null;
   }
+
   getRightType(id: number): string {
-    for(let l of this.rightType) {
+    for (let l of this.rightType) {
       if (id == l.id) {
         return l.name;
       }
     }
     return null;
+  }
+
+  getArea(a) {
+    return Math.round(a / 10) / 1000 + ' ha';
+  }
+  addWarning(farmLand:any){
+    this.selectedFarmLand.emit(farmLand);
+  }
+
+  showWarningDetails(landId:any, splitIndex:number){
+    this.selectedLandId = landId;
+    this.selectedSplitIndex=splitIndex;
+    this.showWarning=true;
+  }
+  closeForm(e){
+    this.selectedLandId = null;
+    this.selectedSplitIndex=0;
+    this.showWarning=false;
   }
 }

@@ -5,7 +5,7 @@
     </div>
   </div>
 </div>
-<div class="col-md-12" >
+<div class="col-md-12">
   <div class="card p-2">
     <div class="card-block p-0">
       <div class="accordion" id="accordionPanelsStayOpenExample">
@@ -14,7 +14,8 @@
             <button class="accordion-button" type="button" data-bs-toggle="collapse"
                     data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
                     aria-controls="panelsStayOpen-collapseOne">
-              <i class="ti ti-user-dollar"></i>&nbsp;&nbsp;Investor Profile <span *ngIf="farm.status">({{farm.status.name}})</span>
+              <i class="ti ti-user-dollar"></i>&nbsp;&nbsp;Investor Profile <span
+              *ngIf="farm.status">({{ farm.status.name }})</span>
             </button>
           </h1>
           <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show"
@@ -245,19 +246,31 @@
                   <th>Land Right</th>
                   <th>Lease Agreement</th>
                   <th>Land Certificate</th>
-                  <th></th>
+                  <th class="text-right">Action</th>
                 </tr>
                 </thead>
                 <tbody *ngIf="farm && farmLands?.length>0">
                 <tr *ngFor="let farmLand of farmLands; index as i ">
-                  <td>{{i+1}}</td>
+                  <td>{{ i + 1 }}</td>
                   <td>
-                    <table class="table" >
+                    <table class="table">
                       <tbody>
-                      <tr><td><b>Upin: </b></td><td>{{farmLand.upin}}</td></tr>
-                      <tr><td><b>Area: </b></td><td> {{farmLand.area}}</td></tr>
-                      <tr><td><b>Centroid X: </b></td><td>{{farmLand.centroidX}}</td></tr>
-                      <tr><td><b>Centroid Y: </b> </td><td> {{farmLand.centroidY}}</td></tr>
+                      <tr>
+                        <td><b>Upin: </b></td>
+                        <td>{{ farmLand.upin }}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Area: </b></td>
+                        <td> {{ getArea(farmLand.area) }}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Centroid_X: </b></td>
+                        <td>{{ farmLand.centroidX }}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Centroid_Y: </b></td>
+                        <td> {{ farmLand.centroidY }}</td>
+                      </tr>
 
                       </tbody>
 
@@ -267,11 +280,26 @@
                     <div *ngIf="!farmLand.rights">No right Yet</div>
                     <table class="table" *ngIf="farmLand?.rights">
                       <tbody>
-                        <tr><td><b>Right Type: </b></td><td>{{getRightType(farmLand.rights.rightType)}}</td></tr>
-                        <tr><td><b>Right Date From: </b></td><td> {{keyCase.convertDate(farmLand.rights.rightFrom)}}</td></tr>
-                        <tr><td><b>Right Date To: </b></td><td>{{keyCase.convertDate(farmLand.rights.rightTo)}}</td></tr>
-                        <tr><td><b>Yearly Amount: </b> </td><td> {{farmLand.rights.yearlyRent| currency:"Br"}}</td></tr>
-                        <tr><td><b>Status: </b></td><td>{{getFarmStatus(farmLand.rights.status)}}</td></tr>
+                      <tr>
+                        <td><b>Right_Type: </b></td>
+                        <td>{{ getRightType(farmLand.rights.rightType) }}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Date_From: </b></td>
+                        <td> {{ keyCase.convertDate(farmLand.rights.rightFrom) }}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Date_To: </b></td>
+                        <td>{{ keyCase.convertDate(farmLand.rights.rightTo) }}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Yearly_Amount: </b></td>
+                        <td> {{ farmLand.rights.yearlyRent| currency:"Br " }}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Status: </b></td>
+                        <td>{{ getFarmStatus(farmLand.rights.status) }}</td>
+                      </tr>
                       </tbody>
 
                     </table>
@@ -282,14 +310,29 @@
                                          [document]="farmLand.rights.contractDocument"></app-document-detail>
                   </td>
 
-                  <td><div *ngIf="!farmLand.rights.certificateDocument">No certificate, yet.</div>
+                  <td>
+                    <div *ngIf="!farmLand.rights.certificateDocument">No certificate, yet.</div>
                     <app-document-detail *ngIf="farmLand.rights.certificateDocument"
-                                         [document]="farmLand.rights.certificateDocument"></app-document-detail></td>
+                                         [document]="farmLand.rights.certificateDocument"></app-document-detail>
+                  </td>
                   <td class="align-right">
-                    <a target="_blank" class="btn btn-custom-light btn-sm"
-                       [href]="'/land-bank/parcel-details/' + farmLand.landId">
-                      <i class="ti ti-map-pin"></i>
-                    </a>
+                    <div class="btn-group">
+                      <a target="_blank" class="btn btn-custom-light btn-sm me-1" title="see parcel info"
+                         [href]="'/land-bank/parcel-details/' + farmLand.landId">
+                        <i class="ti ti-map-pin"></i>
+                      </a>
+                      <a class="btn btn-custom btn-sm me-1" title="add warning"
+                         *ngIf="loginRole==='2' && farm && !farm.locked && [4,5,8].includes(farm.status.id)"
+                         href="javascript:" (click)="addWarning(farmLand)">
+                        <i class="ti ti-plus"></i>
+                      </a>
+                      <a class="btn btn-custom btn-sm" title="see warning"
+                         *ngIf="farmLand.rights.status===8"
+                         href="javascript:" (click)="showWarningDetails(farmLand.landId, farmLand.splitIndex)">
+                        <i class="ti ti-eye"></i>
+                      </a>
+                    </div>
+
                   </td>
                 </tr>
                 </tbody>
@@ -313,7 +356,7 @@
   </div>
 
 </div>
-<div class="col-md-12" *ngIf="plan && plan.rootActivity">
+<div class="col-md-12">
   <div class="card p-2">
     <div class="card-block p-0">
       <div class="row">
@@ -357,3 +400,15 @@
   </div>
 
 </div>
+
+<div class="modal fade" [class.show]="showWarning" [style.display]="(showWarning) ? 'block' : 'none'"
+     id="resetPassModal" tabindex="-1" aria-labelledby="resetPassModalLabel" aria-hidden="true">
+  <div class="modal-dialog" style="max-width: 95%">
+    <div class="modal-content">
+     <app-farm-warning-details *ngIf="showWarning" [farmId]="farm.id" [landId]="selectedLandId" [splitIndex]="selectedSplitIndex" [farm]="farm" (closeEditForm)="closeForm($event)"></app-farm-warning-details>
+    </div>
+  </div>
+</div>
+
+<!-- Backdrop -->
+<div class="modal-backdrop fade show" *ngIf="showWarning" (click)="closeForm(true)"></div>

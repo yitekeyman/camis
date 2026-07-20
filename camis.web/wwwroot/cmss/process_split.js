@@ -166,7 +166,9 @@ function rejectTask() {
                 alert('Error trying to save change.\n' + res.error);
             } else {
                 alert('Task rejected successfully');
-                loadCurrentTasks();
+                split_state = 0;
+                unloadTask();
+                openHomePage();
             }
         },
         error: function(err) {

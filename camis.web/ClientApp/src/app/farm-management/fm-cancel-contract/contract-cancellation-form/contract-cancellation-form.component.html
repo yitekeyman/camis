@@ -17,7 +17,6 @@
             </th>
             <th>Land Info</th>
             <th>Right Info</th>
-            <th>Support Doc</th>
           </tr>
           </thead>
           <tbody>
@@ -67,30 +66,49 @@
                 </tbody>
               </table>
             </td>
-            <td>
-              <small>
-                <div *ngIf="!farmLand.rights.contractDocument">No lease contract, yet.</div>
-                <app-document-detail *ngIf="farmLand.rights.contractDocument"
-                                     [document]="farmLand.rights.contractDocument"></app-document-detail>
-                <div *ngIf="!farmLand.rights.certificateDocument">No certificate, yet.</div>
-                <app-document-detail *ngIf="farmLand.rights.certificateDocument"
-                                     [document]="farmLand.rights.certificateDocument"></app-document-detail>
-              </small>
-            </td>
           </tr>
           </tbody>
         </table>
       </div>
 
       <div class="form-group">
-        <label for="cancellationReason">
-          Describe Cancellation Reason:<span class="text-danger">(*)&nbsp;</span>
-          <span class="error-message" *ngIf="submitted && !cancellationModel.cancellationReason">
+        <div class="row me-0">
+          <div class="col-md-5">
+            <div class="form-group">
+              <label for="cancellationReason">
+                Cancellation Reason:<span class="text-danger">(*)&nbsp;</span>
+                <span class="error-message" *ngIf="submitted && !cancellationModel.reason">
+            <i class="ti ti-exclamation-circle"></i>  reason is required
+          </span>
+              </label>
+              <input type="text" class="form-control" id="cancellationReason"
+                        [(ngModel)]="cancellationModel.reason" required>
+            </div>
+            <div class="form-group">
+              <label for="cancellationDate">
+                Cancellation Date:<span class="text-danger">(*)&nbsp;</span>
+                <span class="error-message" *ngIf="submitted && !cancellationModel.date">
+            <i class="ti ti-exclamation-circle"></i>  Date is required
+          </span>
+              </label>
+              <input type="date" class="form-control" id="cancellationDate"
+                     [(ngModel)]="cancellationModel.date" required>
+            </div>
+          </div>
+          <div class="col-md-7">
+            <div class="form-group">
+              <label for="cancellationReasonDet">
+                Describe Reason:<span class="text-danger">(*)&nbsp;</span>
+                <span class="error-message" *ngIf="submitted && !cancellationModel.cancellationReason">
             <i class="ti ti-exclamation-circle"></i> Cancellation reason is required
           </span>
-        </label>
-        <textarea class="form-control" id="cancellationReason" rows="3"
-                  [(ngModel)]="cancellationModel.cancellationReason" required></textarea>
+              </label>
+              <textarea class="form-control" id="cancellationReasonDet" rows="3"
+                        [(ngModel)]="cancellationModel.cancellationReason" required></textarea>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <div class="form-group">

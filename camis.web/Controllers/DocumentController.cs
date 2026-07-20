@@ -146,7 +146,7 @@ namespace intapscamis.camis.Controllers
             try
             {
                 _facade.SetSession(GetSession());
-                var ret = _facade.PatchMigratingWorkItemFile().ConfigureAwait(false);
+                var ret = _facade.PatchMigratingWorkItemFile().ConfigureAwait(true);
                 return Json(ret);
             }
             catch (Exception e)

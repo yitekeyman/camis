@@ -30,6 +30,9 @@
     <Content Remove="ClientApp\.idea\**" />
     <None Remove="ClientApp\dist\**" />
     <Content Remove="ClientApp\dist\**" />
+    <Content Update="Views\Report\PlanNode.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <!-- Static assets (no need to copy to output, web root serves from source) -->
@@ -68,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ClientApp\.angular\cache\" />
+    <Folder Include="ClientApp\.angular\cache\20.3.2\" />
   </ItemGroup>
 
   <!-- Node.js environment for SPA build (unchanged) -->

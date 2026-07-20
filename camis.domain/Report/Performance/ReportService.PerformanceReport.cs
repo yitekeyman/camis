@@ -720,7 +720,6 @@ select at.farmid, at.upin, at.area, at.root_activity_id, at.plan_id, at.actid, a
             else
             {
                 s = from b in farms group b by b.Upin.Region() into g select new CampSummaryItem() { location = g.Key, count = g.Count() };
-
             }
 
 
@@ -914,8 +913,8 @@ select at.farmid, at.upin, at.area, at.root_activity_id, at.plan_id, at.actid, a
                         upin = Productions.Where(m => m.farmid == farm).First().upin,
                         name = Productions.Where(m => m.farmid == farm).First().OpeartorName,
                         type = p,
-                        male = Productions.Where(m => m.farmid == farm && m.tag.Substring(0,23) == maleTag).Count(),
-                        female = Productions.Where(m => m.farmid == farm && m.tag.Substring(0,23) == femaleTag).Count()
+                        male = (int)Productions.Where(m => m.farmid == farm && m.tag.Substring(0,23) == maleTag).Sum(m=>m.progress),
+                        female = (int)Productions.Where(m => m.farmid == farm && m.tag.Substring(0,23) == femaleTag).Sum(m=>m.progress)
 
                     });
                 }

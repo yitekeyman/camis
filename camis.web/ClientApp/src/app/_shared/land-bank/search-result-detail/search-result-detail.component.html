@@ -351,7 +351,7 @@
   </div>
 </div>
 
-<div id="landSplitDialog" class="modal fade" tabindex="-1" aria-labelledby="landSplitDialogLabel"
+<div id="landSplitDialog" class="modal fade" [class.show]="showModal"  [style.display]="showModal ? 'block' : 'none'" tabindex="-1" aria-labelledby="landSplitDialogLabel"
      aria-hidden="true" >
   <div class="modal-dialog">
     <div class="modal-content" *ngIf="showModal">
@@ -390,10 +390,11 @@
           <button type="button" class="btn btn-default" data-bs-dismiss="modal" aria-label="Close"
                   (click)="manageModal()">Cancel
           </button>
-          <button type="button" class="btn btn-primary btn-md" (click)="splitLandRequest()" [disabled]="!(prepareForm.valid)">Send Request
+          <button type="button"  data-bs-dismiss="modal" aria-label="Close" class="btn btn-primary btn-md" (click)="splitLandRequest()" [disabled]="!(prepareForm.valid)">Send Request
           </button>
         </div>
       </form>
     </div>
   </div>
 </div>
+<div class="modal-backdrop fade show" *ngIf="showModal" (click)="manageModal()"></div>

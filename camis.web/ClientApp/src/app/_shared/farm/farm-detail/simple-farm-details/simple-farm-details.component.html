@@ -1,12 +1,12 @@
 ﻿<div class="row">
-  <div class="col-md-3">
+  <div class="col-md-2">
     <div class="card p-2">
       <div class="card-body p-0">
         <img [src]="getPhotoSource()"/>
       </div>
     </div>
   </div>
-  <div class="col-md-5">
+  <div class="col-md-4">
     <table class="table mb-0">
       <tbody>
       <tr>
@@ -18,7 +18,8 @@
         </td>
       </tr>
       <tr>
-        <td><label>Owners {{ farm.operator.typeId == 1 ? 'Nationality' : 'Country of Origin' }}:</label>&nbsp;{{ farm.operator.nationality }}
+        <td><label>Owners {{ farm.operator.typeId == 1 ? 'Nationality' : 'Country of Origin' }}
+          :</label>&nbsp;{{ farm.operator.nationality }}
         </td>
       </tr>
       <tr>
@@ -52,11 +53,11 @@
       </tbody>
     </table>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-3">
     <app-address-output [leafId]="farm.operator.addressId" [email]="farm.operator.email"
                         [phone]="farm.operator.phone" [isDisplay]="true"></app-address-output>
   </div>
-  <div class="col-md-12">
+  <div class="col-md-3">
     <table class="table mb-0">
       <thead>
       <tr>
@@ -69,15 +70,14 @@
           <table class="table mb-0">
             <tbody>
             <tr>
-              <td style="text-wrap: nowrap"><label>Primary Farm Type:</label></td>
-              <td>
-                {{ farm.typeId && frType(farm.typeId) != null ? frType(farm.typeId).name : null }}
+              <td colspan="2"><label>Primary Farm
+                Type:</label>  {{ farm.typeId && frType(farm.typeId) != null ? frType(farm.typeId).name : null }}
               </td>
-              <td><label>Invested Capital: </label> {{ farm.investedCapital |currency:'Br ' }}</td>
+
             </tr>
             <tr>
-              <td style="text-wrap: nowrap"><label>Other Farm Types:</label></td>
-              <td >
+              <td><label>Other Farm Types:</label></td>
+              <td>
                 <ul *ngIf="farm.otherTypeIds && farm.otherTypeIds.length">
                   <li
                     *ngFor="let typeId of farm.otherTypeIds"><i
@@ -85,8 +85,16 @@
                   </li>
                 </ul>
               </td>
-              <td><label>Description:</label>
-                <p>{{ farm.description }}</p>
+
+            </tr>
+            <tr>
+              <td colspan="2"><label>Invested Capital: </label> {{ farm.investedCapital |currency:'Br ' }}</td>
+            </tr>
+
+            <tr>
+
+              <td colspan="2"><label>Description:</label>
+                <span>{{ farm.description }}</span>
               </td>
             </tr>
             </tbody>

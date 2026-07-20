@@ -10,7 +10,7 @@
         <td>File *</td>
         <td>Ref. *</td>
         <td>Date *</td>
-        <td class="align-center">Actions</td>
+        <td class="align-right">Actions</td>
       </tr>
       </thead>
       <tbody *ngIf="documents.length > 0">
@@ -19,7 +19,7 @@
         <td>{{ doc.filename }}</td>
         <td>{{ doc.ref }}</td>
         <td>{{ doc.date | date }}</td>
-        <td class="alert-light">
+        <td class="align-right">
           <button type="button" (click)="removeDoc(i)" class="btn btn-outline-warning btn-sm"><i
             class="ti ti-trash"></i></button>
         </td>

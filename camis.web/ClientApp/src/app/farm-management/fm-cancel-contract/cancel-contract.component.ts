@@ -29,19 +29,20 @@ export class CancelContractComponent implements OnInit {
   workItem: any = null;
   workFlowItem: any = null;
   userWorkItem: any = null;
-  farmLands: any[]=[];
-  state= [{ id: 1, name: 'Filing' }, { id: 2, name: 'Request Sent' }, { id: 3, name: 'Task Rejected' }, {
+  farmLands: any[] = [];
+  state = [{id: 1, name: 'Filing'}, {id: 2, name: 'Request Sent'}, {id: 3, name: 'Task Rejected'}, {
     id: -2,
     name: 'Task Approved'
-  }, { id: -3, name: 'Task Cancelled' }];
+  }, {id: -3, name: 'Task Cancelled'}];
   rightType = [
-    { id: 1, name: 'Lease From State' },
-    { id: 2, name: 'Lease From Private' },
-    { id: 3, name: 'Private' },
-    { id: 4, name: 'Contract Farming' },
-    { id: 5, name: 'Sub-lease' },
+    {id: 1, name: 'Lease From State'},
+    {id: 2, name: 'Lease From Private'},
+    {id: 3, name: 'Private'},
+    {id: 4, name: 'Contract Farming'},
+    {id: 5, name: 'Sub-lease'},
   ];
   showCancellationForm = false;
+
   constructor(
     private api: FarmApiService,
     private router: Router,
@@ -99,10 +100,13 @@ export class CancelContractComponent implements OnInit {
     const message = await dialog.prompt('Enter a note (optional):');
     dialog.loading();
 
-    this.api.approveContractCancellation(this.workflowId, message).subscribe(res => {
-      dialog.success('Contract Cancellation task has been approved successfully.');
-      this.router.navigate(['default/pending-task']).catch(dialog.error);
-    }, dialog.error);
+    this.api.approveContractCancellation(this.workflowId, message).toPromise()
+      .then(() => dialog.success('Contract Cancellation task has been approved successfully.'))
+      .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+      .catch(err => {
+        dialog.close();
+        return dialog.error(err)
+      });
   }
 
   async rejectContractCancellationRequest(): Promise<void> {
@@ -111,15 +115,19 @@ export class CancelContractComponent implements OnInit {
     }
     let msgQue = '';
     const message = await dialog.prompt("Enter a rejection note for Farm Data Registrar:");
-    if (message === null)
+    if (message === "") {
+      await dialog.error("Please enter note")
       return;
-
-    dialog.loading();
-
-    this.api.rejectContractCancellation(this.workflowId, message).subscribe(res => {
-      dialog.success('Contract Cancellation task has been rejected successfully.');
-      this.router.navigate(['default/pending-task']).catch(dialog.error);
-    }, dialog.error);
+    } else {
+      dialog.loading();
+      this.api.rejectContractCancellation(this.workflowId, message).toPromise()
+        .then(() => dialog.success('Contract Cancellation task has been rejected successfully.'))
+        .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+        .catch(err => {
+          dialog.close();
+          return dialog.error(err)
+        });
+    }
 
   }
 
@@ -128,37 +136,48 @@ export class CancelContractComponent implements OnInit {
       return;
     }
     const message = await dialog.prompt("Enter a task cancellation reason");
-    if (message === null) {
+    if (message === "") {
+      await dialog.error("Please enter note")
       return;
+    } else {
+      dialog.loading();
+      this.api.cancelContractCancellation(this.workflowId, message).toPromise()
+        .then(() => dialog.success('Contract Cancellation task has been cancelled successfully.'))
+        .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+        .catch(err => {
+          dialog.close();
+          return dialog.error(err)
+        });
     }
-    dialog.loading();
-    this.api.cancelContractCancellation(this.workflowId, message).subscribe(res => {
-      dialog.success('Contract Cancellation task has been cancelled successfully.');
-      this.router.navigate(['default/pending-task']).catch(dialog.error);
-    }, dialog.error);
+
   }
 
   getRightType(id: number): string {
     const type = this.rightType.find(t => t.id === id);
     return type ? type.name : null;
   }
-  getLandR(id: string, sIndex:number) {
-    return this.farmLands.find(t => t.landId === id && t.splitIndex===sIndex);
+
+  getLandR(id: string, sIndex: number) {
+    return this.farmLands.find(t => t.landId === id && t.splitIndex === sIndex);
   }
-  getArea(a:number) {
+
+  getArea(a: number) {
     return Math.round(a / 10) / 1000 + ' ha';
   }
+
   public CancelContBtnClick(): void {
     this.showCancellationForm = true;
   }
+
   public closeForm(close: boolean): void {
     if (close) {
-      this.showCancellationForm=false;
+      this.showCancellationForm = false;
     }
   }
-  public reloadPage(rel:boolean){
-    if(rel){
-      window.location.reload();
+
+  public reloadPage(rel: boolean) {
+    if (rel) {
+      this.router.navigate(['default/pending-task']).catch(dialog.error);
     }
   }
 }

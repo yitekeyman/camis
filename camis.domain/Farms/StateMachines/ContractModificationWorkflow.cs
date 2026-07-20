@@ -127,7 +127,7 @@ public class ContractModificationWorkflow: CamisService
 
         if (data?.SupportiveDocument != null)
         {
-            const string pathPrefix = "/api/Farms/InWorkItemContractCancellationDoc/";
+            const string pathPrefix = "/api/Farms/InWorkItemContractRenewalDoc/";
 
             foreach (var doc in data.SupportiveDocument)
             {
@@ -194,7 +194,7 @@ public class ContractModificationWorkflow: CamisService
             FromState = (int)transition.Source,
             ToState = (int)transition.Destination,
             Trigger = (int)transition.Trigger,
-            DataType = typeof(ContractCancellationRequest).ToString(),
+            DataType = typeof(ContractModificationRequest).ToString(),
             Data = data != null ? JsonConvert.SerializeObject(data) : null,
             Description = description,
             AssignedRole = role,
@@ -228,7 +228,7 @@ public class ContractModificationWorkflow: CamisService
 
     public void Fire(Guid workflowId,
         StateMachine<States, Triggers>.TriggerWithParameters<ContractModificationRequest, string, long?> trigger,
-        ContractCancellationRequest data,
+        ContractModificationRequest data,
         string description, long? assignedUser)
     {
         _machine.Fire(trigger, data, description, assignedUser);
@@ -239,7 +239,7 @@ public class ContractModificationWorkflow: CamisService
         StateMachine<States, Triggers>.Transition transition)
     {
         ConfigureAndAddWorkItem(UserRoles.FarmSupervisor, data, description, assignedUser, transition);
-        _service.SetFarmLock(Guid.Parse(data.Id), true);
+        _service.SetFarmLock(Guid.Parse(data.FarmId), true);
        
     }
 
@@ -254,7 +254,7 @@ public class ContractModificationWorkflow: CamisService
     {
         var data = GetData();
         ConfigureAndAddWorkItem(null, data, description, assignedUser, transition);
-        _service.SetFarmLock(Guid.Parse(data.Id), false);
+        _service.SetFarmLock(Guid.Parse(data.FarmId), false);
        
     }
 
@@ -263,7 +263,7 @@ public class ContractModificationWorkflow: CamisService
     {
         var data = GetData();
         ConfigureAndAddWorkItem(null, data, description, assignedUser, transition);
-       // _service.CancelContract(data);
+       _service.RenewContract(data);
     }
     private ContractModificationRequest GetData()
     {

@@ -622,7 +622,7 @@ namespace intapscamis.camis.domain.Projects
             // ...remove old child activities
             IList<Guid> validChildActivityIds = validChildActivities.Select(childActivity => childActivity.Id).ToList();
             var oldChildActivities = Context.Activity.Where(childActivity =>
-                childActivity.ParentActivityId == activity.Id && !validChildActivityIds.Contains(childActivity.Id));            
+                childActivity.ParentActivityId == activity.Id && !validChildActivityIds.Contains(childActivity.Id)).ToList();            
             foreach (var oldChildActivity in oldChildActivities)
                 PerformActivityTreeGenocideOn(oldChildActivity, planId);
             
@@ -631,26 +631,25 @@ namespace intapscamis.camis.domain.Projects
 
         private void PerformActivityTreeGenocideOn(Activity activity, Guid planId)
         {
-            var children = Context.Activity.Where(childActivity => childActivity.ParentActivityId == activity.Id)
-                .ToList();
+            var children = Context.Activity.Where(childActivity => childActivity.ParentActivityId == activity.Id).ToList();
             foreach (var child in children) PerformActivityTreeGenocideOn(child, planId);
             
-            var progresses = Context.ActivityProgress.Where(progress => progress.ActivityId == activity.Id);
+            var progresses = Context.ActivityProgress.Where(progress => progress.ActivityId == activity.Id).ToList();
             Context.ActivityProgress.RemoveRange(progresses);
             Context.SaveChanges();
 
             var progressStatuses =
-                Context.ActivityProgressStatus.Where(progressStatus => progressStatus.ActivityId == activity.Id);
+                Context.ActivityProgressStatus.Where(progressStatus => progressStatus.ActivityId == activity.Id).ToList();
             Context.ActivityProgressStatus.RemoveRange(progressStatuses);
             Context.SaveChanges();
             
             var planDetails = Context.ActivityPlanDetail.Where(planDetail =>
-                planDetail.PlanId == planId && planDetail.ActivityId == activity.Id);
+                planDetail.PlanId == planId && planDetail.ActivityId == activity.Id).ToList();
             Context.ActivityPlanDetail.RemoveRange(planDetails);
             Context.SaveChanges();
             
             var schedules = Context.ActivitySchedule.Where(schedule =>
-                schedule.PlanId == planId && schedule.ActivityId == activity.Id);
+                schedule.PlanId == planId && schedule.ActivityId == activity.Id).ToList();
             Context.ActivitySchedule.RemoveRange(schedules);
             Context.SaveChanges();
             

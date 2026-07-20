@@ -39,5 +39,7 @@ namespace intapscamis.camis.data.Entities
         public ICollection<LandDoc> LandDoc { get; set; }
         public ICollection<LandRight> LandRightCertificateDocumentNavigation { get; set; }
         public ICollection<LandRight> LandRightContractDocumentNavigation { get; set; }
+        public virtual ICollection<WarningDoc> WarningDocs { get; set; } = new List<WarningDoc>();
+        public virtual ICollection<CancelledContractDoc> CancelledContractDocs { get; set; } = new List<CancelledContractDoc>();
     }
 }

@@ -168,4 +168,35 @@ namespace intapscamis.camis.domain.Farms.Models
         Deleted=7,
         UnderWarning=8
     }
+
+    public class WarningResponse
+    {
+        public string Id { get; set; }
+
+        public string FarmId { get; set; }
+
+        public string LandId { get; set; }
+
+        public int SplitIndex { get; set; }
+
+        public DateTime Date { get; set; }
+
+        public int Stage { get; set; }
+
+        public string Reason { get; set; }
+
+        public string ReasonDetails { get; set; }
+
+        public long? Aid { get; set; }
+
+        public Guid? Wfid { get; set; }
+        public IList<DocumentResponse> SupportiveDocuments { get; set; } = new List<DocumentResponse>();
+       
+    }
+
+    public class FarmWarningResponse
+    {
+        public IList<WarningResponse>  Warnings { get; set; }=new  List<WarningResponse>();
+        public LandBankFacadeModel.LandRightResponse LandRight { get; set; } = new LandBankFacadeModel.LandRightResponse();
+    }
 }

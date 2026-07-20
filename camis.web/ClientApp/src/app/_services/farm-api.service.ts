@@ -293,4 +293,68 @@ export class FarmApiService {
     }
     return this.api.put(`Farms/CancelContractCancellation/${workflowId}`, null,{params});
   }
+  requestContractModification(wfid:string, body:any, message: string | null): Observable<any> {
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Farms/RequestContractModification/${wfid}`, body,{params});
+  }
+  approveContractModification(workflowId: string, message: string | null): Observable<any> {
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Farms/ApproveContractModification/${workflowId}`, null,{params});
+  }
+  rejectContractModification(workflowId: string, message: string | null): Observable<any> {
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Farms/RejectContractModification/${workflowId}`, null,{params});
+  }
+  cancelContractModification(workflowId: string, message: string | null): Observable<any> {
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Farms/CancelContractModification/${workflowId}`, null,{params});
+  }
+  getAllModificationReasonList(): Observable<any> {
+    return this.api.get(`Farms/GetAllModificationReasonList`);
+  }
+
+  requestContractWarning(wfid:string, body:any, message: string | null): Observable<any> {
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.post(`Farms/RequestContractWarning/${wfid}`, body,{params});
+  }
+  approveContractWarning(workflowId: string, message: string | null): Observable<any> {
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Farms/ApproveContractWarning/${workflowId}`, null,{params});
+  }
+  rejectContractWarning(workflowId: string, message: string | null): Observable<any> {
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Farms/RejectContractWarning/${workflowId}`, null,{params});
+  }
+  cancelContractWarning(workflowId: string, message: string | null): Observable<any> {
+    let params = new HttpParams();
+    if (message){
+      params=params.set('description', message);
+    }
+    return this.api.put(`Farms/CancelContractWarning/${workflowId}`, null,{params});
+  }
+
+  GetRightWarning( farm_id: string,land_id: string, part_id: number): Observable<any> {
+    return this.api.get(`Farms/GetRightWarning`,{params:{farmId:farm_id,landId:land_id,splitIndex:part_id.toString() }});
+  }
 }

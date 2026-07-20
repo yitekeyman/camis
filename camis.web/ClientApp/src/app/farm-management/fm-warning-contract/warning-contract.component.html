@@ -1,0 +1,116 @@
+﻿<div class="row">
+  <div class="col-sm-12">
+    <div class="card p-0">
+      <div class="card-header p-2">
+        <div class="row">
+          <div class="col-md-6">
+            <h4 *ngIf="workflowId"><i class="ti ti-map-plus"></i> Commercial Farm Contract Warning Task</h4>
+          </div>
+          <div class="col-md-6 " style="text-align: right">
+            <div *ngIf="!loading && data">
+              <div class="btn-group" *ngIf="workflowId && workFlowItem?.typeId==14">
+                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                  Actions <i class="ti ti-caret-down"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="javascript:" data-bs-toggle="modal"
+                         data-bs-target="#landAssignmentDialog" *ngIf="loginRole==2 && workFlowItem.currentState==3"  (click)="CancelContBtnClick()">Edit Contract Warning</a></li>
+                  <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole==3 && workFlowItem.currentState==2" (click)="approveContractWarningRequest()">Approve
+                    Task</a></li>
+                  <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole==3 && workFlowItem.currentState==2" (click)="rejectContractWarningRequest()">Reject
+                    Task </a></li>
+                  <li>
+
+                  <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole==2 && workFlowItem.currentState==3" (click)="cancelContractWarningRequest()"> Cancel
+                    Task</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <div class="col-md-12" *ngIf="workFlowItem?.typeId===14">
+    <div class="alert alert-primary d-flex align-items-center p-1 mb-1">
+      <table class="table p-0 m-0">
+        <tbody>
+        <tr *ngIf="workFlowItem?.typeId===14">
+          <td class="m-0 p-1"
+              style="vertical-align: middle; font-size: 2rem; border-right: 2px solid rgba(0,0,0,0.25); text-align: center;color:rgba(0,255,0,0.75)">
+            <i class="ti ti-bell-ringing-filled"></i>
+          </td>
+          <td class="m-0" style="font-size: 0.75rem; vertical-align: middle">
+            <b>Sent by: </b> {{ userWorkItem?.sentUserName }}<br/>
+            <b>Date: </b> {{ userWorkItem?.workItemDate | date }}<br/>
+            <b>User Note: </b> {{ userWorkItem?.workItemNote }}
+          </td>
+          <td class="m-0" style="font-size: 0.75rem; vertical-align: middle">
+            <b>Task: </b> {{workFlowItem.type.name}}<br/>
+            <b>Task State: </b>{{getTaskState(workFlowItem.currentState)}}<br>
+            <b>Reason: </b> {{ warningData.reason }}<br>
+          </td>
+          <td class="m-0" style="font-size: 0.75rem; vertical-align: middle">
+            <b>Date: </b> {{warningData.date | date}}<br/>
+            <b>Stage: </b>{{warningData.stage}}<br>
+            <b>Reason Detail: </b> {{ warningData.description }}<br>
+          </td>
+          <td rowspan="2" class="m-0" style="font-size: 0.75rem; vertical-align: top">
+            <p>Supportive Doc</p>
+            <div *ngIf="warningData.supportiveDocument?.length==0">No document attached, yet.</div>
+            <div *ngFor="let doc of warningData.supportiveDocument">
+              <app-document-detail [document]="doc"></app-document-detail>
+            </div>
+
+          </td>
+        </tr>
+        <tr>
+          <td colspan="4">
+            <table class="table mb-0" style="font-size: 0.75rem; vertical-align: middle">
+              <thead>
+              <tr>
+                <th>#</th>
+                <th>UPID</th>
+                <th>Area</th>
+                <th>R-Type</th>
+                <th>Date_From</th>
+                <th>Date_To</th>
+                <th>Amount</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr >
+                <td></td>
+                <td>{{getLandR(warningData.landId, warningData.splitIndex)?.upin}}</td>
+                <td>{{getArea(getLandR(warningData.landId, warningData.splitIndex)?.area)}}</td>
+                <td>{{getRightType(warningData.warnedRight.rightType)}}</td>
+                <td>{{warningData.warnedRight.rightFrom|date}}</td>
+                <td>{{warningData.warnedRight.rightTo|date}}</td>
+                <td>{{warningData.warnedRight.yearlyRent|currency : "Br "}}</td>
+              </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div *ngIf="!loading && data">
+    <app-farm-detail *ngIf="data" [farm]="data"></app-farm-detail>
+  </div>
+</div>
+
+<div class="modal fade" [class.show]="showCancellationForm" [style.display]="showCancellationForm ? 'block' : 'none'"
+     id="resetPassModal" tabindex="-1" aria-labelledby="resetPassModalLabel" aria-hidden="true">
+  <div class="modal-dialog" style="max-width: 95%">
+    <div class="modal-content">
+      <app-contract-warning-form *ngIf="showCancellationForm" [workflowId]="this.workflowId" [data]="warningData"  (closeEditForm)="closeForm($event)"  (reload)="reloadPage($event)"></app-contract-warning-form>
+    </div>
+  </div>
+</div>
+
+<!-- Backdrop -->
+<div class="modal-backdrop fade show" *ngIf="showCancellationForm" (click)="closeForm(true)"></div>

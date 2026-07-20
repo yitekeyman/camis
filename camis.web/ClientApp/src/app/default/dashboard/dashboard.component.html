@@ -1,26 +1,5 @@
 <div class="row g-4 justify-content-center" *ngIf="dashboardData">
-  <div class="col-xl-4 col-md-6">
-    <div class="card mb-2 earning-card bg-secondary-dark text-white overflow-hidden">
-      <span class="round secondary-round small"></span>
-      <span class="round secondary-round big"></span>
-      <div class="card-body">
-        <div class="row">
-          <div class="col">
-            <div class="avatar avatar-lg">
-              <i class="text-white ti ti-cloud-dollar f-24"></i>
-            </div>
-          </div>
-          <div class="col-auto">
 
-          </div>
-        </div>
-        <span class="text-white d-block f-28 f-w-500 my-2">
-         {{dashboardData.investmentDataStat.investedCapital | currency:'Br '}}
-        </span>
-        <p class="mb-0 opacity-50">Total Invested Capital</p>
-      </div>
-    </div>
-  </div>
   <div class="col-xl-4 col-md-6">
     <div class="card mb-2 earning-card bg-primary-dark text-white overflow-hidden">
       <span class="round primary-round small"></span>
@@ -40,9 +19,37 @@
           </div>
         </div>
         <span class="text-white d-block f-28 f-w-500 my-2">
-          {{dashboardData.investmentDataStat.investorCapital | currency:'Br '}}
+         {{dashboardData.investmentDataStat.investedCapital | currency:'Br '}}
         </span>
-        <p class="mb-0 opacity-50">Total Investor Registered</p>
+        <p class="mb-0 opacity-50">Total Invested Capital</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-4 col-md-12">
+    <div class="card mb-2 total-income-card warning overflow-hidden">
+      <div class="card-body">
+        <div class="d-flex align-items-center">
+          <div class="avatar avatar-lg icon-warning m-r-5">
+            <i class="text-warning ti ti-user-heart f-24"></i>
+          </div>
+          <div class="ms-2">
+            <h4 class="f-w-600 mb-1">{{(dashboardData.investmentDataStat.local.totalInvestors) | number}} | {{(dashboardData.investmentDataStat.local.investmentCapital) | currency:'Br '}}</h4>
+            <p class="mb-0 opacity-50 text-sm">Domestic Investor</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mb-2 total-income-card overflow-hidden bg-primary-dark text-white">
+      <div class="card-body">
+        <div class="d-flex align-items-center">
+          <div class="avatar avatar-lg icon m-r-5">
+            <i class="text-white ti ti-user-bolt f-24"></i>
+          </div>
+          <div class="ms-2">
+            <h4 class="text-white f-w-600 mb-1">{{dashboardData.investmentDataStat.indigenous.totalInvestors | number}} | {{dashboardData.investmentDataStat.indigenous.investmentCapital | currency:'Br '}}</h4>
+            <p class="mb-0 opacity-50 text-sm">Indigenous Investor</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -67,8 +74,8 @@
             <i class="text-warning ti ti-user-heart f-24"></i>
           </div>
           <div class="ms-2">
-            <h4 class="f-w-600 mb-1">{{(dashboardData.investmentDataStat.ethiopianOrigin.totalInvestors + dashboardData.investmentDataStat.local.totalInvestors) | number}} | {{(dashboardData.investmentDataStat.ethiopianOrigin.investmentCapital + dashboardData.investmentDataStat.local.investmentCapital) | currency:'Br '}}</h4>
-            <p class="mb-0 opacity-50 text-sm">Loacl & Ethiopian Origin Investor</p>
+            <h4 class="f-w-600 mb-1">{{(dashboardData.investmentDataStat.ethiopianOrigin.totalInvestors) | number}} | {{(dashboardData.investmentDataStat.ethiopianOrigin.investmentCapital ) | currency:'Br '}}</h4>
+            <p class="mb-0 opacity-50 text-sm">Diaspora Investor</p>
           </div>
         </div>
       </div>

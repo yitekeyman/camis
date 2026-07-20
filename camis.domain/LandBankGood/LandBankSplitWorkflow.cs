@@ -112,10 +112,11 @@ public class
                 if (sp.Id == r.SubLand)
                 {
                     area = sp.Area;
-                    upid=upid+"-"+sp.Indexes;
+                    upid = upid + "-" + sp.Indexes;
                 }
             }
         }
+
         return new LandBankFacadeModel.SplitData()
         {
             n = r.NoOfSplit,
@@ -138,8 +139,8 @@ public class
         var ws = _workflowService.GetWorkflows((int)WorkflowTypes.PrepareLand, (int)States.WaitingForCMSS);
         foreach (var w in ws)
         {
-            var wi = _workflowService.GetLastWorkItem<LandBankFacadeModel.LandPreparationRequest>(w.Id);
-            var data = wi.Data as LandBankFacadeModel.LandPreparationRequest;
+            // var wi = _workflowService.GetLastWorkItem<LandBankFacadeModel.LandPreparationRequest>(w.Id);
+            var data = GetPreparationRequest(w.Id);
             if (data?.NoOfSplit > 0)
             {
                 var land = _landBankService.GetLand(Guid.Parse(data.LandId), false, false);
@@ -152,7 +153,7 @@ public class
                             upid = upid + "-" + sp.Indexes;
                     }
                 }
-                
+
                 ret.tasks.Add(new LandBankFacadeModel.SplitTaskItem()
                 {
                     id = w.Id.ToString(),
@@ -168,11 +169,11 @@ public class
 
     internal List<LandBankFacadeModel.SplitTaskGeom> GetParcelSplitTaskGeom(Guid wfid)
     {
-        var w = _workflowService.GetLastWorkItem<LandBankFacadeModel.LandPreparationRequest>(wfid);
-        var r = (LandBankFacadeModel.LandPreparationRequest)w.Data;
+        //var w = _workflowService.GetLastWorkItem<LandBankFacadeModel.LandPreparationRequest>(wfid);
+        var r = GetPreparationRequest(wfid);
         Context.Database.OpenConnection();
         var rets = new List<LandBankFacadeModel.SplitTaskGeom>();
-        if (r.GeomData!=null && r.GeomData.Count > 0)
+        if (r.GeomData != null && r.GeomData.Count > 0)
         {
             foreach (var tGeom in r.GeomData)
             {
@@ -210,7 +211,6 @@ public class
                 return rets;
             }
         }
-
 
         return null;
     }
@@ -251,56 +251,46 @@ public class
         {
             foreach (var sp in landSplit)
             {
-                if (sp.Id == request.SubLand)
+                if (sp.Id == request.SubLand && String.IsNullOrEmpty(wfid))
                     CamisUtils.Assert((sp.Status == 2 || sp.Locked),
                         $"Parcel part {sp.Indexes} status doesn't allow split");
             }
         }
 
-        CamisUtils.Assert(request.NoOfSplit > 1, $"Split no should be at least 2");
-        CamisUtils.Assert(l != null, $"{request.LandId} is land id");
-        CamisUtils.Assert((l.LandType == 2 || l.LandType == 5 || l.LandType == 6), "Land Status doesn't allow split");
-        CamisUtils.Assert(l?.Upins.Count == 1, $"Land {request.LandId} doesn't have unique UPIN");
-        var p = l?.parcels[l.Upins[0]];
-        CamisUtils.Assert(p.IsStateLand(), $"Only state land can be prepared.");
-        CamisUtils.Assert(p != null, $"Land {request.LandId} doesn't have associated land Profile");
+        if (String.IsNullOrEmpty(wfid))
+        {
+            CamisUtils.Assert(request.NoOfSplit > 1, $"Split no should be at least 2");
+            CamisUtils.Assert(l != null, $"{request.LandId} is land id");
+            CamisUtils.Assert((l.LandType == 2 || l.LandType == 5 || l.LandType == 6),
+                "Land Status doesn't allow split");
+            CamisUtils.Assert(l?.Upins.Count == 1, $"Land {request.LandId} doesn't have unique UPIN");
+            var p = l?.parcels[l.Upins[0]];
+            CamisUtils.Assert(p.IsStateLand(), $"Only state land can be prepared.");
+            CamisUtils.Assert(p != null, $"Land {request.LandId} doesn't have associated land Profile");
 
+        }
 
         States nexState;
         Triggers trigger;
         int role;
         SetRegionId();
-        if (regionId.Equals("AM"))
+
+        nexState = States.WaitingForCMSS;
+        trigger = Triggers.WaitForCMSS;
+        role = UserRoles.CMSSUser;
+
+        if (request.SubLand > 0)
         {
-            nexState = States.WaitingForCMSS;
-            trigger = Triggers.WaitForCMSS;
-            role = UserRoles.CMSSUser;
+            _landBankService.SetSubLandState(Guid.Parse(request.LandId), request.SubLand,
+                LandBankFacadeModel.LandTypeEnum.OnSplit);
+            _landBankService.SetSubLandLock(Guid.Parse(request.LandId), request.SubLand, true);
         }
         else
         {
-            nexState = States.WaitingForNRLAIS;
-            trigger = Triggers.WaitForNRLAIS;
-            role = UserRoles.LandAdmin;
+            _landBankService.SetLandState(Guid.Parse(request.LandId), LandBankFacadeModel.LandTypeEnum.OnSplit);
+            _landBankService.SetLandLock(Guid.Parse(request.LandId), true);
         }
 
-        if (regionId.Equals("AM") || regionId.Equals("am") || regionId.Equals("03"))
-        {
-            if (request.SubLand > 0)
-            {
-                _landBankService.SetSubLandState(Guid.Parse(request.LandId), request.SubLand,
-                    LandBankFacadeModel.LandTypeEnum.OnSplit);
-                _landBankService.SetSubLandLock(Guid.Parse(request.LandId), request.SubLand, true);
-            }
-            else
-            {
-                _landBankService.SetLandState(Guid.Parse(request.LandId), LandBankFacadeModel.LandTypeEnum.OnSplit);
-                _landBankService.SetLandLock(Guid.Parse(request.LandId), true);
-            }
-        }
-        else
-        {
-            throw new InvalidOperationException("Parcel Spliting operation allowed for only Amhara region");
-        }
 
         fireAction(wf.Id, trigger, request.Description, role, request);
         return wf.Id;
@@ -312,7 +302,7 @@ public class
         var data = GetPreparationRequest(wfid);
         _landBankService.SetLandLock(Guid.Parse(data.LandId), true);
         if (data.SubLand > 0)
-            _landBankService.SetSubLandLock(Guid.Parse(data.LandId), data.SubLand,true);
+            _landBankService.SetSubLandLock(Guid.Parse(data.LandId), data.SubLand, true);
         return fireAction(wfid, Triggers.Cancel, note, null).Id;
     }
 
@@ -453,7 +443,7 @@ public class
             .Permit(Triggers.WaitForCMSS, States.WaitingForCMSS)
             .Permit(Triggers.Cancel, States.Cancelled);
     }
-    
+
     internal int GetSplitStatus(Guid wfid)
     {
         ConfigureMachine(wfid);

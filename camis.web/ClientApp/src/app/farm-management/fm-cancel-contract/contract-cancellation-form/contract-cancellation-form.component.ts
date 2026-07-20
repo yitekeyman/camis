@@ -127,10 +127,16 @@ export class ContractCancellationFormComponent implements OnInit {
       locked: farm.locked,
       cancelledRight: [],
       cancellationSupDoc: [],
-      farmLands: []
+      farmLands: [],
+      wfid:'',
+      date:new Date().toISOString().slice(0, 10),
+      reason:''
     };
 
     if (this.data) {
+      this.cancellationModel.reason = this.data.reason||"";
+      this.cancellationModel.wfid = this.data.wfid||"";
+      this.cancellationModel.date=new Date(this.data.date).toLocaleDateString('en-CA');
       this.cancellationModel.cancellationReason = this.data.cancellationReason || "";
       this.cancellationModel.cancelledRight = this.data.cancelledRight || [];
       this.cancellationModel.cancellationSupDoc = this.data.cancellationSupDoc || [];
@@ -206,7 +212,6 @@ export class ContractCancellationFormComponent implements OnInit {
     // Validation
     if (!this.cancellationModel.cancellationReason?.trim()) {
        await dialog.error("Please provide a cancellation reason.");
-
     }
 
     const selectedRights = this.farmLandRights.filter(fl => fl.selected);

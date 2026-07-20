@@ -1,0 +1,96 @@
+﻿<div class="modal-header">
+  <h4 class="modal-title" id="landAssignmentDialogLabel">Farm Contract Warning Details</h4>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="closeForm()"></button>
+</div>
+<div class="modal-body p-1" style="height: 78vh; overflow-y: auto">
+  <div class="row me-0">
+    <div class="col-md-12">
+      <app-simple-farm-details [farm]="farm"></app-simple-farm-details>
+    </div>
+    <hr>
+    <div class="col-md-4 m-0">
+      <div class="card p-1 m-0">
+        <div class="card-header m-1 p-1">
+          <h5 class="p-1">Right Details</h5>
+        </div>
+        <div class="card-body p-1">
+          <div class="" *ngIf="loadWarning && warningModel==null && farmLand==null">
+            <h4>Load Right....</h4>
+          </div>
+          <div class=" " *ngIf="!loadWarning && warningModel!=null && farmLand!=null">
+            <table class="table table-striped mb-0" style="font-size: 10pt">
+              <tbody>
+              <tr>
+                <td><strong>UPIN: &nbsp;</strong> {{ farmLand.upin }}</td>
+              </tr>
+              <tr>
+                <td><strong>Area: &nbsp;</strong> {{getArea(farmLand.area) }}</td>
+              </tr>
+              <tr>
+                <td><strong>Right Type: &nbsp;</strong> {{ getRightType(farmLand.rights.rightType) }}</td>
+              </tr>
+              <tr>
+                <td><strong>Date From: &nbsp;</strong> {{ farmLand.rights.rightFrom|date }}</td>
+              </tr>
+              <tr>
+                <td><strong>Date To: &nbsp;</strong> {{ farmLand.rights.rightTo|date }}</td>
+              </tr>
+              <tr>
+                <td><strong>Yearly Amount: &nbsp;</strong> {{ farmLand.rights.yearlyRent|currency:"Br " }}</td>
+              </tr>
+              <tr>
+                <td><strong>Status: &nbsp;</strong> {{ farmLand.rights.status }}</td>
+              </tr>
+              </tbody>
+
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-8 m-0">
+      <div class="card p-1 m-0">
+        <div class="card-header m-1 p-1">
+          <h5 class="p-1">Warning Details</h5>
+        </div>
+        <div class="card-body p-1" style="height: 35vh; overflow-y: auto">
+          <div class="" *ngIf="loadWarning && warningModel==null && farmLand==null">
+            <h4>Load Warning Details....</h4>
+          </div>
+          <div class=" " *ngIf="!loadWarning && warningModel!=null && farmLand!=null">
+            <table class="table table-bordered mb-1 bg-warning" style="font-size: 10pt; border-radius: 5px;" *ngFor="let w of warningModel.warnings">
+              <tbody>
+              <tr>
+                <td><strong>Stage: &nbsp;</strong> {{ w.stage }}</td>
+                <td rowspan="4"><strong>Supportive Doc: &nbsp;</strong>
+                  <div class="row me-0">
+                    <div class="col-md-12" *ngFor="let doc of w.supportiveDocuments">
+                      <app-document-detail *ngIf="doc!=null"
+                                           [document]="doc"></app-document-detail>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Date: &nbsp;</strong> {{w.date|date}}</td>
+              </tr>
+              <tr>
+                <td><strong>Reason: &nbsp;</strong> {{w.reason }}</td>
+              </tr>
+              <tr>
+                <td><strong>Reason Details: &nbsp;</strong> {{ w.reasonDetails }}</td>
+              </tr>
+              </tbody>
+
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="modal-footer right p-1">
+  <button type="button" class="btn btn-default" (click)="closeForm()">Close</button>
+</div>

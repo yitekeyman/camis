@@ -104,6 +104,7 @@ public class ContractCancellationWorkflow : CamisService
     private void OnRequest(ContractCancellationRequest data, string description, long? assignedUser,
         StateMachine<States, Triggers>.Transition transition)
     {
+        data.wfid=Workflow.Id.ToString();
         ConfigureAndAddWorkItem(UserRoles.FarmSupervisor, data, description, assignedUser, transition);
         _service.SetFarmLock(Guid.Parse(data.Id), true);
         foreach (var r in data.CancelledRight)

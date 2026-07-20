@@ -378,7 +378,7 @@
     <div class="modal-content" *ngIf="showModal">
       <form [formGroup]="prepareForm" >
         <div class="modal-header">
-          <h4 class="modal-title" id="landSplitDialogLabel">Re-Request Parcel Split</h4>
+          <h4 class="modal-title" id="landSplitDialogLabel">Re-request Parcel Split</h4>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                   (click)="manageModal()"></button>
         </div>
@@ -404,7 +404,7 @@
           <button type="button" class="btn btn-default" data-bs-dismiss="modal" aria-label="Close"
                   (click)="manageModal()">Cancel
           </button>
-          <button type="button" class="btn btn-primary btn-md" (click)="splitLandRequest()" [disabled]="!(prepareForm.valid)">Send Request
+          <button type="button" class="btn btn-primary btn-md"  data-bs-dismiss="modal" aria-label="Close" (click)="splitLandRequest()" [disabled]="!(prepareForm.valid)">Send Request
           </button>
         </div>
       </form>

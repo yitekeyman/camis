@@ -85,7 +85,10 @@ getWorkflow(workflowId: string) {
   }
 
 
-  onCertify() {
+  async onCertify():Promise<void> {
+    if (!await dialog.confirm('Are you sure you want to certify this parcel?')) {
+      return;
+    }
     const body = this.data;
 
     // note: this logic works only for single land per investment
@@ -97,20 +100,13 @@ getWorkflow(workflowId: string) {
       leaseContractDoc: this.leaseContract.doc,
     }];
 
-    this.loading = true;
     dialog.loading();
-    this.api.certifyLandAssignment(this.workflowId, body, null).subscribe(res => {
-      if (res.success) {
-        this.router.navigate(['default/pending-task']).catch(dialog.error);
-        return dialog.success('The land has been certified successfully.')
-      } else {
-        this.loading = false;
-        return dialog.error(res)
-      }
-    }, err => {
-      this.loading = false;
-      return dialog.error(err)
-    });
+    this.api.certifyLandAssignment(this.workflowId, body, null).toPromise()
+      .then(() => dialog.success('The land has been certified successfully..'))
+      .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+      .catch(err => {
+        return dialog.error(err)
+      });
   }
 
 }

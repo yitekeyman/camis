@@ -52,7 +52,7 @@ export class LandDetailsTableComponent implements OnInit {
   agroEchologyZones: any[] = [];
   existingLandes: any[] = [];
   investmentTypes: any[] = [];
-  moistureSources: any[]=[];
+  moistureSources: any[] = [];
   groundWater: any[] = [];
   isAgricultural: string;
   topography: any[] = [];
@@ -65,6 +65,7 @@ export class LandDetailsTableComponent implements OnInit {
   prepareForm: FormGroup;
   public loginRole = 0;
   isIrrigated: boolean = false;
+
   constructor(
     private router: Router,
     private landService: LandDataService,
@@ -90,8 +91,9 @@ export class LandDetailsTableComponent implements OnInit {
   getSplitArea(a: number) {
     return Math.round(a / 10) / 1000 + ' ha';
   }
+
   getSplitStatus(status) {
-    let ret="Unknown";
+    let ret = "Unknown";
     for (const landTypeList of this.landTypeList) {
       if (landTypeList.id === status) {
         ret = landTypeList.name;
@@ -99,6 +101,7 @@ export class LandDetailsTableComponent implements OnInit {
     }
     return ret;
   }
+
   getLandDetail() {
     dialog.loading();
     this.api.getWorkflow(this.wfid).subscribe(res => {
@@ -365,15 +368,19 @@ export class LandDetailsTableComponent implements OnInit {
     const message = await dialog.prompt('Enter a note (optional):');
     dialog.loading();
     if (this.userWorkItems['workFlowType'] === 4) {
-      this.landService.ApproveRegistration(this.wfid, message).subscribe(res => {
-        dialog.success('The parcel identification has been approved successfully.');
-        this.router.navigate(['default/pending-task']).catch(dialog.error);
-      }, dialog.error);
+      this.landService.ApproveRegistration(this.wfid, message).toPromise()
+        .then(() => dialog.success('The parcel identification has been approved successfully.'))
+        .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+        .catch(err => {
+          return dialog.error(err)
+        });
     } else if (this.userWorkItems['workFlowType'] === 7) {
-      this.landService.ApproveParcelSplitting(this.wfid, message).subscribe(res => {
-        dialog.success('The parcel splitting task has been approved successfully.')
-        this.router.navigate(['default/pending-task']).catch(dialog.error);
-      }, dialog.error);
+      this.landService.ApproveParcelSplitting(this.wfid, message).toPromise()
+        .then(() => dialog.success('The parcel splitting task has been approved successfully.'))
+        .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+        .catch(err => {
+          return dialog.error(err)
+        });
     }
   }
 
@@ -385,21 +392,29 @@ export class LandDetailsTableComponent implements OnInit {
     if (this.userWorkItems['workFlowType'] === 7)
       msgQue = "Enter a rejection note for CMSS user";
     const message = await dialog.prompt(msgQue);
-    if (message === null) {
+    if (message === "") {
+      await dialog.error("Putting note is required");
       return;
+    } else {
+      dialog.loading();
+      if (this.userWorkItems['workFlowType'] === 4) {
+        this.landService.RejectRegistrationRequest(this.wfid, message).toPromise()
+          .then(() => dialog.success('The parcel identification has been rejected successfully.'))
+          .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+          .catch(err => {
+            return dialog.error(err)
+          });
+      } else if (this.userWorkItems['workFlowType'] === 7) {
+        this.landService.RejectParcelSplitting(this.wfid, message).toPromise()
+          .then(() => dialog.success('The parcel preparation has been rejected successfully.'))
+          .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+          .catch(err => {
+            return dialog.error(err)
+          });
+      }
     }
-    dialog.loading();
-    if (this.userWorkItems['workFlowType'] === 4) {
-      this.landService.RejectRegistrationRequest(this.wfid, message).subscribe(res => {
-        dialog.success('The parcel identification has been rejected successfully.');
-        this.router.navigate(['default/pending-task']).catch(dialog.error);
-      }, dialog.error);
-    } else if (this.userWorkItems['workFlowType'] === 7) {
-      this.landService.RejectParcelSplitting(this.wfid, message).subscribe(res => {
-        dialog.success('The parcel preparation has been rejected successfully.');
-        this.router.navigate(['default/pending-task']).catch(dialog.error);
-      }, dialog.error);
-    }
+
+
   }
 
   async cancelRequest(): Promise<void> {
@@ -410,22 +425,26 @@ export class LandDetailsTableComponent implements OnInit {
     if (this.userWorkItems['workFlowType'] === 7)
       mesQue = 'Enter a task cancellation reason';
     const message = await dialog.prompt(mesQue);
-    if (message === null) {
+    if (message === "") {
+      await dialog.error("Putting note is required");
       return;
-    }
-    dialog.loading();
-    if (this.userWorkItems['workFlowType'] === 4) {
-      this.landService.CancelRegistrationRequest(this.wfid, message).subscribe(res => {
-
-        dialog.success('The parcel identification has been cancelled successfully.');
-        this.router.navigate(['default/pending-task']).catch(dialog.error);
-
-      }, dialog.error);
-    } else if (this.userWorkItems['workFlowType'] === 7) {
-      this.landService.CancelParcelSplitRequest(this.wfid, message).subscribe(res => {
-        dialog.success('The task has been cancelled successfully.');
-        this.router.navigate(['default/pending-task']).catch(dialog.error);
-      }, dialog.error);
+    } else {
+      dialog.loading();
+      if (this.userWorkItems['workFlowType'] === 4) {
+        this.landService.CancelRegistrationRequest(this.wfid, message).toPromise()
+          .then(() => dialog.success('The parcel identification has been cancelled successfully.'))
+          .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+          .catch(err => {
+            return dialog.error(err)
+          });
+      } else if (this.userWorkItems['workFlowType'] === 7) {
+        this.landService.CancelParcelSplitRequest(this.wfid, message).toPromise()
+          .then(() => dialog.success('The task has been cancelled successfully.'))
+          .then(() => this.router.navigate(['default/pending-task']).catch(dialog.error))
+          .catch(err => {
+            return dialog.error(err)
+          });
+      }
     }
   }
 

@@ -67,6 +67,14 @@ const routes: Routes = [{
     {
       path: 'task/contract-cancellation/:workflowId',
       loadComponent: () => import('./fm-cancel-contract/cancel-contract.component').then((c) => c.CancelContractComponent)
+    },
+    {
+      path: 'task/contract-renewal/:workflowId',
+      loadComponent: () => import('./fm-renew-contract/renew-contract.component').then((c) => c.RenewContractComponent)
+    },
+    {
+      path: 'task/contract-warning/:workflowId',
+      loadComponent: () => import('./fm-warning-contract/warning-contract.component').then((c) => c.WarningContractComponent)
     }
   ]
 }];

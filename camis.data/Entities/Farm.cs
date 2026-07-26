@@ -30,5 +30,6 @@ namespace intapscamis.camis.data.Entities
         public virtual FarmStatusType StatusNavigation { get; set; }
         public virtual ICollection<FarmWarning> FarmWarnings { get; set; } = new List<FarmWarning>();
         public virtual ICollection<CancelledContract> CancelledContracts { get; set; } = new List<CancelledContract>();
+        public virtual ICollection<RenewContract> RenewContracts { get; set; } = new List<RenewContract>();
     }
 }

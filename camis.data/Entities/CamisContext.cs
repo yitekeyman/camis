@@ -101,6 +101,9 @@ namespace intapscamis.camis.data.Entities
         public virtual DbSet<Months> Months { get; set; }
         public virtual DbSet<RegistrationAuthority> RegistrationAuthority { get; set; }
         public virtual DbSet<RegistrationType> RegistrationType { get; set; }
+        public virtual DbSet<RenewContract> RenewContracts { get; set; }
+
+        public virtual DbSet<RenewContractDoc> RenewContractDocs { get; set; }
         public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<SoilTest> SoilTest { get; set; }
         public virtual DbSet<SoilTestTypes> SoilTestTypes { get; set; }
@@ -2331,7 +2334,59 @@ namespace intapscamis.camis.data.Entities
                     .IsRequired()
                     .HasColumnName("name");
             });
+            modelBuilder.Entity<RenewContract>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("renew_contract_pkey");
 
+                entity.ToTable("renew_contract", "frm");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.Aid).HasColumnName("aid");
+                entity.Property(e => e.BudgetYear).HasColumnName("budget_year");
+                entity.Property(e => e.Date).HasColumnName("date");
+                entity.Property(e => e.FarmId).HasColumnName("farm_id");
+                entity.Property(e => e.LandId).HasColumnName("land_id");
+                entity.Property(e => e.Remark).HasColumnName("remark");
+                entity.Property(e => e.SplitIndex).HasColumnName("split_index");
+                entity.Property(e => e.Wfid).HasColumnName("wfid");
+
+                entity.HasOne(d => d.Farm).WithMany(p => p.RenewContracts)
+                    .HasForeignKey(d => d.FarmId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("contract_renew_farm_id_fk");
+
+                entity.HasOne(d => d.Land).WithMany(p => p.RenewContracts)
+                    .HasForeignKey(d => d.LandId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("contract_renew_land_id_fk");
+            });
+
+            modelBuilder.Entity<RenewContractDoc>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("renew_contract_doc_pkey");
+
+                entity.ToTable("renew_contract_doc", "frm");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.AuthorityId).HasColumnName("authority_id");
+                entity.Property(e => e.DocId).HasColumnName("doc_id");
+                entity.Property(e => e.RenewId).HasColumnName("renew_id");
+                entity.Property(e => e.TypeId).HasColumnName("type_id");
+
+                entity.HasOne(d => d.Doc).WithMany(p => p.RenewContractDocs)
+                    .HasForeignKey(d => d.DocId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("contract_renew_doc_id_fk");
+
+                entity.HasOne(d => d.Renew).WithMany(p => p.RenewContractDocs)
+                    .HasForeignKey(d => d.RenewId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("contract_renew_id_fk");
+            });
             modelBuilder.Entity<Role>(entity =>
             {
                 entity.ToTable("role", "sys");

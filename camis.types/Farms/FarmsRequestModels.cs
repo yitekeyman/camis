@@ -152,4 +152,28 @@ namespace intapscamis.camis.domain.Farms.Models
         public string Geom { get; set; }
         public FarmStatus Status { get; set; } = new FarmStatus();
     }
+    
+    public class ContractRenewalRequest
+    {
+        public string Id { get; set; }
+        public string FarmId { get; set; }
+        public string LandId { get; set; }
+        public int SplitIndex {get; set;}
+        public DateTime Date { get; set; }
+        public string Remark { get; set; }
+        public int BudgetYear { get; set; }
+        public string wfid { get; set; }
+        public IList<ContractRenewalDocumentRequest> SupportiveDocument { get; set; }=new List<ContractRenewalDocumentRequest>();
+        public CancelledRightRequest RenewRight { get; set; }=new CancelledRightRequest();
+        
+    }
+
+    public class ContractRenewalDocumentRequest
+    {
+        public string RegistrationNumber { get; set; }
+        public int AuthorityId { get; set; }
+        public int TypeId { get; set; }
+        public string DocumentId { get; set; } // only for modification and deletion
+        public DocumentRequest Document { get; set; }=new DocumentRequest();
+    }
 }

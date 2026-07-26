@@ -15,5 +15,6 @@
         ContractCancellation = 12,
         ContractModification = 13,
         FarmContractWarning=14,
+        ContractRenewal = 15,
     }
 }

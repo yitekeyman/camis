@@ -1,4 +1,5 @@
 import {IDocument} from "../document/interfaces";
+import {IAuthorityRegistration} from "./authority-registrar/interfaces";
 
 export interface IRegistrationType {
   id: number;
@@ -89,4 +90,25 @@ export interface ContractRenewalRequest {
   modifiedRight: CancelledRightRequest[];
   supportiveDocument: IDocument[];
   farmLands: FarmLandRequest[];
+}
+
+export interface ContractBudgetYearRenewalRequest {
+  id: string;
+  farmId: string;
+  landId: string;
+  splitIndex: number;
+  date: any;
+  remark: string;
+  budgetYear: number;
+  wfid: string;
+  renewRight: CancelledRightRequest;
+  supportiveDocument: IAuthorityRegistration[];
+}
+
+export interface ContractRenewalDocumentRequest {
+  registrationNumber: string;
+  authorityId: number;
+  typeId: number;
+  documentId: string;
+  document: IDocument;
 }

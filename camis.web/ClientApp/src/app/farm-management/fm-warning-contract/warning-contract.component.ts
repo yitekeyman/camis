@@ -13,7 +13,7 @@ import {DocumentDetailComponent} from "../../_shared/document/document-detail/do
 import {ContractWarningFormComponent} from "./contract-warning-form/contract-warning-form.component";
 
 @Component({
-  selector: "app-contract-cancellation",
+  selector: "app-contract-warning",
   imports: [CommonModule, ReactiveFormsModule, FormsModule, FarmDetailComponent, DocumentDetailComponent, ContractWarningFormComponent],
   templateUrl: "warning-contract.component.html"
 })

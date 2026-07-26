@@ -49,7 +49,8 @@
         UpdateSystemConfigurationValue = 1004,
         CancelContract=1005,
         UpdateContract=1006,
-        ContractWarning=1007
+        ContractWarning=1007,
+        RenewContract=1008
     }
 
     public static class UserRoles

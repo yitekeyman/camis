@@ -13,15 +13,18 @@ import {
   ContractCancellationFormComponent
 } from "../../fm-cancel-contract/contract-cancellation-form/contract-cancellation-form.component";
 import {
-  ContractRenewalFormComponent
-} from "../../fm-renew-contract/contract-renewal-form/contract-renewal-form.component";
+  ContractUpdateFormComponent
+} from "../../fm-update-contract/contract-update-form/contract-update-form.component";
 import {
   ContractWarningFormComponent
 } from "../../fm-warning-contract/contract-warning-form/contract-warning-form.component";
+import {
+  ContractRenewalFormComponent
+} from "../../fm-renew-contract/contract-renewal-form/contract-renewal-form.component";
 
 @Component({
   selector: 'app-fc-farm-view',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, FarmDetailComponent, ContractCancellationFormComponent, ContractRenewalFormComponent, ContractWarningFormComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, FarmDetailComponent, ContractCancellationFormComponent, ContractUpdateFormComponent, ContractWarningFormComponent, ContractRenewalFormComponent],
   templateUrl: 'fc-farm-view.component.html'
 })
 export class FcFarmViewComponent implements OnInit {
@@ -36,6 +39,7 @@ export class FcFarmViewComponent implements OnInit {
   showCancellationForm = false;
   showRenewalForm = false;
   showWarningForm = false;
+  showUpdateForm=false;
   landId: string=null;
   workflowId: string=null;
   splitIndex:number=0;
@@ -113,8 +117,8 @@ export class FcFarmViewComponent implements OnInit {
   public CancelContBtnClick(id:any, farmLand:any): void {
     if(id==="cancellation"){
       this.showCancellationForm = true;
-    }else if(id==="renewal"){
-      this.showRenewalForm = true;
+    }else if(id==="update"){
+      this.showUpdateForm = true;
     }
 
   }
@@ -123,6 +127,7 @@ export class FcFarmViewComponent implements OnInit {
       this.showCancellationForm=false;
       this.showRenewalForm=false;
       this.showWarningForm=false;
+      this.showUpdateForm=false;
       this.selectedFarmLand=null;
     }
   }
@@ -133,8 +138,13 @@ export class FcFarmViewComponent implements OnInit {
   }
   public async getFarmLand(data:any):Promise<void>{
     if(data!=null){
-      this.selectedFarmLand=data;
-      this.showWarningForm=true;
+      this.selectedFarmLand=data.farmLand;
+      if(data.taskFor=='renewal'){
+        this.showRenewalForm=true;
+      }else if(data.taskFor=='warning'){
+        this.showWarningForm=true;
+      }
+
     }else{
       await dialog.error("sorry, i can't find farm land right");
     }

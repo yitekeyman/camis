@@ -39,7 +39,9 @@ namespace intapscamis.camis.domain.Farms
 
 
         PaginatorResponse<FarmOperatorResponse> SearchFarmOperators(string term, int skip, int take);
-        PaginatorResponse<FarmResponse> SearchFarms(string term, int ownerType, int farmType, int status, int skip, int take);
+
+        PaginatorResponse<FarmResponse> SearchFarms(string term, int ownerType, int farmType, int status, int skip,
+            int take);
 
         FarmOperatorResponse GetFarmOperator(Guid id);
         FarmResponse GetFarm(Guid id);
@@ -76,11 +78,13 @@ namespace intapscamis.camis.domain.Farms
         void CancelContract(ContractCancellationRequest request);
         Document InWorkItemContractCancellationDoc(Guid workItemId, Guid documentId);
         object GetAllModificationReasonList();
-        void RenewContract(ContractModificationRequest request);
+        void UpdateContract(ContractModificationRequest request);
+        Document InWorkItemContractUpdateDoc(Guid workItemId, Guid documentId);
         Document InWorkItemContractRenewalDoc(Guid workItemId, Guid documentId);
         Document InWorkItemContractWarningDoc(Guid workItemId, Guid documentId);
         void RegisterContractWarning(ContractWarningRequest request);
         FarmWarningResponse GetRightWarning(Guid farmId, Guid landId, int splitIndex);
+        void RenewContract(ContractRenewalRequest request);
     }
 
     public class FarmsService : CamisService, IFarmsService
@@ -291,11 +295,10 @@ namespace intapscamis.camis.domain.Farms
                     (f.Operator != null && f.Operator.Phone != null &&
                      f.Operator.Phone.ToLower().Contains(searchTerm)) ||
                     (f.Operator != null && f.Operator.Email != null && f.Operator.Email.ToLower().Contains(searchTerm))
-                    
                 )
                 .AsSplitQuery()
                 .AsNoTracking();
-          
+
             if (farmType > 0)
                 baseQuery = baseQuery.Where(f => f.TypeId == farmType);
 
@@ -310,9 +313,8 @@ namespace intapscamis.camis.domain.Farms
                 }
                 else
                 {
-                    baseQuery = baseQuery.Where(f => f.Status == status && f.Locked==false);
+                    baseQuery = baseQuery.Where(f => f.Status == status && f.Locked == false);
                 }
-               
             }
 
             // Get total count
@@ -640,9 +642,10 @@ namespace intapscamis.camis.domain.Farms
         {
             var farm = Context.Farm.First(f => f.Id == farmId);
             farm.Locked = false;
-            farm.Status =(int) FarmStatusEnum.Active;
+            farm.Status = (int)FarmStatusEnum.Active;
             var certificateDoc = _documentService.CreateDocumentInFolder(Guid.Empty, farmLandRequest.CertificateDoc);
-            var leaseContractDoc = _documentService.CreateDocumentInFolder(Guid.Empty,farmLandRequest.LeaseContractDoc);
+            var leaseContractDoc =
+                _documentService.CreateDocumentInFolder(Guid.Empty, farmLandRequest.LeaseContractDoc);
 
             Context.FarmLand.Add(new FarmLand
             {
@@ -697,16 +700,15 @@ namespace intapscamis.camis.domain.Farms
 
             if (workItem.Data != null)
             {
-              
                 if (workItem.DataType.Equals("intapscamis.camis.domain.LandBank.LandBankFacadeModel+TransferRequest"))
                 {
-                     var data = JsonConvert.DeserializeObject<LandBankFacadeModel.TransferRequest>(
+                    var data = JsonConvert.DeserializeObject<LandBankFacadeModel.TransferRequest>(
                         JsonConvert.SerializeObject(workItem.Data));
-                     workItem.Data = data;
+                    workItem.Data = data;
                 }
                 else
                 {
-                   var  data = JsonConvert.DeserializeObject<FarmRequest>(
+                    var data = JsonConvert.DeserializeObject<FarmRequest>(
                         JsonConvert.SerializeObject(workItem.Data));
 
                     if (data.Operator.Photo != null)
@@ -735,7 +737,6 @@ namespace intapscamis.camis.domain.Farms
 
                     workItem.Data = data;
                 }
-                
             }
 
             return workItem;
@@ -986,7 +987,8 @@ namespace intapscamis.camis.domain.Farms
 
             return DocumentService.ParseDocument(documentRequest);
         }
- public Document InWorkItemContractCancellationDoc(Guid workItemId, Guid documentId)
+
+        public Document InWorkItemContractCancellationDoc(Guid workItemId, Guid documentId)
         {
             var dataStr = Context.WorkItem.Find(workItemId).Data;
             if (dataStr == null) return null;
@@ -1034,7 +1036,57 @@ namespace intapscamis.camis.domain.Farms
 
             return DocumentService.ParseDocument(documentRequest);
         }
- public Document InWorkItemContractRenewalDoc(Guid workItemId, Guid documentId)
+
+        public Document InWorkItemContractUpdateDoc(Guid workItemId, Guid documentId)
+        {
+            var dataStr = Context.WorkItem.Find(workItemId).Data;
+            if (dataStr == null) return null;
+            var data = JsonConvert.DeserializeObject<ContractRenewalRequest>(dataStr);
+            var fileDirectory = Context.SysConfigs.First(e => e.Name.Equals("file_directory")).Value ??
+                                "/usr/bin/CAMIS/data/docs";
+            var documentRequest = data?.SupportiveDocument?.First(d => d.DocumentId == documentId.ToString()).Document;
+            if (documentRequest?.Id != null && documentRequest.File == null)
+            {
+                var doc = _documentService.GetDocument(documentRequest.Id);
+                if (doc != null && doc.File == null)
+                {
+                    var filePath = $"{doc.Id}";
+                    if (!Path.IsPathRooted(filePath))
+                    {
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                            workItemId.ToString(), Path.GetFileName(filePath));
+                    }
+
+                    if (File.Exists(filePath))
+                    {
+                        doc.File = File.ReadAllBytes(filePath);
+                    }
+
+                    return doc;
+                }
+                else
+                {
+                    var filePath = $"{documentRequest.Id}";
+                    if (!Path.IsPathRooted(filePath))
+                    {
+                        filePath = Path.Combine(Directory.GetCurrentDirectory(), fileDirectory,
+                            workItemId.ToString(), Path.GetFileName(filePath));
+                    }
+
+                    if (File.Exists(filePath))
+                    {
+                        var fileBytes = File.ReadAllBytes(filePath);
+                        documentRequest.File = Convert.ToBase64String(fileBytes);
+                    }
+
+                    return DocumentService.ParseDocument(documentRequest);
+                }
+            }
+
+            return DocumentService.ParseDocument(documentRequest);
+        }
+
+        public Document InWorkItemContractRenewalDoc(Guid workItemId, Guid documentId)
         {
             var dataStr = Context.WorkItem.Find(workItemId).Data;
             if (dataStr == null) return null;
@@ -1082,7 +1134,8 @@ namespace intapscamis.camis.domain.Farms
 
             return DocumentService.ParseDocument(documentRequest);
         }
-  public Document InWorkItemContractWarningDoc(Guid workItemId, Guid documentId)
+
+        public Document InWorkItemContractWarningDoc(Guid workItemId, Guid documentId)
         {
             var dataStr = Context.WorkItem.Find(workItemId).Data;
             if (dataStr == null) return null;
@@ -1130,6 +1183,7 @@ namespace intapscamis.camis.domain.Farms
 
             return DocumentService.ParseDocument(documentRequest);
         }
+
         public FarmResponse GetFarmByLandId(Guid id)
         {
             var farmland = Context.FarmLand.FirstOrDefault(l => l.LandId == id);
@@ -1175,6 +1229,7 @@ namespace intapscamis.camis.domain.Farms
                 if (r != null)
                     rights.Add(r);
             }
+
             return rights;
         }
 
@@ -1188,6 +1243,7 @@ namespace intapscamis.camis.domain.Farms
                 if (r != null)
                     rights.Add(r);
             }
+
             return rights;
         }
 
@@ -1198,6 +1254,7 @@ namespace intapscamis.camis.domain.Farms
             Context.Farm.Update(l);
             Context.SaveChanges();
         }
+
         public void SetFarmLock(Guid farmId, bool val)
         {
             var l = Context.Farm.Where(x => x.Id == farmId).First();
@@ -1206,53 +1263,56 @@ namespace intapscamis.camis.domain.Farms
             Context.SaveChanges();
         }
 
-       public List<Workflow> GetTransferWorkFlows()
+        public List<Workflow> GetTransferWorkFlows()
         {
-            return Context.Workflow.Where(x=>x.TypeId==10 && x.CurrentState==3).ToList();
+            return Context.Workflow.Where(x => x.TypeId == 10 && x.CurrentState == 3).ToList();
         }
+
         public List<FarmLandResponse2> GetFarmLands(Guid farmId)
         {
             var ret = new List<FarmLandResponse2>();
-            var landRights=Context.LandRight.Where(l => l.FarmId == farmId).ToList();
-           
+            var landRights = Context.LandRight.Where(l => l.FarmId == farmId).ToList();
+
             foreach (var fl in landRights)
             {
                 var l = new FarmLandResponse2();
-                var land = Context.LandUpin.First(x=>x.LandId == fl.LandId);
-                var farmland=Context.FarmLand.FirstOrDefault(x=>x.LandId==fl.LandId && x.FarmId==farmId && x.SplitIndex==fl.SplitIndex);
-                l.Area=land.Area??0;
+                var land = Context.LandUpin.First(x => x.LandId == fl.LandId);
+                var farmland = Context.FarmLand.FirstOrDefault(x =>
+                    x.LandId == fl.LandId && x.FarmId == farmId && x.SplitIndex == fl.SplitIndex);
+                l.Area = land.Area ?? 0;
                 l.Geom = GetWktFromGeom(land.Geometry);
-                l.CentroidX=land.CentroidX??0;
-                l.CentroidY=land.CentroidY??0;
+                l.CentroidX = land.CentroidX ?? 0;
+                l.CentroidY = land.CentroidY ?? 0;
                 l.Upin = land.Upin;
                 if (farmland != null)
                 {
                     fl.CertificateDocument = farmland.CertificateDoc;
                     fl.ContractDocument = farmland.LeaseContractDoc;
                 }
+
                 if (fl.SplitIndex > 0)
                 {
-                    var sp=Context.LandSplit.First(x=>x.LandId == fl.LandId && x.Id==fl.SplitIndex);
-                    l.Area=sp.Area;
+                    var sp = Context.LandSplit.First(x => x.LandId == fl.LandId && x.Id == fl.SplitIndex);
+                    l.Area = sp.Area;
                     l.Upin = land.Upin + "-" + sp.Indexes;
                     l.Geom = GetWktFromGeom(sp.Geom);
                 }
 
                 l.SplitIndex = fl.SplitIndex;
-                l.LandId=fl.LandId.ToString();
-                l.FarmId=fl.FarmId.ToString();
+                l.LandId = fl.LandId.ToString();
+                l.FarmId = fl.FarmId.ToString();
                 l.Rights = MapLandRight(fl);
-                
-                ret.Add(l);
 
+                ret.Add(l);
             }
+
             return ret;
         }
 
         public void CancelContract(ContractCancellationRequest request)
         {
             var farm = Context.Farm.First(x => x.Id == Guid.Parse(request.Id));
-            var land=new  List<Land>();
+            var land = new List<Land>();
             var landSplit = new List<LandSplit>();
             var landRight = new List<LandRight>();
             var farmLand = new List<FarmLand>();
@@ -1260,13 +1320,16 @@ namespace intapscamis.camis.domain.Farms
             var sourceTxtUid = Guid.NewGuid();
             farm.Locked = false;
             var cancellations = new List<CancelledContract>();
-            if (request.CancelledRight.Count==request.FarmLands.Count)
+            if (request.CancelledRight.Count == request.FarmLands.Count)
             {
                 farm.Status = (int)FarmStatusEnum.Suspended;
             }
+
             foreach (var cr in request.CancelledRight)
             {
-                farmLand.Add(Context.FarmLand.First(x=>x.LandId==Guid.Parse(cr.LandId) && x.FarmId==Guid.Parse(cr.FarmId) && x.SplitIndex==cr.SplitIndex));
+                farmLand.Add(Context.FarmLand.First(x =>
+                    x.LandId == Guid.Parse(cr.LandId) && x.FarmId == Guid.Parse(cr.FarmId) &&
+                    x.SplitIndex == cr.SplitIndex));
                 var r = Context.LandRight.First(x =>
                     x.LandId == Guid.Parse(cr.LandId) && x.FarmId == Guid.Parse(cr.FarmId) &&
                     x.SplitIndex == cr.SplitIndex);
@@ -1277,14 +1340,15 @@ namespace intapscamis.camis.domain.Farms
                     var sp = Context.LandSplit.First(x => x.LandId == Guid.Parse(cr.LandId) && x.Id == cr.SplitIndex);
                     sp.Locked = false;
                     sp.Status = (int)LandBankFacadeModel.LandTypeEnum.Prepared;
-                    l.LandType=(int)LandBankFacadeModel.LandTypeEnum.PreparedWithSplit;
+                    l.LandType = (int)LandBankFacadeModel.LandTypeEnum.PreparedWithSplit;
                     landSplit.Add(sp);
                 }
                 else
                 {
-                   l.LandType=(int)LandBankFacadeModel.LandTypeEnum.Prepared;
-                   l.Locked = false;
+                    l.LandType = (int)LandBankFacadeModel.LandTypeEnum.Prepared;
+                    l.Locked = false;
                 }
+
                 land.Add(l);
                 cancellations.Add(new CancelledContract
                 {
@@ -1299,6 +1363,7 @@ namespace intapscamis.camis.domain.Farms
                     Wfid = Guid.Parse(request.wfid)
                 });
             }
+
             Context.FarmLand.RemoveRange(farmLand);
             Context.LandRight.RemoveRange(landRight);
             Context.Land.UpdateRange(land);
@@ -1309,7 +1374,7 @@ namespace intapscamis.camis.domain.Farms
             Context.CancelledContractDocs.AddRange(request.CancellationSupDoc.Select(doc =>
             {
                 Document document = null;
-                
+
                 if (doc != null)
                 {
                     var workItemId =
@@ -1319,15 +1384,16 @@ namespace intapscamis.camis.domain.Farms
                     return new CancelledContractDoc()
                     {
                         Id = Guid.NewGuid(),
-                        CancellationId = cancellations.First(e=>e.FarmId==Guid.Parse(request.Id)).Id,
+                        CancellationId = cancellations.First(e => e.FarmId == Guid.Parse(request.Id)).Id,
                         DocId = document.Id
                     };
                 }
+
                 return null;
             }));
 
-            var aid=Context.SaveChanges(_session.Username, (int)UserActionType.CancelContract).Id;
-            Context.CancelledContracts.UpdateRange(cancellations.Select(c=>
+            var aid = Context.SaveChanges(_session.Username, (int)UserActionType.CancelContract).Id;
+            Context.CancelledContracts.UpdateRange(cancellations.Select(c =>
             {
                 c.Aid = aid;
                 return c;
@@ -1339,13 +1405,15 @@ namespace intapscamis.camis.domain.Farms
             return Context.ContractUpdateReasons.Select(c => new { id = c.Id, name = c.Name }).ToList();
         }
 
-        public void RenewContract(ContractModificationRequest request)
+        public void UpdateContract(ContractModificationRequest request)
         {
             var farm = Context.Farm.First(f => f.Id == Guid.Parse(request.FarmId));
             var modifiedRight = new List<LandRight>();
             foreach (var mr in request.ModifiedRight)
             {
-                var lr=Context.LandRight.FirstOrDefault(e=>e.LandId==Guid.Parse(mr.LandId) && e.FarmId==Guid.Parse(mr.FarmId) && e.SplitIndex==mr.SplitIndex);
+                var lr = Context.LandRight.FirstOrDefault(e =>
+                    e.LandId == Guid.Parse(mr.LandId) && e.FarmId == Guid.Parse(mr.FarmId) &&
+                    e.SplitIndex == mr.SplitIndex);
                 if (lr != null)
                 {
                     lr.RightFrom = mr.RightFrom.Ticks;
@@ -1355,21 +1423,23 @@ namespace intapscamis.camis.domain.Farms
                     modifiedRight.Add(lr);
                 }
             }
+
             Context.LandRight.UpdateRange(modifiedRight);
             Context.SaveChanges();
             farm.Locked = false;
-            farm.Status=(int)FarmStatusEnum.Active;
+            farm.Status = (int)FarmStatusEnum.Active;
             Context.Farm.Update(farm);
             Context.SaveChanges(_session.Username, (int)UserActionType.UpdateContract);
         }
 
         public void RegisterContractWarning(ContractWarningRequest request)
         {
-           
-            var right=Context.LandRight.FirstOrDefault(r=>r.FarmId==Guid.Parse(request.FarmId) && r.LandId==Guid.Parse(request.LandId)&& r.SplitIndex==request.SplitIndex);
+            var right = Context.LandRight.FirstOrDefault(r =>
+                r.FarmId == Guid.Parse(request.FarmId) && r.LandId == Guid.Parse(request.LandId) &&
+                r.SplitIndex == request.SplitIndex);
             if (right != null)
             {
-                right.Status=(int)FarmStatusEnum.UnderWarning;
+                right.Status = (int)FarmStatusEnum.UnderWarning;
                 Context.LandRight.Update(right);
                 Context.SaveChanges();
             }
@@ -1390,7 +1460,7 @@ namespace intapscamis.camis.domain.Farms
             Context.WarningDocs.AddRange(request.SupportiveDocument.Select(doc =>
             {
                 Document document = null;
-                
+
                 if (doc != null)
                 {
                     var workItemId =
@@ -1404,6 +1474,7 @@ namespace intapscamis.camis.domain.Farms
                         DocId = document.Id
                     };
                 }
+
                 return null;
             }));
 
@@ -1413,10 +1484,13 @@ namespace intapscamis.camis.domain.Farms
 
         public FarmWarningResponse GetRightWarning(Guid farmId, Guid landId, int splitIndex)
         {
-            var right=Context.LandRight.FirstOrDefault(e=>e.FarmId ==farmId && e.LandId==landId && e.SplitIndex==splitIndex);
+            var right = Context.LandRight.FirstOrDefault(e =>
+                e.FarmId == farmId && e.LandId == landId && e.SplitIndex == splitIndex);
             if (right == null)
                 return null;
-            var warnings=Context.FarmWarnings.Where(e=>e.FarmId==farmId && e.LandId==landId && e.SplitIndex==splitIndex).OrderByDescending(e=>e.Date).ToList();
+            var warnings = Context.FarmWarnings
+                .Where(e => e.FarmId == farmId && e.LandId == landId && e.SplitIndex == splitIndex)
+                .OrderByDescending(e => e.Date).ToList();
             var parseWarnings = new List<WarningResponse>();
             foreach (var wr in warnings)
             {
@@ -1429,6 +1503,58 @@ namespace intapscamis.camis.domain.Farms
                 Warnings = parseWarnings
             };
         }
+
+        public void RenewContract(ContractRenewalRequest request)
+        {
+            var right = Context.LandRight.FirstOrDefault(r =>
+                r.FarmId == Guid.Parse(request.FarmId) && r.LandId == Guid.Parse(request.LandId) &&
+                r.SplitIndex == request.SplitIndex);
+            if (right != null)
+            {
+                right.Status = (int)FarmStatusEnum.Active;
+                Context.LandRight.Update(right);
+                Context.SaveChanges();
+            }
+
+            var renewal = new RenewContract()
+            {
+                Id = Guid.NewGuid(),
+                FarmId = request.FarmId.ToGuid(),
+                LandId = request.LandId.ToGuid(),
+                SplitIndex = request.SplitIndex,
+                Date = request.Date.Ticks,
+                BudgetYear = request.BudgetYear,
+                Remark = request.Remark,
+                Wfid = request.wfid.ToGuid()
+            };
+            Context.RenewContracts.Add(renewal);
+            Context.RenewContractDocs.AddRange(request.SupportiveDocument.Select(doc =>
+            {
+                Document document = null;
+
+                if (doc?.Document != null)
+                {
+                    var workItemId =
+                        _documentService.ExtractWorkItemIdFromOverrideFilePath(doc.Document.OverrideFilePath);
+                    if (workItemId != Guid.Empty)
+                        document = _documentService.CreateDocumentInFolder(workItemId, doc.Document);
+                    return new RenewContractDoc()
+                    {
+                        Id = Guid.NewGuid(),
+                        RenewId = renewal.Id,
+                        AuthorityId = doc.AuthorityId,
+                        TypeId = doc.TypeId,
+                        DocId = document.Id
+                    };
+                }
+
+                return null;
+            }));
+
+            renewal.Aid = Context.SaveChanges(_session.Username, (int)UserActionType.RenewContract).Id;
+            Context.RenewContracts.Update(renewal);
+        }
+
         private FarmResponse ParseFarmResponse(Farm farm)
         {
             var res = new FarmResponse
@@ -1625,7 +1751,7 @@ namespace intapscamis.camis.domain.Farms
                     Id = 3,
                     Name = "Transaction Locked"
                 };
-            
+
             return ret;
         }
 
@@ -1805,6 +1931,7 @@ namespace intapscamis.camis.domain.Farms
             var farm = baseQuery.FirstOrDefault(e => e.Id == id);
             return MapFarmToResponse(farm);
         }
+
         private LandBankFacadeModel.LandRightResponse MapLandRight(LandRight lr)
         {
             var cd = Context.Document.FirstOrDefault(c => c.Id == lr.CertificateDocument);
@@ -1862,11 +1989,11 @@ namespace intapscamis.camis.domain.Farms
         private WarningResponse ParseWaringResponse(Guid warningId)
         {
             var ret = new WarningResponse();
-            var warning=Context.FarmWarnings.FirstOrDefault(w => w.Id == warningId);
+            var warning = Context.FarmWarnings.FirstOrDefault(w => w.Id == warningId);
             if (warning == null)
                 return null;
             var docs = new List<DocumentResponse>();
-            var supDoc=Context.WarningDocs.Where(e=>e.WarningId==warningId).ToList();
+            var supDoc = Context.WarningDocs.Where(e => e.WarningId == warningId).ToList();
             foreach (var wd in supDoc)
             {
                 docs.Add(MapDocumentResponse(_documentService.GetDocument(wd.DocId)));

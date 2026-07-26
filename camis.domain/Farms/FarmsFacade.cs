@@ -74,6 +74,7 @@ namespace intapscamis.camis.domain.Farms
         void GetTransferWorkFlows();
         Document InWorkItemContractCancellationDoc(Guid workItemId, Guid documentId);
         Document InWorkItemContractRenewalDoc(Guid workItemId, Guid documentId);
+        Document InWorkItemContractUpdateDoc(Guid workItemId, Guid documentId);
         void RequestContractCancellation(Guid workflowId, ContractCancellationRequest body, string description);
         void ApproveContractCancellation(Guid workflowId, string description);
         void RejectContractCancellation(Guid workflowId, string description);
@@ -90,6 +91,11 @@ namespace intapscamis.camis.domain.Farms
         void RejectContractWarning(Guid workflowId, string description);
         void CancelContractWarning(Guid workflowId, string description);
         FarmWarningResponse GetRightWarning(Guid farmId, Guid landId, int splitIndex);
+        
+        void RequestContractRenewal(Guid workflowId, ContractRenewalRequest body, string description);
+        void ApproveContractRenewal(Guid workflowId, string description);
+        void RejectContractRenewal(Guid workflowId, string description);
+        void CancelContractRenewal(Guid workflowId, string description);
     }
 
     public class FarmsFacade : CamisFacade, IFarmsFacade
@@ -105,6 +111,7 @@ namespace intapscamis.camis.domain.Farms
         private readonly ContractCancellationWorkflow _contractCancellationWorkflow;
         private readonly ContractModificationWorkflow _contractModificationWorkflow;
         private readonly FarmWarningWorkflow _contractWarningWorkflow;
+        private readonly ContractRenewWorkflow _contractRenewWorkflow;
 
         private readonly CamisContext _context;
 
@@ -132,6 +139,7 @@ namespace intapscamis.camis.domain.Farms
             _contractModificationWorkflow =
                 new ContractModificationWorkflow(_service, workflowService, new LandBankService());
             _contractWarningWorkflow = new FarmWarningWorkflow(_service, workflowService, new LandBankService());
+            _contractRenewWorkflow = new ContractRenewWorkflow(_service, workflowService, new LandBankService());
         }
 
         public void SetSession(UserSession session)
@@ -643,6 +651,11 @@ namespace intapscamis.camis.domain.Farms
             return _service.InWorkItemContractCancellationDoc(workItemId, documentId);
         }
 
+       public Document InWorkItemContractUpdateDoc(Guid workItemId, Guid documentId)
+        {
+            PassContext(_service, _context);
+            return _service.InWorkItemContractUpdateDoc(workItemId, documentId);
+        }
         public Document InWorkItemContractRenewalDoc(Guid workItemId, Guid documentId)
         {
             PassContext(_service, _context);
@@ -840,6 +853,64 @@ namespace intapscamis.camis.domain.Farms
         {
             PassContext(_service, _context);
             return _service.GetRightWarning(farmId, landId, splitIndex);
+        }
+        
+       public void RequestContractRenewal(Guid workflowId, ContractRenewalRequest body, string description)
+        {
+            Transact(_context, t =>
+            {
+                PassContext(_contractRenewWorkflow, _context);
+                if (workflowId == Guid.Empty)
+                    _contractRenewWorkflow.ConfigureMachine();
+                else
+                    _contractRenewWorkflow.ConfigureMachine(workflowId);
+
+                _contractRenewWorkflow.Fire(_contractRenewWorkflow.Workflow.Id,
+                    ContractRenewWorkflow.ParameterizedTriggers.Request, body,
+                    description ?? "Farm Contract Renewal Request for FS.",
+                    null);
+            });
+        }
+
+        public void ApproveContractRenewal(Guid workflowId, string description)
+        {
+            Transact(_context, t =>
+            {
+                PassContext(_contractRenewWorkflow, _context);
+                _contractRenewWorkflow.ConfigureMachine(workflowId);
+
+                _contractRenewWorkflow.Fire(_contractRenewWorkflow.Workflow.Id, ContractRenewWorkflow.ParameterizedTriggers.Approve,
+                    description ?? "FS Approved Contract Renewal request.",
+                    null);
+            });
+        }
+
+        public void RejectContractRenewal(Guid workflowId, string description)
+        {
+            Transact(_context, t =>
+            {
+                PassContext(_contractRenewWorkflow, _context);
+                _contractRenewWorkflow.ConfigureMachine(workflowId);
+
+                _contractRenewWorkflow.Fire(_contractRenewWorkflow.Workflow.Id,
+                    ContractRenewWorkflow.ParameterizedTriggers.Reject,
+                    description ?? "FS Rejected Contract Renewal request.",
+                    null);
+            });
+        }
+
+        public void CancelContractRenewal(Guid workflowId, string description)
+        {
+            Transact(_context, t =>
+            {
+                PassContext(_contractRenewWorkflow, _context);
+                _contractRenewWorkflow.ConfigureMachine(workflowId);
+
+                _contractRenewWorkflow.Fire(_contractRenewWorkflow.Workflow.Id,
+                    ContractRenewWorkflow.ParameterizedTriggers.Cancel,
+                    description ?? "FS/FC Cancel Contract Renewal request.",
+                    null);
+            });
         }
     }
 }

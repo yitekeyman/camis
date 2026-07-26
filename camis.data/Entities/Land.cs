@@ -44,5 +44,6 @@ namespace intapscamis.camis.data.Entities
         public virtual ICollection<FarmLand> FarmLands { get; set; } = new List<FarmLand>();
         public virtual ICollection<FarmWarning> FarmWarnings { get; set; } = new List<FarmWarning>();
         public virtual ICollection<CancelledContract> CancelledContracts { get; set; } = new List<CancelledContract>();
+        public virtual ICollection<RenewContract> RenewContracts { get; set; } = new List<RenewContract>();
     }
 }

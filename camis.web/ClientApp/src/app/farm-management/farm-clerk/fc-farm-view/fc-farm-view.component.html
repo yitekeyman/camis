@@ -23,7 +23,7 @@
                 </li>
 
                 <li *ngIf="[4,5,8].includes(farm.status.id)"><a class="dropdown-item" href="javascript:" (click)="CancelContBtnClick('cancellation', null)">Cancel Contract</a></li>
-                <li *ngIf="[4,5,6,7,8].includes(farm.status.id)"><a class="dropdown-item" href="javascript:" (click)="CancelContBtnClick('renewal', null)"> Renew/Modify Contract</a></li>
+                <li *ngIf="[4,5,6,7,8].includes(farm.status.id)"><a class="dropdown-item" href="javascript:" (click)="CancelContBtnClick('update', null)"> Update Contract</a></li>
               </ul>
             </div>
           </div>
@@ -39,16 +39,17 @@
 
 </div>
 
-<div class="modal fade" [class.show]="showCancellationForm || showRenewalForm || showWarningForm" [style.display]="(showCancellationForm || showRenewalForm|| showWarningForm) ? 'block' : 'none'"
+<div class="modal fade" [class.show]="showCancellationForm || showRenewalForm || showWarningForm ||showUpdateForm" [style.display]="(showCancellationForm || showRenewalForm|| showWarningForm ||showUpdateForm) ? 'block' : 'none'"
      id="resetPassModal" tabindex="-1" aria-labelledby="resetPassModalLabel" aria-hidden="true">
   <div class="modal-dialog" style="max-width: 95%">
     <div class="modal-content">
      <app-contract-cancellation-form *ngIf="showCancellationForm" [farmId]="farmId" [landId]="landId" [splitIndex]="splitIndex"  (closeEditForm)="closeForm($event)"  (reload)="reloadPage($event)"></app-contract-cancellation-form>
-      <app-contract-renewal-form *ngIf="showRenewalForm" [farmId]="farmId" [landId]="landId" [splitIndex]="splitIndex"  (closeEditForm)="closeForm($event)"  (reload)="reloadPage($event)"></app-contract-renewal-form>
+      <app-contract-update-form *ngIf="showUpdateForm" [farmId]="farmId" [landId]="landId" [splitIndex]="splitIndex"  (closeEditForm)="closeForm($event)"  (reload)="reloadPage($event)"></app-contract-update-form>
       <app-contract-warning-form *ngIf="showWarningForm" [farmId]="farmId" [farmLand]="selectedFarmLand" (closeEditForm)="closeForm($event)"  (reload)="reloadPage($event)"></app-contract-warning-form>
+      <app-contract-renewal-form *ngIf="showRenewalForm" [farmId]="farmId" [farmLand]="selectedFarmLand" (closeEditForm)="closeForm($event)"  (reload)="reloadPage($event)"></app-contract-renewal-form>
     </div>
   </div>
 </div>
 
 <!-- Backdrop -->
-<div class="modal-backdrop fade show" *ngIf="showCancellationForm || showRenewalForm || showWarningForm" (click)="closeForm(true)"></div>
+<div class="modal-backdrop fade show" *ngIf="showCancellationForm || showRenewalForm || showWarningForm ||showUpdateForm" (click)="closeForm(true)"></div>

@@ -351,3 +351,65 @@ CREATE TABLE frm.cancelled_contract_doc
 
 ALTER TABLE frm.cancelled_contract_doc
     OWNER to postgres;
+
+CREATE TABLE frm.renew_contract
+(
+    id uuid NOT NULL,
+    farm_id uuid NOT NULL,
+    land_id uuid NOT NULL,
+    split_index integer,
+    budget_year integer NOT NULL,
+    date bigint NOT NULL,
+    remark text COLLATE pg_catalog."default",
+    aid bigint,
+    wfid uuid NOT NULL,
+    CONSTRAINT renew_contract_pkey PRIMARY KEY (id),
+    CONSTRAINT contract_renew_farm_id_fk FOREIGN KEY (farm_id)
+        REFERENCES frm.farm (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT contract_renew_land_id_fk FOREIGN KEY (land_id)
+        REFERENCES lb.land (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+    WITH (
+        OIDS = FALSE
+        )
+    TABLESPACE pg_default;
+
+ALTER TABLE frm.renew_contract
+    OWNER to postgres;
+
+CREATE TABLE frm.renew_contract_doc
+(
+    id uuid NOT NULL,
+    renew_id uuid NOT NULL,
+    doc_id uuid NOT NULL,
+    type_id integer,
+    authority_id integer,
+    CONSTRAINT renew_contract_doc_pkey PRIMARY KEY (id),
+    CONSTRAINT contract_renew_doc_id_fk FOREIGN KEY (doc_id)
+        REFERENCES doc.document (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT contract_renew_id_fk FOREIGN KEY (renew_id)
+        REFERENCES frm.renew_contract (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+    WITH (
+        OIDS = FALSE
+        )
+    TABLESPACE pg_default;
+
+ALTER TABLE frm.renew_contract_doc
+    OWNER to postgres;
+
+INSERT INTO wf.workflow_type(
+    id, name, description)
+VALUES (15, 'Contract Renewal', 'Renew farm for the budget year');
+
+INSERT INTO sys.action_type(
+    id, name)
+VALUES (1008, 'Renew Contract');

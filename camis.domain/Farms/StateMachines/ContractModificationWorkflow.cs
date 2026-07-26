@@ -72,7 +72,7 @@ public class ContractModificationWorkflow: CamisService
         Workflow = _workflowService.CreateWorkflow(new WorkflowRequest
         {
             CurrentState = (int)States.Filing,
-            Description = "Farm Contract Renewal/Modification.",
+            Description = "Farm Contract Modification.",
             TypeId = (int)WorkflowTypes.ContractModification
         });
         _machine = new StateMachine<States, Triggers>(States.Filing);
@@ -127,7 +127,7 @@ public class ContractModificationWorkflow: CamisService
 
         if (data?.SupportiveDocument != null)
         {
-            const string pathPrefix = "/api/Farms/InWorkItemContractRenewalDoc/";
+            const string pathPrefix = "/api/Farms/InWorkItemContractUpdateDoc/";
 
             foreach (var doc in data.SupportiveDocument)
             {
@@ -263,7 +263,7 @@ public class ContractModificationWorkflow: CamisService
     {
         var data = GetData();
         ConfigureAndAddWorkItem(null, data, description, assignedUser, transition);
-       _service.RenewContract(data);
+       _service.UpdateContract(data);
     }
     private ContractModificationRequest GetData()
     {

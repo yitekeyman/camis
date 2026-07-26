@@ -960,6 +960,21 @@ namespace intapscamis.camis.Controllers
                 return StatusCode(500, new { success = false, message = e.Message });
             }
         }
+        [HttpGet]
+        public IActionResult InWorkItemContractUpdateDoc(string id, string documentId)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                var doc = _facade.InWorkItemContractUpdateDoc(id.ToGuid(), documentId.ToGuid());
+                return File(doc.File, doc.Mimetype, null); // the filename is null to support in-browser view
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
         
          [HttpPost]
         public IActionResult RequestContractWarning(string id, [FromBody] ContractWarningRequest body,
@@ -1036,6 +1051,72 @@ namespace intapscamis.camis.Controllers
                 _facade.SetSession(GetSession());
                 var doc = _facade.GetRightWarning(Guid.Parse(farmId), Guid.Parse(landId),splitIndex);
                 return Json(doc);
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+          [HttpPost]
+        public IActionResult RequestContractRenewal(string id, [FromBody] ContractRenewalRequest body,
+            string description)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                if(string.IsNullOrEmpty(id))
+                    id=Guid.Empty.ToString();
+                _facade.RequestContractRenewal(id.ToGuid(), body, description);
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+
+        [HttpPut]
+        public IActionResult ApproveContractRenewal(string id, string description)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                _facade.ApproveContractRenewal(id.ToGuid(), description);
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+
+        [HttpPut]
+        public IActionResult RejectContractRenewal(string id, string description)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                _facade.RejectContractRenewal(id.ToGuid(), description);
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+                return StatusCode(500, new { success = false, message = e.Message });
+            }
+        }
+
+        [HttpPut]
+        public IActionResult CancelContractRenewal(string id, string description)
+        {
+            try
+            {
+                _facade.SetSession(GetSession());
+                _facade.CancelContractRenewal(id.ToGuid(), description);
+                return Json(new { success = true });
             }
             catch (Exception e)
             {

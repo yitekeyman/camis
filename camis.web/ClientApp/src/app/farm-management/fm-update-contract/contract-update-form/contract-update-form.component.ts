@@ -7,28 +7,36 @@ import { ObjectKeyCasingService } from "../../../_services/object-key-casing.ser
 import dialog from "../../../_shared/dialog";
 import { LandDataService } from "../../../_services/land-data.service";
 import { CamisMapComponent } from "../../../_shared/camismap/camismap.component";
+import { DocumentDetailComponent } from "../../../_shared/document/document-detail/document-detail.component";
 import { LandbankDocumentSelectorComponent } from "../../../_shared/land-bank/landbank-document-selector/landbank-document-selector.component";
-import { ContractCancellationRequest, CancelledRightRequest } from "../../../_shared/farm/interfaces";
+import {
+  ContractCancellationRequest,
+  CancelledRightRequest,
+  ContractRenewalRequest
+} from "../../../_shared/farm/interfaces";
 import {WorkflowApiService} from "../../../_services/workflow-api.service";
 
 @Component({
-  selector: 'app-contract-cancellation-form',
+  selector: 'app-contract-update-form',
   imports: [CommonModule, ReactiveFormsModule, FormsModule, CamisMapComponent, LandbankDocumentSelectorComponent],
-  templateUrl: "contract-cancellation-form.component.html"
+  templateUrl: "contract-update-form.component.html"
 })
-export class ContractCancellationFormComponent implements OnInit {
+export class ContractUpdateFormComponent implements OnInit {
   @Input() workflowId: string | null = null;
   @Input() farmId: string | null = null;
   @Input() landId: string | null = null;
   @Input() splitIndex: number = 0;
-  @Input() data: ContractCancellationRequest | null = null;
+  @Input() data: ContractRenewalRequest | null = null;
   @Output() closeEditForm = new EventEmitter<boolean>();
   @Output() reload = new EventEmitter<boolean>();
 
-  cancellationModel: ContractCancellationRequest;
+  renewalModel: ContractRenewalRequest;
   farmLandRights: any[] = [];
+  renewFarmLandRights: any[] = [];
+  selectedFarmLandRights: any=null;
   farmStatusTypes: any[] = [];
   submitted = false;
+  showEditRightForm: boolean = false;
 
   rightType = [
     { id: 1, name: 'Lease From State' },
@@ -38,6 +46,7 @@ export class ContractCancellationFormComponent implements OnInit {
     { id: 5, name: 'Sub-lease' },
   ];
 
+  modificationReasonList: any[] = [];
   @ViewChild('camis_map') map: CamisMapComponent;
 
   constructor(
@@ -52,6 +61,10 @@ export class ContractCancellationFormComponent implements OnInit {
       this.keyCase.camelCase(statusType);
       this.farmStatusTypes = statusType;
     }, dialog.error);
+    this.api.getAllModificationReasonList().subscribe(statusType => {
+      this.keyCase.camelCase(statusType);
+      this.modificationReasonList = statusType;
+    }, dialog.error);
   }
 
   ngOnInit() {
@@ -61,13 +74,13 @@ export class ContractCancellationFormComponent implements OnInit {
       if(this.data==null){
         this.wfApi.getLastWorkItem(this.workflowId).subscribe(workflow => {
           this.keyCase.camelCase(workflow);
-          this.cancellationModel=workflow.data;
-          this.loadFarmLandsAndMap(this.cancellationModel.id);
+          this.renewalModel=workflow.data;
+          this.loadFarmLandsAndMap(this.renewalModel.farmId);
         }, dialog.error);
       }
       else{
-        this.cancellationModel=this.data;
-        this.loadFarmLandsAndMap(this.cancellationModel.id);
+        this.renewalModel=this.data;
+        this.loadFarmLandsAndMap(this.renewalModel.farmId);
       }
 
       dialog.close();
@@ -80,20 +93,30 @@ export class ContractCancellationFormComponent implements OnInit {
     }
   }
   private syncSelectedRights() {
-    if (!this.cancellationModel?.cancelledRight?.length) return;
-    for (const cancelled of this.cancellationModel.cancelledRight) {
+    if (!this.renewalModel?.modifiedRight?.length){
+      if(this.farmLandRights.length ==1){
+        this.renewFarmLandRights=this.farmLandRights;
+      }
+      return;
+    }
+    for (const modified of this.renewalModel.modifiedRight) {
       const match = this.farmLandRights.find(fl =>
-        fl.farmId?.toString() === cancelled.farmId?.toString() &&
-        fl.landId?.toString() === cancelled.landId?.toString() &&
-        fl.splitIndex === cancelled.splitIndex
+        fl.farmId?.toString() === modified.farmId?.toString() &&
+        fl.landId?.toString() === modified.landId?.toString() &&
+        fl.splitIndex === modified.splitIndex
       );
-      if (match) match.selected = true;
+      if (match) {
+        match.rights.rightFrom=modified.rightFrom;
+        match.rights.rightTo=modified.rightTo;
+        match.rights.yearlyRent=modified.yearlyRent;
+        this.renewFarmLandRights.push(match);
+      }
     }
   }
   private loadCancellationDataByLandId() {
     this.api.getFarmByLandId(this.landId).subscribe(res => {
       this.keyCase.camelCase(res);
-      this.initCancellationModel(res);
+      this.initRenewalModel(res);
       this.loadFarmLandsAndMap(res.farmLands?.length ? res.id : null);
     }, error => {
       dialog.close();
@@ -104,7 +127,7 @@ export class ContractCancellationFormComponent implements OnInit {
   private loadCancellationDataByFarmId() {
     this.api.getFarm(this.farmId).subscribe(res => {
       this.keyCase.camelCase(res);
-      this.initCancellationModel(res);
+      this.initRenewalModel(res);
       this.loadFarmLandsAndMap(this.farmId);
     }, error => {
       dialog.close();
@@ -112,33 +135,22 @@ export class ContractCancellationFormComponent implements OnInit {
     });
   }
 
-  private initCancellationModel(farm: any) {
-    this.cancellationModel = {
-      id: farm.id?.toString() || null,
-      operatorId: farm.operatorId?.toString() || null,
-      typeId: farm.typeId,
-      activityId: farm.activityId?.toString(),
-      investedCapital: farm.investedCapital,
+  private initRenewalModel(farm: any) {
+    this.renewalModel = {
+      farmId: farm.id?.toString() || null,
       description: farm.description,
-      otherTypeIds: farm.otherTypeIds,
-      cancellationReason: "",
+      modificationReason: {id:0,name:""},
       status: farm.status,
       locked: farm.locked,
-      cancelledRight: [],
-      cancellationSupDoc: [],
-      farmLands: [],
-      wfid:'',
-      date:new Date().toISOString().slice(0, 10),
-      reason:''
+      modifiedRight: [],
+      supportiveDocument: [],
+      farmLands: []
     };
 
     if (this.data) {
-      this.cancellationModel.reason = this.data.reason||"";
-      this.cancellationModel.wfid = this.data.wfid||"";
-      this.cancellationModel.date=new Date(this.data.date).toLocaleDateString('en-CA');
-      this.cancellationModel.cancellationReason = this.data.cancellationReason || "";
-      this.cancellationModel.cancelledRight = this.data.cancelledRight || [];
-      this.cancellationModel.cancellationSupDoc = this.data.cancellationSupDoc || [];
+      this.renewalModel.modificationReason = this.data.modificationReason || null;
+      this.renewalModel.modifiedRight = this.data.modifiedRight || [];
+      this.renewalModel.supportiveDocument = this.data.supportiveDocument || [];
     }
   }
 
@@ -157,12 +169,12 @@ export class ContractCancellationFormComponent implements OnInit {
 
       const splitGeomData: any[] = [];
       // Clear farmLands to avoid duplicates when reloading (important for workflow case)
-      this.cancellationModel.farmLands = [];
+      this.renewalModel.farmLands = [];
 
       for (let fl of this.farmLandRights) {
         const parts = fl.rights.geom.split(";");
         splitGeomData.push({ id: fl.upin, wkt: parts[parts.length - 1] });
-        this.cancellationModel.farmLands.push({
+        this.renewalModel.farmLands.push({
           farmId: fl.farmId.toString(),
           landId: fl.landId.toString(),
           splitIndex: fl.splitIndex,
@@ -190,36 +202,29 @@ export class ContractCancellationFormComponent implements OnInit {
     return type ? type.name : null;
   }
 
-  toggleSelectAll(event: any) {
-    const checked = event.target.checked;
-    this.farmLandRights.forEach(fl => fl.selected = checked);
-  }
-
-  isAllSelected(): boolean {
-    return this.farmLandRights.length > 0 && this.farmLandRights.every(fl => fl.selected);
-  }
-
-  async saveCancellation():Promise<void>   {
+  async saveRenewal():Promise<void>   {
     this.submitted = true;
-    if (!await dialog.confirm('Are you sure you want to reject this registration request?')) {
+    if (!await dialog.confirm('Are you sure you want to request this renewal request?')) {
       return;
     }
-    const message = await dialog.prompt('Enter a message for the clerk:');
+    const message = await dialog.prompt('Enter a message for the suppervisour:');
     if (message === "") {
       return
     }
     // Validation
-    if (!this.cancellationModel.cancellationReason?.trim()) {
-       await dialog.error("Please provide a cancellation reason.");
+    if (!this.renewalModel.description?.trim()) {
+       await dialog.error("Please provide a modification reason details.");
+return ;
     }
 
-    const selectedRights = this.farmLandRights.filter(fl => fl.selected);
-    if (selectedRights.length === 0) {
-      await dialog.error("Please select at least one farm right to cancel.");
+
+    if (this.renewFarmLandRights.length === 0) {
+      await dialog.error("Please select at least one farm right to renewal.");
+      return ;
     }
 
     // Build cancelledRight array
-    this.cancellationModel.cancelledRight = selectedRights.map(fl => ({
+    this.renewalModel.modifiedRight = this.renewFarmLandRights.map(fl => ({
       farmId: fl.farmId.toString(),
       landId: fl.landId.toString(),
       splitIndex: fl.splitIndex,
@@ -237,13 +242,13 @@ export class ContractCancellationFormComponent implements OnInit {
     dialog.loading();
 
     const saveObservable = this.workflowId
-      ? this.api.requestContractCancellation(this.workflowId, this.cancellationModel, message)
-      : this.api.requestContractCancellation("", this.cancellationModel, message);
+      ? this.api.requestContractModification(this.workflowId, this.renewalModel, message)
+      : this.api.requestContractModification("", this.renewalModel, message);
 
     saveObservable.subscribe({
       next: () => {
         dialog.close();
-        dialog.success("Contract cancellation saved successfully.");
+        dialog.success("Contract Renewal saved successfully.");
         this.closeForm();
         this.reload.emit(true);
       },
@@ -256,5 +261,28 @@ export class ContractCancellationFormComponent implements OnInit {
 
   closeForm() {
     this.closeEditForm.emit(true);
+  }
+
+  renewRight(right:any){
+    this.selectedFarmLandRights=right;
+    this.showEditRightForm=true;
+  }
+
+  doneEditRightForm(){
+    if (this.renewFarmLandRights.length > 0) {
+      let r=[];
+      for(let f of this.renewFarmLandRights){
+        if(f.farmId===this.selectedFarmLandRights.farmId && f.landId===this.selectedFarmLandRights.landId && f.splitIndex===this.selectedFarmLandRights.splitIndex){
+          r.push(this.selectedFarmLandRights);
+        }else{
+          r.push(f);
+        }
+      }
+      this.renewFarmLandRights=r;
+    }else{
+      this.renewFarmLandRights.push(this.selectedFarmLandRights);
+    }
+    this.selectedFarmLandRights=null;
+    this.showEditRightForm=false;
   }
 }

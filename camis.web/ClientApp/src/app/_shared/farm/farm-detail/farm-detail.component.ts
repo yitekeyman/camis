@@ -10,27 +10,17 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {AddressModule} from "../../address/address.module";
 import {DocumentModule} from "../../document/document.module";
 import {ProjectModule} from "../../project/project.module";
-import {
-  SimpleLandBankDetails
-} from "../../land-bank/search-result-detail/simple-land-bank-details/simple-land-bank-details.component";
+
 import {CamisMapComponent} from "../../camismap/camismap.component";
 import {LandDataService} from "../../../_services/land-data.service";
-import {
-  ContractCancellationFormComponent
-} from "../../../farm-management/fm-cancel-contract/contract-cancellation-form/contract-cancellation-form.component";
-import {
-  ContractRenewalFormComponent
-} from "../../../farm-management/fm-renew-contract/contract-renewal-form/contract-renewal-form.component";
-import {
-  ContractWarningFormComponent
-} from "../../../farm-management/fm-warning-contract/contract-warning-form/contract-warning-form.component";
+
 import {
   ContractWarningDetailsComponent
 } from "../../../farm-management/fm-warning-contract/contract-warning-details/contract-warning-details.component";
 
 @Component({
   selector: 'app-farm-detail',
-  imports: [CommonModule, ReactiveFormsModule, AddressModule, DocumentModule, ProjectModule, CamisMapComponent, ContractCancellationFormComponent, ContractRenewalFormComponent, ContractWarningFormComponent, ContractWarningDetailsComponent],
+  imports: [CommonModule, ReactiveFormsModule, AddressModule, DocumentModule, ProjectModule, CamisMapComponent, ContractWarningDetailsComponent],
   templateUrl: 'farm-detail.component.html',
   styleUrls: ['farm-detail.component.scss']
 
@@ -265,9 +255,19 @@ export class FarmDetailComponent implements OnInit {
     return Math.round(a / 10) / 1000 + ' ha';
   }
   addWarning(farmLand:any){
-    this.selectedFarmLand.emit(farmLand);
+    const data={
+      farmLand:farmLand,
+      taskFor:"warning"
+    }
+    this.selectedFarmLand.emit(data);
   }
-
+addRenewal(farmLand:any){
+  const data={
+    farmLand:farmLand,
+    taskFor:"renewal"
+  }
+  this.selectedFarmLand.emit(data);
+}
   showWarningDetails(landId:any, splitIndex:number){
     this.selectedLandId = landId;
     this.selectedSplitIndex=splitIndex;

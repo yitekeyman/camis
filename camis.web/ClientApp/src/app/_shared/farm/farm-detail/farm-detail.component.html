@@ -317,20 +317,37 @@
                   </td>
                   <td class="align-right">
                     <div class="btn-group">
-                      <a target="_blank" class="btn btn-custom-light btn-sm me-1" title="see parcel info"
-                         [href]="'/land-bank/parcel-details/' + farmLand.landId">
-                        <i class="ti ti-map-pin"></i>
-                      </a>
-                      <a class="btn btn-custom btn-sm me-1" title="add warning"
-                         *ngIf="loginRole==='2' && farm && !farm.locked && [4,5,8].includes(farm.status.id)"
-                         href="javascript:" (click)="addWarning(farmLand)">
-                        <i class="ti ti-plus"></i>
-                      </a>
-                      <a class="btn btn-custom btn-sm" title="see warning"
-                         *ngIf="farmLand.rights.status===8"
-                         href="javascript:" (click)="showWarningDetails(farmLand.landId, farmLand.splitIndex)">
-                        <i class="ti ti-eye"></i>
-                      </a>
+                      <button class="btn btn-custom dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown"
+                              aria-expanded="false">
+                        Actions&nbsp;&nbsp;<i class="ti ti-caret-down"></i>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a target="_blank"  title="see parcel info"
+                               [href]="'/land-bank/parcel-details/' + farmLand.landId">
+                          <i class="ti ti-map-pin"></i> see Parcel
+                        </a></li>
+                        <li *ngIf="farmLand.rights.status===8"><a  title="see warning"
+
+                               href="javascript:" (click)="showWarningDetails(farmLand.landId, farmLand.splitIndex)">
+                          <i class="ti ti-eye"></i> See Warnings
+                        </a></li>
+
+                        <li>
+                          <hr class="dropdown-divider">
+                        </li>
+
+                        <li *ngIf="loginRole==='2' && farm && !farm.locked && [4,5,8].includes(farm.status.id)"> <a  title="add warning"
+
+                                 href="javascript:" (click)="addWarning(farmLand)">
+                          <i class="ti ti-plus"></i> Register Warning
+                        </a></li>
+                        <li *ngIf="loginRole==='2' && farm && !farm.locked && [4,5,8].includes(farm.status.id)"> <a  title="renew contract"
+
+                                 href="javascript:" (click)="addRenewal(farmLand)">
+                          <i class="ti ti-plus"></i> Renew Contract
+                        </a>
+                        </li>
+                      </ul>
                     </div>
 
                   </td>

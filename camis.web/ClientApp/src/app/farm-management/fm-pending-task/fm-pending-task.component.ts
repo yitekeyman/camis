@@ -48,6 +48,7 @@ export class FmPendingTaskComponent implements OnInit {
         { type: 12, states: [3] },
         { type: 13, states: [6] },
         { type: 14, states: [3] },
+        { type: 15, states: [3] },
       ];
     }
     if (this.loginRole === '3') {
@@ -62,6 +63,7 @@ export class FmPendingTaskComponent implements OnInit {
         { type: 12, states: [2] },
         { type: 13, states: [2] },
         { type: 14, states: [2] },
+        { type: 15, states: [2] },
       ];
     }
     if (this.loginRole === '6') {
@@ -301,10 +303,13 @@ export class FmPendingTaskComponent implements OnInit {
           url = `farm-management/task/contract-cancellation/${e.workflowId}`;
           break;
         case 13:
-          url = `farm-management/task/contract-renewal/${e.workflowId}`;
+          url = `farm-management/task/contract-update/${e.workflowId}`;
           break;
         case 14:
           url = `farm-management/task/contract-warning/${e.workflowId}`;
+          break;
+        case 15:
+          url = `farm-management/task/contract-renewal/${e.workflowId}`;
           break;
         default:
           url = `default/pending-task`;
@@ -337,10 +342,13 @@ export class FmPendingTaskComponent implements OnInit {
           url = `farm-management/task/contract-cancellation/${e.workflowId}`;
           break;
         case 13:
-          url = `farm-management/task/contract-renewal/${e.workflowId}`;
+          url = `farm-management/task/contract-update/${e.workflowId}`;
           break;
         case 14:
           url = `farm-management/task/contract-warning/${e.workflowId}`;
+          break;
+        case 15:
+          url = `farm-management/task/contract-renewal/${e.workflowId}`;
           break;
         default:
           url = `default/pending-task`;

@@ -4,25 +4,25 @@
       <div class="card-header p-2">
         <div class="row">
           <div class="col-md-6">
-            <h4 *ngIf="workflowId"><i class="ti ti-map-plus"></i> Commercial Farm Contract Budget Year Renewal Task</h4>
+            <h4 *ngIf="workflowId"><i class="ti ti-map-plus"></i> Commercial Farm Contract Renewal Task</h4>
           </div>
           <div class="col-md-6 " style="text-align: right">
             <div *ngIf="!loading && data">
-              <div class="btn-group" *ngIf="workflowId && workFlowItem?.typeId==15">
+              <div class="btn-group" *ngIf="workflowId && workFlowItem?.typeId==13">
                 <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
                   Actions <i class="ti ti-caret-down"></i>
                 </button>
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="javascript:" data-bs-toggle="modal"
-                         data-bs-target="#landAssignmentDialog" *ngIf="loginRole==2 && workFlowItem.currentState==3"  (click)="CancelContBtnClick()">Edit Contract Renewal</a></li>
+                         data-bs-target="#landAssignmentDialog" *ngIf="loginRole==2 && workFlowItem.currentState==6"  (click)="renewContBtnClick()">Edit Contract Renewal</a></li>
                   <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole==3 && workFlowItem.currentState==2" (click)="approveContractRenewalRequest()">Approve
-                    Task</a></li>
+                    Task Request</a></li>
                   <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole==3 && workFlowItem.currentState==2" (click)="rejectContractRenewalRequest()">Reject
-                    Task </a></li>
+                    Task Request</a></li>
                   <li>
 
-                  <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole==2 && workFlowItem.currentState==3" (click)="cancelContractRenewalRequest()"> Cancel
+                  <li><a class="dropdown-item" href="javascript:" *ngIf="loginRole==2 && workFlowItem.currentState==6" (click)="cancelContractRenewalRequest()"> Cancel
                     Task</a></li>
                 </ul>
               </div>
@@ -33,11 +33,11 @@
       </div>
     </div>
   </div>
-  <div class="col-md-12" *ngIf="workFlowItem?.typeId===15">
+  <div class="col-md-12" *ngIf="workFlowItem?.typeId===13">
     <div class="alert alert-primary d-flex align-items-center p-1 mb-1">
       <table class="table p-0 m-0">
         <tbody>
-        <tr *ngIf="workFlowItem?.typeId===15">
+        <tr *ngIf="workFlowItem?.typeId===13">
           <td class="m-0 p-1"
               style="vertical-align: middle; font-size: 2rem; border-right: 2px solid rgba(0,0,0,0.25); text-align: center;color:rgba(0,255,0,0.75)">
             <i class="ti ti-bell-ringing-filled"></i>
@@ -50,24 +50,20 @@
           <td class="m-0" style="font-size: 0.75rem; vertical-align: middle">
             <b>Task: </b> {{workFlowItem.type.name}}<br/>
             <b>Task State: </b>{{getTaskState(workFlowItem.currentState)}}<br>
-            <b>Remark: </b> {{ warningData.remark }}<br>
-          </td>
-          <td class="m-0" style="font-size: 0.75rem; vertical-align: middle">
-            <b>Date: </b> {{warningData.date | date}}<br/>
-            <b>Budget Year: </b>{{warningData.budgetYear}}<br>
-
+            <b>Renewal Reason: </b> {{ renewalData.modificationReason.name }}<br>
+            <b>Reason Details: </b> {{ renewalData.description }}<br>
           </td>
           <td rowspan="2" class="m-0" style="font-size: 0.75rem; vertical-align: top">
-            <p>Supportive Doc</p>
-            <div *ngIf="warningData.supportiveDocument?.length==0">No document attached, yet.</div>
-            <div *ngFor="let doc of warningData.supportiveDocument">
-              <app-document-detail [document]="doc.document"></app-document-detail>
+            <p>Contract Renewal Support Doc</p>
+            <div *ngIf="renewalData.supportiveDocument?.length==0">No document attached, yet.</div>
+            <div *ngFor="let doc of renewalData.supportiveDocument">
+              <app-document-detail [document]="doc"></app-document-detail>
             </div>
 
           </td>
         </tr>
         <tr>
-          <td colspan="4">
+          <td colspan="3">
             <table class="table mb-0" style="font-size: 0.75rem; vertical-align: middle">
               <thead>
               <tr>
@@ -81,14 +77,14 @@
               </tr>
               </thead>
               <tbody>
-              <tr >
-                <td></td>
-                <td>{{getLandR(warningData.landId, warningData.splitIndex)?.upin}}</td>
-                <td>{{getArea(getLandR(warningData.landId, warningData.splitIndex)?.area)}}</td>
-                <td>{{getRightType(warningData.renewRight.rightType)}}</td>
-                <td>{{warningData.renewRight.rightFrom|date}}</td>
-                <td>{{warningData.renewRight.rightTo|date}}</td>
-                <td>{{warningData.renewRight.yearlyRent|currency : "Br "}}</td>
+              <tr *ngFor="let r of renewalData.modifiedRight;index as i">
+                <td>{{i+1}}</td>
+                <td>{{getLandR(r.landId, r.splitIndex)?.upin}}</td>
+                <td>{{getArea(getLandR(r.landId, r.splitIndex)?.area)}}</td>
+                <td>{{getRightType(r.rightType)}}</td>
+                <td>{{r.rightFrom|date}}</td>
+                <td>{{r.rightTo|date}}</td>
+                <td>{{r.yearlyRent|currency : "Br "}}</td>
               </tr>
               </tbody>
             </table>
@@ -103,14 +99,14 @@
   </div>
 </div>
 
-<div class="modal fade" [class.show]="showCancellationForm" [style.display]="showCancellationForm ? 'block' : 'none'"
+<div class="modal fade" [class.show]="showRenewalForm" [style.display]="showRenewalForm ? 'block' : 'none'"
      id="resetPassModal" tabindex="-1" aria-labelledby="resetPassModalLabel" aria-hidden="true">
   <div class="modal-dialog" style="max-width: 95%">
     <div class="modal-content">
-      <app-contract-renewal-form *ngIf="showCancellationForm" [workflowId]="this.workflowId" [data]="warningData"  (closeEditForm)="closeForm($event)"  (reload)="reloadPage($event)"></app-contract-renewal-form>
+      <app-contract-update-form *ngIf="showRenewalForm" [workflowId]="workflowId" [data]="renewalData"  (closeEditForm)="closeForm($event)"  (reload)="reloadPage($event)"></app-contract-update-form>
     </div>
   </div>
 </div>
 
 <!-- Backdrop -->
-<div class="modal-backdrop fade show" *ngIf="showCancellationForm" (click)="closeForm(true)"></div>
+<div class="modal-backdrop fade show" *ngIf="showRenewalForm" (click)="closeForm(true)"></div>
